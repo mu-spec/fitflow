@@ -2,16 +2,29 @@
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
+.packages
 .pub-cache/
 .pub/
 /build/
 /coverage/
+**/doc/api/
+**/ios/Flutter/.last_build_id
+
+# Symbolication / obfuscation artifacts
+app.*.symbols
+app.*.map.json
+
+# Local Gradle caches
+.gradle/
 
 # IDEs and operating systems
 .idea/
 *.iml
+*.ipr
+*.iws
 .DS_Store
 Thumbs.db
+*.swp
 
 # Local Android SDK configuration
 android/local.properties

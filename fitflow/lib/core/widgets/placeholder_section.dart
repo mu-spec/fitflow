@@ -1,3 +1,4 @@
+import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
 /// A titled card used as a placeholder section on feature screens.
@@ -16,7 +17,7 @@ class PlaceholderSection extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: AppDimens.itemGap),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

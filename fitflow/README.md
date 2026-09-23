@@ -1,17 +1,21 @@
-# fitflow
+# FitFlow
 
-A new Flutter project.
+Adaptive home workout app built with Flutter (Material 3, Riverpod, go_router).
 
-## Getting Started
+## Status
 
-This project is a starting point for a Flutter application.
+Foundation complete (Milestones 1A–1C). No workout functionality yet.
 
-A few resources to get you started if this is your first Flutter project:
+- **1A** — Project foundation: feature-first structure, Material 3 theme, Riverpod setup
+- **1B** — Routing & navigation: Splash → Home, bottom navigation with four tabs (Home / Workouts / Progress / Profile)
+- **1C** — Appearance: System / Light / Dark theme selection, persisted locally with SharedPreferences (Profile → Settings)
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+All screens are placeholders until onboarding and workout development begin.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Getting started
+
+```bash
+flutter pub get
+flutter analyze
+flutter test
+```

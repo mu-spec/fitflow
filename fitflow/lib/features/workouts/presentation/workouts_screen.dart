@@ -1,3 +1,4 @@
+import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/core/widgets/placeholder_section.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +12,7 @@ class WorkoutsScreen extends StatelessWidget {
 
     return SafeArea(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(AppDimens.screenPadding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
