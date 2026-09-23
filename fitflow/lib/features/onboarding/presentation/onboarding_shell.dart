@@ -1,6 +1,4 @@
 import 'package:fitflow/app/config/app_dimensions.dart';
-import 'package:fitflow/features/onboarding/data/onboarding_pages.dart';
-import 'package:fitflow/features/onboarding/presentation/widgets/onboarding_placeholder.dart';
 import 'package:fitflow/features/onboarding/presentation/widgets/onboarding_progress.dart';
 import 'package:flutter/material.dart';
 
@@ -11,8 +9,10 @@ class OnboardingShell extends StatelessWidget {
     super.key,
     required this.step,
     required this.totalSteps,
-    required this.page,
+    required this.title,
+    required this.content,
     required this.canGoBack,
+    required this.canContinue,
     required this.trailingLabel,
     required this.onBack,
     required this.onContinue,
@@ -20,8 +20,10 @@ class OnboardingShell extends StatelessWidget {
 
   final int step;
   final int totalSteps;
-  final OnboardingPage page;
+  final String title;
+  final Widget content;
   final bool canGoBack;
+  final bool canContinue;
   final String trailingLabel;
   final VoidCallback onBack;
   final VoidCallback onContinue;
@@ -29,7 +31,6 @@ class OnboardingShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final body = page.body;
 
     return Scaffold(
       body: SafeArea(
@@ -50,15 +51,9 @@ class OnboardingShell extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      page.title,
-                      style: theme.textTheme.titleLarge,
-                    ),
+                    Text(title, style: theme.textTheme.titleLarge),
                     const SizedBox(height: 16),
-                    if (body != null)
-                      Text(body, style: theme.textTheme.bodyLarge)
-                    else
-                      const OnboardingPlaceholder(),
+                    content,
                   ],
                 ),
               ),
@@ -78,7 +73,7 @@ class OnboardingShell extends StatelessWidget {
                   ),
                   const Spacer(),
                   FilledButton(
-                    onPressed: onContinue,
+                    onPressed: canContinue ? onContinue : null,
                     child: Text(trailingLabel),
                   ),
                 ],

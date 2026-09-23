@@ -18,6 +18,9 @@ void main() {
     await waitUntilOnboarding(tester);
   }
 
+  FilledButton continueButton(WidgetTester tester) => tester.widget<
+      FilledButton>(find.widgetWithText(FilledButton, 'Continue'));
+
   testWidgets('first step shows the welcome content and progress', (
     tester,
   ) async {
@@ -72,10 +75,96 @@ void main() {
     expect(find.text('1 of ${OnboardingPages.all.length}'), findsOneWidget);
   });
 
+  testWidgets('Goal step requires a selection before Continue is enabled', (
+    tester,
+  ) async {
+    await launchOnboarding(tester);
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('What is your main goal?'), findsOneWidget);
+    expect(continueButton(tester).onPressed, isNull);
+
+    await tester.tap(find.text('Build strength'));
+    await tester.pumpAndSettle();
+
+    expect(continueButton(tester).onPressed, isNotNull);
+  });
+
+  testWidgets('selected goal remains selected after Back and Forward', (
+    tester,
+  ) async {
+    await launchOnboarding(tester);
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Lose weight'));
+    await tester.pumpAndSettle();
+    expect(find.byIcon(Icons.check_circle), findsOneWidget);
+
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+    expect(find.text('What is your current experience?'), findsOneWidget);
+
+    await tester.tap(find.text('Back'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('What is your main goal?'), findsOneWidget);
+    expect(find.byIcon(Icons.check_circle), findsOneWidget);
+  });
+
+  testWidgets(
+    'Experience step requires a selection before Continue is enabled',
+    (tester) async {
+      await launchOnboarding(tester);
+      await tester.tap(find.text('Continue'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('General fitness'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Continue'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('What is your current experience?'), findsOneWidget);
+      expect(continueButton(tester).onPressed, isNull);
+
+      await tester.tap(find.text('Regular training'));
+      await tester.pumpAndSettle();
+
+      expect(continueButton(tester).onPressed, isNotNull);
+    },
+  );
+
+  testWidgets('selected experience remains selected after Back and Forward', (
+    tester,
+  ) async {
+    await launchOnboarding(tester);
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('General fitness'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Experienced'));
+    await tester.pumpAndSettle();
+    expect(find.byIcon(Icons.check_circle), findsOneWidget);
+
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+    expect(find.text('How much time do you usually have?'), findsOneWidget);
+
+    await tester.tap(find.text('Back'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('What is your current experience?'), findsOneWidget);
+    expect(find.byIcon(Icons.check_circle), findsOneWidget);
+  });
+
   testWidgets('final step opens Home with Get Started', (tester) async {
     await launchOnboarding(tester);
 
     for (var i = 0; i < OnboardingPages.all.length - 1; i++) {
+      await selectChoiceIfRequired(tester, OnboardingPages.all[i].id);
       await tester.tap(find.text('Continue'));
       await tester.pumpAndSettle();
     }
