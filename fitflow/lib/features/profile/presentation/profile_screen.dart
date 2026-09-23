@@ -1,5 +1,7 @@
+import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/core/widgets/placeholder_row.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 /// Profile tab: user and app entries (placeholder content only, no editing).
 class ProfileScreen extends StatelessWidget {
@@ -32,10 +34,11 @@ class ProfileScreen extends StatelessWidget {
               title: 'Workout Preferences',
               subtitle: 'Adjust how your workouts feel.',
             ),
-            const PlaceholderRow(
+            PlaceholderRow(
               icon: Icons.settings,
               title: 'Settings',
               subtitle: 'Manage your app.',
+              onTap: () => context.go(AppRoutes.settings),
             ),
           ],
         ),

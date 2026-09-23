@@ -7,11 +7,13 @@ class PlaceholderRow extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.subtitle,
+    this.onTap,
   });
 
   final IconData icon;
   final String title;
   final String subtitle;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +24,7 @@ class PlaceholderRow extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
         child: ListTile(
+          onTap: onTap,
           leading: Icon(icon),
           title: Text(title),
           subtitle: Text(
