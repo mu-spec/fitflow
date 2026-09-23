@@ -18,6 +18,18 @@ void main() {
     await waitUntilOnboarding(tester);
   }
 
+  /// Taps through every step before [pageId], selecting where required.
+  Future<void> advanceToStep(WidgetTester tester, String pageId) async {
+    for (final page in OnboardingPages.all) {
+      if (page.id == pageId) {
+        return;
+      }
+      await selectChoiceIfRequired(tester, page.id);
+      await tester.tap(find.text('Continue'));
+      await tester.pumpAndSettle();
+    }
+  }
+
   FilledButton continueButton(WidgetTester tester) => tester.widget<
       FilledButton>(find.widgetWithText(FilledButton, 'Continue'));
 
@@ -157,6 +169,80 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('What is your current experience?'), findsOneWidget);
+    expect(find.byIcon(Icons.check_circle), findsOneWidget);
+  });
+
+  testWidgets(
+    'Workout Time requires a selection before Continue is enabled',
+    (tester) async {
+      await launchOnboarding(tester);
+      await advanceToStep(tester, 'workout_time');
+
+      expect(find.text('How much time do you usually have?'), findsOneWidget);
+      expect(continueButton(tester).onPressed, isNull);
+
+      await tester.tap(find.text('30 minutes'));
+      await tester.pumpAndSettle();
+
+      expect(continueButton(tester).onPressed, isNotNull);
+    },
+  );
+
+  testWidgets('selected duration remains selected after Back and Forward', (
+    tester,
+  ) async {
+    await launchOnboarding(tester);
+    await advanceToStep(tester, 'workout_time');
+
+    await tester.tap(find.text('20 minutes'));
+    await tester.pumpAndSettle();
+    expect(find.byIcon(Icons.check_circle), findsOneWidget);
+
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+    expect(find.text('Where do you usually train?'), findsOneWidget);
+
+    await tester.tap(find.text('Back'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('How much time do you usually have?'), findsOneWidget);
+    expect(find.byIcon(Icons.check_circle), findsOneWidget);
+  });
+
+  testWidgets(
+    'Environment requires a selection before Continue is enabled',
+    (tester) async {
+      await launchOnboarding(tester);
+      await advanceToStep(tester, 'environment');
+
+      expect(find.text('Where do you usually train?'), findsOneWidget);
+      expect(continueButton(tester).onPressed, isNull);
+
+      await tester.tap(find.text('Hotel / travel'));
+      await tester.pumpAndSettle();
+
+      expect(continueButton(tester).onPressed, isNotNull);
+    },
+  );
+
+  testWidgets('selected environment remains selected after Back and Forward', (
+    tester,
+  ) async {
+    await launchOnboarding(tester);
+    await advanceToStep(tester, 'environment');
+
+    await tester.tap(find.text('Outdoor'));
+    await tester.pumpAndSettle();
+    expect(find.byIcon(Icons.check_circle), findsOneWidget);
+
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+    expect(find.text('What equipment do you have?'), findsOneWidget);
+
+    await tester.tap(find.text('Back'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Where do you usually train?'), findsOneWidget);
     expect(find.byIcon(Icons.check_circle), findsOneWidget);
   });
 

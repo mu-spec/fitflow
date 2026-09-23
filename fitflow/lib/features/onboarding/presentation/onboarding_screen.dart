@@ -1,9 +1,11 @@
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/onboarding/data/onboarding_pages.dart';
+import 'package:fitflow/features/onboarding/presentation/environment_step_content.dart';
 import 'package:fitflow/features/onboarding/presentation/experience_step_content.dart';
 import 'package:fitflow/features/onboarding/presentation/goal_step_content.dart';
 import 'package:fitflow/features/onboarding/presentation/onboarding_shell.dart';
 import 'package:fitflow/features/onboarding/presentation/widgets/onboarding_placeholder.dart';
+import 'package:fitflow/features/onboarding/presentation/workout_time_step_content.dart';
 import 'package:fitflow/features/onboarding/state/onboarding_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -43,6 +45,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     return switch (OnboardingPages.all[_index].id) {
       'goal' => state.goal != null,
       'experience' => state.experience != null,
+      'workout_time' => state.workoutDuration != null,
+      'environment' => state.environment != null,
       _ => true,
     };
   }
@@ -52,6 +56,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     return switch (page.id) {
       'goal' => const GoalStepContent(),
       'experience' => const ExperienceStepContent(),
+      'workout_time' => const WorkoutTimeStepContent(),
+      'environment' => const EnvironmentStepContent(),
       _ => body != null ? Text(body) : const OnboardingPlaceholder(),
     };
   }

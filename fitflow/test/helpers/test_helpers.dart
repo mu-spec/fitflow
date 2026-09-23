@@ -18,6 +18,12 @@ Future<void> selectChoiceIfRequired(WidgetTester tester, String pageId) async {
     case 'experience':
       await tester.tap(find.text('Completely new'));
       await tester.pumpAndSettle();
+    case 'workout_time':
+      await tester.tap(find.text('15 minutes'));
+      await tester.pumpAndSettle();
+    case 'environment':
+      await tester.tap(find.text('Normal home'));
+      await tester.pumpAndSettle();
   }
 }
 
