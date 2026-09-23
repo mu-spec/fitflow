@@ -1,5 +1,4 @@
 import 'package:fitflow/app/app.dart';
-import 'package:fitflow/core/constants/app_constants.dart';
 import 'package:fitflow/features/settings/data/appearance_mode.dart';
 import 'package:fitflow/features/settings/data/appearance_storage.dart';
 import 'package:fitflow/features/settings/state/appearance_controller.dart';
@@ -7,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'helpers/test_helpers.dart';
 
 void main() {
   group('AppearanceController', () {
@@ -57,8 +58,7 @@ void main() {
           child: FitFlowApp(),
         ),
       );
-      await tester.pump(AppConstants.splashDelay + const Duration(seconds: 1));
-      await tester.pumpAndSettle();
+      await completeOnboarding(tester);
 
       await tester.tap(find.text('Profile'));
       await tester.pumpAndSettle();
@@ -111,8 +111,7 @@ void main() {
           child: FitFlowApp(),
         ),
       );
-      await tester.pump(AppConstants.splashDelay + const Duration(seconds: 1));
-      await tester.pumpAndSettle();
+      await waitUntilOnboarding(tester);
 
       expect(_materialApp(tester).themeMode, ThemeMode.dark);
       expect(_brightness(tester), Brightness.dark);

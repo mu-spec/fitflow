@@ -1,27 +1,37 @@
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/home/presentation/home_screen.dart';
 import 'package:fitflow/features/main/presentation/main_shell.dart';
+import 'package:fitflow/features/onboarding/presentation/onboarding_screen.dart';
 import 'package:fitflow/features/profile/presentation/profile_screen.dart';
 import 'package:fitflow/features/progress/presentation/progress_screen.dart';
 import 'package:fitflow/features/settings/presentation/settings_screen.dart';
 import 'package:fitflow/features/splash/splash_screen.dart';
 import 'package:fitflow/features/workouts/presentation/workouts_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+/// App-wide router provider. Each [ProviderContainer] (i.e. each app launch,
+/// or each widget test) gets its own router instance.
+final appRouterProvider = Provider<GoRouter>((ref) {
+  return AppRouter.create();
+});
 
 /// Centralized route definitions for the app.
 class AppRouter {
   AppRouter._();
 
-  /// The app-wide router instance.
-  static final GoRouter router = _createRouter();
-
-  static GoRouter _createRouter() {
+  /// Creates a router with all route definitions.
+  static GoRouter create() {
     return GoRouter(
       initialLocation: AppRoutes.splash,
       routes: [
         GoRoute(
           path: AppRoutes.splash,
           builder: (context, state) => const SplashScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.onboarding,
+          builder: (context, state) => const OnboardingScreen(),
         ),
         StatefulShellRoute.indexedStack(
           builder: (context, state, navigationShell) {

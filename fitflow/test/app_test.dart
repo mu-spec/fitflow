@@ -4,8 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'helpers/test_helpers.dart';
+
 void main() {
-  testWidgets('FitFlow opens on the splash screen, then moves to Home', (
+  testWidgets('FitFlow opens on the splash screen, then onboarding', (
     tester,
   ) async {
     SharedPreferences.setMockInitialValues({});
@@ -18,10 +20,9 @@ void main() {
     expect(find.text(AppConstants.appName), findsOneWidget);
     expect(find.text(AppConstants.tagline), findsOneWidget);
 
-    await tester.pump(AppConstants.splashDelay + const Duration(seconds: 1));
-    await tester.pumpAndSettle();
+    await waitUntilOnboarding(tester);
 
-    expect(find.text('Your adaptive workout starts here'), findsOneWidget);
+    expect(find.text('Welcome to FitFlow'), findsOneWidget);
   });
 
   testWidgets('bottom navigation switches between the four tabs', (tester) async {
@@ -31,8 +32,7 @@ void main() {
         child: FitFlowApp(),
       ),
     );
-    await tester.pump(AppConstants.splashDelay + const Duration(seconds: 1));
-    await tester.pumpAndSettle();
+    await completeOnboarding(tester);
 
     expect(find.text('Your adaptive workout starts here'), findsOneWidget);
 
