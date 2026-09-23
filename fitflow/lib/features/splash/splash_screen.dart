@@ -1,8 +1,29 @@
-import 'package:flutter/material.dart';
+import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/core/constants/app_constants.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _navigateToHome();
+  }
+
+  Future<void> _navigateToHome() async {
+    await Future<void>.delayed(AppConstants.splashDelay);
+    if (!mounted) {
+      return;
+    }
+    context.go(AppRoutes.home);
+  }
 
   @override
   Widget build(BuildContext context) {
