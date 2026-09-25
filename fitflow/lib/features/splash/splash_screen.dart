@@ -1,28 +1,40 @@
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/core/constants/app_constants.dart';
+import 'package:fitflow/features/onboarding/state/user_fitness_profile_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _navigateToOnboarding();
+    _decideNextRoute();
   }
 
-  Future<void> _navigateToOnboarding() async {
+  /// Splash → load persisted profile → Home if a valid profile exists,
+  /// otherwise Onboarding.
+  Future<void> _decideNextRoute() async {
     await Future<void>.delayed(AppConstants.splashDelay);
+
+    bool hasProfile;
+    try {
+      hasProfile = await ref.read(userFitnessProfileProvider.future) != null;
+    } on Object {
+      hasProfile = false;
+    }
+
     if (!mounted) {
       return;
     }
-    context.go(AppRoutes.onboarding);
+    context.go(hasProfile ? AppRoutes.home : AppRoutes.onboarding);
   }
 
   @override

@@ -44,13 +44,22 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     setState(() => _index++);
   }
 
-  /// Builds the in-memory [UserFitnessProfile] from the completed selections
-  /// before opening Home.
-  void _finishOnboarding() {
-    final profile = ref.read(onboardingControllerProvider).toUserFitnessProfile();
-    if (profile != null) {
-      ref.read(userFitnessProfileProvider.notifier).setProfile(profile);
+  /// Builds and persists the [UserFitnessProfile] from the completed
+  /// selections, then opens Home. Only navigates when the profile was saved.
+  Future<void> _finishOnboarding() async {
+    final profile =
+        ref.read(onboardingControllerProvider).toUserFitnessProfile();
+    if (profile == null) {
+      return;
     }
+
+    final saved = await ref
+        .read(userFitnessProfileProvider.notifier)
+        .saveProfile(profile);
+    if (!mounted || !saved) {
+      return;
+    }
+
     context.go(AppRoutes.home);
   }
 

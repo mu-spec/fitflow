@@ -132,18 +132,23 @@ void main() {
   });
 
   group('UserFitnessProfileController', () {
-    test('starts null and accepts a profile', () {
+    test('starts null and accepts a profile', () async {
+      SharedPreferences.setMockInitialValues({});
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
-      expect(container.read(userFitnessProfileProvider), isNull);
+      expect(container.read(userFitnessProfileProvider).value, isNull);
 
       final profile = completedState().toUserFitnessProfile();
-      container
+      final saved = await container
           .read(userFitnessProfileProvider.notifier)
-          .setProfile(profile!);
+          .saveProfile(profile!);
 
-      expect(container.read(userFitnessProfileProvider), same(profile));
+      expect(saved, isTrue);
+      expect(
+        container.read(userFitnessProfileProvider).value,
+        same(profile),
+      );
     });
   });
 
@@ -163,7 +168,7 @@ void main() {
 
       final context = tester.element(find.byType(Scaffold).first);
       final container = ProviderScope.containerOf(context);
-      final profile = container.read(userFitnessProfileProvider);
+      final profile = container.read(userFitnessProfileProvider).value;
 
       expect(profile, isNotNull);
       expect(profile?.goal, FitnessGoal.generalFitness);
