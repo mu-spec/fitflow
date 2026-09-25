@@ -24,6 +24,9 @@ Future<void> selectChoiceIfRequired(WidgetTester tester, String pageId) async {
     case 'environment':
       await tester.tap(find.text('Normal home'));
       await tester.pumpAndSettle();
+    case 'equipment':
+      await tester.tap(find.text('Chair'));
+      await tester.pumpAndSettle();
   }
 }
 

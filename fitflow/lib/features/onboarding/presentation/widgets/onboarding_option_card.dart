@@ -1,18 +1,24 @@
 import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:flutter/material.dart';
 
-/// A selectable card used for single-choice onboarding questions.
+/// A selectable card used for onboarding questions. Supports single-choice
+/// (radio icon) and multi-choice (`multiSelect`, checkbox icons).
 class OnboardingOptionCard extends StatelessWidget {
   const OnboardingOptionCard({
     super.key,
     required this.label,
     this.helperText,
+    this.multiSelect = false,
     required this.selected,
     required this.onSelected,
   });
 
   final String label;
   final String? helperText;
+
+  /// Whether the card behaves as a multi-select (checkbox) option.
+  final bool multiSelect;
+
   final bool selected;
   final VoidCallback onSelected;
 
@@ -43,13 +49,12 @@ class OnboardingOptionCard extends StatelessWidget {
                     children: [
                       Text(
                         label,
-                        style: theme.textTheme.titleSmall
-                            ?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: selected
-                                  ? colorScheme.onSecondaryContainer
-                                  : colorScheme.onSurface,
-                            ),
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: selected
+                              ? colorScheme.onSecondaryContainer
+                              : colorScheme.onSurface,
+                        ),
                       ),
                       if (helper != null)
                         Padding(
@@ -66,9 +71,13 @@ class OnboardingOptionCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Icon(
-                  selected
-                      ? Icons.check_circle
-                      : Icons.radio_button_unchecked,
+                  multiSelect
+                      ? (selected
+                            ? Icons.check_box
+                            : Icons.check_box_outline_blank)
+                      : (selected
+                            ? Icons.check_circle
+                            : Icons.radio_button_unchecked),
                   color: selected
                       ? colorScheme.onSecondaryContainer
                       : colorScheme.outline,
