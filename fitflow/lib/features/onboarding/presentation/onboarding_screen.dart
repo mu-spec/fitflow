@@ -9,6 +9,7 @@ import 'package:fitflow/features/onboarding/presentation/preferences_step_conten
 import 'package:fitflow/features/onboarding/presentation/widgets/onboarding_placeholder.dart';
 import 'package:fitflow/features/onboarding/presentation/workout_time_step_content.dart';
 import 'package:fitflow/features/onboarding/state/onboarding_controller.dart';
+import 'package:fitflow/features/onboarding/state/user_fitness_profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -37,10 +38,20 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   void _showNextPage() {
     if (_isLastPage) {
-      context.go(AppRoutes.home);
+      _finishOnboarding();
       return;
     }
     setState(() => _index++);
+  }
+
+  /// Builds the in-memory [UserFitnessProfile] from the completed selections
+  /// before opening Home.
+  void _finishOnboarding() {
+    final profile = ref.read(onboardingControllerProvider).toUserFitnessProfile();
+    if (profile != null) {
+      ref.read(userFitnessProfileProvider.notifier).setProfile(profile);
+    }
+    context.go(AppRoutes.home);
   }
 
   bool _canContinue(OnboardingState state) {

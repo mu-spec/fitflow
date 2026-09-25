@@ -2,6 +2,7 @@ import 'package:fitflow/features/onboarding/data/experience_level.dart';
 import 'package:fitflow/features/onboarding/data/fitness_goal.dart';
 import 'package:fitflow/features/onboarding/data/training_environment.dart';
 import 'package:fitflow/features/onboarding/data/workout_duration.dart';
+import 'package:fitflow/features/onboarding/data/user_fitness_profile.dart';
 import 'package:fitflow/features/onboarding/data/workout_equipment.dart';
 import 'package:fitflow/features/onboarding/data/workout_preference.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -44,6 +45,33 @@ class OnboardingState {
       environment: environment ?? this.environment,
       equipment: equipment ?? this.equipment,
       preferences: preferences ?? this.preferences,
+    );
+  }
+
+  /// Whether every value required for a valid profile is present.
+  bool get hasRequiredProfileFields =>
+      goal != null &&
+      experience != null &&
+      workoutDuration != null &&
+      environment != null &&
+      equipment.isNotEmpty;
+
+  /// Builds the user's initial fitness profile if all required fields are
+  /// present, otherwise returns null.
+  ///
+  /// Preferences are optional and may be empty.
+  UserFitnessProfile? toUserFitnessProfile() {
+    if (!hasRequiredProfileFields) {
+      return null;
+    }
+
+    return UserFitnessProfile(
+      goal: goal!,
+      experience: experience!,
+      workoutDuration: workoutDuration!,
+      environment: environment!,
+      equipment: Set.unmodifiable(equipment),
+      preferences: Set.unmodifiable(preferences),
     );
   }
 }
