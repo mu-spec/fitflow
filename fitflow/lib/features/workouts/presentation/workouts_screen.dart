@@ -5,14 +5,12 @@ import 'package:fitflow/core/widgets/placeholder_section.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// Workouts tab: catalog of workouts (placeholder content only).
 class WorkoutsScreen extends StatelessWidget {
   const WorkoutsScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
+    const exerciseCount = 80;
     return SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(AppDimens.screenPadding),
@@ -24,21 +22,12 @@ class WorkoutsScreen extends StatelessWidget {
             PlaceholderRow(
               icon: Icons.fitness_center,
               title: 'Exercise Library',
-              subtitle: 'Browse all 80 exercises',
+              subtitle: 'Browse $exerciseCount exercises',
               onTap: () => context.push(AppRoutes.exerciseLibrary),
             ),
-            const PlaceholderSection(
-              title: 'Recommended',
-              subtitle: 'Workouts picked for your level and history.',
-            ),
-            const PlaceholderSection(
-              title: 'Programs',
-              subtitle: 'Structured multi-week training plans.',
-            ),
-            const PlaceholderSection(
-              title: 'Custom Workouts',
-              subtitle: 'Build and save your own workouts.',
-            ),
+            const PlaceholderSection(title: 'Recommended', subtitle: 'Workouts picked for your level and history.'),
+            const PlaceholderSection(title: 'Programs', subtitle: 'Structured multi-week training plans.'),
+            const PlaceholderSection(title: 'Create', subtitle: 'Build a custom workout.'),
           ],
         ),
       ),
