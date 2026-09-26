@@ -4,10 +4,16 @@ import 'package:fitflow/features/workouts/domain/exercise_type.dart';
 import 'package:flutter/material.dart';
 
 /// Compact, read-only row for an exercise in the library list.
+/// Now tappable with chevron affordance for detail navigation.
 class ExerciseListTile extends StatelessWidget {
-  const ExerciseListTile({super.key, required this.exercise});
+  const ExerciseListTile({
+    super.key,
+    required this.exercise,
+    this.onTap,
+  });
 
   final Exercise exercise;
+  final VoidCallback? onTap;
 
   String _primaryMusclesLabel() {
     if (exercise.primaryMuscles.isEmpty) return '—';
@@ -38,7 +44,7 @@ class ExerciseListTile extends StatelessWidget {
       final duration = exercise.defaultDuration;
       if (duration != null) {
         final seconds = duration.inSeconds;
-        // Keep compact: e.g., "30s"
+        // Keep compact: e.g., \"30s\"
         return '${seconds}s';
       }
       return 'Timed';
@@ -49,35 +55,59 @@ class ExerciseListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Padding(
+    final content = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            exercise.name,
-            style: theme.textTheme.titleMedium
-                ?.copyWith(fontWeight: FontWeight.w600),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  exercise.name,
+                  style: theme.textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  _primaryMusclesLabel(),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  _movementAndDifficultyLabel(),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '${_equipmentLabel()} • ${_repsOrTimedLabel()}',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 4),
-          Text(
-            _primaryMusclesLabel(),
-            style: theme.textTheme.bodySmall
-                ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            _movementAndDifficultyLabel(),
-            style: theme.textTheme.bodySmall
-                ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            '${_equipmentLabel()} • ${_repsOrTimedLabel()}',
-            style: theme.textTheme.bodySmall
-                ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          const SizedBox(width: 12),
+          Icon(
+            Icons.chevron_right,
+            color: theme.colorScheme.onSurfaceVariant,
           ),
         ],
+      ),
+    );
+
+    if (onTap == null) {
+      return content;
+    }
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: content,
       ),
     );
   }

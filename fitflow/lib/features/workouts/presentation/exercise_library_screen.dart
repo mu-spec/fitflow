@@ -1,9 +1,11 @@
+import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/workouts/data/exercise_catalog.dart';
 import 'package:fitflow/features/workouts/domain/exercise.dart';
 import 'package:fitflow/features/workouts/presentation/exercise_library_filter.dart';
 import 'package:fitflow/features/workouts/presentation/widgets/exercise_filter_sheet.dart';
 import 'package:fitflow/features/workouts/presentation/widgets/exercise_list_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 /// Exercise Library with instant search, filters, quick filters, live count.
 class ExerciseLibraryScreen extends StatefulWidget {
@@ -214,7 +216,12 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                     separatorBuilder: (_, __) => const Divider(height: 1),
                     itemBuilder: (context, index) {
                       final exercise = filtered[index];
-                      return ExerciseListTile(exercise: exercise);
+                      return ExerciseListTile(
+                        exercise: exercise,
+                        onTap: () => context.push(
+                          AppRoutes.exerciseDetail(exercise.id),
+                        ),
+                      );
                     },
                   ),
           ),
