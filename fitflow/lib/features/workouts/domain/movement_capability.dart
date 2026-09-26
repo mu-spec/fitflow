@@ -114,8 +114,11 @@ class MovementCapability {
           .where((p) => p.name == patternName)
           .cast<MovementPattern?>()
           .firstWhere((p) => p != null, orElse: () => null);
-      if (pattern == null) return null;
-      if (pattern == MovementPattern.warmup || pattern == MovementPattern.cooldown) {
+      if (pattern == null) {
+        return null;
+      }
+      if (pattern == MovementPattern.warmup ||
+          pattern == MovementPattern.cooldown) {
         return null;
       }
 
@@ -123,16 +126,22 @@ class MovementCapability {
           .where((l) => l.name == levelName)
           .cast<CapabilityLevel?>()
           .firstWhere((l) => l != null, orElse: () => null);
-      if (level == null) return null;
+      if (level == null) {
+        return null;
+      }
 
       final source = CapabilitySource.values
           .where((s) => s.name == sourceName)
           .cast<CapabilitySource?>()
           .firstWhere((s) => s != null, orElse: () => null);
-      if (source == null) return null;
+      if (source == null) {
+        return null;
+      }
 
       final updatedAt = DateTime.tryParse(updatedAtString);
-      if (updatedAt == null) return null;
+      if (updatedAt == null) {
+        return null;
+      }
 
       final anchor = json['anchorExerciseId'] as String?;
 
@@ -144,7 +153,9 @@ class MovementCapability {
         anchorExerciseId: anchor,
       );
 
-      if (!capability.isValid) return null;
+      if (!capability.isValid) {
+        return null;
+      }
       return capability;
     } catch (_) {
       return null;

@@ -37,7 +37,9 @@ class CapabilityProfile {
 
   /// Returns capability for given pattern, or null if not found or non-trainable.
   MovementCapability? capabilityFor(MovementPattern pattern) {
-    if (!_isTrainable(pattern)) return null;
+    if (!_isTrainable(pattern)) {
+      return null;
+    }
     return _capabilities[pattern];
   }
 
@@ -139,14 +141,22 @@ class CapabilityProfile {
   static CapabilityProfile? fromJson(Map<String, dynamic> json) {
     try {
       final list = json['capabilities'] as List?;
-      if (list == null) return null;
+      if (list == null) {
+        return null;
+      }
       final map = <MovementPattern, MovementCapability>{};
       for (final item in list) {
-        if (item is! Map<String, dynamic>) continue;
+        if (item is! Map<String, dynamic>) {
+          continue;
+        }
         final cap = MovementCapability.fromJson(item);
-        if (cap == null) continue;
+        if (cap == null) {
+          continue;
+        }
         // Only accept trainable, and last wins if duplicates
-        if (!trainablePatterns.contains(cap.movementPattern)) continue;
+        if (!trainablePatterns.contains(cap.movementPattern)) {
+          continue;
+        }
         map[cap.movementPattern] = cap;
       }
       return CapabilityProfile._(map);
