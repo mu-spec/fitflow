@@ -1,6 +1,9 @@
 import 'package:fitflow/app/config/app_dimensions.dart';
+import 'package:fitflow/app/router/app_routes.dart';
+import 'package:fitflow/core/widgets/placeholder_row.dart';
 import 'package:fitflow/core/widgets/placeholder_section.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 /// Workouts tab: catalog of workouts (placeholder content only).
 class WorkoutsScreen extends StatelessWidget {
@@ -18,6 +21,12 @@ class WorkoutsScreen extends StatelessWidget {
           children: [
             Text('Your workouts', style: theme.textTheme.titleLarge),
             const SizedBox(height: 16),
+            PlaceholderRow(
+              icon: Icons.fitness_center,
+              title: 'Exercise Library',
+              subtitle: 'Browse all 80 exercises',
+              onTap: () => context.push(AppRoutes.exerciseLibrary),
+            ),
             const PlaceholderSection(
               title: 'Recommended',
               subtitle: 'Workouts picked for your level and history.',
