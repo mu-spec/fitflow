@@ -18,7 +18,7 @@ void main() {
       await tester.pumpWidget(
         const ProviderScope(child: FitFlowApp()),
       );
-      await completeOnboarding(tester);
+      await completeOnboardingToHome(tester);
 
       // Navigate to Workouts tab
       await tester.tap(find.text('Workouts'));
@@ -216,7 +216,7 @@ void main() {
       await tester.pumpWidget(
         const ProviderScope(child: FitFlowApp()),
       );
-      await completeOnboarding(tester);
+      await completeOnboardingToHome(tester);
 
       await tester.tap(find.text('Workouts'));
       await tester.pump(const Duration(milliseconds: 500));

@@ -14,7 +14,7 @@ void main() {
     await tester.pumpWidget(
       const ProviderScope(child: FitFlowApp()),
     );
-    await completeOnboarding(tester);
+    await completeOnboardingToHome(tester);
 
     // Navigate to Workouts tab (bounded pumps to avoid NavigationBar ticker hang)
     await tester.tap(find.text('Workouts'));

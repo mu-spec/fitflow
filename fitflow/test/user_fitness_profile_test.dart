@@ -162,7 +162,7 @@ void main() {
           child: FitFlowApp(),
         ),
       );
-      await completeOnboarding(tester);
+      await completeOnboardingToHome(tester);
 
       expect(find.text('Your adaptive workout starts here'), findsOneWidget);
 

@@ -246,7 +246,7 @@ void main() {
     expect(find.byIcon(Icons.check_circle), findsOneWidget);
   });
 
-  testWidgets('final step opens Home with Get Started', (tester) async {
+  testWidgets('final step opens Movement Check with Get Started', (tester) async {
     await launchOnboarding(tester);
 
     for (var i = 0; i < OnboardingPages.all.length - 1; i++) {
@@ -265,8 +265,10 @@ void main() {
     expect(find.widgetWithText(FilledButton, 'Get Started'), findsOneWidget);
 
     await tester.tap(find.text('Get Started'));
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump(const Duration(milliseconds: 500));
 
-    expect(find.text('Your adaptive workout starts here'), findsOneWidget);
+    expect(find.text('Movement Check'), findsWidgets);
+    expect(find.textContaining('Your workouts adapt'), findsOneWidget);
   });
 }

@@ -1,4 +1,5 @@
 import 'package:fitflow/app/router/app_routes.dart';
+import 'package:fitflow/features/capability_assessment/presentation/capability_assessment_screen.dart';
 import 'package:fitflow/features/home/presentation/home_screen.dart';
 import 'package:fitflow/features/main/presentation/main_shell.dart';
 import 'package:fitflow/features/onboarding/presentation/onboarding_screen.dart';
@@ -30,6 +31,10 @@ class AppRouter {
         GoRoute(
           path: AppRoutes.onboarding,
           builder: (context, state) => const OnboardingScreen(),
+        ),
+        GoRoute(
+          path: AppRoutes.capabilityAssessment,
+          builder: (context, state) => const CapabilityAssessmentScreen(),
         ),
         StatefulShellRoute.indexedStack(
           builder: (context, state, navigationShell) {

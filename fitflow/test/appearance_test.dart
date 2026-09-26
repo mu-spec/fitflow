@@ -58,7 +58,7 @@ void main() {
           child: FitFlowApp(),
         ),
       );
-      await completeOnboarding(tester);
+      await completeOnboardingToHome(tester);
 
       await tester.tap(find.text('Profile'));
       await tester.pumpAndSettle();

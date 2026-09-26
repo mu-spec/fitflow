@@ -146,7 +146,7 @@ void main() {
       await pumpApp(tester);
       await completeOnboarding(tester);
 
-      expect(find.text('Your adaptive workout starts here'), findsOneWidget);
+      expect(find.text('Movement Check'), findsWidgets);
 
       final prefs = await SharedPreferences.getInstance();
       final saved = UserFitnessProfileStorage(prefs).load();
@@ -155,15 +155,15 @@ void main() {
       expect(saved?.equipment, isNotEmpty);
     });
 
-    testWidgets('restart with a saved profile goes straight to Home', (
-      tester,
-    ) async {
+    testWidgets('restart with a saved user profile and no capability goes to Movement Check',
+        (tester) async {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
       await UserFitnessProfileStorage(prefs).save(profile);
       await pumpApp(tester);
 
-      expect(find.text('Your adaptive workout starts here'), findsOneWidget);
+      // With user profile but no capability, should go to Movement Check
+      expect(find.text('Movement Check'), findsWidgets);
       expect(find.text('Welcome to FitFlow'), findsNothing);
     });
 

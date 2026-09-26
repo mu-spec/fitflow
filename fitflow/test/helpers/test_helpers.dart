@@ -37,7 +37,7 @@ Future<void> selectChoiceIfRequired(WidgetTester tester, String pageId) async {
   }
 }
 
-/// Waits past the splash and taps through every onboarding step to Home.
+/// Waits past the splash and taps through every onboarding step to Movement Check.
 /// Uses bounded pumps instead of pumpAndSettle to avoid hanging on
 /// NavigationBar animations.
 Future<void> completeOnboarding(WidgetTester tester) async {
@@ -51,4 +51,29 @@ Future<void> completeOnboarding(WidgetTester tester) async {
   await tester.tap(find.text('Get Started'));
   await tester.pump(const Duration(milliseconds: 500));
   await tester.pump(const Duration(milliseconds: 500));
+}
+
+/// Completes onboarding then saves capability assessment to reach Home.
+Future<void> completeOnboardingToHome(WidgetTester tester) async {
+  await completeOnboarding(tester);
+  // Now in Movement Check, scroll to and tap Save & Continue
+  await tester.pump(const Duration(milliseconds: 500));
+  await tester.pump(const Duration(milliseconds: 500));
+  final saveButton = find.text('Save & Continue');
+  try {
+    await tester.scrollUntilVisible(
+      saveButton,
+      300,
+      maxScrolls: 30,
+    );
+  } catch (_) {
+    // ignore if not found
+  }
+  await tester.pump(const Duration(milliseconds: 300));
+  if (saveButton.evaluate().isNotEmpty) {
+    await tester.tap(saveButton);
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump(const Duration(milliseconds: 500));
+  }
 }

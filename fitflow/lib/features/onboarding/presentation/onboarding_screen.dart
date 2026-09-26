@@ -45,7 +45,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 
   /// Builds and persists the [UserFitnessProfile] from the completed
-  /// selections, then opens Home. Only navigates when the profile was saved.
+  /// selections, then opens Movement Check. Only navigates when the profile
+  /// was saved. Capability profile is created in the dedicated assessment screen.
   Future<void> _finishOnboarding() async {
     final profile =
         ref.read(onboardingControllerProvider).toUserFitnessProfile();
@@ -60,7 +61,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       return;
     }
 
-    context.go(AppRoutes.home);
+    context.go(AppRoutes.capabilityAssessment);
   }
 
   bool _canContinue(OnboardingState state) {
