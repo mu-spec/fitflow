@@ -7,7 +7,8 @@ enum WorkoutEquipment {
   dumbbells('Dumbbells'),
   kettlebell('Kettlebell'),
   pullUpBar('Pull-up bar'),
-  bench('Bench');
+  bench('Bench'),
+  towel('Towel');
 
   const WorkoutEquipment(this.label);
 

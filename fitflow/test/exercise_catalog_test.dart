@@ -10,7 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   final all = ExerciseCatalog.all;
 
-  test('contains exactly the requested 20 exercises in stable order', () {
+  test('contains exactly the requested 40 exercises in stable order', () {
     expect(all.map((e) => e.name).toList(), [
       'Wall Push-Up',
       'Incline Push-Up',
@@ -32,13 +32,33 @@ void main() {
       'March in Place',
       'High Knees',
       'Jumping Jacks',
+      'Doorway Row',
+      'Towel Row',
+      'Reverse Snow Angel',
+      'Superman',
+      'Prone Y Raise',
+      'Reverse Lunge',
+      'Forward Lunge',
+      'Static Split Squat',
+      'Bulgarian Split Squat',
+      'Calf Raise',
+      'Bird Dog',
+      'Bicycle Crunch',
+      'Heel Taps',
+      'Reverse Crunch',
+      'Mountain Climbers',
+      'Cat-Cow',
+      "Child's Pose",
+      'Hip Flexor Stretch',
+      'Standing Hamstring Stretch',
+      'Thoracic Rotation',
     ]);
-    expect(all, hasLength(20));
+    expect(all, hasLength(40));
   });
 
   test('IDs and normalized names are unique', () {
-    expect(all.map((e) => e.id).toSet(), hasLength(20));
-    expect(all.map((e) => e.name.trim().toLowerCase()).toSet(), hasLength(20));
+    expect(all.map((e) => e.id).toSet(), hasLength(40));
+    expect(all.map((e) => e.name.trim().toLowerCase()).toSet(), hasLength(40));
   });
 
   test('every definition validates and contains meaningful metadata', () {
@@ -126,10 +146,18 @@ void main() {
       ],
       'forearm_plank': ['plank_knee', 'plank_forearm'],
       'glute_bridge': ['bridge_glute', 'bridge_single_leg'],
+      'lunge': [
+        'squat_split_static',
+        'lunge_reverse',
+        'lunge_forward',
+        'squat_split_bulgarian'
+      ],
     };
     for (final family in families.entries) {
-      final members =
-          all.where((e) => e.progressionFamilyId == family.key).toList();
+      final members = all
+          .where((e) => e.progressionFamilyId == family.key)
+          .toList()
+        ..sort((a, b) => a.progressionRank.compareTo(b.progressionRank));
       expect(members.map((e) => e.id).toList(), family.value);
       expect(members.map((e) => e.progressionRank).toList(),
           List.generate(members.length, (i) => i + 1));
@@ -159,6 +187,44 @@ void main() {
     expect(ExerciseCatalog.byId('pushup_standard')!.wristLoad, JointLoad.high);
     expect(ExerciseCatalog.byId('plank_knee')!.bodyPosition,
         ExercisePosition.floor);
+  });
+
+  test('new equipment and constraint metadata matches the described variants',
+      () {
+    final towel = ExerciseCatalog.byId('row_towel')!;
+    expect(towel.requiredEquipment, {WorkoutEquipment.towel});
+    expect(towel.bodyPosition, ExercisePosition.floor);
+    final doorway = ExerciseCatalog.byId('row_doorway')!;
+    expect(doorway.tags, contains('structural_doorway_required'));
+    expect(
+        doorway.instructions.join(' '), contains('never grip a moving door'));
+    final split = ExerciseCatalog.byId('squat_split_bulgarian')!;
+    expect(split.requiredEquipment, {WorkoutEquipment.bench});
+    expect(split.kneeLoad, JointLoad.high);
+    expect(split.tags, contains('balance_demand'));
+    final climber = ExerciseCatalog.byId('mountain_climbers')!;
+    expect(climber.bodyPosition, ExercisePosition.floor);
+    expect(climber.wristLoad, JointLoad.high);
+    expect(climber.impactLevel, ImpactLevel.moderate);
+    expect(climber.noiseLevel, NoiseLevel.moderate);
+    expect(climber.tags, contains('jumping'));
+    for (final id in ['childs_pose', 'hamstring_stretch_standing']) {
+      final e = ExerciseCatalog.byId(id)!;
+      expect(e.impactLevel, ImpactLevel.low);
+      expect(e.noiseLevel, NoiseLevel.quiet);
+    }
+    expect(ExerciseCatalog.byId('childs_pose')!.bodyPosition,
+        ExercisePosition.floor);
+    expect(ExerciseCatalog.byId('hamstring_stretch_standing')!.bodyPosition,
+        ExercisePosition.standing);
+  });
+
+  test('new core and mobility entries are not forced into progressions', () {
+    for (final e in all.skip(30)) {
+      expect(e.progressionFamilyId, isNull);
+      expect(e.easierVariationId, isNull);
+      expect(e.harderVariationId, isNull);
+    }
   });
 
   test('catalog and model collections cannot be mutated', () {
