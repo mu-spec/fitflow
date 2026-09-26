@@ -5,12 +5,13 @@ import 'package:fitflow/features/workouts/domain/exercise_type.dart';
 import 'package:fitflow/features/workouts/domain/impact_level.dart';
 import 'package:fitflow/features/workouts/domain/joint_load.dart';
 import 'package:fitflow/features/workouts/domain/noise_level.dart';
+import 'package:fitflow/features/workouts/domain/space_requirement.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   final all = ExerciseCatalog.all;
 
-  test('contains exactly the requested 40 exercises in stable order', () {
+  test('contains exactly the requested 60 exercises in stable order', () {
     expect(all.map((e) => e.name).toList(), [
       'Wall Push-Up',
       'Incline Push-Up',
@@ -52,13 +53,33 @@ void main() {
       'Hip Flexor Stretch',
       'Standing Hamstring Stretch',
       'Thoracic Rotation',
+      'Good Morning',
+      'Hip Hinge',
+      'Single-Leg Hip Hinge',
+      'Donkey Kick',
+      'Fire Hydrant',
+      'Pike Push-Up',
+      'Close-Grip Push-Up',
+      'Wide Push-Up',
+      'Shoulder Tap',
+      'Plank Up-Down',
+      'Step Jack',
+      'Butt Kicks',
+      'Skater Step',
+      'Squat to Knee Drive',
+      'Shadow Boxing',
+      'Single-Leg Stand',
+      'Standing Knee Raise',
+      'Ankle Circles',
+      'Arm Circles',
+      "World's Greatest Stretch",
     ]);
-    expect(all, hasLength(40));
+    expect(all, hasLength(60));
   });
 
   test('IDs and normalized names are unique', () {
-    expect(all.map((e) => e.id).toSet(), hasLength(40));
-    expect(all.map((e) => e.name.trim().toLowerCase()).toSet(), hasLength(40));
+    expect(all.map((e) => e.id).toSet(), hasLength(60));
+    expect(all.map((e) => e.name.trim().toLowerCase()).toSet(), hasLength(60));
   });
 
   test('every definition validates and contains meaningful metadata', () {
@@ -152,6 +173,7 @@ void main() {
         'lunge_forward',
         'squat_split_bulgarian'
       ],
+      'hinge': ['hip_hinge', 'good_morning', 'hip_hinge_single_leg'],
     };
     for (final family in families.entries) {
       final members = all
@@ -220,11 +242,112 @@ void main() {
   });
 
   test('new core and mobility entries are not forced into progressions', () {
+    // Original 20 + hinge family are the only progressions; check that
+    // post-30 entries except hinge family remain unlinked
+    final hingeIds = {'hip_hinge', 'good_morning', 'hip_hinge_single_leg'};
     for (final e in all.skip(30)) {
-      expect(e.progressionFamilyId, isNull);
-      expect(e.easierVariationId, isNull);
-      expect(e.harderVariationId, isNull);
+      if (hingeIds.contains(e.id)) continue;
+      expect(e.progressionFamilyId, isNull, reason: e.id);
+      expect(e.easierVariationId, isNull, reason: e.id);
+      expect(e.harderVariationId, isNull, reason: e.id);
     }
+  });
+
+  test('new hinge progression is correct if added', () {
+    final hinge = ExerciseCatalog.byId('hip_hinge')!;
+    final good = ExerciseCatalog.byId('good_morning')!;
+    final single = ExerciseCatalog.byId('hip_hinge_single_leg')!;
+    // Family and ranks
+    expect(hinge.progressionFamilyId, 'hinge');
+    expect(good.progressionFamilyId, 'hinge');
+    expect(single.progressionFamilyId, 'hinge');
+    expect(hinge.progressionRank, 1);
+    expect(good.progressionRank, 2);
+    expect(single.progressionRank, 3);
+    // Easier/harder links
+    expect(hinge.easierVariationId, isNull);
+    expect(hinge.harderVariationId, 'good_morning');
+    expect(good.easierVariationId, 'hip_hinge');
+    expect(good.harderVariationId, 'hip_hinge_single_leg');
+    expect(single.easierVariationId, 'good_morning');
+    expect(single.harderVariationId, isNull);
+    // Difficulty should support clean progression (level1 < level2 < level3)
+    expect(hinge.difficulty.index < good.difficulty.index, isTrue);
+    expect(good.difficulty.index < single.difficulty.index, isTrue);
+  });
+
+  test('low-impact alternatives such as Step Jack have correct constraint metadata',
+      () {
+    final stepJack = ExerciseCatalog.byId('step_jack')!;
+    expect(stepJack.bodyPosition, ExercisePosition.standing);
+    expect(stepJack.impactLevel, ImpactLevel.low);
+    expect(stepJack.noiseLevel, NoiseLevel.quiet);
+    expect(stepJack.tags, contains('no_jumping'));
+    expect(stepJack.requiredEquipment, {WorkoutEquipment.none});
+    // Step Jack should be quieter/more gentle than Jumping Jacks
+    final jacks = ExerciseCatalog.byId('jumping_jacks')!;
+    expect(stepJack.impactLevel.index < jacks.impactLevel.index, isTrue);
+    expect(stepJack.noiseLevel.index < jacks.noiseLevel.index, isTrue);
+
+    final shadow = ExerciseCatalog.byId('shadow_boxing')!;
+    expect(shadow.bodyPosition, ExercisePosition.standing);
+    expect(shadow.requiredEquipment, {WorkoutEquipment.none});
+    expect(shadow.impactLevel, isIn([ImpactLevel.low, ImpactLevel.moderate]));
+    expect(shadow.noiseLevel, NoiseLevel.quiet);
+    expect(shadow.spaceRequirement, SpaceRequirement.small);
+
+    final shoulderTap = ExerciseCatalog.byId('shoulder_tap')!;
+    expect(shoulderTap.bodyPosition, ExercisePosition.floor);
+    expect(shoulderTap.wristLoad, JointLoad.high);
+
+    final upDown = ExerciseCatalog.byId('plank_up_down')!;
+    expect(upDown.bodyPosition, ExercisePosition.floor);
+    expect(upDown.wristLoad, JointLoad.high);
+    // More demanding than forearm plank (level2)
+    final forearm = ExerciseCatalog.byId('plank_forearm')!;
+    expect(upDown.difficulty.index > forearm.difficulty.index, isTrue);
+
+    final singleStand = ExerciseCatalog.byId('single_leg_stand')!;
+    expect(singleStand.bodyPosition, ExercisePosition.standing);
+    expect(singleStand.impactLevel, ImpactLevel.low);
+    expect(singleStand.noiseLevel, NoiseLevel.quiet);
+    expect(singleStand.tags, contains('balance'));
+
+    final world = ExerciseCatalog.byId('world_greatest_stretch')!;
+    expect(world.movementPattern, isNotNull);
+    expect(world.spaceRequirement, SpaceRequirement.medium);
+    // Requires more space than standing hamstring stretch (tiny)
+    final hammy = ExerciseCatalog.byId('hamstring_stretch_standing')!;
+    expect(world.spaceRequirement.index > hammy.spaceRequirement.index, isTrue);
+  });
+
+  test('original progression families remain valid', () {
+    // Ensure original 5 families still have correct members and order
+    const originalFamilies = {
+      'pushup': 5,
+      'squat': 4,
+      'forearm_plank': 2,
+      'glute_bridge': 2,
+      'lunge': 4,
+    };
+    for (final entry in originalFamilies.entries) {
+      final members =
+          all.where((e) => e.progressionFamilyId == entry.key).toList();
+      expect(members, hasLength(entry.value), reason: entry.key);
+    }
+    // No duplicate family contamination
+    expect(
+        all
+            .where((e) => e.progressionFamilyId == 'pushup')
+            .map((e) => e.id)
+            .toSet(),
+        containsAll([
+          'pushup_wall',
+          'pushup_incline',
+          'pushup_knee',
+          'pushup_standard',
+          'pushup_decline'
+        ]));
   });
 
   test('catalog and model collections cannot be mutated', () {

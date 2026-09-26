@@ -1498,6 +1498,761 @@ abstract final class ExerciseCatalog {
       assetPath: null,
       active: true,
     ),
+    Exercise(
+      id: "good_morning",
+      name: "Good Morning",
+      shortDescription:
+          "Standing hip hinge with hands behind head, folding forward with flat back and returning upright.",
+      movementPattern: MovementPattern.hinge,
+      difficulty: ExerciseDifficulty.level2,
+      bodyPosition: ExercisePosition.standing,
+      impactLevel: ImpactLevel.low,
+      noiseLevel: NoiseLevel.quiet,
+      spaceRequirement: SpaceRequirement.small,
+      wristLoad: JointLoad.none,
+      kneeLoad: JointLoad.low,
+      primaryMuscles: {MuscleGroup.hamstrings, MuscleGroup.glutes},
+      secondaryMuscles: {MuscleGroup.lowerBack, MuscleGroup.abs},
+      requiredEquipment: {WorkoutEquipment.none},
+      exerciseType: ExerciseType.reps,
+      defaultReps: 10,
+      defaultRest: Duration(seconds: 30),
+      progressionFamilyId: "hinge",
+      progressionRank: 2,
+      easierVariationId: "hip_hinge",
+      harderVariationId: "hip_hinge_single_leg",
+      instructions: [
+        "Stand with feet hip-width apart, knees soft, hands lightly behind head with elbows wide and spine tall.",
+        "Push hips back and hinge forward with a flat back until you feel a gentle hamstring stretch, keeping shins nearly vertical.",
+        "Drive hips forward and squeeze glutes to return to standing without rounding your back."
+      ],
+      commonMistakes: [
+        "Rounding the lower back instead of hinging at hips",
+        "Bending knees into a squat rather than pushing hips back"
+      ],
+      breathingGuidance: "Inhale as you hinge back; exhale as you drive hips forward to stand.",
+      tags: {"bodyweight", "hip_hinge", "hamstring_focus"},
+      assetPath: null,
+      active: true,
+    ),
+    Exercise(
+      id: "hip_hinge",
+      name: "Hip Hinge",
+      shortDescription:
+          "Fundamental hip-hinge pattern drill with hands on hips and soft knees.",
+      movementPattern: MovementPattern.hinge,
+      difficulty: ExerciseDifficulty.level1,
+      bodyPosition: ExercisePosition.standing,
+      impactLevel: ImpactLevel.low,
+      noiseLevel: NoiseLevel.quiet,
+      spaceRequirement: SpaceRequirement.tiny,
+      wristLoad: JointLoad.none,
+      kneeLoad: JointLoad.low,
+      primaryMuscles: {MuscleGroup.glutes, MuscleGroup.hamstrings},
+      secondaryMuscles: {MuscleGroup.lowerBack, MuscleGroup.abs},
+      requiredEquipment: {WorkoutEquipment.none},
+      exerciseType: ExerciseType.reps,
+      defaultReps: 10,
+      defaultRest: Duration(seconds: 30),
+      progressionFamilyId: "hinge",
+      progressionRank: 1,
+      harderVariationId: "good_morning",
+      instructions: [
+        "Stand with feet hip-width apart, hands on hips, knees softly bent and weight centered over mid-foot.",
+        "Push hips straight back with a long spine until torso leans forward, shins stay vertical and back stays flat.",
+        "Squeeze glutes to bring hips forward to standing, keeping abs gently braced."
+      ],
+      commonMistakes: [
+        "Squatting by bending knees forward",
+        "Rounding shoulders or arching lower back at the end range"
+      ],
+      breathingGuidance: "Inhale to hinge; exhale to return to standing.",
+      tags: {"bodyweight", "hip_hinge", "pattern_learning"},
+      assetPath: null,
+      active: true,
+    ),
+    Exercise(
+      id: "hip_hinge_single_leg",
+      name: "Single-Leg Hip Hinge",
+      shortDescription:
+          "Unilateral hinge balancing on one leg with the opposite leg extending straight back.",
+      movementPattern: MovementPattern.hinge,
+      difficulty: ExerciseDifficulty.level3,
+      bodyPosition: ExercisePosition.standing,
+      impactLevel: ImpactLevel.low,
+      noiseLevel: NoiseLevel.quiet,
+      spaceRequirement: SpaceRequirement.small,
+      wristLoad: JointLoad.none,
+      kneeLoad: JointLoad.moderate,
+      primaryMuscles: {MuscleGroup.glutes, MuscleGroup.hamstrings},
+      secondaryMuscles: {
+        MuscleGroup.lowerBack,
+        MuscleGroup.abs,
+        MuscleGroup.obliques
+      },
+      requiredEquipment: {WorkoutEquipment.none},
+      exerciseType: ExerciseType.reps,
+      defaultReps: 8,
+      defaultRest: Duration(seconds: 45),
+      progressionFamilyId: "hinge",
+      progressionRank: 3,
+      easierVariationId: "good_morning",
+      instructions: [
+        "Stand on one leg with knee soft, opposite leg straight, hands on hips or at sides for balance.",
+        "Hinge by pushing hips back and reaching extended leg behind you, keeping hips square and back flat.",
+        "Drive through the standing foot to return upright; complete eight repetitions per side without touching the free foot down."
+      ],
+      commonMistakes: [
+        "Rotating hips open toward the side",
+        "Rounding the back to reach farther"
+      ],
+      breathingGuidance: "Inhale while hinging; exhale as you return to standing.",
+      tags: {
+        "bodyweight",
+        "unilateral",
+        "reps_per_side",
+        "balance_demand",
+        "hip_hinge"
+      },
+      assetPath: null,
+      active: true,
+    ),
+    Exercise(
+      id: "donkey_kick",
+      name: "Donkey Kick",
+      shortDescription:
+          "Quadruped hip extension driving heel toward ceiling with knee bent at ninety degrees.",
+      movementPattern: MovementPattern.glute,
+      difficulty: ExerciseDifficulty.level1,
+      bodyPosition: ExercisePosition.floor,
+      impactLevel: ImpactLevel.low,
+      noiseLevel: NoiseLevel.quiet,
+      spaceRequirement: SpaceRequirement.small,
+      wristLoad: JointLoad.moderate,
+      kneeLoad: JointLoad.moderate,
+      primaryMuscles: {MuscleGroup.glutes},
+      secondaryMuscles: {
+        MuscleGroup.hamstrings,
+        MuscleGroup.lowerBack,
+        MuscleGroup.abs
+      },
+      requiredEquipment: {WorkoutEquipment.none},
+      exerciseType: ExerciseType.reps,
+      defaultReps: 10,
+      defaultRest: Duration(seconds: 30),
+      instructions: [
+        "Start on hands and knees with hands under shoulders, knees under hips, and neck neutral on a comfortable surface.",
+        "Keep knee bent at ninety degrees, brace trunk, and lift one heel toward the ceiling by extending the hip without arching the back.",
+        "Pause briefly at the top and lower with control; complete ten repetitions per side keeping hips level."
+      ],
+      commonMistakes: [
+        "Arching the lower back to lift the leg higher",
+        "Rotating the pelvis toward the lifting leg"
+      ],
+      breathingGuidance: "Exhale as you kick back; inhale as you lower.",
+      tags: {"bodyweight", "quadruped", "reps_per_side"},
+      assetPath: null,
+      active: true,
+    ),
+    Exercise(
+      id: "fire_hydrant",
+      name: "Fire Hydrant",
+      shortDescription:
+          "Quadruped hip abduction lifting the bent knee outward while keeping the pelvis stable.",
+      movementPattern: MovementPattern.glute,
+      difficulty: ExerciseDifficulty.level1,
+      bodyPosition: ExercisePosition.floor,
+      impactLevel: ImpactLevel.low,
+      noiseLevel: NoiseLevel.quiet,
+      spaceRequirement: SpaceRequirement.small,
+      wristLoad: JointLoad.moderate,
+      kneeLoad: JointLoad.moderate,
+      primaryMuscles: {MuscleGroup.glutes},
+      secondaryMuscles: {
+        MuscleGroup.obliques,
+        MuscleGroup.abs,
+        MuscleGroup.hipFlexors
+      },
+      requiredEquipment: {WorkoutEquipment.none},
+      exerciseType: ExerciseType.reps,
+      defaultReps: 10,
+      defaultRest: Duration(seconds: 30),
+      instructions: [
+        "Begin on hands and knees with hands under shoulders, knees under hips, and back neutral.",
+        "Brace trunk and lift one knee outward to the side, keeping the knee bent and foot flexed, without shifting weight excessively.",
+        "Pause at a comfortable height, then lower with control; complete ten repetitions per side."
+      ],
+      commonMistakes: [
+        "Leaning the torso away from the lifting leg",
+        "Rotating the lower back instead of moving at the hip"
+      ],
+      breathingGuidance: "Exhale as you lift the knee outward; inhale as you lower.",
+      tags: {"bodyweight", "quadruped", "reps_per_side", "hip_abduction"},
+      assetPath: null,
+      active: true,
+    ),
+    Exercise(
+      id: "pushup_pike",
+      name: "Pike Push-Up",
+      shortDescription:
+          "Inverted-V press emphasizing shoulders by bending elbows to lower the head toward the floor.",
+      movementPattern: MovementPattern.push,
+      difficulty: ExerciseDifficulty.level3,
+      bodyPosition: ExercisePosition.floor,
+      impactLevel: ImpactLevel.low,
+      noiseLevel: NoiseLevel.quiet,
+      spaceRequirement: SpaceRequirement.small,
+      wristLoad: JointLoad.high,
+      kneeLoad: JointLoad.low,
+      primaryMuscles: {MuscleGroup.shoulders, MuscleGroup.triceps},
+      secondaryMuscles: {
+        MuscleGroup.chest,
+        MuscleGroup.upperBack,
+        MuscleGroup.abs
+      },
+      requiredEquipment: {WorkoutEquipment.none},
+      exerciseType: ExerciseType.reps,
+      defaultReps: 8,
+      defaultRest: Duration(seconds: 45),
+      instructions: [
+        "Start in an inverted-V with hands slightly wider than shoulders, hips high, and legs straight with heels toward the floor.",
+        "Bend elbows and lower the crown of the head toward the floor between your hands while keeping hips elevated.",
+        "Press back to the start with control, keeping neck neutral and avoiding shrugging shoulders."
+      ],
+      commonMistakes: [
+        "Letting hips sag into a flat plank",
+        "Flaring elbows straight outward and shrugging"
+      ],
+      breathingGuidance: "Inhale as you lower; exhale as you press up.",
+      tags: {"bodyweight", "shoulder_emphasis", "inverted"},
+      assetPath: null,
+      active: true,
+    ),
+    Exercise(
+      id: "pushup_close_grip",
+      name: "Close-Grip Push-Up",
+      shortDescription:
+          "Narrow-hand push-up emphasizing triceps while keeping elbows close to the ribs.",
+      movementPattern: MovementPattern.push,
+      difficulty: ExerciseDifficulty.level3,
+      bodyPosition: ExercisePosition.floor,
+      impactLevel: ImpactLevel.low,
+      noiseLevel: NoiseLevel.quiet,
+      spaceRequirement: SpaceRequirement.small,
+      wristLoad: JointLoad.high,
+      kneeLoad: JointLoad.low,
+      primaryMuscles: {MuscleGroup.triceps, MuscleGroup.chest},
+      secondaryMuscles: {MuscleGroup.shoulders, MuscleGroup.abs},
+      requiredEquipment: {WorkoutEquipment.none},
+      exerciseType: ExerciseType.reps,
+      defaultReps: 8,
+      defaultRest: Duration(seconds: 45),
+      instructions: [
+        "Set hands close together beneath the center of your chest, legs extended with toes on the floor and trunk braced.",
+        "Lower chest between hands with elbows tucked near the ribs, keeping hips in one line with shoulders.",
+        "Press back to straight arms without flaring elbows outward or sagging the lower back."
+      ],
+      commonMistakes: [
+        "Allowing elbows to flare away from the sides",
+        "Sagging hips or piking them upward to assist the press"
+      ],
+      breathingGuidance: "Inhale while lowering; exhale while pressing.",
+      tags: {"bodyweight", "triceps_emphasis", "narrow_hands"},
+      assetPath: null,
+      active: true,
+    ),
+    Exercise(
+      id: "pushup_wide",
+      name: "Wide Push-Up",
+      shortDescription:
+          "Wide-hand push-up increasing chest stretch and horizontal pressing range.",
+      movementPattern: MovementPattern.push,
+      difficulty: ExerciseDifficulty.level3,
+      bodyPosition: ExercisePosition.floor,
+      impactLevel: ImpactLevel.low,
+      noiseLevel: NoiseLevel.quiet,
+      spaceRequirement: SpaceRequirement.medium,
+      wristLoad: JointLoad.high,
+      kneeLoad: JointLoad.low,
+      primaryMuscles: {MuscleGroup.chest, MuscleGroup.shoulders},
+      secondaryMuscles: {MuscleGroup.triceps, MuscleGroup.abs},
+      requiredEquipment: {WorkoutEquipment.none},
+      exerciseType: ExerciseType.reps,
+      defaultReps: 8,
+      defaultRest: Duration(seconds: 45),
+      instructions: [
+        "Place hands wider than shoulders with fingers facing forward and legs extended in a straight plank.",
+        "Brace trunk and lower chest between hands with elbows angled outward around forty-five degrees, keeping hips level.",
+        "Press back up while maintaining a straight line from head to heels without letting shoulders shrug."
+      ],
+      commonMistakes: [
+        "Placing hands excessively wide and dropping the chest between shoulders",
+        "Allowing the lower back to sag under the stretch load"
+      ],
+      breathingGuidance: "Inhale on the descent; exhale on the press.",
+      tags: {"bodyweight", "chest_emphasis", "wide_hands"},
+      assetPath: null,
+      active: true,
+    ),
+    Exercise(
+      id: "shoulder_tap",
+      name: "Shoulder Tap",
+      shortDescription:
+          "High-plank anti-rotation drill alternately tapping opposite shoulder while resisting trunk twist.",
+      movementPattern: MovementPattern.core,
+      difficulty: ExerciseDifficulty.level2,
+      bodyPosition: ExercisePosition.floor,
+      impactLevel: ImpactLevel.low,
+      noiseLevel: NoiseLevel.quiet,
+      spaceRequirement: SpaceRequirement.small,
+      wristLoad: JointLoad.high,
+      kneeLoad: JointLoad.low,
+      primaryMuscles: {MuscleGroup.abs, MuscleGroup.obliques},
+      secondaryMuscles: {MuscleGroup.shoulders, MuscleGroup.glutes},
+      requiredEquipment: {WorkoutEquipment.none},
+      exerciseType: ExerciseType.reps,
+      defaultReps: 8,
+      defaultRest: Duration(seconds: 30),
+      instructions: [
+        "Begin in a high plank with hands under shoulders, feet hip-width apart, and a straight line from head to heels.",
+        "Shift weight slightly, lift one hand and tap the opposite shoulder without rotating hips or shoulders.",
+        "Return hand to the floor with control and alternate; complete eight taps per side."
+      ],
+      commonMistakes: [
+        "Rotating hips or shoulders with each tap",
+        "Placing feet too narrow and losing balance"
+      ],
+      breathingGuidance: "Breathe steadily and exhale with each tap.",
+      tags: {
+        "bodyweight",
+        "anti_rotation",
+        "reps_per_side",
+        "wrist_loaded",
+        "shoulder_stability"
+      },
+      assetPath: null,
+      active: true,
+    ),
+    Exercise(
+      id: "plank_up_down",
+      name: "Plank Up-Down",
+      shortDescription:
+          "Dynamic plank transitioning between high-plank hands and forearm support.",
+      movementPattern: MovementPattern.core,
+      difficulty: ExerciseDifficulty.level3,
+      bodyPosition: ExercisePosition.floor,
+      impactLevel: ImpactLevel.low,
+      noiseLevel: NoiseLevel.quiet,
+      spaceRequirement: SpaceRequirement.small,
+      wristLoad: JointLoad.high,
+      kneeLoad: JointLoad.low,
+      primaryMuscles: {MuscleGroup.abs, MuscleGroup.shoulders},
+      secondaryMuscles: {
+        MuscleGroup.triceps,
+        MuscleGroup.obliques,
+        MuscleGroup.glutes
+      },
+      requiredEquipment: {WorkoutEquipment.none},
+      exerciseType: ExerciseType.reps,
+      defaultReps: 8,
+      defaultRest: Duration(seconds: 45),
+      instructions: [
+        "Start in a forearm plank with elbows under shoulders and body in a straight line.",
+        "Press one palm then the other to a high plank, keeping hips level and feet hip-width apart.",
+        "Lower one forearm then the other back to the start with control; complete eight full transitions, alternating the leading arm."
+      ],
+      commonMistakes: [
+        "Rocking hips side to side with each transition",
+        "Sagging the lower back when moving between supports"
+      ],
+      breathingGuidance:
+          "Breathe rhythmically; exhale as you press to high plank, inhale as you lower.",
+      tags: {"bodyweight", "dynamic_plank", "wrist_loaded", "shoulder_stability"},
+      assetPath: null,
+      active: true,
+    ),
+    Exercise(
+      id: "step_jack",
+      name: "Step Jack",
+      shortDescription:
+          "Low-impact stepping jack with alternating side steps and overhead arm raises.",
+      movementPattern: MovementPattern.cardio,
+      difficulty: ExerciseDifficulty.level1,
+      bodyPosition: ExercisePosition.standing,
+      impactLevel: ImpactLevel.low,
+      noiseLevel: NoiseLevel.quiet,
+      spaceRequirement: SpaceRequirement.small,
+      wristLoad: JointLoad.none,
+      kneeLoad: JointLoad.low,
+      primaryMuscles: {
+        MuscleGroup.calves,
+        MuscleGroup.quadriceps,
+        MuscleGroup.glutes
+      },
+      secondaryMuscles: {
+        MuscleGroup.shoulders,
+        MuscleGroup.hipFlexors,
+        MuscleGroup.abs
+      },
+      requiredEquipment: {WorkoutEquipment.none},
+      exerciseType: ExerciseType.timed,
+      defaultDuration: Duration(seconds: 30),
+      defaultRest: Duration(seconds: 30),
+      instructions: [
+        "Stand with feet together and arms by your sides, with clear space at sides and overhead.",
+        "Step one foot to the side while sweeping both arms overhead, keeping knees soft and landing on the whole foot without jumping.",
+        "Step feet together as arms lower; continue alternating sides at a brisk but controlled rhythm."
+      ],
+      commonMistakes: [
+        "Jumping off the floor instead of stepping",
+        "Landing with locked knees or collapsing knees inward"
+      ],
+      breathingGuidance: "Breathe continuously in rhythm with the steps.",
+      tags: {"bodyweight", "no_jumping", "low_impact", "cardio_alternative"},
+      assetPath: null,
+      active: true,
+    ),
+    Exercise(
+      id: "butt_kicks",
+      name: "Butt Kicks",
+      shortDescription:
+          "Jogging in place driving heels toward glutes with quick arm swings.",
+      movementPattern: MovementPattern.cardio,
+      difficulty: ExerciseDifficulty.level2,
+      bodyPosition: ExercisePosition.standing,
+      impactLevel: ImpactLevel.moderate,
+      noiseLevel: NoiseLevel.moderate,
+      spaceRequirement: SpaceRequirement.small,
+      wristLoad: JointLoad.none,
+      kneeLoad: JointLoad.moderate,
+      primaryMuscles: {
+        MuscleGroup.hamstrings,
+        MuscleGroup.quadriceps,
+        MuscleGroup.calves
+      },
+      secondaryMuscles: {MuscleGroup.glutes, MuscleGroup.hipFlexors, MuscleGroup.abs},
+      requiredEquipment: {WorkoutEquipment.none},
+      exerciseType: ExerciseType.timed,
+      defaultDuration: Duration(seconds: 20),
+      defaultRest: Duration(seconds: 40),
+      instructions: [
+        "Stand tall with feet hip-width apart and elbows bent at about ninety degrees.",
+        "Jog lightly in place, flicking each heel toward the glute quickly without leaning far forward.",
+        "Land softly on the forefoot and stay on the balls of your feet while swinging arms naturally."
+      ],
+      commonMistakes: [
+        "Leaning excessively forward and kicking away from the body",
+        "Landing heavily on the heels with locked knees"
+      ],
+      breathingGuidance: "Breathe rhythmically through the jog; avoid holding breath.",
+      tags: {"bodyweight", "running_in_place", "cardio"},
+      assetPath: null,
+      active: true,
+    ),
+    Exercise(
+      id: "skater_step",
+      name: "Skater Step",
+      shortDescription:
+          "Lateral stepping skater with soft side lunges and arm swings without leaving the floor.",
+      movementPattern: MovementPattern.cardio,
+      difficulty: ExerciseDifficulty.level2,
+      bodyPosition: ExercisePosition.standing,
+      impactLevel: ImpactLevel.low,
+      noiseLevel: NoiseLevel.quiet,
+      spaceRequirement: SpaceRequirement.medium,
+      wristLoad: JointLoad.none,
+      kneeLoad: JointLoad.moderate,
+      primaryMuscles: {MuscleGroup.glutes, MuscleGroup.quadriceps},
+      secondaryMuscles: {
+        MuscleGroup.hamstrings,
+        MuscleGroup.calves,
+        MuscleGroup.abs,
+        MuscleGroup.obliques
+      },
+      requiredEquipment: {WorkoutEquipment.none},
+      exerciseType: ExerciseType.timed,
+      defaultDuration: Duration(seconds: 30),
+      defaultRest: Duration(seconds: 30),
+      instructions: [
+        "Stand with feet hip-width apart, knees soft, and arms relaxed, allowing lateral space on each side.",
+        "Step one foot diagonally behind the other, bending front knee softly as you sweep arms across your body.",
+        "Push off the front foot and step to the other side, keeping hops tiny or feet grounded for a no-jumping option."
+      ],
+      commonMistakes: [
+        "Jumping high instead of stepping softly",
+        "Letting the front knee collapse inward across the toes"
+      ],
+      breathingGuidance: "Breathe steadily with the lateral rhythm.",
+      tags: {"bodyweight", "lateral", "no_jumping", "cardio"},
+      assetPath: null,
+      active: true,
+    ),
+    Exercise(
+      id: "squat_knee_drive",
+      name: "Squat to Knee Drive",
+      shortDescription:
+          "Bodyweight squat followed by alternating standing knee drives for power and balance.",
+      movementPattern: MovementPattern.squat,
+      difficulty: ExerciseDifficulty.level2,
+      bodyPosition: ExercisePosition.standing,
+      impactLevel: ImpactLevel.low,
+      noiseLevel: NoiseLevel.quiet,
+      spaceRequirement: SpaceRequirement.small,
+      wristLoad: JointLoad.none,
+      kneeLoad: JointLoad.moderate,
+      primaryMuscles: {MuscleGroup.quadriceps, MuscleGroup.glutes},
+      secondaryMuscles: {
+        MuscleGroup.hamstrings,
+        MuscleGroup.hipFlexors,
+        MuscleGroup.calves,
+        MuscleGroup.abs
+      },
+      requiredEquipment: {WorkoutEquipment.none},
+      exerciseType: ExerciseType.reps,
+      defaultReps: 8,
+      defaultRest: Duration(seconds: 45),
+      instructions: [
+        "Stand with feet about shoulder-width apart, brace trunk, and keep weight over mid-foot.",
+        "Lower into a controlled squat to a comfortable depth with knees tracking over toes.",
+        "Stand and immediately drive one knee toward hip height without leaning backward, then step down and repeat alternating sides for eight repetitions per side."
+      ],
+      commonMistakes: [
+        "Rounding the back at the squat bottom",
+        "Leaning backward or using momentum for the knee drive"
+      ],
+      breathingGuidance: "Inhale on the squat; exhale as you stand and drive the knee up.",
+      tags: {
+        "bodyweight",
+        "unilateral",
+        "reps_per_side",
+        "balance_demand",
+        "squat_plus_knee"
+      },
+      assetPath: null,
+      active: true,
+    ),
+    Exercise(
+      id: "shadow_boxing",
+      name: "Shadow Boxing",
+      shortDescription:
+          "Standing alternating punches with light foot movement and core rotation.",
+      movementPattern: MovementPattern.cardio,
+      difficulty: ExerciseDifficulty.level2,
+      bodyPosition: ExercisePosition.standing,
+      impactLevel: ImpactLevel.low,
+      noiseLevel: NoiseLevel.quiet,
+      spaceRequirement: SpaceRequirement.small,
+      wristLoad: JointLoad.low,
+      kneeLoad: JointLoad.low,
+      primaryMuscles: {MuscleGroup.shoulders, MuscleGroup.obliques},
+      secondaryMuscles: {
+        MuscleGroup.chest,
+        MuscleGroup.triceps,
+        MuscleGroup.abs,
+        MuscleGroup.quadriceps
+      },
+      requiredEquipment: {WorkoutEquipment.none},
+      exerciseType: ExerciseType.timed,
+      defaultDuration: Duration(seconds: 30),
+      defaultRest: Duration(seconds: 30),
+      instructions: [
+        "Adopt a staggered stance with hands up near the face, elbows tucked, and chin slightly tucked.",
+        "Extend alternating jabs and crosses with full arm extension while pivoting the rear foot and rotating the trunk lightly.",
+        "Keep feet active with small steps, stay relaxed in the shoulders, and return hands to guard after each punch."
+      ],
+      commonMistakes: [
+        "Locking elbows aggressively at full extension",
+        "Holding breath and tensing shoulders"
+      ],
+      breathingGuidance: "Exhale with each punch; inhale as you return to guard.",
+      tags: {"bodyweight", "no_jumping", "cardio", "boxing"},
+      assetPath: null,
+      active: true,
+    ),
+    Exercise(
+      id: "single_leg_stand",
+      name: "Single-Leg Stand",
+      shortDescription:
+          "Quiet single-leg balance hold with eyes forward and hands at hips.",
+      movementPattern: MovementPattern.balance,
+      difficulty: ExerciseDifficulty.level1,
+      bodyPosition: ExercisePosition.standing,
+      impactLevel: ImpactLevel.low,
+      noiseLevel: NoiseLevel.quiet,
+      spaceRequirement: SpaceRequirement.tiny,
+      wristLoad: JointLoad.none,
+      kneeLoad: JointLoad.low,
+      primaryMuscles: {MuscleGroup.calves, MuscleGroup.glutes},
+      secondaryMuscles: {MuscleGroup.quadriceps, MuscleGroup.abs},
+      requiredEquipment: {WorkoutEquipment.none},
+      exerciseType: ExerciseType.timed,
+      defaultDuration: Duration(seconds: 20),
+      defaultRest: Duration(seconds: 15),
+      instructions: [
+        "Stand tall with feet hip-width apart and hands on hips, focusing gaze at a fixed point ahead.",
+        "Shift weight onto one foot and lift the opposite foot a few centimetres, keeping the standing knee soft and hips level.",
+        "Hold for twenty seconds with steady breathing, then switch sides without hopping."
+      ],
+      commonMistakes: [
+        "Locking the standing knee straight",
+        "Tilting hips or reaching the lifted leg far away"
+      ],
+      breathingGuidance: "Breathe slowly and evenly throughout each hold.",
+      tags: {"bodyweight", "balance", "duration_per_side", "quiet_hold"},
+      assetPath: null,
+      active: true,
+    ),
+    Exercise(
+      id: "standing_knee_raise",
+      name: "Standing Knee Raise",
+      shortDescription:
+          "Controlled standing knee lift to hip height with trunk upright and hands at hips.",
+      movementPattern: MovementPattern.balance,
+      difficulty: ExerciseDifficulty.level1,
+      bodyPosition: ExercisePosition.standing,
+      impactLevel: ImpactLevel.low,
+      noiseLevel: NoiseLevel.quiet,
+      spaceRequirement: SpaceRequirement.tiny,
+      wristLoad: JointLoad.none,
+      kneeLoad: JointLoad.low,
+      primaryMuscles: {MuscleGroup.hipFlexors, MuscleGroup.quadriceps},
+      secondaryMuscles: {
+        MuscleGroup.glutes,
+        MuscleGroup.calves,
+        MuscleGroup.abs,
+        MuscleGroup.obliques
+      },
+      requiredEquipment: {WorkoutEquipment.none},
+      exerciseType: ExerciseType.reps,
+      defaultReps: 8,
+      defaultRest: Duration(seconds: 30),
+      instructions: [
+        "Stand tall with feet hip-width apart and hands at hips or holding a wall lightly for balance if needed.",
+        "Lift one knee toward hip height with a controlled motion, keeping trunk upright and standing leg soft.",
+        "Lower the foot softly without touching momentum, then alternate for eight repetitions per side."
+      ],
+      commonMistakes: [
+        "Leaning backward to lift the knee",
+        "Losing balance by moving too quickly"
+      ],
+      breathingGuidance: "Exhale as you lift the knee; inhale as you lower.",
+      tags: {"bodyweight", "balance", "reps_per_side", "controlled"},
+      assetPath: null,
+      active: true,
+    ),
+    Exercise(
+      id: "ankle_circles",
+      name: "Ankle Circles",
+      shortDescription:
+          "Standing ankle mobility circles lifting one foot and rotating the ankle joint.",
+      movementPattern: MovementPattern.mobility,
+      difficulty: ExerciseDifficulty.level1,
+      bodyPosition: ExercisePosition.standing,
+      impactLevel: ImpactLevel.low,
+      noiseLevel: NoiseLevel.quiet,
+      spaceRequirement: SpaceRequirement.tiny,
+      wristLoad: JointLoad.none,
+      kneeLoad: JointLoad.low,
+      primaryMuscles: {MuscleGroup.calves},
+      secondaryMuscles: {MuscleGroup.quadriceps, MuscleGroup.glutes},
+      requiredEquipment: {WorkoutEquipment.none},
+      exerciseType: ExerciseType.reps,
+      defaultReps: 10,
+      defaultRest: Duration(seconds: 15),
+      instructions: [
+        "Stand near a wall for light balance support if needed, shift weight onto one leg with standing knee soft.",
+        "Lift the opposite foot slightly and draw slow, full circles with the toes, rotating from the ankle without moving the knee.",
+        "Complete ten circles in each direction, then switch sides keeping motion smooth."
+      ],
+      commonMistakes: [
+        "Rotating the entire leg instead of isolating the ankle",
+        "Rushing through small, incomplete circles"
+      ],
+      breathingGuidance: "Breathe naturally at a relaxed pace.",
+      tags: {"bodyweight", "mobility", "reps_per_side", "ankle_mobility"},
+      assetPath: null,
+      active: true,
+    ),
+    Exercise(
+      id: "arm_circles",
+      name: "Arm Circles",
+      shortDescription:
+          "Standing small-to-large arm rotations for shoulder mobility and warm-up.",
+      movementPattern: MovementPattern.mobility,
+      difficulty: ExerciseDifficulty.level1,
+      bodyPosition: ExercisePosition.standing,
+      impactLevel: ImpactLevel.low,
+      noiseLevel: NoiseLevel.quiet,
+      spaceRequirement: SpaceRequirement.small,
+      wristLoad: JointLoad.none,
+      kneeLoad: JointLoad.none,
+      primaryMuscles: {MuscleGroup.shoulders},
+      secondaryMuscles: {MuscleGroup.upperBack, MuscleGroup.chest},
+      requiredEquipment: {WorkoutEquipment.none},
+      exerciseType: ExerciseType.timed,
+      defaultDuration: Duration(seconds: 30),
+      defaultRest: Duration(seconds: 15),
+      instructions: [
+        "Stand with feet hip-width apart, arms extended to the sides at shoulder height, palms facing forward.",
+        "Draw small forward circles, gradually enlarging them, then reverse direction after fifteen seconds.",
+        "Keep shoulders relaxed and trunk tall without shrugging toward ears."
+      ],
+      commonMistakes: [
+        "Shrugging shoulders toward ears throughout",
+        "Arching the lower back as circles enlarge"
+      ],
+      breathingGuidance: "Breathe steadily and keep shoulders relaxed.",
+      tags: {"bodyweight", "mobility", "warmup", "shoulder_mobility"},
+      assetPath: null,
+      active: true,
+    ),
+    Exercise(
+      id: "world_greatest_stretch",
+      name: "World's Greatest Stretch",
+      shortDescription:
+          "Dynamic mobility flow stepping into deep lunge, rotating trunk, and reaching overhead.",
+      movementPattern: MovementPattern.mobility,
+      difficulty: ExerciseDifficulty.level2,
+      bodyPosition: ExercisePosition.floor,
+      impactLevel: ImpactLevel.low,
+      noiseLevel: NoiseLevel.quiet,
+      spaceRequirement: SpaceRequirement.medium,
+      wristLoad: JointLoad.moderate,
+      kneeLoad: JointLoad.moderate,
+      primaryMuscles: {MuscleGroup.hipFlexors, MuscleGroup.hamstrings},
+      secondaryMuscles: {
+        MuscleGroup.glutes,
+        MuscleGroup.obliques,
+        MuscleGroup.upperBack,
+        MuscleGroup.shoulders,
+        MuscleGroup.chest
+      },
+      requiredEquipment: {WorkoutEquipment.none},
+      exerciseType: ExerciseType.reps,
+      defaultReps: 5,
+      defaultRest: Duration(seconds: 30),
+      instructions: [
+        "Begin in a high plank with hands under shoulders and body in a straight line, then step the right foot outside the right hand into a deep lunge.",
+        "Place the left forearm near the floor inside the front foot if comfortable, then rotate the trunk and reach the right arm toward the ceiling, following fingertips with eyes.",
+        "Return hand to the floor, step back to plank, and repeat on the opposite side for five repetitions per side."
+      ],
+      commonMistakes: [
+        "Letting the front knee collapse inward or slide far past toes",
+        "Forcing shoulder to the floor by over-rotating the lower back"
+      ],
+      breathingGuidance:
+          "Inhale to lengthen the spine in the lunge; exhale during the rotation and reach.",
+      tags: {
+        "bodyweight",
+        "dynamic_mobility",
+        "reps_per_side",
+        "full_body",
+        "lunge_plus_rotation"
+      },
+      assetPath: null,
+      active: true,
+    ),
+
   ]);
 
   static final Map<String, Exercise> _byId = Map.unmodifiable({
