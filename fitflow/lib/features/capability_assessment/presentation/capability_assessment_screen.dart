@@ -349,7 +349,7 @@ class _CapabilityAssessmentScreenState
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'You can change these later in profile settings.',
+                        'These starting levels help FitFlow personalize your workouts.',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: Theme.of(context)
                                   .colorScheme
