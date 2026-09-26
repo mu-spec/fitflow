@@ -3,7 +3,6 @@ import 'package:fitflow/features/workouts/data/exercise_catalog.dart';
 import 'package:fitflow/features/workouts/domain/exercise_progression.dart';
 import 'package:fitflow/features/workouts/presentation/exercise_detail_screen.dart';
 import 'package:fitflow/features/workouts/presentation/widgets/exercise_list_tile.dart';
-import 'package:fitflow/features/workouts/presentation/widgets/exercise_variation_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
