@@ -2,6 +2,7 @@ import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/core/widgets/placeholder_row.dart';
 import 'package:fitflow/core/widgets/placeholder_section.dart';
+import 'package:fitflow/features/workouts/data/exercise_catalog.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -10,7 +11,7 @@ class WorkoutsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    const exerciseCount = 80;
+    final exerciseCount = ExerciseCatalog.all.where((e) => e.active).length;
     return SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(AppDimens.screenPadding),
