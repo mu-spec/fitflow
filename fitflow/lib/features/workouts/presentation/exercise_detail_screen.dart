@@ -1,8 +1,12 @@
 import 'package:fitflow/app/config/app_dimensions.dart';
+import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/onboarding/data/workout_equipment.dart';
 import 'package:fitflow/features/workouts/data/exercise_catalog.dart';
 import 'package:fitflow/features/workouts/domain/exercise.dart';
+import 'package:fitflow/features/workouts/domain/exercise_progression.dart';
 import 'package:fitflow/features/workouts/domain/exercise_type.dart';
+import 'package:fitflow/features/workouts/presentation/widgets/exercise_characteristics_section.dart';
+import 'package:fitflow/features/workouts/presentation/widgets/exercise_progression_section.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -24,6 +28,8 @@ class ExerciseDetailScreen extends StatelessWidget {
       );
     }
 
+    final progression = ExerciseProgressionResolver.resolve(exercise);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(exercise.name),
@@ -37,6 +43,10 @@ class ExerciseDetailScreen extends StatelessWidget {
             _HeroSection(exercise: exercise),
             const SizedBox(height: 24),
             _PrescriptionSection(exercise: exercise),
+            if (progression != null) ...[
+              const SizedBox(height: 24),
+              ExerciseProgressionSection(progression: progression),
+            ],
             const SizedBox(height: 24),
             _MusclesSection(exercise: exercise),
             const SizedBox(height: 24),
@@ -48,7 +58,7 @@ class ExerciseDetailScreen extends StatelessWidget {
             const SizedBox(height: 24),
             _BreathingSection(exercise: exercise),
             const SizedBox(height: 24),
-            _CharacteristicsSection(exercise: exercise),
+            ExerciseCharacteristicsSection(exercise: exercise),
             const SizedBox(height: 32),
           ],
         ),
@@ -100,7 +110,7 @@ class _NotFoundBody extends StatelessWidget {
                   if (router.canPop()) {
                     router.pop();
                   } else {
-                    router.go('/workouts/exercise-library');
+                    router.go(AppRoutes.exerciseLibrary);
                   }
                   return;
                 } catch (_) {
@@ -138,7 +148,6 @@ class _HeroSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Placeholder illustration area - generic, not pretending to show form
         Container(
           width: double.infinity,
           height: 180,
@@ -422,7 +431,6 @@ class _EquipmentSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Keep label for testability and readability
           Text(
             label,
             style: theme.textTheme.bodyMedium,
@@ -570,95 +578,6 @@ class _BreathingSection extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _CharacteristicsSection extends StatelessWidget {
-  const _CharacteristicsSection({required this.exercise});
-
-  final Exercise exercise;
-
-  @override
-  Widget build(BuildContext context) {
-    return _SectionCard(
-      title: 'Exercise Characteristics',
-      child: Column(
-        children: [
-          _CharRow(
-            label: 'Position',
-            value: exercise.bodyPosition?.label ?? '—',
-            icon: Icons.accessibility_new,
-          ),
-          const Divider(height: 20),
-          _CharRow(
-            label: 'Impact',
-            value: exercise.impactLevel.label,
-            icon: Icons.bolt_outlined,
-          ),
-          const Divider(height: 20),
-          _CharRow(
-            label: 'Noise',
-            value: exercise.noiseLevel.label,
-            icon: Icons.volume_up_outlined,
-          ),
-          const Divider(height: 20),
-          _CharRow(
-            label: 'Space',
-            value: exercise.spaceRequirement.label,
-            icon: Icons.square_foot_outlined,
-          ),
-          const Divider(height: 20),
-          _CharRow(
-            label: 'Wrist load',
-            value: exercise.wristLoad.label,
-            icon: Icons.front_hand_outlined,
-          ),
-          const Divider(height: 20),
-          _CharRow(
-            label: 'Knee load',
-            value: exercise.kneeLoad.label,
-            icon: Icons.airline_seat_legroom_extra_outlined,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _CharRow extends StatelessWidget {
-  const _CharRow({
-    required this.label,
-    required this.value,
-    required this.icon,
-  });
-
-  final String label;
-  final String value;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Row(
-      children: [
-        Icon(icon, size: 20, color: theme.colorScheme.onSurfaceVariant),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Text(
-            label,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ),
-        Text(
-          value,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
     );
   }
 }
