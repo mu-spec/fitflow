@@ -14,16 +14,18 @@ import 'package:fitflow/features/workouts/domain/movement_pattern.dart';
 import 'package:fitflow/features/workouts/domain/noise_level.dart';
 import 'package:fitflow/features/workouts/domain/space_requirement.dart';
 
-/// Deterministic eligibility engine (5A-3 extended with No Jumping).
+/// Deterministic eligibility engine (5A-4 final).
 ///
 /// Considers:
 /// - active status
+/// - missing movement pattern (defensive)
 /// - movement-specific capability (trainable only) using explicit mapping
 /// - required equipment
 /// - environment space limits
 /// - environment noise limits (apartment/hotel only)
 /// - Low Impact, No Floor, Standing Only, Avoid Wrist-Heavy, Avoid Deep Knee Bending
 /// - No Jumping (metadata-driven, explicit override, high-impact fallback)
+/// Provides collection APIs evaluateAll and filterEligible with stable ordering.
 class ExerciseEligibilityEngine {
   const ExerciseEligibilityEngine._();
 
@@ -50,6 +52,12 @@ class ExerciseEligibilityEngine {
     // Active rule – continue evaluating other rules
     if (!exercise.active) {
       reasons.add(ExerciseExclusionReason.inactiveExercise);
+    }
+
+    // Missing movement pattern – defensive, does NOT treat warmup/cooldown as missing
+    // warmup/cooldown are legitimate non-null patterns
+    if (exercise.movementPattern == null) {
+      reasons.add(ExerciseExclusionReason.missingMovementPattern);
     }
 
     // Equipment rule
@@ -235,5 +243,48 @@ class ExerciseEligibilityEngine {
       case TrainingEnvironment.outdoor:
         return null; // No additional noise restriction in 5A-2
     }
+  }
+
+  // --- Collection APIs (5A-4) ---
+
+  /// Diagnostic API: evaluates every exercise, preserving input order.
+  ///
+  /// - Same number of outputs as inputs
+  /// - Exact input-relative order, no sorting, no randomness
+  /// - Does not mutate input
+  /// - Externally immutable returned list
+  /// - Single source of truth is [evaluate]
+  static List<ExerciseEligibilityResult> evaluateAll(
+    List<Exercise> exercises,
+    ExerciseEligibilityContext context,
+  ) {
+    // Defensive copy iteration, no mutation
+    final results = <ExerciseEligibilityResult>[];
+    for (final ex in exercises) {
+      results.add(evaluate(ex, context));
+    }
+    return List<ExerciseEligibilityResult>.unmodifiable(results);
+  }
+
+  /// Filters to only eligible exercises, preserving input order.
+  ///
+  /// - Preserves exact relative input order, no sorting, no randomness
+  /// - Does not mutate input
+  /// - Externally immutable returned list
+  /// - Empty input → empty output
+  /// - Uses canonical [evaluate] logic, no duplicated rules
+  /// - Behaviorally equivalent to evaluateAll → keep eligible → map to exercise
+  static List<Exercise> filterEligible(
+    List<Exercise> exercises,
+    ExerciseEligibilityContext context,
+  ) {
+    final eligible = <Exercise>[];
+    for (final ex in exercises) {
+      final result = evaluate(ex, context);
+      if (result.eligible) {
+        eligible.add(ex);
+      }
+    }
+    return List<Exercise>.unmodifiable(eligible);
   }
 }
