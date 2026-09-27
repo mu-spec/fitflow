@@ -37,6 +37,8 @@ class WorkoutExercisePrescription {
   /// - For timed: uses exercise.defaultDuration and defaultRest
   /// - sets defaults to 1
   /// - Returns null if required defaults missing (no fabrication)
+  /// - 5C-2 cleanup: missing defaultRest or negative rest now returns null
+  /// - Zero rest valid only when exercise explicitly has defaultRest == Duration.zero
   static WorkoutExercisePrescription? fromExerciseDefaults(
     Exercise exercise, {
     int sets = 1,
@@ -44,7 +46,13 @@ class WorkoutExercisePrescription {
     if (sets < 1) {
       return null;
     }
-    final rest = exercise.defaultRest ?? Duration.zero;
+    final rest = exercise.defaultRest;
+    if (rest == null) {
+      return null;
+    }
+    if (rest < Duration.zero) {
+      return null;
+    }
 
     switch (exercise.exerciseType) {
       case ExerciseType.reps:
