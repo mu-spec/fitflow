@@ -14,7 +14,7 @@ import 'package:fitflow/features/workouts/domain/movement_pattern.dart';
 import 'package:fitflow/features/workouts/domain/noise_level.dart';
 import 'package:fitflow/features/workouts/domain/space_requirement.dart';
 
-/// Deterministic eligibility engine (5A-2 extended).
+/// Deterministic eligibility engine (5A-3 extended with No Jumping).
 ///
 /// Considers:
 /// - active status
@@ -23,10 +23,18 @@ import 'package:fitflow/features/workouts/domain/space_requirement.dart';
 /// - environment space limits
 /// - environment noise limits (apartment/hotel only)
 /// - Low Impact, No Floor, Standing Only, Avoid Wrist-Heavy, Avoid Deep Knee Bending
-///
-/// No Jumping deferred to 5A-3.
+/// - No Jumping (metadata-driven, explicit override, high-impact fallback)
 class ExerciseEligibilityEngine {
   const ExerciseEligibilityEngine._();
+
+  // Canonical tags used by catalog for jumping classification
+  static const String _noJumpingTag = 'no_jumping';
+  static const String _jumpingTag = 'jumping';
+
+  static bool _hasExplicitJumpingTag(Exercise exercise) {
+    // Use actual jump-related tags present in catalog, never name-based
+    return exercise.tags.contains(_jumpingTag);
+  }
 
   /// Evaluates [exercise] against [context] deterministically.
   ///
@@ -129,6 +137,20 @@ class ExerciseEligibilityEngine {
     if (context.preferences.contains(WorkoutPreference.avoidDeepKneeBending)) {
       if (exercise.kneeLoad == JointLoad.high) {
         reasons.add(ExerciseExclusionReason.kneeLoadRestricted);
+      }
+    }
+
+    // No Jumping preference – metadata-driven, never name-based
+    if (context.preferences.contains(WorkoutPreference.noJumping)) {
+      // Explicit no_jumping override takes priority
+      if (!exercise.tags.contains(_noJumpingTag)) {
+        // Explicit jumping metadata
+        if (_hasExplicitJumpingTag(exercise)) {
+          reasons.add(ExerciseExclusionReason.jumpingRestricted);
+        } else if (exercise.impactLevel == ImpactLevel.high) {
+          // High-impact fallback when no explicit no_jumping metadata
+          reasons.add(ExerciseExclusionReason.jumpingRestricted);
+        }
       }
     }
 

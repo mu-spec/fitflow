@@ -1,4 +1,4 @@
-/// Reasons an exercise may be excluded for a given user context (5A-2 extended).
+/// Reasons an exercise may be excluded for a given user context (5A-3 extended).
 enum ExerciseExclusionReason {
   inactiveExercise,
   missingCapability,
@@ -11,4 +11,5 @@ enum ExerciseExclusionReason {
   standingOnlyRequired,
   wristLoadRestricted,
   kneeLoadRestricted,
+  jumpingRestricted,
 }
