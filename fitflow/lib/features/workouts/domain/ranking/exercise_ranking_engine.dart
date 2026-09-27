@@ -1,3 +1,4 @@
+import 'package:fitflow/features/onboarding/data/fitness_goal.dart';
 import 'package:fitflow/features/workouts/domain/capability_level.dart';
 import 'package:fitflow/features/workouts/domain/capability_profile.dart';
 import 'package:fitflow/features/workouts/domain/eligibility/exercise_eligibility_context.dart';
@@ -9,11 +10,12 @@ import 'package:fitflow/features/workouts/domain/ranking/exercise_ranking_contex
 import 'package:fitflow/features/workouts/domain/ranking/exercise_ranking_result.dart';
 
 /// Deterministic ranking engine that prefers exercises whose difficulty
-/// is closest to the user's capability for that movement (5B-1).
+/// is closest to the user's capability for that movement (5B-2 with goal affinity).
 ///
 /// - No eligibility rules duplicated; ranking operates on already-eligible exercises.
-/// - Single source of truth for capability-fit scoring.
+/// - Single source of truth for capability-fit and goal-affinity scoring.
 /// - Stable tie-breaking via original index.
+/// - Capability remains dominant: max goal bonus 15 < 20 diff between capability levels.
 class ExerciseRankingEngine {
   const ExerciseRankingEngine._();
 
@@ -22,16 +24,19 @@ class ExerciseRankingEngine {
   /// - No crash on above-capability, missing capability, or null movement.
   /// - Read-only, no state mutation.
   /// - Same inputs → same result.
+  /// - For 5B-2: total = capabilityFit + goalAffinity
   static ExerciseRankingResult score(
     Exercise exercise,
     ExerciseRankingContext context,
   ) {
     final capabilityFitScore = _capabilityFitScore(exercise, context);
-    // For 5B-1 totalScore == capabilityFitScore
+    final goalAffinityScore = _goalAffinityScore(exercise, context.goal);
+    final totalScore = capabilityFitScore + goalAffinityScore;
     return ExerciseRankingResult(
       exercise: exercise,
       capabilityFitScore: capabilityFitScore,
-      totalScore: capabilityFitScore,
+      goalAffinityScore: goalAffinityScore,
+      totalScore: totalScore,
     );
   }
 
@@ -132,11 +137,141 @@ class ExerciseRankingEngine {
       case 4:
         return 20;
       default:
-        // diff >4 shouldn't happen with 5 levels, but defensive → lowest eligible score
-        // However spec says above capability is 0, below up to 4 levels is 20.
-        // If diff >4, return 0 as safe fallback? But to keep monotonic, return 0.
-        // Since max diff is 4, we treat >4 as 0 to avoid unexpected high score.
         return 0;
+    }
+  }
+
+  /// Centralized goal-affinity scoring (0..15) based solely on MovementPattern.
+  ///
+  /// - No exercise-name matching
+  /// - No tag-based scoring
+  /// - Warmup/cooldown and null movement → 0
+  /// - Capability remains dominant (max 15 < 20)
+  static int _goalAffinityScore(Exercise exercise, FitnessGoal goal) {
+    final pattern = exercise.movementPattern;
+
+    // Null movement → 0
+    if (pattern == null) {
+      return 0;
+    }
+
+    // Warmup / Cooldown → 0 (do not bias)
+    if (pattern == MovementPattern.warmup ||
+        pattern == MovementPattern.cooldown) {
+      return 0;
+    }
+
+    // Non-trainable future-proof → 0
+    if (!CapabilityProfile.trainablePatterns.contains(pattern) &&
+        pattern != MovementPattern.warmup &&
+        pattern != MovementPattern.cooldown) {
+      // Already handled warmup/cooldown, but if new non-trainable appears → 0
+      // This branch is defensive
+    }
+
+    switch (goal) {
+      case FitnessGoal.generalFitness:
+        return 0;
+
+      case FitnessGoal.buildStrength:
+        switch (pattern) {
+          case MovementPattern.push:
+          case MovementPattern.pull:
+          case MovementPattern.squat:
+          case MovementPattern.lunge:
+          case MovementPattern.hinge:
+          case MovementPattern.core:
+          case MovementPattern.glute:
+            return 15;
+          case MovementPattern.balance:
+            return 5;
+          case MovementPattern.cardio:
+          case MovementPattern.mobility:
+          case MovementPattern.warmup:
+          case MovementPattern.cooldown:
+            return 0;
+        }
+
+      case FitnessGoal.buildMuscle:
+        switch (pattern) {
+          case MovementPattern.push:
+          case MovementPattern.pull:
+          case MovementPattern.squat:
+          case MovementPattern.lunge:
+          case MovementPattern.hinge:
+          case MovementPattern.glute:
+            return 15;
+          case MovementPattern.core:
+            return 10;
+          case MovementPattern.cardio:
+          case MovementPattern.mobility:
+          case MovementPattern.balance:
+          case MovementPattern.warmup:
+          case MovementPattern.cooldown:
+            return 0;
+        }
+
+      case FitnessGoal.loseWeight:
+      case FitnessGoal.improveEndurance:
+        // Shared table for this stage
+        switch (pattern) {
+          case MovementPattern.cardio:
+            return 15;
+          case MovementPattern.squat:
+          case MovementPattern.lunge:
+          case MovementPattern.hinge:
+          case MovementPattern.core:
+          case MovementPattern.glute:
+            return 10;
+          case MovementPattern.push:
+          case MovementPattern.pull:
+          case MovementPattern.balance:
+            return 5;
+          case MovementPattern.mobility:
+          case MovementPattern.warmup:
+          case MovementPattern.cooldown:
+            return 0;
+        }
+
+      case FitnessGoal.improveMobility:
+        switch (pattern) {
+          case MovementPattern.mobility:
+            return 15;
+          case MovementPattern.balance:
+            return 10;
+          case MovementPattern.squat:
+          case MovementPattern.lunge:
+          case MovementPattern.hinge:
+          case MovementPattern.core:
+          case MovementPattern.glute:
+            return 5;
+          case MovementPattern.push:
+          case MovementPattern.pull:
+          case MovementPattern.cardio:
+          case MovementPattern.warmup:
+          case MovementPattern.cooldown:
+            return 0;
+        }
+
+      case FitnessGoal.stayActive:
+        switch (pattern) {
+          case MovementPattern.cardio:
+          case MovementPattern.mobility:
+          case MovementPattern.balance:
+            return 15;
+          case MovementPattern.squat:
+          case MovementPattern.lunge:
+          case MovementPattern.hinge:
+          case MovementPattern.core:
+          case MovementPattern.glute:
+            return 10;
+          case MovementPattern.push:
+          case MovementPattern.pull:
+            return 5;
+          case MovementPattern.warmup:
+          case MovementPattern.cooldown:
+            return 0;
+        }
     }
   }
 
