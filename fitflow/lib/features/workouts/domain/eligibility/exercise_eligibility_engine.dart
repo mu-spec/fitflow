@@ -1,19 +1,30 @@
+import 'package:fitflow/features/onboarding/data/training_environment.dart';
 import 'package:fitflow/features/onboarding/data/workout_equipment.dart';
+import 'package:fitflow/features/onboarding/data/workout_preference.dart';
 import 'package:fitflow/features/workouts/domain/capability_profile.dart';
 import 'package:fitflow/features/workouts/domain/eligibility/exercise_eligibility_context.dart';
 import 'package:fitflow/features/workouts/domain/eligibility/exercise_eligibility_result.dart';
 import 'package:fitflow/features/workouts/domain/eligibility/exercise_exclusion_reason.dart';
 import 'package:fitflow/features/workouts/domain/exercise.dart';
+import 'package:fitflow/features/workouts/domain/exercise_difficulty.dart';
+import 'package:fitflow/features/workouts/domain/exercise_position.dart';
+import 'package:fitflow/features/workouts/domain/impact_level.dart';
+import 'package:fitflow/features/workouts/domain/joint_load.dart';
 import 'package:fitflow/features/workouts/domain/movement_pattern.dart';
+import 'package:fitflow/features/workouts/domain/noise_level.dart';
+import 'package:fitflow/features/workouts/domain/space_requirement.dart';
 
-/// Core deterministic eligibility engine (5A-1 only).
+/// Deterministic eligibility engine (5A-2 extended).
 ///
 /// Considers:
 /// - active status
-/// - movement-specific capability (trainable only)
+/// - movement-specific capability (trainable only) using explicit mapping
 /// - required equipment
+/// - environment space limits
+/// - environment noise limits (apartment/hotel only)
+/// - Low Impact, No Floor, Standing Only, Avoid Wrist-Heavy, Avoid Deep Knee Bending
 ///
-/// Environment/preferences will be added in 5A-2.
+/// No Jumping deferred to 5A-3.
 class ExerciseEligibilityEngine {
   const ExerciseEligibilityEngine._();
 
@@ -34,15 +45,12 @@ class ExerciseEligibilityEngine {
     }
 
     // Equipment rule
-    // Treat WorkoutEquipment.none as requiring nothing
     final required = exercise.requiredEquipment;
-    // Filter out none
     final effectiveRequired = required
         .where((e) => e != WorkoutEquipment.none)
         .toSet();
 
     if (effectiveRequired.isNotEmpty) {
-      // All must be present
       final missing = effectiveRequired
           .where((e) => !context.availableEquipment.contains(e))
           .toSet();
@@ -52,23 +60,77 @@ class ExerciseEligibilityEngine {
       }
     }
 
-    // Capability rule – trainable patterns only
+    // Capability rule – trainable patterns only, using explicit mapping (no .index)
     final pattern = exercise.movementPattern;
     if (pattern != null && _isTrainable(pattern)) {
       final capability = context.capabilityProfile.capabilityFor(pattern);
       if (capability == null) {
         reasons.add(ExerciseExclusionReason.missingCapability);
       } else {
-        // exercise difficulty <= movement capability
-        // Compare via index (both enums ordered level1..level5)
-        final exerciseRank = exercise.difficulty.index;
-        final capabilityRank = capability.level.index;
+        // Use existing 4A mapping: capability.level.toExerciseDifficulty()
+        // Compare via stable explicit rank helpers (not enum .index)
+        final capabilityDifficulty = capability.level.toExerciseDifficulty();
+        final exerciseRank = _exerciseDifficultyRank(exercise.difficulty);
+        final capabilityRank = _exerciseDifficultyRank(capabilityDifficulty);
         if (exerciseRank > capabilityRank) {
           reasons.add(ExerciseExclusionReason.aboveCapability);
         }
       }
     }
-    // Warmup/cooldown do NOT require capability – skipped
+
+    // Environment space limits
+    final maxSpace = _maxSpaceForEnvironment(context.environment);
+    final exerciseSpaceRank = _spaceRequirementRank(exercise.spaceRequirement);
+    final maxSpaceRank = _spaceRequirementRank(maxSpace);
+    if (exerciseSpaceRank > maxSpaceRank) {
+      reasons.add(ExerciseExclusionReason.insufficientSpace);
+    }
+
+    // Environment noise limits – only apartment/hotel impose quiet max
+    final maxNoise = _maxNoiseForEnvironment(context.environment);
+    if (maxNoise != null) {
+      final exerciseNoiseRank = _noiseLevelRank(exercise.noiseLevel);
+      final maxNoiseRank = _noiseLevelRank(maxNoise);
+      if (exerciseNoiseRank > maxNoiseRank) {
+        reasons.add(ExerciseExclusionReason.tooNoisy);
+      }
+    }
+
+    // Low Impact preference
+    if (context.preferences.contains(WorkoutPreference.lowImpact)) {
+      if (exercise.impactLevel != ImpactLevel.low) {
+        reasons.add(ExerciseExclusionReason.lowImpactRequired);
+      }
+    }
+
+    // No Floor Exercises preference – reject floor and kneeling
+    if (context.preferences.contains(WorkoutPreference.noFloorExercises)) {
+      final pos = exercise.bodyPosition;
+      if (pos == ExercisePosition.floor || pos == ExercisePosition.kneeling) {
+        reasons.add(ExerciseExclusionReason.floorRestricted);
+      }
+    }
+
+    // Standing Only preference – require exactly standing
+    if (context.preferences.contains(WorkoutPreference.standingOnly)) {
+      if (exercise.bodyPosition != ExercisePosition.standing) {
+        reasons.add(ExerciseExclusionReason.standingOnlyRequired);
+      }
+    }
+
+    // Avoid Wrist-Heavy – reject only high wrist load
+    if (context.preferences.contains(WorkoutPreference.avoidWristHeavy)) {
+      if (exercise.wristLoad == JointLoad.high) {
+        reasons.add(ExerciseExclusionReason.wristLoadRestricted);
+      }
+    }
+
+    // Avoid Deep Knee Bending – for this milestone reject high knee load only
+    if (context.preferences.contains(WorkoutPreference.avoidDeepKneeBending)) {
+      if (exercise.kneeLoad == JointLoad.high) {
+        reasons.add(ExerciseExclusionReason.kneeLoadRestricted);
+      }
+    }
 
     return ExerciseEligibilityResult(
       exercise: exercise,
@@ -79,5 +141,77 @@ class ExerciseEligibilityEngine {
 
   static bool _isTrainable(MovementPattern pattern) {
     return CapabilityProfile.trainablePatterns.contains(pattern);
+  }
+
+  // --- Centralized rank helpers (no scattered switch) ---
+
+  static int _exerciseDifficultyRank(ExerciseDifficulty difficulty) {
+    switch (difficulty) {
+      case ExerciseDifficulty.level1:
+        return 1;
+      case ExerciseDifficulty.level2:
+        return 2;
+      case ExerciseDifficulty.level3:
+        return 3;
+      case ExerciseDifficulty.level4:
+        return 4;
+      case ExerciseDifficulty.level5:
+        return 5;
+    }
+  }
+
+  static int _spaceRequirementRank(SpaceRequirement req) {
+    switch (req) {
+      case SpaceRequirement.tiny:
+        return 1;
+      case SpaceRequirement.small:
+        return 2;
+      case SpaceRequirement.medium:
+        return 3;
+      case SpaceRequirement.large:
+        return 4;
+    }
+  }
+
+  static SpaceRequirement _maxSpaceForEnvironment(TrainingEnvironment env) {
+    switch (env) {
+      case TrainingEnvironment.apartment:
+        return SpaceRequirement.small;
+      case TrainingEnvironment.smallRoom:
+        return SpaceRequirement.small;
+      case TrainingEnvironment.hotel:
+        return SpaceRequirement.small;
+      case TrainingEnvironment.normalHome:
+        return SpaceRequirement.medium;
+      case TrainingEnvironment.largeRoom:
+        return SpaceRequirement.large;
+      case TrainingEnvironment.outdoor:
+        return SpaceRequirement.large;
+    }
+  }
+
+  static int _noiseLevelRank(NoiseLevel level) {
+    switch (level) {
+      case NoiseLevel.quiet:
+        return 1;
+      case NoiseLevel.moderate:
+        return 2;
+      case NoiseLevel.loud:
+        return 3;
+    }
+  }
+
+  static NoiseLevel? _maxNoiseForEnvironment(TrainingEnvironment env) {
+    switch (env) {
+      case TrainingEnvironment.apartment:
+        return NoiseLevel.quiet;
+      case TrainingEnvironment.hotel:
+        return NoiseLevel.quiet;
+      case TrainingEnvironment.normalHome:
+      case TrainingEnvironment.smallRoom:
+      case TrainingEnvironment.largeRoom:
+      case TrainingEnvironment.outdoor:
+        return null; // No additional noise restriction in 5A-2
+    }
   }
 }
