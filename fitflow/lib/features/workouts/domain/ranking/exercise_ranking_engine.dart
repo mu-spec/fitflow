@@ -1,4 +1,5 @@
 import 'package:fitflow/features/onboarding/data/fitness_goal.dart';
+import 'package:fitflow/features/onboarding/data/user_fitness_profile.dart';
 import 'package:fitflow/features/workouts/domain/capability_level.dart';
 import 'package:fitflow/features/workouts/domain/capability_profile.dart';
 import 'package:fitflow/features/workouts/domain/eligibility/exercise_eligibility_context.dart';
@@ -10,7 +11,7 @@ import 'package:fitflow/features/workouts/domain/ranking/exercise_ranking_contex
 import 'package:fitflow/features/workouts/domain/ranking/exercise_ranking_result.dart';
 
 /// Deterministic ranking engine that prefers exercises whose difficulty
-/// is closest to the user's capability for that movement (5B-2 with goal affinity).
+/// is closest to the user's capability for that movement (5B-3 final).
 ///
 /// - No eligibility rules duplicated; ranking operates on already-eligible exercises.
 /// - Single source of truth for capability-fit and goal-affinity scoring.
@@ -24,7 +25,7 @@ class ExerciseRankingEngine {
   /// - No crash on above-capability, missing capability, or null movement.
   /// - Read-only, no state mutation.
   /// - Same inputs → same result.
-  /// - For 5B-2: total = capabilityFit + goalAffinity
+  /// - For 5B-2/5B-3: total = capabilityFit + goalAffinity
   static ExerciseRankingResult score(
     Exercise exercise,
     ExerciseRankingContext context,
@@ -40,7 +41,7 @@ class ExerciseRankingEngine {
     );
   }
 
-  /// Ranks [exercises] by descending totalScore (capability-fit for 5B-1).
+  /// Ranks [exercises] by descending totalScore.
   ///
   /// - Highest totalScore first
   /// - Deterministic, no randomness
@@ -83,6 +84,32 @@ class ExerciseRankingEngine {
     final eligible =
         ExerciseEligibilityEngine.filterEligible(exercises, eligibilityContext);
     return rank(eligible, rankingContext);
+  }
+
+  /// Profile-based integration API (5B-3 final).
+  ///
+  /// Composes existing factories and delegates to existing eligibility + ranking:
+  /// 1. ExerciseEligibilityContext.fromProfiles(...)
+  /// 2. ExerciseRankingContext.fromProfiles(...)
+  /// 3. filterEligible
+  /// 4. rank
+  ///
+  /// Returns immutable list of ranking results for eligible exercises only.
+  static List<ExerciseRankingResult> rankForUser(
+    List<Exercise> exercises,
+    UserFitnessProfile userProfile,
+    CapabilityProfile capabilityProfile,
+  ) {
+    final eligibilityContext = ExerciseEligibilityContext.fromProfiles(
+      userProfile: userProfile,
+      capabilityProfile: capabilityProfile,
+    );
+    final rankingContext = ExerciseRankingContext.fromProfiles(
+      userProfile: userProfile,
+      capabilityProfile: capabilityProfile,
+    );
+    // Delegation: no rule duplication
+    return rankEligible(exercises, eligibilityContext, rankingContext);
   }
 
   // --- Core scoring logic ---
@@ -155,18 +182,15 @@ class ExerciseRankingEngine {
       return 0;
     }
 
-    // Warmup / Cooldown → 0 (do not bias)
+    // Warmup / Cooldown → 0 (do not bias, later structure places them)
     if (pattern == MovementPattern.warmup ||
         pattern == MovementPattern.cooldown) {
       return 0;
     }
 
-    // Non-trainable future-proof → 0
-    if (!CapabilityProfile.trainablePatterns.contains(pattern) &&
-        pattern != MovementPattern.warmup &&
-        pattern != MovementPattern.cooldown) {
-      // Already handled warmup/cooldown, but if new non-trainable appears → 0
-      // This branch is defensive
+    // Defensive: if movement is not trainable and not warmup/cooldown (future-proof), return 0
+    if (!CapabilityProfile.trainablePatterns.contains(pattern)) {
+      return 0;
     }
 
     switch (goal) {
