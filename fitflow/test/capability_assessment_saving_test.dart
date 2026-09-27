@@ -89,7 +89,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 800));
 
       // Should navigate to Home
-      expect(find.text('Your adaptive workout starts here'), findsOneWidget);
+      expect(find.text('Your adaptive workout'), findsOneWidget);
 
       // Verify persisted CapabilityProfile
       final prefs = await SharedPreferences.getInstance();
@@ -158,7 +158,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
       await tester.pump(const Duration(milliseconds: 800));
 
-      expect(find.text('Your adaptive workout starts here'), findsOneWidget);
+      expect(find.text('Your adaptive workout'), findsOneWidget);
       expect(find.text('Movement Check'), findsNothing);
     });
 
@@ -176,7 +176,7 @@ void main() {
       expect(find.text('Movement Check'), findsWidgets);
 
       // Verify Home is not yet reachable without saving
-      expect(find.text('Your adaptive workout starts here'), findsNothing);
+      expect(find.text('Your adaptive workout'), findsNothing);
 
       // Now save
       await scrollToKey(tester, const Key('save_and_continue_button'));
@@ -185,7 +185,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
       await tester.pump(const Duration(milliseconds: 800));
 
-      expect(find.text('Your adaptive workout starts here'), findsOneWidget);
+      expect(find.text('Your adaptive workout'), findsOneWidget);
     });
   });
 }

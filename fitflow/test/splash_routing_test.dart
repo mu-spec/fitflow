@@ -42,7 +42,7 @@ void main() {
 
       expect(find.text('Welcome to FitFlow'), findsOneWidget);
       expect(find.text('Movement Check'), findsNothing);
-      expect(find.text('Your adaptive workout starts here'), findsNothing);
+      expect(find.text('Your adaptive workout'), findsNothing);
     });
 
     testWidgets('Case B: UserFitnessProfile exists, Capability missing → Movement Check',
@@ -56,7 +56,7 @@ void main() {
 
       expect(find.text('Movement Check'), findsWidgets);
       expect(find.text('Welcome to FitFlow'), findsNothing);
-      expect(find.text('Your adaptive workout starts here'), findsNothing);
+      expect(find.text('Your adaptive workout'), findsNothing);
     });
 
     testWidgets('Case C: Both valid profiles exist → Home', (tester) async {
@@ -69,7 +69,7 @@ void main() {
 
       await pumpApp(tester);
 
-      expect(find.text('Your adaptive workout starts here'), findsOneWidget);
+      expect(find.text('Your adaptive workout'), findsOneWidget);
       expect(find.text('Welcome to FitFlow'), findsNothing);
       expect(find.text('Movement Check'), findsNothing);
     });
@@ -85,7 +85,7 @@ void main() {
       await pumpApp(tester);
 
       expect(find.text('Movement Check'), findsWidgets);
-      expect(find.text('Your adaptive workout starts here'), findsNothing);
+      expect(find.text('Your adaptive workout'), findsNothing);
     });
 
     testWidgets('Incomplete capability JSON (9 entries) → Movement Check',

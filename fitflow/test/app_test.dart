@@ -34,7 +34,7 @@ void main() {
     );
     await completeOnboardingToHome(tester);
 
-    expect(find.text('Your adaptive workout starts here'), findsOneWidget);
+    expect(find.text('Your adaptive workout'), findsOneWidget);
 
     await tester.tap(find.text('Workouts'));
     await tester.pumpAndSettle();
@@ -50,6 +50,6 @@ void main() {
 
     await tester.tap(find.text('Home'));
     await tester.pumpAndSettle();
-    expect(find.text('Your adaptive workout starts here'), findsOneWidget);
+    expect(find.text('Your adaptive workout'), findsOneWidget);
   });
 }
