@@ -77,12 +77,9 @@ class WorkoutVolumeFiller {
       return null;
     }
     if (initialEstimate.total > budget) {
-      // Already over budget -> return as is? But builder guarantees <= budget, so this shouldn't happen.
-      // To be safe, return original section (no filling) if already over? Spec says budget safety.
-      // We'll return original section unchanged rather than null, because builder already ensured <=.
-      // However if invalid input over budget, we return null? For safety, return original if over.
-      // For final generator, sections are already within budget.
-      return section;
+      // Already over budget -> fail cleanly, do not return over-budget section.
+      // Enforces invariant: every non-null result satisfies estimate.total <= budget
+      return null;
     }
 
     // Round-robin filling

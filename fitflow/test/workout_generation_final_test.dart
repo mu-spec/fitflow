@@ -431,6 +431,29 @@ void main() {
       expect(result2, isNull);
     });
 
+    test('over-budget initial section returns null regression', () {
+      // Create a valid section whose estimate exceeds supplied smaller budget
+      final exA = createTimed(id: 'A', pattern: MovementPattern.push, duration: const Duration(seconds: 60));
+      final exB = createTimed(id: 'B', pattern: MovementPattern.squat, duration: const Duration(seconds: 60));
+
+      final section = WorkoutSection(
+        type: WorkoutSectionType.main,
+        exercises: [
+          prescriptionFromExercise(exA, sets: 1),
+          prescriptionFromExercise(exB, sets: 1),
+        ],
+      );
+
+      final estimate = WorkoutTimeEstimator.estimateSection(section);
+      expect(estimate, isNotNull);
+      // 60 + 15 + 60 = 135 sec
+      expect(estimate!.total, const Duration(seconds: 135));
+
+      final smallerBudget = const Duration(seconds: 100); // less than 135
+      final result = WorkoutVolumeFiller.fill(section, smallerBudget);
+      expect(result, isNull, reason: 'Section already over budget should return null, not over-budget section');
+    });
+
     test('max sets caps constants', () {
       expect(WorkoutVolumeFiller.warmupMaxSets, 2);
       expect(WorkoutVolumeFiller.mainMaxSets, 4);
@@ -438,6 +461,45 @@ void main() {
       expect(WorkoutVolumeFiller.capFor(WorkoutSectionType.warmup), 2);
       expect(WorkoutVolumeFiller.capFor(WorkoutSectionType.main), 4);
       expect(WorkoutVolumeFiller.capFor(WorkoutSectionType.cooldown), 2);
+    });
+
+    test('exact-budget input works and final result never exceeds budget', () {
+      final exA = createTimed(id: 'A', pattern: MovementPattern.push, duration: const Duration(seconds: 30));
+      final exB = createTimed(id: 'B', pattern: MovementPattern.squat, duration: const Duration(seconds: 30));
+
+      final budget = const Duration(seconds: 75);
+      final section = WorkoutSection(
+        type: WorkoutSectionType.main,
+        exercises: [
+          prescriptionFromExercise(exA, sets: 1),
+          prescriptionFromExercise(exB, sets: 1),
+        ],
+      );
+
+      final filled = WorkoutVolumeFiller.fill(section, budget);
+      expect(filled, isNotNull);
+      expect(WorkoutTimeEstimator.estimateSection(filled!)!.total <= budget, true);
+    });
+
+    test('under-budget input fills normally and respects budget invariant', () {
+      final exA = createTimed(id: 'A', pattern: MovementPattern.push, duration: const Duration(seconds: 20));
+      final exB = createTimed(id: 'B', pattern: MovementPattern.squat, duration: const Duration(seconds: 20));
+
+      final budget = const Duration(seconds: 200);
+      final section = WorkoutSection(
+        type: WorkoutSectionType.main,
+        exercises: [
+          prescriptionFromExercise(exA, sets: 1),
+          prescriptionFromExercise(exB, sets: 1),
+        ],
+      );
+
+      final filled = WorkoutVolumeFiller.fill(section, budget);
+      expect(filled, isNotNull);
+      // Should have increased at least one set
+      final totalSets = filled!.exercises.fold<int>(0, (sum, p) => sum + p.sets);
+      expect(totalSets > 2, true, reason: 'Under-budget should fill');
+      expect(WorkoutTimeEstimator.estimateSection(filled)!.total <= budget, true);
     });
   });
 
