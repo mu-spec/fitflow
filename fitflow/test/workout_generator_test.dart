@@ -185,9 +185,17 @@ void main() {
       expect(plan.main.type, WorkoutSectionType.main);
       expect(plan.cooldown.type, WorkoutSectionType.cooldown);
 
-      for (final p in plan.allPrescriptions) {
+      for (final p in plan.warmup.exercises) {
         expect(p.isValid, true);
-        expect(p.sets, 1);
+        expect(p.sets >= 1 && p.sets <= 2, true, reason: 'Warmup sets should be 1..2, got ${p.sets}');
+      }
+      for (final p in plan.main.exercises) {
+        expect(p.isValid, true);
+        expect(p.sets >= 1 && p.sets <= 4, true, reason: 'Main sets should be 1..4, got ${p.sets}');
+      }
+      for (final p in plan.cooldown.exercises) {
+        expect(p.isValid, true);
+        expect(p.sets >= 1 && p.sets <= 2, true, reason: 'Cooldown sets should be 1..2, got ${p.sets}');
       }
     });
   });
@@ -400,10 +408,20 @@ void main() {
         userProfile: context.userProfile,
         capabilityProfile: context.capabilityProfile,
       );
-      for (final pres in plan.allPrescriptions) {
+      for (final pres in plan.warmup.exercises) {
         final result = ExerciseEligibilityEngine.evaluate(pres.exercise, eligibilityContext);
         expect(result.eligible, true);
-        expect(pres.sets, 1);
+        expect(pres.sets >= 1 && pres.sets <= 2, true);
+      }
+      for (final pres in plan.main.exercises) {
+        final result = ExerciseEligibilityEngine.evaluate(pres.exercise, eligibilityContext);
+        expect(result.eligible, true);
+        expect(pres.sets >= 1 && pres.sets <= 4, true);
+      }
+      for (final pres in plan.cooldown.exercises) {
+        final result = ExerciseEligibilityEngine.evaluate(pres.exercise, eligibilityContext);
+        expect(result.eligible, true);
+        expect(pres.sets >= 1 && pres.sets <= 2, true);
       }
 
       // Budgets respected
@@ -552,8 +570,15 @@ void main() {
 
         // Under-target is acceptable, but ensure not over target by too much? Actually sections budgets sum to target, so if each <= budget, total <= target
         // We do not require exact target
-        for (final pres in plan.allPrescriptions) {
-          expect(pres.sets, 1);
+        // Final milestone: sets may be >1, check within caps
+        for (final pres in plan.warmup.exercises) {
+          expect(pres.sets >= 1 && pres.sets <= 2, true, reason: 'Warmup sets 1..2 for $dur');
+        }
+        for (final pres in plan.main.exercises) {
+          expect(pres.sets >= 1 && pres.sets <= 4, true, reason: 'Main sets 1..4 for $dur');
+        }
+        for (final pres in plan.cooldown.exercises) {
+          expect(pres.sets >= 1 && pres.sets <= 2, true, reason: 'Cooldown sets 1..2 for $dur');
         }
       }
     });

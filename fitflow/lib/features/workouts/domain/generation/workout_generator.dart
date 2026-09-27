@@ -1,24 +1,30 @@
 import 'package:fitflow/features/workouts/data/exercise_catalog.dart';
 import 'package:fitflow/features/workouts/domain/exercise.dart';
+import 'package:fitflow/features/workouts/domain/generation/workout_candidate_diversifier.dart';
 import 'package:fitflow/features/workouts/domain/generation/workout_candidate_resolver.dart';
 import 'package:fitflow/features/workouts/domain/generation/workout_generation_context.dart';
 import 'package:fitflow/features/workouts/domain/generation/workout_generation_limits.dart';
 import 'package:fitflow/features/workouts/domain/generation/workout_section_builder.dart';
+import 'package:fitflow/features/workouts/domain/generation/workout_volume_filler.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_plan.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_section_type.dart';
 
-/// Deterministic complete workout generator V1 (5D-3).
+/// Deterministic complete workout generator — Final Milestone.
 ///
-/// Composes:
-/// candidate resolver → section builder → complete WorkoutPlan
+/// Flow:
+/// 1. resolve candidates
+/// 2. diversify MAIN candidates (deterministic two-pass unique movement first)
+/// 3. build warmup using builder
+/// 4. build main using diversified candidates
+/// 5. build cooldown using builder
+/// 6. require all three non-empty
+/// 7. fill warmup/main/cooldown volume via round-robin set increments within budgets
+/// 8. build WorkoutPlan
+/// 9. validate plan
 ///
-/// - Uses existing candidate resolver (eligibility+ranking+classification)
-/// - Uses existing section builder (default prescriptions, budget fit, max count, transitions)
-/// - Uses context.timeBudget for section budgets
-/// - Uses explicit duration-based max exercise counts (single source of truth)
-/// - Requires all three sections non-empty, otherwise returns null
-/// - Returns null if final plan invalid
-/// - No movement diversity, no randomization, no volume scaling
+/// Preserves existing pipeline:
+/// Eligibility → Ranking → Candidate Pools → Section Builder → WorkoutPlan
+/// Reuses all existing systems, no duplication.
 class WorkoutGenerator {
   const WorkoutGenerator._();
 
@@ -26,7 +32,8 @@ class WorkoutGenerator {
   ///
   /// Returns null when complete valid workout cannot be produced:
   /// - builder returns null unexpectedly
-  /// - any required section empty (no candidates, cannot fit, missing defaults)
+  /// - any required section empty
+  /// - volume filler fails
   /// - final plan invalid
   ///
   /// Does not mutate inputs. Deterministic.
@@ -48,7 +55,11 @@ class WorkoutGenerator {
     final cooldownBudget =
         context.timeBudget.budgetFor(WorkoutSectionType.cooldown);
 
-    // 4. Build each section using existing builder (5D-2)
+    // 4. Diversify MAIN candidates only (Final)
+    final diversifiedMain =
+        WorkoutCandidateDiversifier.diversifyMain(candidates.main);
+
+    // 5. Build each section using existing builder (5D-2)
     final warmupSection = WorkoutSectionBuilder.build(
       type: WorkoutSectionType.warmup,
       candidates: candidates.warmup,
@@ -58,7 +69,7 @@ class WorkoutGenerator {
 
     final mainSection = WorkoutSectionBuilder.build(
       type: WorkoutSectionType.main,
-      candidates: candidates.main,
+      candidates: diversifiedMain,
       budget: mainBudget,
       maxExercises: limits.mainMax,
     );
@@ -70,29 +81,49 @@ class WorkoutGenerator {
       maxExercises: limits.cooldownMax,
     );
 
-    // 5. Builder failure -> null
+    // 6. Builder failure -> null
     if (warmupSection == null ||
         mainSection == null ||
         cooldownSection == null) {
       return null;
     }
 
-    // 6. Empty required section -> null (complete plan requires all three non-empty)
+    // 7. Empty required section -> null
     if (warmupSection.isEmpty ||
         mainSection.isEmpty ||
         cooldownSection.isEmpty) {
       return null;
     }
 
-    // 7. Plan construction using context.timeBudget (no second budget)
+    // 8. Fill volume within budgets (Final)
+    final filledWarmup =
+        WorkoutVolumeFiller.fill(warmupSection, warmupBudget);
+    final filledMain = WorkoutVolumeFiller.fill(mainSection, mainBudget);
+    final filledCooldown =
+        WorkoutVolumeFiller.fill(cooldownSection, cooldownBudget);
+
+    if (filledWarmup == null ||
+        filledMain == null ||
+        filledCooldown == null) {
+      return null;
+    }
+
+    // Ensure filled sections still non-empty (should be, but defensive)
+    if (filledWarmup.isEmpty ||
+        filledMain.isEmpty ||
+        filledCooldown.isEmpty) {
+      return null;
+    }
+
+    // 9. Plan construction using context.timeBudget
     final plan = WorkoutPlan(
-      warmup: warmupSection,
-      main: mainSection,
-      cooldown: cooldownSection,
+      warmup: filledWarmup,
+      main: filledMain,
+      cooldown: filledCooldown,
       timeBudget: context.timeBudget,
     );
 
-    // 8. Final validation
+    // 10. Final validation
     if (!plan.isValid) {
       return null;
     }
