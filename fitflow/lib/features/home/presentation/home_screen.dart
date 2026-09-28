@@ -120,6 +120,17 @@ class HomeScreen extends ConsumerWidget {
                     plan: plan,
                     userProfile: userProfile,
                   ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      onPressed: () {
+                        context.push(AppRoutes.workoutPreview);
+                      },
+                      icon: const Icon(Icons.visibility_outlined),
+                      label: const Text('View workout'),
+                    ),
+                  ),
                   const SizedBox(height: 16),
                   HomeMovementFocus(plan: plan),
                   const SizedBox(height: 16),

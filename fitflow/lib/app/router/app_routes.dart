@@ -4,6 +4,7 @@ class AppRoutes {
   static const String onboarding = '/onboarding';
   static const String capabilityAssessment = '/capability-assessment';
   static const String home = '/home';
+  static const String workoutPreview = '/home/workout-preview';
   static const String workouts = '/workouts';
   static const String exerciseLibrary = '/workouts/exercise-library';
   static const String progress = '/progress';

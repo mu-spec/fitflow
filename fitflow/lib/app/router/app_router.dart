@@ -7,6 +7,7 @@ import 'package:fitflow/features/profile/presentation/profile_screen.dart';
 import 'package:fitflow/features/progress/presentation/progress_screen.dart';
 import 'package:fitflow/features/settings/presentation/settings_screen.dart';
 import 'package:fitflow/features/splash/splash_screen.dart';
+import 'package:fitflow/features/workout_preview/presentation/workout_preview_screen.dart';
 import 'package:fitflow/features/workouts/presentation/exercise_detail_screen.dart';
 import 'package:fitflow/features/workouts/presentation/exercise_library_screen.dart';
 import 'package:fitflow/features/workouts/presentation/workouts_screen.dart';
@@ -46,6 +47,12 @@ class AppRouter {
                 GoRoute(
                   path: AppRoutes.home,
                   builder: (context, state) => const HomeScreen(),
+                  routes: [
+                    GoRoute(
+                      path: 'workout-preview',
+                      builder: (context, state) => const WorkoutPreviewScreen(),
+                    ),
+                  ],
                 ),
               ],
             ),
