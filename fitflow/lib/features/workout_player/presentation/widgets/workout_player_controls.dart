@@ -1,11 +1,9 @@
-import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/workout_player/application/workout_player_controller.dart';
 import 'package:fitflow/features/workout_player/application/workout_player_state.dart';
 import 'package:fitflow/features/workout_player/domain/workout_player_phase.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_plan.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_section_type.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 /// Bottom phase-specific controls.
 class WorkoutPlayerControls extends StatelessWidget {
@@ -93,15 +91,8 @@ class WorkoutPlayerControls extends StatelessWidget {
         );
 
       case WorkoutPlayerPhase.completed:
-        return SizedBox(
-          width: double.infinity,
-          child: FilledButton(
-            onPressed: () {
-              context.go(AppRoutes.home);
-            },
-            child: const Text('Done'),
-          ),
-        );
+        // Done is now handled inside WorkoutPlayerCompletedView alongside Tune next workout
+        return const SizedBox.shrink();
     }
   }
 }

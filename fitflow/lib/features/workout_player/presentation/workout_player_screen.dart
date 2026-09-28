@@ -106,10 +106,13 @@ class _WorkoutPlayerContent extends ConsumerStatefulWidget {
 class _WorkoutPlayerContentState extends ConsumerState<_WorkoutPlayerContent> {
   late final AppLifecycleListener _lifecycleListener;
   bool _allowPop = false;
+  late final WorkoutPlan _stablePlan;
 
   @override
   void initState() {
     super.initState();
+    // Capture stable session plan to prevent rebuilds when capability profile changes
+    _stablePlan = widget.plan;
     _lifecycleListener = AppLifecycleListener(
       onInactive: _handleAppInactive,
       onPause: _handleAppInactive,
@@ -125,18 +128,25 @@ class _WorkoutPlayerContentState extends ConsumerState<_WorkoutPlayerContent> {
   }
 
   @override
+  void didUpdateWidget(covariant _WorkoutPlayerContent oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Intentionally ignore new widget.plan to keep session stable
+    // This prevents completed Player from resetting when capability profile changes
+  }
+
+  @override
   void dispose() {
     _lifecycleListener.dispose();
     super.dispose();
   }
 
   void _handleAppInactive() {
-    final playerState = ref.read(workoutPlayerControllerProvider(widget.plan));
+    final playerState = ref.read(workoutPlayerControllerProvider(_stablePlan));
     if (playerState.isPaused) return;
     if (playerState.phase == WorkoutPlayerPhase.work ||
         playerState.phase == WorkoutPlayerPhase.rest ||
         playerState.phase == WorkoutPlayerPhase.transition) {
-      ref.read(workoutPlayerControllerProvider(widget.plan).notifier).pauseForLifecycle();
+      ref.read(workoutPlayerControllerProvider(_stablePlan).notifier).pauseForLifecycle();
     }
   }
 
@@ -163,8 +173,8 @@ class _WorkoutPlayerContentState extends ConsumerState<_WorkoutPlayerContent> {
   }
 
   Future<void> _handleReplaceExercise() async {
-    final controller = ref.read(workoutPlayerControllerProvider(widget.plan).notifier);
-    final state = ref.read(workoutPlayerControllerProvider(widget.plan));
+    final controller = ref.read(workoutPlayerControllerProvider(_stablePlan).notifier);
+    final state = ref.read(workoutPlayerControllerProvider(_stablePlan));
 
     if (!controller.canReplaceCurrentExercise) return;
 
@@ -209,8 +219,8 @@ class _WorkoutPlayerContentState extends ConsumerState<_WorkoutPlayerContent> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(workoutPlayerControllerProvider(widget.plan));
-    final controller = ref.read(workoutPlayerControllerProvider(widget.plan).notifier);
+    final state = ref.watch(workoutPlayerControllerProvider(_stablePlan));
+    final controller = ref.read(workoutPlayerControllerProvider(_stablePlan).notifier);
 
     final isActiveSession = state.phase == WorkoutPlayerPhase.work ||
         state.phase == WorkoutPlayerPhase.rest ||
@@ -326,7 +336,7 @@ class _WorkoutPlayerContentState extends ConsumerState<_WorkoutPlayerContent> {
                         ),
                       ),
                     const SizedBox(height: 8),
-                    WorkoutPlayerControls(state: state, controller: controller, plan: widget.plan),
+                    WorkoutPlayerControls(state: state, controller: controller, plan: _stablePlan),
                     const SizedBox(height: 8),
                   ],
                 ),
@@ -355,7 +365,7 @@ class _WorkoutPlayerContentState extends ConsumerState<_WorkoutPlayerContent> {
       case WorkoutPlayerPhase.sectionBreak:
         return WorkoutPlayerSectionBreakView(state: state);
       case WorkoutPlayerPhase.completed:
-        return WorkoutPlayerCompletedView(plan: widget.plan, state: state);
+        return WorkoutPlayerCompletedView(plan: _stablePlan, state: state);
     }
   }
 }

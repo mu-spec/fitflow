@@ -335,7 +335,15 @@ void main() {
       }
 
       expect(find.text('Workout complete'), findsOneWidget);
-      await tester.tap(find.text('Done'));
+      // Ensure Done is visible (may be off-screen after adding Tune button)
+      final doneFinder = find.widgetWithText(OutlinedButton, 'Done');
+      if (doneFinder.evaluate().isNotEmpty) {
+        await tester.ensureVisible(doneFinder);
+        await tester.pumpAndSettle();
+        await tester.tap(doneFinder);
+      } else {
+        await tester.tap(find.text('Done').last);
+      }
       await tester.pumpAndSettle();
       await tester.pump(const Duration(seconds: 2));
       await tester.pumpAndSettle();

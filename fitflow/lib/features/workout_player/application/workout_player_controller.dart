@@ -83,6 +83,31 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
     return ids;
   }
 
+  /// Effective Main prescriptions resolving replacements, immutable snapshot.
+  /// Used for adaptive progression evidence – actual exercises performed.
+  List<WorkoutExercisePrescription> get effectiveMainPrescriptions {
+    // Main section is index 1 in execution (warmup=0, main=1, cooldown=2)
+    const mainSectionIndex = 1;
+    final count = _execution.exerciseCountInSection(mainSectionIndex);
+    final list = <WorkoutExercisePrescription>[];
+    for (int e = 0; e < count; e++) {
+      list.add(_effectivePrescriptionAt(mainSectionIndex, e));
+    }
+    return List.unmodifiable(list);
+  }
+
+  /// All effective prescriptions in order (warmup, main, cooldown) for completeness.
+  List<WorkoutExercisePrescription> get effectiveAllPrescriptions {
+    final list = <WorkoutExercisePrescription>[];
+    for (int s = 0; s < _execution.sectionCount; s++) {
+      final count = _execution.exerciseCountInSection(s);
+      for (int e = 0; e < count; e++) {
+        list.add(_effectivePrescriptionAt(s, e));
+      }
+    }
+    return List.unmodifiable(list);
+  }
+
   static WorkoutPlayerState _initialState(WorkoutPlan plan, {bool voiceEnabled = true}) {
     final execution = WorkoutPlayerExecution(plan);
     final firstSection = execution.sectionAt(0);

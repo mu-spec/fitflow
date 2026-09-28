@@ -1,9 +1,18 @@
+import 'package:fitflow/app/router/app_router.dart';
+import 'package:fitflow/app/router/app_routes.dart';
+import 'package:fitflow/features/workout_player/application/workout_player_controller.dart';
 import 'package:fitflow/features/workout_player/application/workout_player_state.dart';
+import 'package:fitflow/features/workout_player/presentation/widgets/adaptive_progression_feedback_sheet.dart';
+import 'package:fitflow/features/workouts/domain/workout/workout_exercise_prescription.dart';
+import 'package:fitflow/features/workouts/state/capability_profile_controller.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_plan.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 /// Completed phase view - truthful data only, no calories/XP/streaks/history.
-class WorkoutPlayerCompletedView extends StatelessWidget {
+/// Now includes Tune next workout secondary action for adaptive progression.
+class WorkoutPlayerCompletedView extends ConsumerWidget {
   const WorkoutPlayerCompletedView({
     super.key,
     required this.plan,
@@ -23,8 +32,52 @@ class WorkoutPlayerCompletedView extends StatelessWidget {
     return '${s}s';
   }
 
+  Future<void> _openTuneSheet(BuildContext context, WidgetRef ref) async {
+    List<WorkoutExercisePrescription> effectiveMain;
+    try {
+      final notifier = ref.read(workoutPlayerControllerProvider(plan).notifier);
+      effectiveMain = notifier.effectiveMainPrescriptions;
+    } catch (_) {
+      effectiveMain = plan.main.exercises;
+    }
+
+    final capabilityAsync = ref.read(capabilityProfileProvider);
+    final capabilityProfile = capabilityAsync.value;
+    if (capabilityProfile == null) {
+      if (context.mounted) {
+        try {
+          context.go(AppRoutes.home);
+        } catch (_) {
+          ref.read(appRouterProvider).go(AppRoutes.home);
+        }
+      }
+      return;
+    }
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (ctx) {
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.85,
+          maxChildSize: 0.95,
+          minChildSize: 0.5,
+          builder: (context, scrollController) {
+            return AdaptiveProgressionFeedbackSheet(
+              effectiveMainPrescriptions: effectiveMain,
+              currentProfile: capabilityProfile,
+              scrollController: scrollController,
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -87,6 +140,30 @@ class WorkoutPlayerCompletedView extends StatelessWidget {
             color: colorScheme.onSurfaceVariant,
           ),
           textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 24),
+        SizedBox(
+          width: double.infinity,
+          child: FilledButton(
+            onPressed: () => _openTuneSheet(context, ref),
+            child: const Text('Tune next workout'),
+          ),
+        ),
+        const SizedBox(height: 8),
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton(
+            onPressed: () {
+              if (context.mounted) {
+                try {
+                  context.go(AppRoutes.home);
+                } catch (_) {
+                  ref.read(appRouterProvider).go(AppRoutes.home);
+                }
+              }
+            },
+            child: const Text('Done'),
+          ),
         ),
       ],
     );
