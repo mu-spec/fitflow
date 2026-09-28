@@ -7,6 +7,7 @@ import 'package:fitflow/features/workouts/domain/capability_profile.dart';
 import 'package:fitflow/features/workouts/domain/eligibility/exercise_eligibility_context.dart';
 import 'package:fitflow/features/workouts/domain/eligibility/exercise_eligibility_engine.dart';
 import 'package:fitflow/features/workouts/domain/exercise.dart';
+import 'package:fitflow/features/workouts/domain/exercise_difficulty.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_exercise_prescription.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_plan.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_section_type.dart';
@@ -180,6 +181,12 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
     if (!canReplaceCurrentExercise) return false;
 
     final current = state.currentPrescription;
+
+    // Enforce difficulty invariant at application time: harder than current must fail
+    if (_difficultyRank(option.exercise.difficulty) > _difficultyRank(current.exercise.difficulty)) {
+      return false;
+    }
+
     if (option.exercise.id == current.exercise.id) return false;
     if (option.exercise.movementPattern != current.exercise.movementPattern) return false;
     if (option.exercise.exerciseType != current.exercise.exerciseType) return false;
@@ -203,6 +210,29 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
     if (option.prescription.restBetweenSets != current.restBetweenSets) return false;
     if (option.prescription.exercise.id != option.exercise.id) return false;
 
+    // Revalidate against fresh canonical alternatives to protect against stale/fabricated options
+    // and to ensure difficulty invariant is evaluated against CURRENT effective exercise
+    if (_userProfile != null && _capabilityProfile != null) {
+      final validOptions = getReplacementOptions();
+      WorkoutReplacementOption? canonical;
+      for (final c in validOptions) {
+        if (c.exercise.id == option.exercise.id) {
+          canonical = c;
+          break;
+        }
+      }
+      if (canonical == null) {
+        return false;
+      }
+      // Prefer canonical fresh option (prevents trusting arbitrary caller data)
+      option = canonical;
+      // Re-check workload preservation after canonical resolution (defensive)
+      if (option.prescription.sets != current.sets) return false;
+      if (option.prescription.repsPerSet != current.repsPerSet) return false;
+      if (option.prescription.workDuration != current.workDuration) return false;
+      if (option.prescription.restBetweenSets != current.restBetweenSets) return false;
+    }
+
     final existingOriginalId = state.originalExerciseId;
     final existingOriginalName = state.originalExerciseName;
     final originalId = existingOriginalId ?? current.exercise.id;
@@ -224,6 +254,21 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
 
     _speak('Switched to ${option.exercise.name}.');
     return true;
+  }
+
+  int _difficultyRank(ExerciseDifficulty d) {
+    switch (d) {
+      case ExerciseDifficulty.level1:
+        return 1;
+      case ExerciseDifficulty.level2:
+        return 2;
+      case ExerciseDifficulty.level3:
+        return 3;
+      case ExerciseDifficulty.level4:
+        return 4;
+      case ExerciseDifficulty.level5:
+        return 5;
+    }
   }
 
   // --- Public API ---
