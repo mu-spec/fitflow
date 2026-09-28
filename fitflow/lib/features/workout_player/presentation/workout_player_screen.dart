@@ -25,7 +25,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// Workout Player screen - core non-voice player for Part 1.
+/// Workout Player screen - final guided player with lifecycle auto-pause, exit protection, voice toggle, truthful completion.
 class WorkoutPlayerScreen extends ConsumerWidget {
   const WorkoutPlayerScreen({super.key});
 
@@ -94,55 +94,169 @@ class WorkoutPlayerScreen extends ConsumerWidget {
   }
 }
 
-class _WorkoutPlayerContent extends ConsumerWidget {
+class _WorkoutPlayerContent extends ConsumerStatefulWidget {
   const _WorkoutPlayerContent({required this.plan});
 
   final WorkoutPlan plan;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(workoutPlayerControllerProvider(plan));
-    final controller = ref.read(workoutPlayerControllerProvider(plan).notifier);
+  ConsumerState<_WorkoutPlayerContent> createState() => _WorkoutPlayerContentState();
+}
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Workout player'),
+class _WorkoutPlayerContentState extends ConsumerState<_WorkoutPlayerContent> {
+  late final AppLifecycleListener _lifecycleListener;
+  bool _allowPop = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _lifecycleListener = AppLifecycleListener(
+      onInactive: _handleAppInactive,
+      onPause: _handleAppInactive,
+      onHide: _handleAppInactive,
+      onStateChange: (state) {
+        if (state == AppLifecycleState.inactive ||
+            state == AppLifecycleState.paused ||
+            state == AppLifecycleState.hidden) {
+          _handleAppInactive();
+        }
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _lifecycleListener.dispose();
+    super.dispose();
+  }
+
+  void _handleAppInactive() {
+    final playerState = ref.read(workoutPlayerControllerProvider(widget.plan));
+    // Only auto-pause when active work/rest/transition and not already paused
+    if (playerState.isPaused) return;
+    if (playerState.phase == WorkoutPlayerPhase.work ||
+        playerState.phase == WorkoutPlayerPhase.rest ||
+        playerState.phase == WorkoutPlayerPhase.transition) {
+      ref.read(workoutPlayerControllerProvider(widget.plan).notifier).pauseForLifecycle();
+    }
+  }
+
+  Future<bool> _showExitDialog() async {
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        title: const Text('End workout?'),
+        content: const Text("Your current session progress won't be saved."),
         actions: [
-          if (state.phase != WorkoutPlayerPhase.ready &&
-              state.phase != WorkoutPlayerPhase.completed &&
-              state.phase != WorkoutPlayerPhase.sectionBreak)
-            IconButton(
-              tooltip: state.isPaused ? 'Resume' : 'Pause',
-              onPressed: () {
-                if (state.isPaused) {
-                  controller.resume();
-                } else {
-                  controller.pause();
-                }
-              },
-              icon: Icon(state.isPaused ? Icons.play_arrow_rounded : Icons.pause_rounded),
-            ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Keep going'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('End workout'),
+          ),
         ],
       ),
-      body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 720),
-            child: Padding(
-              padding: const EdgeInsets.all(AppDimens.screenPadding),
-              child: Column(
-                children: [
-                  WorkoutPlayerProgressHeader(state: state),
-                  const SizedBox(height: 16),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: _buildPhaseBody(context, state, controller),
+    );
+    return result ?? false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final state = ref.watch(workoutPlayerControllerProvider(widget.plan));
+    final controller = ref.read(workoutPlayerControllerProvider(widget.plan).notifier);
+
+    final isActiveSession = state.phase == WorkoutPlayerPhase.work ||
+        state.phase == WorkoutPlayerPhase.rest ||
+        state.phase == WorkoutPlayerPhase.transition ||
+        state.isPaused ||
+        state.phase == WorkoutPlayerPhase.sectionBreak;
+
+    final canPop = !_allowPop
+        ? (state.phase == WorkoutPlayerPhase.ready || state.phase == WorkoutPlayerPhase.completed)
+        : true;
+
+    return PopScope(
+      canPop: canPop,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        if (!isActiveSession) {
+          // ready or completed allow normal back
+          if (context.mounted) {
+            setState(() => _allowPop = true);
+            // Use microtask to pop after setting flag
+            Future.microtask(() {
+              if (context.mounted) {
+                context.pop();
+              }
+            });
+          }
+          return;
+        }
+        // Active session: show confirmation
+        final shouldEnd = await _showExitDialog();
+        if (!shouldEnd) {
+          // Keep going preserves exact state
+          return;
+        }
+        // End workout -> exit cleanly to Preview
+        if (context.mounted) {
+          setState(() => _allowPop = true);
+          Future.microtask(() {
+            if (context.mounted) {
+              context.pop();
+            }
+          });
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Workout player'),
+          actions: [
+            // Voice toggle
+            IconButton(
+              tooltip: state.voiceEnabled ? 'Voice on' : 'Muted',
+              onPressed: () => controller.toggleVoice(),
+              icon: Icon(state.voiceEnabled ? Icons.volume_up_rounded : Icons.volume_off_rounded),
+            ),
+            if (state.phase != WorkoutPlayerPhase.ready &&
+                state.phase != WorkoutPlayerPhase.completed &&
+                state.phase != WorkoutPlayerPhase.sectionBreak)
+              IconButton(
+                tooltip: state.isPaused ? 'Resume' : 'Pause',
+                onPressed: () {
+                  if (state.isPaused) {
+                    controller.resume();
+                  } else {
+                    controller.pause();
+                  }
+                },
+                icon: Icon(state.isPaused ? Icons.play_arrow_rounded : Icons.pause_rounded),
+              ),
+          ],
+        ),
+        body: SafeArea(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 720),
+              child: Padding(
+                padding: const EdgeInsets.all(AppDimens.screenPadding),
+                child: Column(
+                  children: [
+                    WorkoutPlayerProgressHeader(state: state),
+                    const SizedBox(height: 16),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: _buildPhaseBody(context, state, controller),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  WorkoutPlayerControls(state: state, controller: controller),
-                  const SizedBox(height: 8),
-                ],
+                    const SizedBox(height: 16),
+                    WorkoutPlayerControls(state: state, controller: controller, plan: widget.plan),
+                    const SizedBox(height: 8),
+                  ],
+                ),
               ),
             ),
           ),
@@ -168,7 +282,7 @@ class _WorkoutPlayerContent extends ConsumerWidget {
       case WorkoutPlayerPhase.sectionBreak:
         return WorkoutPlayerSectionBreakView(state: state);
       case WorkoutPlayerPhase.completed:
-        return const WorkoutPlayerCompletedView();
+        return WorkoutPlayerCompletedView(plan: widget.plan, state: state);
     }
   }
 }

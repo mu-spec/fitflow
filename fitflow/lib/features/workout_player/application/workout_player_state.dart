@@ -21,6 +21,7 @@ class WorkoutPlayerState {
     required this.currentPrescription,
     this.nextPrescription,
     this.previousPhaseBeforePause,
+    this.voiceEnabled = true,
   });
 
   /// Current phase.
@@ -68,6 +69,9 @@ class WorkoutPlayerState {
   /// When paused, remembers phase before pause to resume correctly.
   final WorkoutPlayerPhase? previousPhaseBeforePause;
 
+  /// Voice coaching enabled, default ON, not persisted.
+  final bool voiceEnabled;
+
   // --- Derived helpers ---
 
   int get totalSetsForCurrentExercise => currentPrescription.sets;
@@ -104,6 +108,7 @@ class WorkoutPlayerState {
     bool clearNextPrescription = false,
     WorkoutPlayerPhase? previousPhaseBeforePause,
     bool clearPreviousPhaseBeforePause = false,
+    bool? voiceEnabled,
   }) {
     return WorkoutPlayerState(
       phase: phase ?? this.phase,
@@ -123,6 +128,7 @@ class WorkoutPlayerState {
       previousPhaseBeforePause: clearPreviousPhaseBeforePause
           ? null
           : (previousPhaseBeforePause ?? this.previousPhaseBeforePause),
+      voiceEnabled: voiceEnabled ?? this.voiceEnabled,
     );
   }
 
@@ -143,7 +149,9 @@ class WorkoutPlayerState {
         other.totalSets == totalSets &&
         other.remaining == remaining &&
         other.currentPrescription == currentPrescription &&
-        other.nextPrescription == nextPrescription;
+        other.nextPrescription == nextPrescription &&
+        other.previousPhaseBeforePause == previousPhaseBeforePause &&
+        other.voiceEnabled == voiceEnabled;
   }
 
   @override
@@ -162,5 +170,7 @@ class WorkoutPlayerState {
         remaining,
         currentPrescription,
         nextPrescription,
+        previousPhaseBeforePause,
+        voiceEnabled,
       );
 }
