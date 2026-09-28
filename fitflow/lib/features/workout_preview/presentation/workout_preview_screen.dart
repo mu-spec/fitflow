@@ -131,6 +131,17 @@ class WorkoutPreviewScreen extends ConsumerWidget {
                   _buildExerciseList(context, plan.cooldown.exercises),
                   const SizedBox(height: 24),
                   const WorkoutPreviewAdaptiveNote(),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      onPressed: () {
+                        context.push(AppRoutes.workoutPlayer);
+                      },
+                      icon: const Icon(Icons.play_arrow_rounded),
+                      label: const Text('Start workout'),
+                    ),
+                  ),
                   const SizedBox(height: 16),
                 ],
               ),
