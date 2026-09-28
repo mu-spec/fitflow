@@ -22,6 +22,8 @@ class WorkoutPlayerState {
     this.nextPrescription,
     this.previousPhaseBeforePause,
     this.voiceEnabled = true,
+    this.originalExerciseId,
+    this.originalExerciseName,
   });
 
   /// Current phase.
@@ -60,10 +62,10 @@ class WorkoutPlayerState {
   /// Remaining duration for timed work/rest/transition. Zero for reps work or ready/sectionBreak/completed.
   final Duration remaining;
 
-  /// Current prescription being executed.
+  /// Current prescription being executed (effective, may be replacement).
   final WorkoutExercisePrescription currentPrescription;
 
-  /// Next prescription for transition UI, null otherwise.
+  /// Next prescription for transition UI, null otherwise (effective).
   final WorkoutExercisePrescription? nextPrescription;
 
   /// When paused, remembers phase before pause to resume correctly.
@@ -71,6 +73,14 @@ class WorkoutPlayerState {
 
   /// Voice coaching enabled, default ON, not persisted.
   final bool voiceEnabled;
+
+  /// If current exercise was replaced, original exercise id for indicator.
+  final String? originalExerciseId;
+
+  /// Original exercise name for subtle secondary text.
+  final String? originalExerciseName;
+
+  bool get isCurrentReplaced => originalExerciseId != null;
 
   // --- Derived helpers ---
 
@@ -109,6 +119,9 @@ class WorkoutPlayerState {
     WorkoutPlayerPhase? previousPhaseBeforePause,
     bool clearPreviousPhaseBeforePause = false,
     bool? voiceEnabled,
+    String? originalExerciseId,
+    bool clearOriginalExercise = false,
+    String? originalExerciseName,
   }) {
     return WorkoutPlayerState(
       phase: phase ?? this.phase,
@@ -129,6 +142,9 @@ class WorkoutPlayerState {
           ? null
           : (previousPhaseBeforePause ?? this.previousPhaseBeforePause),
       voiceEnabled: voiceEnabled ?? this.voiceEnabled,
+      originalExerciseId: clearOriginalExercise ? null : (originalExerciseId ?? this.originalExerciseId),
+      originalExerciseName:
+          clearOriginalExercise ? null : (originalExerciseName ?? this.originalExerciseName),
     );
   }
 
@@ -151,7 +167,9 @@ class WorkoutPlayerState {
         other.currentPrescription == currentPrescription &&
         other.nextPrescription == nextPrescription &&
         other.previousPhaseBeforePause == previousPhaseBeforePause &&
-        other.voiceEnabled == voiceEnabled;
+        other.voiceEnabled == voiceEnabled &&
+        other.originalExerciseId == originalExerciseId &&
+        other.originalExerciseName == originalExerciseName;
   }
 
   @override
@@ -172,5 +190,7 @@ class WorkoutPlayerState {
         nextPrescription,
         previousPhaseBeforePause,
         voiceEnabled,
+        originalExerciseId,
+        originalExerciseName,
       );
 }

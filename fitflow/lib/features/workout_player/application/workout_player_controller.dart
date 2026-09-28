@@ -1,5 +1,13 @@
 import 'dart:async';
 
+import 'package:fitflow/features/onboarding/data/user_fitness_profile.dart';
+import 'package:fitflow/features/onboarding/state/user_fitness_profile_controller.dart';
+import 'package:fitflow/features/workouts/data/exercise_catalog.dart';
+import 'package:fitflow/features/workouts/domain/capability_profile.dart';
+import 'package:fitflow/features/workouts/domain/eligibility/exercise_eligibility_context.dart';
+import 'package:fitflow/features/workouts/domain/eligibility/exercise_eligibility_engine.dart';
+import 'package:fitflow/features/workouts/domain/exercise.dart';
+import 'package:fitflow/features/workouts/domain/workout/workout_exercise_prescription.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_plan.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_section_type.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_time_estimator.dart';
@@ -8,37 +16,71 @@ import 'package:fitflow/features/workout_player/domain/flutter_tts_workout_coach
 import 'package:fitflow/features/workout_player/domain/workout_coach.dart';
 import 'package:fitflow/features/workout_player/domain/workout_player_execution.dart';
 import 'package:fitflow/features/workout_player/domain/workout_player_phase.dart';
+import 'package:fitflow/features/workout_player/domain/workout_replacement_engine.dart';
+import 'package:fitflow/features/workout_player/domain/workout_replacement_option.dart';
+import 'package:fitflow/features/workouts/state/capability_profile_controller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Provider for WorkoutCoach abstraction.
-/// Production returns FlutterTtsWorkoutCoach, tests override with Fake/NoOp.
 final workoutCoachProvider = Provider<WorkoutCoach>((ref) {
   return FlutterTtsWorkoutCoach();
 });
 
-/// Dedicated testable controller for Workout Player.
-/// Owns single timer, prevents overlapping timers, duplicate advancement, negative time.
-/// Voice coaching is side-effect only, never blocks progression.
+/// Dedicated testable controller for Workout Player with smart replacement.
 class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
   WorkoutPlayerController({
     required WorkoutPlan plan,
     bool autoStartTimer = true,
     WorkoutCoach? coach,
     bool voiceEnabled = true,
+    UserFitnessProfile? userProfile,
+    CapabilityProfile? capabilityProfile,
+    List<Exercise>? catalog,
   })  : _execution = WorkoutPlayerExecution(plan),
         _autoStartTimer = autoStartTimer,
         _coach = coach ?? NoOpWorkoutCoach(),
-        super(_initialState(plan, voiceEnabled: voiceEnabled)) {
-    // No timer in ready state.
-  }
+        _userProfile = userProfile,
+        _capabilityProfile = capabilityProfile,
+        _catalog = catalog ?? ExerciseCatalog.all,
+        _replacements = {},
+        super(_initialState(plan, voiceEnabled: voiceEnabled));
 
   final WorkoutPlayerExecution _execution;
   final bool _autoStartTimer;
   final WorkoutCoach _coach;
+  final UserFitnessProfile? _userProfile;
+  final CapabilityProfile? _capabilityProfile;
+  final List<Exercise> _catalog;
   Timer? _timer;
   bool _isDisposed = false;
-  bool _isCompleting = false; // prevent duplicate zero advancement
+  bool _isCompleting = false;
+
+  final Map<String, WorkoutExercisePrescription> _replacements;
+
+  String _keyFor(int sectionIndex, int exerciseIndex) => '$sectionIndex-$exerciseIndex';
+
+  WorkoutExercisePrescription _originalPrescriptionAt(int sectionIndex, int exerciseIndex) {
+    return _execution.prescriptionAt(sectionIndex, exerciseIndex);
+  }
+
+  WorkoutExercisePrescription _effectivePrescriptionAt(int sectionIndex, int exerciseIndex) {
+    final key = _keyFor(sectionIndex, exerciseIndex);
+    return _replacements[key] ?? _originalPrescriptionAt(sectionIndex, exerciseIndex);
+  }
+
+  Set<String> _effectiveIdsExcluding(int currentSection, int currentExercise) {
+    final ids = <String>{};
+    for (int s = 0; s < _execution.sectionCount; s++) {
+      final count = _execution.exerciseCountInSection(s);
+      for (int e = 0; e < count; e++) {
+        if (s == currentSection && e == currentExercise) continue;
+        final pres = _effectivePrescriptionAt(s, e);
+        ids.add(pres.exercise.id);
+      }
+    }
+    return ids;
+  }
 
   static WorkoutPlayerState _initialState(WorkoutPlan plan, {bool voiceEnabled = true}) {
     final execution = WorkoutPlayerExecution(plan);
@@ -64,19 +106,14 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
     );
   }
 
-  // --- Voice helpers ---
-
   void _speak(String message) {
     if (!state.voiceEnabled) return;
     if (message.trim().isEmpty) return;
-    // Best-effort, never throw, never block progression
     try {
       final future = _coach.speak(message);
       // ignore: discarded_futures
       future.then((_) {}, onError: (_) {});
-    } catch (_) {
-      // Sync throw safety
-    }
+    } catch (_) {}
   }
 
   void _stopVoice() {
@@ -89,11 +126,104 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
 
   String _exerciseName() {
     try {
-      final ex = state.currentPrescription;
-      return ex.exercise.name;
+      return state.currentPrescription.exercise.name;
     } catch (_) {
       return 'exercise';
     }
+  }
+
+  // --- Replacement API ---
+
+  bool get canReplaceCurrentExercise {
+    if (_isDisposed) return false;
+    if (state.phase == WorkoutPlayerPhase.completed) return false;
+    if (state.phase == WorkoutPlayerPhase.rest ||
+        state.phase == WorkoutPlayerPhase.transition ||
+        state.phase == WorkoutPlayerPhase.sectionBreak) {
+      return false;
+    }
+    if (state.phase == WorkoutPlayerPhase.ready) return true;
+    final effectivePhase = state.isPaused ? state.previousPhaseBeforePause : state.phase;
+    if (effectivePhase == WorkoutPlayerPhase.work) {
+      return state.setNumber == 1;
+    }
+    if (state.isPaused && state.previousPhaseBeforePause == WorkoutPlayerPhase.work) {
+      return state.setNumber == 1;
+    }
+    return false;
+  }
+
+  List<WorkoutReplacementOption> getReplacementOptions() {
+    if (_userProfile == null || _capabilityProfile == null) return const [];
+    if (!canReplaceCurrentExercise) return const [];
+
+    final eligibilityContext = ExerciseEligibilityContext.fromProfiles(
+      userProfile: _userProfile!,
+      capabilityProfile: _capabilityProfile!,
+    );
+
+    final effectiveElsewhere = _effectiveIdsExcluding(state.sectionIndex, state.exerciseIndex);
+
+    return WorkoutReplacementEngine.getAlternatives(
+      currentPrescription: state.currentPrescription,
+      eligibilityContext: eligibilityContext,
+      userProfile: _userProfile!,
+      capabilityProfile: _capabilityProfile!,
+      effectiveExerciseIdsElsewhere: effectiveElsewhere,
+      catalog: _catalog,
+      maxOptions: 3,
+    );
+  }
+
+  bool replaceCurrentExercise(WorkoutReplacementOption option) {
+    if (_isDisposed) return false;
+    if (!canReplaceCurrentExercise) return false;
+
+    final current = state.currentPrescription;
+    if (option.exercise.id == current.exercise.id) return false;
+    if (option.exercise.movementPattern != current.exercise.movementPattern) return false;
+    if (option.exercise.exerciseType != current.exercise.exerciseType) return false;
+
+    final elsewhere = _effectiveIdsExcluding(state.sectionIndex, state.exerciseIndex);
+    if (elsewhere.contains(option.exercise.id)) return false;
+
+    if (_userProfile != null && _capabilityProfile != null) {
+      final ctx = ExerciseEligibilityContext.fromProfiles(
+        userProfile: _userProfile!,
+        capabilityProfile: _capabilityProfile!,
+      );
+      final result = ExerciseEligibilityEngine.evaluate(option.exercise, ctx);
+      if (!result.eligible) return false;
+    }
+
+    if (!option.prescription.isValid) return false;
+    if (option.prescription.sets != current.sets) return false;
+    if (option.prescription.repsPerSet != current.repsPerSet) return false;
+    if (option.prescription.workDuration != current.workDuration) return false;
+    if (option.prescription.restBetweenSets != current.restBetweenSets) return false;
+    if (option.prescription.exercise.id != option.exercise.id) return false;
+
+    final existingOriginalId = state.originalExerciseId;
+    final existingOriginalName = state.originalExerciseName;
+    final originalId = existingOriginalId ?? current.exercise.id;
+    final originalName = existingOriginalName ?? current.exercise.name;
+
+    final key = _keyFor(state.sectionIndex, state.exerciseIndex);
+    _replacements[key] = option.prescription;
+
+    final newRemaining = option.prescription.workDuration ?? Duration.zero;
+
+    state = state.copyWith(
+      currentPrescription: option.prescription,
+      remaining: newRemaining,
+      setNumber: 1,
+      originalExerciseId: originalId,
+      originalExerciseName: originalName,
+      clearNextPrescription: true,
+    );
+
+    _speak('Switched to ${option.exercise.name}.');
+    return true;
   }
 
   // --- Public API ---
@@ -103,28 +233,24 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
     if (state.phase != WorkoutPlayerPhase.ready) return;
     if (state.isPaused) return;
 
-    // Transition to work phase for first set
     final remaining = state.currentPrescription.workDuration ?? Duration.zero;
     state = state.copyWith(
       phase: WorkoutPlayerPhase.work,
       remaining: remaining,
     );
     _maybeStartTimerForCurrentPhase();
-    // Voice cue: first exercise
     _speak('${_exerciseName()}. Set ${state.setNumber} of ${state.totalSetsForCurrentExercise}.');
   }
 
-  /// For reps exercises, user taps Set complete.
   void completeSet() {
     if (_isDisposed) return;
-    if (state.isPaused) return; // prevent accidental advancement when paused
+    if (state.isPaused) return;
     if (state.phase != WorkoutPlayerPhase.work) return;
-    if (state.isTimedExercise) return; // timed auto-completes, not manual
+    if (state.isTimedExercise) return;
 
     _completeCurrentWorkSet();
   }
 
-  /// Skip rest phase.
   void skipRest() {
     if (_isDisposed) return;
     if (state.isPaused) return;
@@ -134,7 +260,6 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
     _advanceToNextSetAfterRest();
   }
 
-  /// Skip transition phase.
   void skipTransition() {
     if (_isDisposed) return;
     if (state.isPaused) return;
@@ -144,7 +269,6 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
     _advanceToNextExerciseAfterTransition();
   }
 
-  /// Continue from section break (manual untimed).
   void continueSection() {
     if (_isDisposed) return;
     if (state.isPaused) return;
@@ -171,7 +295,6 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
   }
 
   void pauseForLifecycle() {
-    // Same as pause but called from AppLifecycleListener
     if (_isDisposed) return;
     if (state.isPaused) return;
     if (state.phase != WorkoutPlayerPhase.work &&
@@ -197,17 +320,14 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
       clearPreviousPhaseBeforePause: true,
     );
 
-    // Resume timer if previous phase was timed
     if (previous == WorkoutPlayerPhase.work && state.isTimedExercise) {
       _maybeStartTimerForCurrentPhase();
     } else if (previous == WorkoutPlayerPhase.rest || previous == WorkoutPlayerPhase.transition) {
       _maybeStartTimerForCurrentPhase();
     } else if (state.phase == WorkoutPlayerPhase.work && state.isTimedExercise) {
-      // Fallback
       _maybeStartTimerForCurrentPhase();
     }
 
-    // Optional concise resume cue (no replay of half sentence)
     if (state.phase == WorkoutPlayerPhase.work) {
       _speak('Resuming.');
     }
@@ -222,7 +342,6 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
     }
   }
 
-  /// For tests: manually tick one second.
   @visibleForTesting
   void tick() {
     if (_isDisposed) return;
@@ -233,11 +352,10 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
       return;
     }
 
-    if (_isCompleting) return; // prevent duplicate advancement
+    if (_isCompleting) return;
 
     final newRemaining = state.remaining - const Duration(seconds: 1);
     if (newRemaining <= Duration.zero) {
-      // Clamp to zero, never negative
       state = state.copyWith(remaining: Duration.zero);
       _handleTimerZero();
     } else {
@@ -254,13 +372,11 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
     super.dispose();
   }
 
-  // --- Internal timer handling ---
-
   void _maybeStartTimerForCurrentPhase() {
     _cancelTimer();
     if (_isDisposed) return;
     if (state.isPaused) return;
-    if (!_autoStartTimer) return; // for tests that want manual ticking
+    if (!_autoStartTimer) return;
 
     Duration? durationToTrack;
     switch (state.phase) {
@@ -284,8 +400,6 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
 
     if (durationToTrack == null) return;
     if (durationToTrack <= Duration.zero) {
-      // Zero duration: advance immediately (e.g., zero rest)
-      // Use microtask to avoid re-entrancy
       Future.microtask(() {
         if (_isDisposed) return;
         if (state.isPaused) return;
@@ -310,7 +424,6 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
     try {
       switch (state.phase) {
         case WorkoutPlayerPhase.work:
-          // Timed work completed
           _completeCurrentWorkSet();
           break;
         case WorkoutPlayerPhase.rest:
@@ -329,25 +442,19 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
     }
   }
 
-  // --- Core progression logic ---
-
   void _completeCurrentWorkSet() {
     _cancelTimer();
     if (_isDisposed) return;
 
     final newCompleted = state.completedSets + 1;
 
-    // Check if this was final set of whole workout
     final isLastSetOfCurrentExercise = state.isLastSetOfExercise;
     final isLastExerciseInSection = state.isLastExerciseInSection;
     final isLastSection = state.isLastSection;
 
-    // If there are more sets in same exercise
     if (!isLastSetOfCurrentExercise) {
-      // Need rest between sets
       final restDuration = state.currentPrescription.restBetweenSets;
       if (restDuration <= Duration.zero) {
-        // Zero rest advances immediately to next set
         state = state.copyWith(
           completedSets: newCompleted,
           setNumber: state.setNumber + 1,
@@ -357,7 +464,6 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
         _maybeStartTimerForCurrentPhase();
         _speak('Set ${state.setNumber} of ${state.totalSetsForCurrentExercise}.');
       } else {
-        // Enter rest phase
         state = state.copyWith(
           completedSets: newCompleted,
           phase: WorkoutPlayerPhase.rest,
@@ -369,12 +475,9 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
       return;
     }
 
-    // Last set of this exercise completed
-    // Check if there are more exercises in same section
     if (!isLastExerciseInSection) {
-      // Transition to next exercise in same section (15 sec)
       final nextExerciseIndex = state.exerciseIndex + 1;
-      final nextPrescription = _execution.prescriptionAt(state.sectionIndex, nextExerciseIndex);
+      final nextPrescription = _effectivePrescriptionAt(state.sectionIndex, nextExerciseIndex);
       state = state.copyWith(
         completedSets: newCompleted,
         phase: WorkoutPlayerPhase.transition,
@@ -387,9 +490,7 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
       return;
     }
 
-    // Last exercise of section completed
     if (!isLastSection) {
-      // Section break manual
       final finishingSectionType = state.sectionType;
       state = state.copyWith(
         completedSets: newCompleted,
@@ -397,17 +498,14 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
         remaining: Duration.zero,
         clearNextPrescription: true,
       );
-      // Voice cue for section completion
       if (finishingSectionType == WorkoutSectionType.warmup) {
         _speak('Warm-up complete. Main workout next.');
       } else if (finishingSectionType == WorkoutSectionType.main) {
         _speak('Main workout complete. Cooldown next.');
       }
-      // No timer for section break
       return;
     }
 
-    // Last section (cooldown) last exercise last set → completed
     state = state.copyWith(
       completedSets: newCompleted,
       phase: WorkoutPlayerPhase.completed,
@@ -419,7 +517,6 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
 
   void _advanceToNextSetAfterRest() {
     if (_isDisposed) return;
-    // Move to next set of same exercise
     state = state.copyWith(
       setNumber: state.setNumber + 1,
       phase: WorkoutPlayerPhase.work,
@@ -433,7 +530,7 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
     if (_isDisposed) return;
     final nextExerciseIndex = state.exerciseIndex + 1;
     final section = _execution.sectionAt(state.sectionIndex);
-    final nextPrescription = _execution.prescriptionAt(state.sectionIndex, nextExerciseIndex);
+    final nextPrescription = _effectivePrescriptionAt(state.sectionIndex, nextExerciseIndex);
 
     state = state.copyWith(
       exerciseIndex: nextExerciseIndex,
@@ -444,6 +541,7 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
       remaining: nextPrescription.workDuration ?? Duration.zero,
       currentPrescription: nextPrescription,
       clearNextPrescription: true,
+      clearOriginalExercise: true,
     );
     _maybeStartTimerForCurrentPhase();
     final name = nextPrescription.exercise.name;
@@ -454,7 +552,6 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
     if (_isDisposed) return;
     final nextSectionIndex = state.sectionIndex + 1;
     if (nextSectionIndex >= _execution.sectionCount) {
-      // Should not happen, but complete
       state = state.copyWith(
         phase: WorkoutPlayerPhase.completed,
         remaining: Duration.zero,
@@ -464,7 +561,7 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
     }
 
     final nextSection = _execution.sectionAt(nextSectionIndex);
-    final nextPrescription = nextSection.exercises.first;
+    final nextPrescription = _effectivePrescriptionAt(nextSectionIndex, 0);
     final sectionType = _execution.sectionTypeAt(nextSectionIndex);
 
     state = state.copyWith(
@@ -479,6 +576,7 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
       remaining: nextPrescription.workDuration ?? Duration.zero,
       currentPrescription: nextPrescription,
       clearNextPrescription: true,
+      clearOriginalExercise: true,
     );
     _maybeStartTimerForCurrentPhase();
     final name = nextPrescription.exercise.name;
@@ -490,10 +588,17 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
 final workoutPlayerControllerProvider = StateNotifierProvider.autoDispose
     .family<WorkoutPlayerController, WorkoutPlayerState, WorkoutPlan>((ref, plan) {
   final coach = ref.watch(workoutCoachProvider);
-  return WorkoutPlayerController(plan: plan, coach: coach);
+  final userProfile = ref.watch(userFitnessProfileProvider).value;
+  final capProfile = ref.watch(capabilityProfileProvider).value;
+  return WorkoutPlayerController(
+    plan: plan,
+    coach: coach,
+    userProfile: userProfile,
+    capabilityProfile: capProfile,
+  );
 });
 
-/// For tests that need to inject a fake coach and control voiceEnabled initial.
+/// For tests that need to inject a fake coach and control autoStart.
 final workoutPlayerWithCoachProvider = StateNotifierProvider.autoDispose
     .family<WorkoutPlayerController, WorkoutPlayerState, ({WorkoutPlan plan, WorkoutCoach coach, bool autoStartTimer})>(
         (ref, args) {
@@ -501,5 +606,20 @@ final workoutPlayerWithCoachProvider = StateNotifierProvider.autoDispose
     plan: args.plan,
     coach: args.coach,
     autoStartTimer: args.autoStartTimer,
+  );
+});
+
+/// For tests with full profile injection.
+final workoutPlayerWithProfilesProvider = StateNotifierProvider.autoDispose
+    .family<WorkoutPlayerController, WorkoutPlayerState,
+        ({WorkoutPlan plan, WorkoutCoach coach, bool autoStartTimer, UserFitnessProfile userProfile, CapabilityProfile capabilityProfile, List<Exercise> catalog})>(
+        (ref, args) {
+  return WorkoutPlayerController(
+    plan: args.plan,
+    coach: args.coach,
+    autoStartTimer: args.autoStartTimer,
+    userProfile: args.userProfile,
+    capabilityProfile: args.capabilityProfile,
+    catalog: args.catalog,
   );
 });

@@ -84,6 +84,20 @@ class WorkoutPlayerExerciseCenter extends StatelessWidget {
           style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
           textAlign: TextAlign.center,
         ),
+        if (state.isCurrentReplaced) ...[
+          const SizedBox(height: 4),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: colorScheme.secondaryContainer,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Text(
+              state.originalExerciseName != null ? 'Replaced ${state.originalExerciseName}' : 'Replaced',
+              style: theme.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
         if (exercise.movementPattern != null) ...[
           const SizedBox(height: 4),
           Text(
