@@ -197,13 +197,6 @@ void main() {
 
     test('malformed entry safe', () async {
       SharedPreferences.setMockInitialValues({
-        WorkoutHistoryStorage.key: '[{"id":"good","completedAt":"2026-09-29T12:00:00.000Z","totalExerciseCount":1,"totalSetCount":1,"warmup":[],"main":[],"cooldown":[]}, {"bad":}]'
-      });
-      final prefs = await SharedPreferences.getInstance();
-      final storage = WorkoutHistoryStorage(prefs);
-      // The whole JSON is malformed due to second entry, should return empty safely (root malformed)
-      // Let's test with one good and one malformed entry inside array but valid JSON
-      SharedPreferences.setMockInitialValues({
         WorkoutHistoryStorage.key: '[{"id":"good","completedAt":"2026-09-29T12:00:00.000Z","totalExerciseCount":1,"totalSetCount":1,"warmup":[],"main":[],"cooldown":[]}, {"id":123}]'
       });
       final prefs2 = await SharedPreferences.getInstance();

@@ -1,4 +1,3 @@
-import 'package:fitflow/app/config/app_theme.dart';
 import 'package:fitflow/app/router/app_router.dart';
 import 'package:fitflow/features/onboarding/data/experience_level.dart';
 import 'package:fitflow/features/onboarding/data/fitness_goal.dart';
@@ -7,9 +6,8 @@ import 'package:fitflow/features/onboarding/data/user_fitness_profile.dart';
 import 'package:fitflow/features/onboarding/data/workout_duration.dart';
 import 'package:fitflow/features/onboarding/data/workout_equipment.dart';
 import 'package:fitflow/features/onboarding/state/user_fitness_profile_controller.dart';
-import 'package:fitflow/features/workout_player/domain/workout_coach.dart';
 import 'package:fitflow/features/workout_player/application/workout_player_controller.dart';
-import 'package:fitflow/features/workouts/data/capability_profile_storage.dart';
+import 'package:fitflow/features/workout_player/domain/workout_coach.dart';
 import 'package:fitflow/features/workouts/data/workout_history_storage.dart';
 import 'package:fitflow/features/workouts/domain/capability_level.dart';
 import 'package:fitflow/features/workouts/domain/capability_profile.dart';
@@ -156,7 +154,6 @@ void main() {
     testWidgets('total workouts', (tester) async {
       final w1 = makeWorkout(id: 'w1', completedAt: DateTime.utc(2026, 9, 28));
       final w2 = makeWorkout(id: 'w2', completedAt: DateTime.utc(2026, 9, 27));
-      final storageJson = '[${w1.toJson().toString().replaceAll("'", '"')}]';
       // Use storage to save properly
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
