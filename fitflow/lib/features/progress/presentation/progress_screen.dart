@@ -178,7 +178,7 @@ class ProgressScreen extends ConsumerWidget {
                 const SizedBox(height: 16),
 
                 ...history.take(10).map((workout) {
-                  final movementChips = workout.main.map((e) => e.movementPattern.label).toSet().toList();
+                  final movementChips = workout.main.where((e) => e.movementPattern != null).map((e) => e.movementPattern!.label).toSet().toList();
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12),
                     child: _RecentWorkoutCard(

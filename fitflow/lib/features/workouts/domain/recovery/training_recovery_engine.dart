@@ -43,7 +43,8 @@ class TrainingRecoveryEngine {
 
       for (final workout in historyCopy) {
         final mainExercises = workout.main;
-        final containsPattern = mainExercises.any((e) => e.movementPattern == pattern);
+        // Ignore null movementPattern – truthful, no guessing
+        final containsPattern = mainExercises.any((e) => e.movementPattern != null && e.movementPattern == pattern);
 
         if (containsPattern) {
           // Update most recent

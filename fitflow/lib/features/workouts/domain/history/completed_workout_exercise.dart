@@ -5,12 +5,13 @@ import 'package:flutter/foundation.dart';
 
 /// Immutable snapshot of a single exercise as actually performed in a completed session.
 /// Self-contained – does not rely on future catalog lookups.
+/// movementPattern is nullable to preserve truthfulness when source exercise has no classification.
 @immutable
 class CompletedWorkoutExercise {
   const CompletedWorkoutExercise({
     required this.exerciseId,
     required this.exerciseName,
-    required this.movementPattern,
+    this.movementPattern,
     required this.sectionType,
     required this.sets,
     this.repsPerSet,
@@ -21,7 +22,7 @@ class CompletedWorkoutExercise {
 
   final String exerciseId;
   final String exerciseName;
-  final MovementPattern movementPattern;
+  final MovementPattern? movementPattern;
   final WorkoutSectionType sectionType;
   final int sets;
   final int? repsPerSet;
@@ -33,7 +34,7 @@ class CompletedWorkoutExercise {
     return {
       'exerciseId': exerciseId,
       'exerciseName': exerciseName,
-      'movementPattern': movementPattern.name,
+      'movementPattern': movementPattern?.name,
       'sectionType': sectionType.name,
       'sets': sets,
       'repsPerSet': repsPerSet,
@@ -47,21 +48,31 @@ class CompletedWorkoutExercise {
     try {
       final exerciseId = json['exerciseId'] as String?;
       final exerciseName = json['exerciseName'] as String?;
-      final movementPatternName = json['movementPattern'] as String?;
       final sectionTypeName = json['sectionType'] as String?;
       final sets = json['sets'] as int?;
       final restSeconds = json['restBetweenSetsSeconds'] as int?;
       final difficultyName = json['difficulty'] as String?;
 
-      if (exerciseId == null || exerciseName == null || movementPatternName == null || sectionTypeName == null || sets == null || restSeconds == null || difficultyName == null) {
+      if (exerciseId == null || exerciseName == null || sectionTypeName == null || sets == null || restSeconds == null || difficultyName == null) {
         return null;
       }
 
-      final movementPattern = _movementPatternFromName(movementPatternName);
+      // movementPattern is nullable: null/missing → null, valid known → enum, unknown non-null → null (deterministic, never Push)
+      MovementPattern? movementPattern;
+      final movementPatternRaw = json['movementPattern'];
+      if (movementPatternRaw is String) {
+        movementPattern = _movementPatternFromName(movementPatternRaw);
+        // Unknown non-null string → treat as null (preserve exercise, no fabricated classification)
+        // This keeps historical data safe and backward compatible with valid entries.
+      } else {
+        // null or missing → null
+        movementPattern = null;
+      }
+
       final sectionType = _sectionTypeFromName(sectionTypeName);
       final difficulty = _difficultyFromName(difficultyName);
 
-      if (movementPattern == null || sectionType == null || difficulty == null) {
+      if (sectionType == null || difficulty == null) {
         return null;
       }
 
@@ -144,5 +155,5 @@ class CompletedWorkoutExercise {
       );
 
   @override
-  String toString() => 'CompletedWorkoutExercise(id:$exerciseId name:$exerciseName pattern:${movementPattern.name} section:${sectionType.name} sets:$sets reps:$repsPerSet work:${workDuration?.inSeconds}s rest:${restBetweenSets.inSeconds}s diff:${difficulty.name})';
+  String toString() => 'CompletedWorkoutExercise(id:$exerciseId name:$exerciseName pattern:${movementPattern?.name ?? "null"} section:${sectionType.name} sets:$sets reps:$repsPerSet work:${workDuration?.inSeconds}s rest:${restBetweenSets.inSeconds}s diff:${difficulty.name})';
 }

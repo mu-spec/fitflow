@@ -136,6 +136,7 @@ class _SectionBlock extends StatelessWidget {
         else
           ...exercises.map((ex) {
             final workload = ex.repsPerSet != null ? '${ex.sets} × ${ex.repsPerSet} reps' : '${ex.sets} × ${ex.workDuration?.inSeconds}s';
+            final movementLabel = ex.movementPattern?.label ?? 'Unclassified movement';
             return Card(
               margin: const EdgeInsets.only(bottom: 8),
               child: Padding(
@@ -145,7 +146,7 @@ class _SectionBlock extends StatelessWidget {
                   children: [
                     Text(ex.exerciseName, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
                     const SizedBox(height: 4),
-                    Text('${ex.movementPattern.label} • Level ${ex.difficulty.name.replaceAll('level', '')} • ${ex.sectionType.label}', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                    Text('$movementLabel • Level ${ex.difficulty.name.replaceAll('level', '')} • ${ex.sectionType.label}', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
                     const SizedBox(height: 4),
                     Text(workload, style: theme.textTheme.bodyMedium),
                     const SizedBox(height: 2),

@@ -10,7 +10,6 @@ import 'package:fitflow/features/workouts/domain/exercise.dart';
 import 'package:fitflow/features/workouts/domain/exercise_difficulty.dart';
 import 'package:fitflow/features/workouts/domain/history/completed_workout.dart';
 import 'package:fitflow/features/workouts/domain/history/completed_workout_exercise.dart';
-import 'package:fitflow/features/workouts/domain/movement_pattern.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_exercise_prescription.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_plan.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_section_type.dart';
@@ -177,10 +176,11 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
     WorkoutExercisePrescription pres,
     WorkoutSectionType sectionType,
   ) {
+    // Preserve movementPattern exactly, do NOT guess – truthful snapshot
     return CompletedWorkoutExercise(
       exerciseId: pres.exercise.id,
       exerciseName: pres.exercise.name,
-      movementPattern: pres.exercise.movementPattern ?? (sectionType == WorkoutSectionType.warmup ? MovementPattern.warmup : sectionType == WorkoutSectionType.cooldown ? MovementPattern.cooldown : MovementPattern.push),
+      movementPattern: pres.exercise.movementPattern,
       sectionType: sectionType,
       sets: pres.sets,
       repsPerSet: pres.repsPerSet,

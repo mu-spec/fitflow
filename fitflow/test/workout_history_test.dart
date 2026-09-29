@@ -213,9 +213,10 @@ void main() {
       final prefs = await SharedPreferences.getInstance();
       final storage = WorkoutHistoryStorage(prefs);
       final loaded = storage.load();
-      // Unknown enum should be ignored, entry's main exercise ignored, but workout still loads with empty main? Our fromJson skips invalid exercise
+      // Unknown movement string → treated as null (truthful, no Push guess), exercise preserved
       expect(loaded.length, equals(1));
-      expect(loaded.first.main, isEmpty);
+      expect(loaded.first.main.length, equals(1));
+      expect(loaded.first.main.first.movementPattern, isNull);
     });
 
     test('clear works', () async {
