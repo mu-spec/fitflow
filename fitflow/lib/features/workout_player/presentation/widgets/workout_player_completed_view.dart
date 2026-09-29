@@ -2,6 +2,7 @@ import 'package:fitflow/app/router/app_router.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/workout_player/application/workout_player_controller.dart';
 import 'package:fitflow/features/workout_player/application/workout_player_state.dart';
+import 'package:fitflow/features/workout_player/domain/workout_session_origin.dart';
 import 'package:fitflow/features/workout_player/presentation/widgets/adaptive_progression_feedback_sheet.dart';
 import 'package:fitflow/features/workouts/application/workout_session_mode_controller.dart';
 import 'package:fitflow/features/workouts/domain/session/workout_session_mode.dart';
@@ -12,19 +13,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// Completed phase view - truthful data only, no calories/XP/streaks/history.
+/// Completed phase view - truthful data only, no calories/XP/streaks.
 /// M12: Tune disabled for temporary modes, reset mode on Done.
+/// M13: Custom origin – no Tune, protection copy, configurable Done destination.
 class WorkoutPlayerCompletedView extends ConsumerWidget {
   const WorkoutPlayerCompletedView({
     super.key,
     required this.plan,
     required this.state,
     this.sessionMode = WorkoutSessionMode.standard,
+    this.sessionOrigin = WorkoutSessionOrigin.adaptive,
+    this.onDone,
+    this.doneRoute,
   });
 
   final WorkoutPlan plan;
   final WorkoutPlayerState state;
   final WorkoutSessionMode sessionMode;
+  final WorkoutSessionOrigin sessionOrigin;
+  final VoidCallback? onDone;
+  final String? doneRoute;
 
   String _formatDuration(Duration? d) {
     if (d == null) return '—';
@@ -81,7 +89,35 @@ class WorkoutPlayerCompletedView extends ConsumerWidget {
   }
 
   void _handleDone(BuildContext context, WidgetRef ref) {
-    // Reset to standard when leaving completion after non-standard
+    if (onDone != null) {
+      onDone!.call();
+      return;
+    }
+
+    if (doneRoute != null) {
+      try {
+        context.go(doneRoute!);
+        return;
+      } catch (_) {
+        try {
+          ref.read(appRouterProvider).go(doneRoute!);
+          return;
+        } catch (_) {}
+      }
+    }
+
+    // Default handling based on origin
+    if (sessionOrigin == WorkoutSessionOrigin.custom) {
+      // Custom completion returns to Workouts tab
+      try {
+        context.go(AppRoutes.workouts);
+      } catch (_) {
+        ref.read(appRouterProvider).go(AppRoutes.workouts);
+      }
+      return;
+    }
+
+    // Adaptive: reset mode if temporary
     if (sessionMode != WorkoutSessionMode.standard) {
       try {
         ref.read(workoutSessionModeProvider.notifier).reset();
@@ -104,7 +140,8 @@ class WorkoutPlayerCompletedView extends ConsumerWidget {
     final totalExercises = plan.totalExerciseCount;
     final completedSets = state.completedSets;
     final totalSets = state.totalSets;
-    final isTemporary = sessionMode != WorkoutSessionMode.standard;
+    final isTemporary = sessionOrigin == WorkoutSessionOrigin.adaptive && sessionMode != WorkoutSessionMode.standard;
+    final isCustom = sessionOrigin == WorkoutSessionOrigin.custom;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -155,6 +192,24 @@ class WorkoutPlayerCompletedView extends ConsumerWidget {
             ),
           ),
         ],
+        if (isCustom) ...[
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: colorScheme.secondaryContainer,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              "Custom workouts don't change your movement levels.",
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSecondaryContainer,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
         const SizedBox(height: 24),
         Card(
           child: Padding(
@@ -181,7 +236,7 @@ class WorkoutPlayerCompletedView extends ConsumerWidget {
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 24),
-        if (!isTemporary)
+        if (!isTemporary && !isCustom)
           SizedBox(
             width: double.infinity,
             child: FilledButton(
@@ -189,7 +244,7 @@ class WorkoutPlayerCompletedView extends ConsumerWidget {
               child: const Text('Tune next workout'),
             ),
           ),
-        if (!isTemporary) const SizedBox(height: 8),
+        if (!isTemporary && !isCustom) const SizedBox(height: 8),
         SizedBox(
           width: double.infinity,
           child: OutlinedButton(

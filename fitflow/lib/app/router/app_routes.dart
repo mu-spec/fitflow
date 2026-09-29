@@ -14,4 +14,10 @@ class AppRoutes {
 
   static String exerciseDetail(String exerciseId) =>
       '/workouts/exercise-library/$exerciseId';
+
+  // Custom workout builder routes – M13
+  static const String customWorkoutNew = '/workouts/custom/new';
+  static String customWorkoutDetail(String workoutId) => '/workouts/custom/$workoutId';
+  static String customWorkoutEdit(String workoutId) => '/workouts/custom/$workoutId/edit';
+  static String customWorkoutPlayer(String workoutId) => '/workouts/custom/$workoutId/player';
 }

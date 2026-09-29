@@ -8,8 +8,11 @@ import 'package:fitflow/features/progress/presentation/progress_history_detail_s
 import 'package:fitflow/features/progress/presentation/progress_screen.dart';
 import 'package:fitflow/features/settings/presentation/settings_screen.dart';
 import 'package:fitflow/features/splash/splash_screen.dart';
+import 'package:fitflow/features/workout_player/presentation/custom_workout_player_screen.dart';
 import 'package:fitflow/features/workout_player/presentation/workout_player_screen.dart';
 import 'package:fitflow/features/workout_preview/presentation/workout_preview_screen.dart';
+import 'package:fitflow/features/workouts/presentation/custom_workout_builder_screen.dart';
+import 'package:fitflow/features/workouts/presentation/custom_workout_detail_screen.dart';
 import 'package:fitflow/features/workouts/presentation/exercise_detail_screen.dart';
 import 'package:fitflow/features/workouts/presentation/exercise_library_screen.dart';
 import 'package:fitflow/features/workouts/presentation/workouts_screen.dart';
@@ -83,6 +86,38 @@ class AppRouter {
                                 state.pathParameters['exerciseId']!;
                             return ExerciseDetailScreen(
                                 exerciseId: exerciseId);
+                          },
+                        ),
+                      ],
+                    ),
+                    GoRoute(
+                      path: 'custom/new',
+                      builder: (context, state) =>
+                          const CustomWorkoutBuilderScreen(),
+                    ),
+                    GoRoute(
+                      path: 'custom/:workoutId',
+                      builder: (context, state) {
+                        final workoutId = state.pathParameters['workoutId']!;
+                        return CustomWorkoutDetailScreen(workoutId: workoutId);
+                      },
+                      routes: [
+                        GoRoute(
+                          path: 'edit',
+                          builder: (context, state) {
+                            final workoutId =
+                                state.pathParameters['workoutId']!;
+                            return CustomWorkoutBuilderScreen(
+                                workoutId: workoutId);
+                          },
+                        ),
+                        GoRoute(
+                          path: 'player',
+                          builder: (context, state) {
+                            final workoutId =
+                                state.pathParameters['workoutId']!;
+                            return CustomWorkoutPlayerScreen(
+                                workoutId: workoutId);
                           },
                         ),
                       ],

@@ -1,25 +1,22 @@
 import 'package:fitflow/features/workouts/data/exercise_catalog.dart';
-import 'package:fitflow/features/workouts/domain/capability_profile.dart';
+import 'package:fitflow/features/workouts/domain/custom/custom_workout_section_classifier.dart';
 import 'package:fitflow/features/workouts/domain/exercise.dart';
 import 'package:fitflow/features/workouts/domain/generation/workout_generation_candidates.dart';
 import 'package:fitflow/features/workouts/domain/generation/workout_generation_context.dart';
-import 'package:fitflow/features/workouts/domain/movement_pattern.dart';
 import 'package:fitflow/features/workouts/domain/ranking/exercise_ranking_engine.dart';
 import 'package:fitflow/features/workouts/domain/ranking/exercise_ranking_result.dart';
+import 'package:fitflow/features/workouts/domain/workout/workout_section_type.dart';
 
-/// Deterministic candidate pool resolver (5D-1 + M12).
+/// Deterministic candidate pool resolver (5D-1 + M12 + M13).
 ///
 /// - Uses existing eligibility + ranking via rankForUser (no duplication)
 /// - M12: uses effectiveCapabilityProfile for ranking but original UserFitnessProfile for goal/equipment/etc
-/// - Classifies by movement pattern and tags only (no name/description)
+/// - M13: delegates classification to CustomWorkoutSectionClassifier (single source of truth)
 /// - Preserves ranking order within each pool
 /// - No duplicate pool membership (precedence warmup > cooldown > main)
 /// - Empty pools allowed
 class WorkoutCandidateResolver {
   const WorkoutCandidateResolver._();
-
-  static const String _warmupTag = 'warmup';
-  static const String _cooldownTag = 'cooldown';
 
   /// Resolves eligible ranked candidates into warmup/main/cooldown pools.
   static WorkoutGenerationCandidates resolve(
@@ -40,29 +37,20 @@ class WorkoutCandidateResolver {
 
     for (final result in ranked) {
       final exercise = result.exercise;
-      final pattern = exercise.movementPattern;
+      final section = CustomWorkoutSectionClassifier.classify(exercise);
 
-      // Warmup candidate: first precedence
-      if (pattern == MovementPattern.warmup ||
-          exercise.tags.contains(_warmupTag)) {
+      if (section == WorkoutSectionType.warmup) {
         warmup.add(result);
         continue;
       }
-
-      // Cooldown candidate: second precedence
-      if (pattern == MovementPattern.cooldown ||
-          exercise.tags.contains(_cooldownTag)) {
+      if (section == WorkoutSectionType.cooldown) {
         cooldown.add(result);
         continue;
       }
-
-      // Main candidate: only trainable patterns
-      if (pattern != null &&
-          CapabilityProfile.trainablePatterns.contains(pattern)) {
+      if (section == WorkoutSectionType.main) {
         main.add(result);
         continue;
       }
-
       // Otherwise: not in any pool (no crash)
     }
 

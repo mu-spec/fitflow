@@ -1,0 +1,4 @@
+enum WorkoutSessionOrigin {
+  adaptive,
+  custom,
+}
