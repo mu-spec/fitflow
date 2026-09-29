@@ -70,7 +70,8 @@ void main() {
 
     test('round-trip single template', () async {
       final template = _makeTemplate(id: 'custom_1_0');
-      await storage.create(template);
+      final result = await storage.create(template);
+      expect(result, isNotNull);
       final all = await storage.loadAll();
       expect(all.length, 1);
       expect(all.first.id, 'custom_1_0');
@@ -86,7 +87,8 @@ void main() {
           id: 'custom_2_0',
           createdAt: DateTime.utc(2024, 1, 2),
           updatedAt: DateTime.utc(2024, 1, 2));
-      await storage.saveAll([t1, t2]);
+      final saved = await storage.saveAll([t1, t2]);
+      expect(saved, isNotNull);
       final all = await storage.loadAll();
       expect(all.first.id, 'custom_2_0');
       expect(all.last.id, 'custom_1_0');
@@ -128,7 +130,8 @@ void main() {
       await storage.create(template);
       await Future.delayed(const Duration(milliseconds: 10));
       final updated = template.copyWith(name: 'Updated', updatedAt: DateTime.now().toUtc());
-      await storage.update(updated);
+      final result = await storage.update(updated);
+      expect(result, isNotNull);
       final all = await storage.loadAll();
       expect(all.first.name, 'Updated');
       expect(all.first.updatedAt.isAfter(created), true);
@@ -138,7 +141,8 @@ void main() {
     test('duplicate ID deduplicated', () async {
       final t1 = _makeTemplate(id: 'dup', name: 'First', updatedAt: DateTime.utc(2024, 1, 1));
       final t2 = _makeTemplate(id: 'dup', name: 'Second', updatedAt: DateTime.utc(2024, 1, 2));
-      await storage.saveAll([t1, t2]);
+      final saved = await storage.saveAll([t1, t2]);
+      expect(saved, isNotNull);
       final all = await storage.loadAll();
       expect(all.length, 1);
       expect(all.first.name, 'Second');
@@ -177,10 +181,11 @@ void main() {
           updatedAt: DateTime.utc(2024, 1, 1).add(Duration(days: i)),
         );
       });
-      await storage.saveAll(templates);
+      final saved = await storage.saveAll(templates);
+      expect(saved, isNotNull);
+      expect(saved!.length, 50);
       final all = await storage.loadAll();
       expect(all.length, 50);
-      // Most recent should be custom_59_0
       expect(all.first.id, 'custom_59_0');
       expect(all.last.id, 'custom_10_0');
     });
@@ -199,7 +204,8 @@ void main() {
         createdAt: DateTime.utc(2024, 2, 20),
         updatedAt: DateTime.utc(2024, 2, 20),
       );
-      await storage.create(extra);
+      final result = await storage.create(extra);
+      expect(result, isNotNull);
       final all = await storage.loadAll();
       expect(all.length, 50);
       expect(all.first.id, 'custom_50_0');
@@ -209,7 +215,8 @@ void main() {
       final t1 = _makeTemplate(id: 'custom_1_0');
       final t2 = _makeTemplate(id: 'custom_2_0');
       await storage.saveAll([t1, t2]);
-      await storage.delete('custom_1_0');
+      final delResult = await storage.delete('custom_1_0');
+      expect(delResult, isNotNull);
       final all = await storage.loadAll();
       expect(all.length, 1);
       expect(all.first.id, 'custom_2_0');
@@ -219,14 +226,59 @@ void main() {
       final template = _makeTemplate(id: 'custom_1_0');
       await storage.create(template);
       final before = await storage.loadAll();
-      // Simulate failure by directly writing invalid JSON then loading – should return empty but not crash
       SharedPreferences.setMockInitialValues({CustomWorkoutStorage.key: 'invalid json'});
       final after = await storage.loadAll();
       expect(after, isEmpty);
-      // Restore valid
       await storage.saveAll(before);
       final restored = await storage.loadAll();
       expect(restored.length, 1);
+    });
+
+    // New failure contract tests
+    test('setString == false -> save returns failure null', () async {
+      final failingStorage = CustomWorkoutStorage(
+        writeString: (prefs, key, value) async => false,
+      );
+      SharedPreferences.setMockInitialValues({});
+      final template = _makeTemplate(id: 'custom_1_0');
+      final result = await failingStorage.saveAll([template]);
+      expect(result, isNull);
+    });
+
+    test('create returns null on write failure', () async {
+      final failingStorage = CustomWorkoutStorage(
+        writeString: (prefs, key, value) async => false,
+      );
+      SharedPreferences.setMockInitialValues({});
+      final template = _makeTemplate(id: 'custom_1_0');
+      final result = await failingStorage.create(template);
+      expect(result, isNull);
+    });
+
+    test('update returns null on write failure', () async {
+      final failingStorage = CustomWorkoutStorage(
+        writeString: (prefs, key, value) async => false,
+      );
+      SharedPreferences.setMockInitialValues({});
+      final template = _makeTemplate(id: 'custom_1_0');
+      final result = await failingStorage.update(template);
+      expect(result, isNull);
+    });
+
+    test('delete returns null on write failure', () async {
+      final failingStorage = CustomWorkoutStorage(
+        writeString: (prefs, key, value) async => false,
+      );
+      SharedPreferences.setMockInitialValues({});
+      final result = await failingStorage.delete('custom_1_0');
+      expect(result, isNull);
+    });
+
+    test('successful writes still update state normally', () async {
+      final template = _makeTemplate(id: 'custom_1_0');
+      final result = await storage.create(template);
+      expect(result, isNotNull);
+      expect(result!.length, 1);
     });
   });
 }

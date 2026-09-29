@@ -22,6 +22,7 @@ class CustomWorkoutValidator {
   const CustomWorkoutValidator._();
 
   /// Pure validation – no silent discard.
+  /// Now also validates against resolved catalog exercise type and validity.
   static CustomWorkoutValidationResult validateTemplate({
     required CustomWorkoutTemplate template,
     required Map<String, Exercise> catalogById,
@@ -45,7 +46,7 @@ class CustomWorkoutValidator {
       issues.add('Add at least one cool-down exercise.');
     }
 
-    // Validate all prescriptions
+    // Validate all prescriptions shape
     for (final e in template.allEntries) {
       final presIssue = _validateEntry(e);
       if (presIssue != null) {
@@ -60,7 +61,7 @@ class CustomWorkoutValidator {
       }
     }
 
-    // Check active and valid and correct section, duplicate detection
+    // Check active, valid, correct section, duplicate, and type matching
     final seen = <String>{};
     for (final entry in template.allEntries) {
       final ex = catalogById[entry.exerciseId];
@@ -70,6 +71,10 @@ class CustomWorkoutValidator {
         issues.add('Exercise is no longer available: ${ex.name}.');
       }
 
+      if (!ex.isValid) {
+        issues.add('Exercise data is invalid: ${ex.name}.');
+      }
+
       // Correct section
       final expectedSection = _sectionForEntry(entry, template);
       final actualSection = CustomWorkoutSectionClassifier.classify(ex);
@@ -77,6 +82,17 @@ class CustomWorkoutValidator {
         issues.add('Exercise is not available for custom workouts: ${ex.name}.');
       } else if (expectedSection != actualSection) {
         issues.add('Exercise ${ex.name} does not belong to ${expectedSection.name} section.');
+      }
+
+      // Type integrity: entry type must match exercise type
+      final isEntryTimed = entry.isTimed;
+      final isExerciseTimed = ex.exerciseType.name == 'timed';
+      if (isEntryTimed != isExerciseTimed) {
+        if (isExerciseTimed) {
+          issues.add('Exercise ${ex.name} requires timed prescription but got reps.');
+        } else {
+          issues.add('Exercise ${ex.name} requires reps prescription but got timed.');
+        }
       }
 
       // Duplicate check across entire workout

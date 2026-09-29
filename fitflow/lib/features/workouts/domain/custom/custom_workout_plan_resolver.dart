@@ -29,13 +29,14 @@ class CustomWorkoutPlanResolution {
 
 /// Pure resolver – input template + catalog + profiles → valid WorkoutPlan OR explicit issues.
 /// Does NOT silently remove entries. Does NOT mutate original profile.
+/// M13 stabilization: eligibility for ALL sections, type integrity, final plan.isValid check.
 class CustomWorkoutPlanResolver {
   const CustomWorkoutPlanResolver._();
 
   static CustomWorkoutPlanResolution resolve({
     required CustomWorkoutTemplate template,
     required Map<String, Exercise> catalogById,
-    required dynamic userFitnessProfile, // UserFitnessProfile – avoid tight import cycle
+    required dynamic userFitnessProfile,
     required CapabilityProfile capabilityProfile,
   }) {
     final issues = <CustomWorkoutResolverIssue>[];
@@ -80,6 +81,11 @@ class CustomWorkoutPlanResolver {
           continue;
         }
 
+        if (!exercise.isValid) {
+          issues.add(CustomWorkoutResolverIssue('Exercise data is invalid: ${exercise.name}.'));
+          continue;
+        }
+
         // Section classification
         final actualSection = CustomWorkoutSectionClassifier.classify(exercise);
         if (actualSection == null) {
@@ -92,14 +98,55 @@ class CustomWorkoutPlanResolver {
           continue;
         }
 
-        // Eligibility – warmup/cooldown exempt per existing logic
-        final isWarmupOrCooldown = expectedType != WorkoutSectionType.main;
-        if (!isWarmupOrCooldown) {
-          // For main section, check eligibility via engine
-          final result = ExerciseEligibilityEngine.evaluate(exercise, eligibilityContext);
-          if (!result.eligible) {
+        // Canonical eligibility for ALL sections (warmup/cooldown exempt only from trainable capability ceiling via engine itself)
+        final eligibilityResult = ExerciseEligibilityEngine.evaluate(exercise, eligibilityContext);
+        if (!eligibilityResult.eligible) {
+          issues.add(CustomWorkoutResolverIssue(
+              'Exercise ${exercise.name} is not eligible for your current setup.'));
+          continue;
+        }
+
+        // Entry itself must be valid
+        if (!entry.isValid) {
+          issues.add(CustomWorkoutResolverIssue('Invalid prescription for ${exercise.name}.'));
+          continue;
+        }
+
+        // Entry workload TYPE must match exercise.exerciseType
+        final isEntryTimed = entry.isTimed;
+        final isExerciseTimed = exercise.exerciseType.name == 'timed';
+        if (isEntryTimed != isExerciseTimed) {
+          if (isExerciseTimed) {
             issues.add(CustomWorkoutResolverIssue(
-                'Exercise ${exercise.name} is not eligible for your current setup.'));
+                'Exercise ${exercise.name} requires timed prescription but got reps.'));
+          } else {
+            issues.add(CustomWorkoutResolverIssue(
+                'Exercise ${exercise.name} requires reps prescription but got timed.'));
+          }
+          continue;
+        }
+
+        // Additional reps/timed shape checks (redundant with entry.isValid but explicit for stale catalog)
+        if (isExerciseTimed) {
+          if (entry.repsPerSet != null) {
+            issues.add(CustomWorkoutResolverIssue(
+                'Timed exercise ${exercise.name} must not have reps.'));
+            continue;
+          }
+          if (entry.workDuration == null || entry.workDuration! <= Duration.zero) {
+            issues.add(CustomWorkoutResolverIssue(
+                'Timed exercise ${exercise.name} requires valid work duration.'));
+            continue;
+          }
+        } else {
+          if (entry.workDuration != null) {
+            issues.add(CustomWorkoutResolverIssue(
+                'Reps exercise ${exercise.name} must not have work duration.'));
+            continue;
+          }
+          if (entry.repsPerSet == null || entry.repsPerSet! <= 0) {
+            issues.add(CustomWorkoutResolverIssue(
+                'Reps exercise ${exercise.name} requires valid reps.'));
             continue;
           }
         }
@@ -108,6 +155,12 @@ class CustomWorkoutPlanResolver {
         final prescription = _prescriptionFromEntry(entry, exercise);
         if (prescription == null) {
           issues.add(CustomWorkoutResolverIssue('Invalid prescription for ${exercise.name}.'));
+          continue;
+        }
+
+        if (!prescription.isValid) {
+          issues.add(CustomWorkoutResolverIssue(
+              'Resulting prescription is invalid for ${exercise.name}: ${prescription.validate().join(', ')}'));
           continue;
         }
 
@@ -151,6 +204,12 @@ class CustomWorkoutPlanResolver {
           exercises: cooldownPres,
         ),
       );
+
+      if (!plan.isValid) {
+        issues.add(CustomWorkoutResolverIssue(
+            'Workout plan is invalid: ${plan.validate().join(', ')}'));
+        return CustomWorkoutPlanResolution(plan: null, issues: List.unmodifiable(issues));
+      }
 
       return CustomWorkoutPlanResolution(plan: plan, issues: const []);
     } catch (e) {

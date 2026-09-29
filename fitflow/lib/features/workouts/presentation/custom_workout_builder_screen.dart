@@ -742,10 +742,9 @@ class _AddExerciseSheetState extends State<_AddExerciseSheet> {
       if (widget.existingIds.contains(ex.id)) return false;
       final pres = WorkoutExercisePrescription.fromExerciseDefaults(ex);
       if (pres == null) return false;
-      if (widget.sectionType == WorkoutSectionType.main) {
-        final result = ExerciseEligibilityEngine.evaluate(ex, eligibilityContext);
-        if (!result.eligible) return false;
-      }
+      // Canonical eligibility for ALL sections (engine already handles capability only for trainable patterns)
+      final result = ExerciseEligibilityEngine.evaluate(ex, eligibilityContext);
+      if (!result.eligible) return false;
       if (_searchQuery.isNotEmpty) {
         if (!ex.name.toLowerCase().contains(_searchQuery)) return false;
       }

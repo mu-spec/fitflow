@@ -22,8 +22,10 @@ class CustomWorkoutController extends StateNotifier<AsyncValue<List<CustomWorkou
   Future<void> _load() async {
     try {
       final all = await _storage.loadAll();
+      if (!mounted) return;
       state = AsyncValue.data(all);
     } catch (e, st) {
+      if (!mounted) return;
       state = AsyncValue.error(e, st);
     }
   }
@@ -36,10 +38,14 @@ class CustomWorkoutController extends StateNotifier<AsyncValue<List<CustomWorkou
   Future<bool> create(CustomWorkoutTemplate template) async {
     try {
       final result = await _storage.create(template);
+      if (result == null) {
+        // Write failure – preserve previous state
+        return false;
+      }
       state = AsyncValue.data(result);
       return true;
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
+    } catch (_) {
+      // Exception – preserve previous state, truthful failure
       return false;
     }
   }
@@ -47,10 +53,12 @@ class CustomWorkoutController extends StateNotifier<AsyncValue<List<CustomWorkou
   Future<bool> update(CustomWorkoutTemplate template) async {
     try {
       final result = await _storage.update(template);
+      if (result == null) {
+        return false;
+      }
       state = AsyncValue.data(result);
       return true;
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
+    } catch (_) {
       return false;
     }
   }
@@ -58,10 +66,12 @@ class CustomWorkoutController extends StateNotifier<AsyncValue<List<CustomWorkou
   Future<bool> delete(String id) async {
     try {
       final result = await _storage.delete(id);
+      if (result == null) {
+        return false;
+      }
       state = AsyncValue.data(result);
       return true;
-    } catch (e, st) {
-      state = AsyncValue.error(e, st);
+    } catch (_) {
       return false;
     }
   }
