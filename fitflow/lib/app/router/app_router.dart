@@ -15,6 +15,8 @@ import 'package:fitflow/features/workouts/presentation/custom_workout_builder_sc
 import 'package:fitflow/features/workouts/presentation/custom_workout_detail_screen.dart';
 import 'package:fitflow/features/workouts/presentation/exercise_detail_screen.dart';
 import 'package:fitflow/features/workouts/presentation/exercise_library_screen.dart';
+import 'package:fitflow/features/workouts/presentation/skill_tree_family_screen.dart';
+import 'package:fitflow/features/workouts/presentation/skill_trees_screen.dart';
 import 'package:fitflow/features/workouts/presentation/workouts_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -87,6 +89,18 @@ class AppRouter {
                             return ExerciseDetailScreen(
                                 exerciseId: exerciseId);
                           },
+                        ),
+                      ],
+                    ),
+                    GoRoute(
+                      path: 'skill-trees',
+                      builder: (context, state) => const SkillTreesScreen(),
+                      routes: [
+                        GoRoute(
+                          path: ':familyId',
+                          builder: (context, state) => SkillTreeFamilyScreen(
+                            familyId: state.pathParameters['familyId']!,
+                          ),
                         ),
                       ],
                     ),

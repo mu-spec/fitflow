@@ -43,6 +43,13 @@ class WorkoutsScreen extends ConsumerWidget {
             const PlaceholderSection(title: 'Programs', subtitle: 'Structured multi-week training plans.'),
             const SizedBox(height: 8),
             _CreateCustomRow(onTap: () => context.push(AppRoutes.customWorkoutNew)),
+            PlaceholderRow(
+              icon: Icons.account_tree_outlined,
+              title: 'Exercise skill trees',
+              subtitle:
+                  'Explore exercise progressions from easier to harder variations.',
+              onTap: () => context.push(AppRoutes.skillTrees),
+            ),
             const SizedBox(height: 16),
             Text('Custom workouts', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
             const SizedBox(height: 12),

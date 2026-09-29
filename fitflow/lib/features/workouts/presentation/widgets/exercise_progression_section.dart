@@ -13,9 +13,11 @@ class ExerciseProgressionSection extends StatelessWidget {
   const ExerciseProgressionSection({
     super.key,
     required this.progression,
+    this.skillTreeFamilyId,
   });
 
   final ExerciseProgressionInfo progression;
+  final String? skillTreeFamilyId;
 
   @override
   Widget build(BuildContext context) {
@@ -100,6 +102,16 @@ class ExerciseProgressionSection extends StatelessWidget {
                 onTap: () => context.push(
                   AppRoutes.exerciseDetail(progression.harder!.id),
                 ),
+              ),
+            ],
+            if (skillTreeFamilyId != null) ...[
+              const SizedBox(height: 16),
+              OutlinedButton.icon(
+                onPressed: () => context.push(
+                  AppRoutes.skillTreeFamily(skillTreeFamilyId!),
+                ),
+                icon: const Icon(Icons.account_tree_outlined),
+                label: const Text('View full skill tree'),
               ),
             ],
           ],

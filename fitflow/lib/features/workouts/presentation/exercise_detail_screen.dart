@@ -4,6 +4,7 @@ import 'package:fitflow/features/onboarding/data/workout_equipment.dart';
 import 'package:fitflow/features/workouts/data/exercise_catalog.dart';
 import 'package:fitflow/features/workouts/domain/exercise.dart';
 import 'package:fitflow/features/workouts/domain/exercise_progression.dart';
+import 'package:fitflow/features/workouts/domain/exercise_skill_tree_resolver.dart';
 import 'package:fitflow/features/workouts/domain/exercise_type.dart';
 import 'package:fitflow/features/workouts/presentation/widgets/exercise_characteristics_section.dart';
 import 'package:fitflow/features/workouts/presentation/widgets/exercise_progression_section.dart';
@@ -29,6 +30,7 @@ class ExerciseDetailScreen extends StatelessWidget {
     }
 
     final progression = ExerciseProgressionResolver.resolve(exercise);
+    final skillTreeFamilyId = _skillTreeFamilyIdFor(exercise);
 
     return Scaffold(
       appBar: AppBar(
@@ -45,7 +47,10 @@ class ExerciseDetailScreen extends StatelessWidget {
             _PrescriptionSection(exercise: exercise),
             if (progression != null) ...[
               const SizedBox(height: 24),
-              ExerciseProgressionSection(progression: progression),
+              ExerciseProgressionSection(
+                progression: progression,
+                skillTreeFamilyId: skillTreeFamilyId,
+              ),
             ],
             const SizedBox(height: 24),
             _MusclesSection(exercise: exercise),
@@ -65,6 +70,22 @@ class ExerciseDetailScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+String? _skillTreeFamilyIdFor(Exercise exercise) {
+  final familyId = exercise.progressionFamilyId?.trim();
+  if (familyId == null || familyId.isEmpty) return null;
+
+  final catalog = ExerciseSkillTreeResolver.resolve(
+    exercises: ExerciseCatalog.all,
+    userProfile: null,
+    capabilityProfile: null,
+  );
+  final tree = catalog.treeForFamilyId(familyId);
+  if (tree == null || !tree.nodes.any((node) => node.exercise.id == exercise.id)) {
+    return null;
+  }
+  return tree.familyId;
 }
 
 class _NotFoundBody extends StatelessWidget {

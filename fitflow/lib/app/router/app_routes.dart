@@ -8,12 +8,16 @@ class AppRoutes {
   static const String workoutPlayer = '/home/workout-preview/player';
   static const String workouts = '/workouts';
   static const String exerciseLibrary = '/workouts/exercise-library';
+  static const String skillTrees = '/workouts/skill-trees';
   static const String progress = '/progress';
   static const String profile = '/profile';
   static const String settings = '/profile/settings';
 
   static String exerciseDetail(String exerciseId) =>
       '/workouts/exercise-library/$exerciseId';
+
+  static String skillTreeFamily(String familyId) =>
+      '/workouts/skill-trees/${Uri.encodeComponent(familyId)}';
 
   // Custom workout builder routes – M13
   static const String customWorkoutNew = '/workouts/custom/new';

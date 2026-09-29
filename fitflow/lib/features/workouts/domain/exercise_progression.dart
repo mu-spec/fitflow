@@ -1,5 +1,6 @@
 import 'package:fitflow/features/workouts/data/exercise_catalog.dart';
 import 'package:fitflow/features/workouts/domain/exercise.dart';
+import 'package:fitflow/features/workouts/domain/exercise_progression_order.dart';
 
 /// Lightweight progression context resolved from existing catalog metadata.
 ///
@@ -62,10 +63,11 @@ abstract final class ExerciseProgressionResolver {
     }
 
     // Resolve family sorted by rank
-    final family = ExerciseCatalog.all
-        .where((e) => e.active && e.progressionFamilyId == familyId)
-        .toList()
-      ..sort((a, b) => a.progressionRank.compareTo(b.progressionRank));
+    final family = ExerciseProgressionOrder.sort(
+      ExerciseCatalog.all.where(
+        (e) => e.active && e.progressionFamilyId == familyId,
+      ),
+    );
 
     if (family.isEmpty) {
       return null;
