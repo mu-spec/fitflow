@@ -129,7 +129,7 @@ class HomeScreen extends ConsumerWidget {
       );
     }
 
-    // Successful dashboard
+    // Successful dashboard – View workout kept near top for M10 compatibility
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -149,12 +149,6 @@ class HomeScreen extends ConsumerWidget {
                     sessionMode: sessionMode,
                   ),
                   const SizedBox(height: 12),
-                  const HomeSessionModeControl(),
-                  if (showComebackSuggestion) ...[
-                    const SizedBox(height: 12),
-                    const ComebackSuggestionCard(),
-                  ],
-                  const SizedBox(height: 12),
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton.icon(
@@ -165,6 +159,12 @@ class HomeScreen extends ConsumerWidget {
                       label: const Text('View workout'),
                     ),
                   ),
+                  const SizedBox(height: 12),
+                  const HomeSessionModeControl(),
+                  if (showComebackSuggestion) ...[
+                    const SizedBox(height: 12),
+                    const ComebackSuggestionCard(),
+                  ],
                   const SizedBox(height: 16),
                   HomeMovementFocus(plan: plan),
                   const SizedBox(height: 16),

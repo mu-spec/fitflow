@@ -6,7 +6,6 @@ import 'package:fitflow/features/onboarding/data/training_environment.dart';
 import 'package:fitflow/features/onboarding/data/user_fitness_profile.dart';
 import 'package:fitflow/features/onboarding/data/workout_duration.dart';
 import 'package:fitflow/features/onboarding/data/workout_equipment.dart';
-import 'package:fitflow/features/onboarding/data/workout_preference.dart';
 import 'package:fitflow/features/onboarding/state/user_fitness_profile_controller.dart';
 import 'package:fitflow/features/workouts/application/workout_history_controller.dart';
 import 'package:fitflow/features/workouts/application/workout_session_mode_controller.dart';
@@ -284,7 +283,9 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(container.read(workoutSessionModeProvider), WorkoutSessionMode.standard);
-      await tester.tap(find.text('Use Comeback'));
+      await tester.ensureVisible(find.text('Use Comeback'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Use Comeback'), warnIfMissed: false);
       await tester.pumpAndSettle();
       expect(container.read(workoutSessionModeProvider), WorkoutSessionMode.comeback);
     });

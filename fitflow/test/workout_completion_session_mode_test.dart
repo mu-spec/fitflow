@@ -6,7 +6,6 @@ import 'package:fitflow/features/onboarding/data/user_fitness_profile.dart';
 import 'package:fitflow/features/onboarding/data/workout_duration.dart';
 import 'package:fitflow/features/onboarding/data/workout_equipment.dart';
 import 'package:fitflow/features/onboarding/state/user_fitness_profile_controller.dart';
-import 'package:fitflow/features/workout_player/application/workout_player_controller.dart';
 import 'package:fitflow/features/workout_player/application/workout_player_state.dart';
 import 'package:fitflow/features/workout_player/domain/workout_player_phase.dart';
 import 'package:fitflow/features/workout_player/presentation/widgets/workout_player_completed_view.dart';
@@ -19,6 +18,8 @@ import 'package:fitflow/features/workouts/domain/generation/workout_generator.da
 import 'package:fitflow/features/workouts/domain/movement_capability.dart';
 import 'package:fitflow/features/workouts/domain/movement_pattern.dart';
 import 'package:fitflow/features/workouts/domain/session/workout_session_mode.dart';
+import 'package:fitflow/features/workouts/domain/workout/workout_plan.dart';
+import 'package:fitflow/features/workouts/domain/workout/workout_section_type.dart';
 import 'package:fitflow/features/workouts/state/capability_profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -63,6 +64,28 @@ class FakeCapabilityController extends CapabilityProfileController {
   Future<CapabilityProfile?> build() async => profile;
 }
 
+WorkoutPlayerState makeCompletedState(WorkoutPlan plan) {
+  final firstPres = plan.warmup.exercises.isNotEmpty
+      ? plan.warmup.exercises.first
+      : plan.main.exercises.first;
+  final totalSets = plan.allPrescriptions.fold<int>(0, (sum, p) => sum + p.sets);
+  return WorkoutPlayerState(
+    phase: WorkoutPlayerPhase.completed,
+    isPaused: false,
+    sectionIndex: 2,
+    sectionType: WorkoutSectionType.cooldown,
+    exerciseIndex: 0,
+    exerciseCountInCurrentSection: 1,
+    isLastExerciseInSection: true,
+    isLastSection: true,
+    setNumber: 1,
+    completedSets: totalSets,
+    totalSets: totalSets,
+    remaining: Duration.zero,
+    currentPrescription: firstPres,
+  );
+}
+
 void main() {
   group('Completion M10 protection', () {
     testWidgets('standard shows Tune next workout', (tester) async {
@@ -79,10 +102,7 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      final state = WorkoutPlayerState.initial(plan: plan).copyWith(
-        phase: WorkoutPlayerPhase.completed,
-        completedSets: 10,
-      );
+      final state = makeCompletedState(plan);
 
       await tester.pumpWidget(
         UncontrolledProviderScope(
@@ -112,10 +132,7 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      final state = WorkoutPlayerState.initial(plan: plan).copyWith(
-        phase: WorkoutPlayerPhase.completed,
-        completedSets: 10,
-      );
+      final state = makeCompletedState(plan);
 
       await tester.pumpWidget(
         UncontrolledProviderScope(
@@ -145,10 +162,7 @@ void main() {
       );
       addTearDown(container.dispose);
 
-      final state = WorkoutPlayerState.initial(plan: plan).copyWith(
-        phase: WorkoutPlayerPhase.completed,
-        completedSets: 10,
-      );
+      final state = makeCompletedState(plan);
 
       await tester.pumpWidget(
         UncontrolledProviderScope(
@@ -180,10 +194,7 @@ void main() {
       container.read(workoutSessionModeProvider.notifier).selectMode(WorkoutSessionMode.lowEnergy);
       expect(container.read(workoutSessionModeProvider), WorkoutSessionMode.lowEnergy);
 
-      final state = WorkoutPlayerState.initial(plan: plan).copyWith(
-        phase: WorkoutPlayerPhase.completed,
-        completedSets: 10,
-      );
+      final state = makeCompletedState(plan);
 
       await tester.pumpWidget(
         UncontrolledProviderScope(
@@ -215,10 +226,7 @@ void main() {
       addTearDown(container.dispose);
       container.read(workoutSessionModeProvider.notifier).selectMode(WorkoutSessionMode.standard);
 
-      final state = WorkoutPlayerState.initial(plan: plan).copyWith(
-        phase: WorkoutPlayerPhase.completed,
-        completedSets: 10,
-      );
+      final state = makeCompletedState(plan);
 
       await tester.pumpWidget(
         UncontrolledProviderScope(
@@ -256,7 +264,6 @@ void main() {
     });
 
     test('standard retains Tune flow after completion', () {
-      // This is covered by widget test but also logical
       final mode = WorkoutSessionMode.standard;
       expect(mode, WorkoutSessionMode.standard);
     });
@@ -272,7 +279,6 @@ void main() {
     });
 
     test('no capability claims in temporary modes', () {
-      // Ensure no forbidden wording in our implementation strings
       final forbidden = ['optimal recovery', 'safe for fatigue', 'scientifically recovered', 'injury prevention', 'readiness', 'score'];
       final allowedMessages = [
         'This was a temporary Low Energy workout. Your movement levels stay unchanged.',
@@ -281,16 +287,14 @@ void main() {
       ];
       for (final msg in allowedMessages) {
         for (final f in forbidden) {
-          expect(msg.toLowerCase().contains(f), false, reason: 'Message \"$msg\" should not contain \"$f\"');
+          expect(msg.toLowerCase().contains(f), false, reason: 'Message "$msg" should not contain "$f"');
         }
       }
     });
 
     test('history still records temporary workouts (logic)', () {
-      // History recording is same regardless of mode – we test that policy does not block
       final mode = WorkoutSessionMode.lowEnergy;
       expect(mode != WorkoutSessionMode.standard, true);
-      // The actual history test would be in history controller, but we verify no mode-based exclusion
     });
   });
 }

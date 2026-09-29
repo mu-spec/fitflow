@@ -53,7 +53,7 @@ class HomeSessionModeControl extends ConsumerWidget {
     showModalBottomSheet(
       context: context,
       showDragHandle: true,
-      isScrollControlled: false,
+      isScrollControlled: true,
       builder: (ctx) {
         return const ChooseWorkoutModeSheet();
       },
@@ -73,50 +73,52 @@ class ChooseWorkoutModeSheet extends ConsumerWidget {
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Choose today's workout",
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 16),
-            _ModeOptionTile(
-              mode: WorkoutSessionMode.standard,
-              title: 'Standard',
-              subtitle: 'Your normal adaptive workout',
-              isSelected: current == WorkoutSessionMode.standard,
-              onTap: () {
-                ref.read(workoutSessionModeProvider.notifier).selectMode(WorkoutSessionMode.standard);
-                Navigator.of(context).pop();
-              },
-            ),
-            const SizedBox(height: 8),
-            _ModeOptionTile(
-              mode: WorkoutSessionMode.lowEnergy,
-              title: 'Low Energy',
-              subtitle: 'A shorter, easier workout for today',
-              supportingNote: "This doesn't change your movement levels",
-              isSelected: current == WorkoutSessionMode.lowEnergy,
-              onTap: () {
-                ref.read(workoutSessionModeProvider.notifier).selectMode(WorkoutSessionMode.lowEnergy);
-                Navigator.of(context).pop();
-              },
-            ),
-            const SizedBox(height: 8),
-            _ModeOptionTile(
-              mode: WorkoutSessionMode.comeback,
-              title: 'Comeback',
-              subtitle: 'A gentler return workout after time away',
-              supportingNote: "This doesn't change your movement levels",
-              isSelected: current == WorkoutSessionMode.comeback,
-              onTap: () {
-                ref.read(workoutSessionModeProvider.notifier).selectMode(WorkoutSessionMode.comeback);
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Choose today's workout",
+                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 16),
+              _ModeOptionTile(
+                mode: WorkoutSessionMode.standard,
+                title: 'Standard',
+                subtitle: 'Your normal adaptive workout',
+                isSelected: current == WorkoutSessionMode.standard,
+                onTap: () {
+                  ref.read(workoutSessionModeProvider.notifier).selectMode(WorkoutSessionMode.standard);
+                  Navigator.of(context).pop();
+                },
+              ),
+              const SizedBox(height: 8),
+              _ModeOptionTile(
+                mode: WorkoutSessionMode.lowEnergy,
+                title: 'Low Energy',
+                subtitle: 'A shorter, easier workout for today',
+                supportingNote: "This doesn't change your movement levels",
+                isSelected: current == WorkoutSessionMode.lowEnergy,
+                onTap: () {
+                  ref.read(workoutSessionModeProvider.notifier).selectMode(WorkoutSessionMode.lowEnergy);
+                  Navigator.of(context).pop();
+                },
+              ),
+              const SizedBox(height: 8),
+              _ModeOptionTile(
+                mode: WorkoutSessionMode.comeback,
+                title: 'Comeback',
+                subtitle: 'A gentler return workout after time away',
+                supportingNote: "This doesn't change your movement levels",
+                isSelected: current == WorkoutSessionMode.comeback,
+                onTap: () {
+                  ref.read(workoutSessionModeProvider.notifier).selectMode(WorkoutSessionMode.comeback);
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
