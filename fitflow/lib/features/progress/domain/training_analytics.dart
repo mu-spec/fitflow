@@ -99,21 +99,23 @@ class MovementTrainingAnalytics {
 
 @immutable
 class TrainingAnalytics {
-  const TrainingAnalytics({
+  TrainingAnalytics({
     required this.now,
     required this.savedWorkoutsCount,
-    required this.validWorkouts,
+    required List<CompletedWorkout> validWorkouts,
     required this.currentPeriod,
     required this.previousPeriod,
     required this.last28Days,
     required this.activeWeeksCount,
-    required this.trendBuckets,
-    required this.movementAnalytics,
-  });
+    required List<TrainingTrendBucket> trendBuckets,
+    required List<MovementTrainingAnalytics> movementAnalytics,
+  })  : validWorkouts = List.unmodifiable(validWorkouts),
+        trendBuckets = List.unmodifiable(trendBuckets),
+        movementAnalytics = List.unmodifiable(movementAnalytics);
 
   final DateTime now;
   final int savedWorkoutsCount;
-  /// Valid workouts at/before now, deduplicated, sorted newest first
+  /// Valid workouts at/before now, deduplicated, sorted newest first – externally immutable
   final List<CompletedWorkout> validWorkouts;
 
   final TrainingPeriodSummary currentPeriod;
@@ -131,6 +133,7 @@ class TrainingAnalytics {
 
   static TrainingAnalytics empty(DateTime now) {
     // For empty history, still provide 10 trainable patterns with zero data for UI consistency
+    // All collections must be unmodifiable
     final movementAnalytics = CapabilityProfile.trainablePatterns
         .map((p) => MovementTrainingAnalytics(
               movementPattern: p,
@@ -139,6 +142,17 @@ class TrainingAnalytics {
               lastTrained: null,
             ))
         .toList();
+    final buckets = List.generate(
+      8,
+      (i) => TrainingTrendBucket(
+        index: i,
+        start: now.subtract(Duration(days: (8 - i) * 7)),
+        end: now.subtract(Duration(days: (7 - i) * 7)),
+        workoutCount: 0,
+        mainSetCount: 0,
+        plannedDuration: Duration.zero,
+      ),
+    );
     return TrainingAnalytics(
       now: now,
       savedWorkoutsCount: 0,
@@ -147,18 +161,8 @@ class TrainingAnalytics {
       previousPeriod: TrainingPeriodSummary.zero,
       last28Days: TrainingPeriodSummary.zero,
       activeWeeksCount: 0,
-      trendBuckets: List.generate(
-        8,
-        (i) => TrainingTrendBucket(
-          index: i,
-          start: now.subtract(Duration(days: (8 - i) * 7)),
-          end: now.subtract(Duration(days: (7 - i) * 7)),
-          workoutCount: 0,
-          mainSetCount: 0,
-          plannedDuration: Duration.zero,
-        ),
-      ),
-      movementAnalytics: movementAnalytics,
+      trendBuckets: List.unmodifiable(buckets),
+      movementAnalytics: List.unmodifiable(movementAnalytics),
     );
   }
 }

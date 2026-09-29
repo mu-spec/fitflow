@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:fitflow/features/progress/domain/training_analytics.dart';
 import 'package:fitflow/features/workouts/domain/capability_profile.dart';
 import 'package:fitflow/features/workouts/domain/history/completed_workout.dart';
@@ -5,7 +7,11 @@ import 'package:fitflow/features/workouts/domain/movement_pattern.dart';
 
 /// Pure deterministic analytics engine derived entirely from real completed history.
 /// No I/O, no Riverpod, no DateTime.now() inside pure calculations.
-/// Future-dated workouts ignored, duplicate IDs counted once (most recent completedAt retained).
+/// Future-dated workouts ignored, duplicate IDs counted once.
+/// Duplicate rule:
+/// 1. later completedAt wins
+/// 2. equal completedAt → lexicographically greater canonical JSON snapshot wins
+/// This guarantees order-independence: reversing input list yields identical analytics.
 class TrainingAnalyticsEngine {
   const TrainingAnalyticsEngine._();
 
@@ -50,6 +56,16 @@ class TrainingAnalyticsEngine {
     }
   }
 
+  static String _canonicalFingerprint(CompletedWorkout w) {
+    try {
+      // toJson emits stable field structure and ordered exercise lists
+      return jsonEncode(w.toJson());
+    } catch (_) {
+      // Fallback to id + completedAt + counts if json fails (should not happen)
+      return '${w.id}|${w.completedAt.toIso8601String()}|${w.totalSetCount}|${w.totalExerciseCount}';
+    }
+  }
+
   static TrainingAnalytics calculate({
     required List<CompletedWorkout> history,
     required DateTime now,
@@ -57,8 +73,11 @@ class TrainingAnalyticsEngine {
     // Defensive copy, do not mutate input
     final historyCopy = List<CompletedWorkout>.from(history);
 
-    // Deduplicate by ID, retain most recent completedAt
+    // Deduplicate by ID, retain most recent completedAt,
+    // equal completedAt → lexicographically greater canonical snapshot wins (order-independent)
     final Map<String, CompletedWorkout> dedupedMap = {};
+    final Map<String, String> fingerprintMap = {};
+
     for (final workout in historyCopy) {
       // Future check: ignore if after now
       if (workout.completedAt.isAfter(now)) continue;
@@ -66,17 +85,32 @@ class TrainingAnalyticsEngine {
       final existing = dedupedMap[workout.id];
       if (existing == null) {
         dedupedMap[workout.id] = workout;
+        fingerprintMap[workout.id] = _canonicalFingerprint(workout);
       } else {
         if (workout.completedAt.isAfter(existing.completedAt)) {
           dedupedMap[workout.id] = workout;
+          fingerprintMap[workout.id] = _canonicalFingerprint(workout);
+        } else if (workout.completedAt.isAtSameMomentAs(existing.completedAt)) {
+          final newFp = _canonicalFingerprint(workout);
+          final oldFp = fingerprintMap[workout.id]!;
+          // Lexicographically greater wins – deterministic, independent of input position
+          if (newFp.compareTo(oldFp) > 0) {
+            dedupedMap[workout.id] = workout;
+            fingerprintMap[workout.id] = newFp;
+          }
         }
-        // If equal, keep existing (deterministic, first wins, but count once)
+        // else older timestamp → keep existing
       }
     }
 
     final validWorkouts = dedupedMap.values.toList();
     // Sort newest first for recent workouts and for deterministic output
-    validWorkouts.sort((a, b) => b.completedAt.compareTo(a.completedAt));
+    // For equal completedAt, use fingerprint as secondary sort to ensure deterministic ordering
+    validWorkouts.sort((a, b) {
+      final timeCmp = b.completedAt.compareTo(a.completedAt);
+      if (timeCmp != 0) return timeCmp;
+      return _canonicalFingerprint(b).compareTo(_canonicalFingerprint(a));
+    });
 
     final savedCount = validWorkouts.length;
 
@@ -154,7 +188,6 @@ class TrainingAnalyticsEngine {
     }
 
     // Active weeks: number of latest four 7-day buckets containing at least one workout
-    // Latest four buckets are indices 4,5,6,7 (last 28 days divided into 4 weeks)
     int activeWeeks = 0;
     for (int i = 4; i < 8; i++) {
       if (buckets[i].workoutCount > 0) activeWeeks += 1;
@@ -172,7 +205,6 @@ class TrainingAnalyticsEngine {
     }
 
     for (final workout in last28List) {
-      // For each pattern, check if workout contains it in Main
       final Set<MovementPattern> patternsInWorkout = {};
       final Map<MovementPattern, int> setsInWorkout = {};
 
@@ -181,14 +213,12 @@ class TrainingAnalyticsEngine {
         if (mp == null) continue;
         if (!CapabilityProfile.trainablePatterns.contains(mp)) continue;
 
-        // Accumulate sets
         setsInWorkout[mp] = (setsInWorkout[mp] ?? 0) + ex.sets;
         patternsInWorkout.add(mp);
       }
 
       for (final mp in patternsInWorkout) {
         movementSessions[mp] = (movementSessions[mp] ?? 0) + 1;
-        // Update lastTrained
         final currentLast = movementLast[mp];
         if (currentLast == null || workout.completedAt.isAfter(currentLast)) {
           movementLast[mp] = workout.completedAt;
@@ -209,7 +239,6 @@ class TrainingAnalyticsEngine {
       ));
     }
 
-    // Order: main sets descending, sessions descending, canonical order
     movementAnalytics.sort((a, b) {
       if (b.mainSets != a.mainSets) return b.mainSets.compareTo(a.mainSets);
       if (b.sessions != a.sessions) return b.sessions.compareTo(a.sessions);
@@ -221,7 +250,7 @@ class TrainingAnalyticsEngine {
     return TrainingAnalytics(
       now: now,
       savedWorkoutsCount: savedCount,
-      validWorkouts: List.unmodifiable(validWorkouts),
+      validWorkouts: validWorkouts,
       currentPeriod: TrainingPeriodSummary(
         workoutCount: currentWorkouts,
         mainSets: currentSets,
@@ -238,8 +267,8 @@ class TrainingAnalyticsEngine {
         plannedDuration: last28Planned,
       ),
       activeWeeksCount: activeWeeks,
-      trendBuckets: List.unmodifiable(buckets),
-      movementAnalytics: List.unmodifiable(movementAnalytics),
+      trendBuckets: buckets,
+      movementAnalytics: movementAnalytics,
     );
   }
 }
