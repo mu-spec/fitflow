@@ -83,7 +83,7 @@ CompletedWorkout makeWorkout({
   DateTime? completedAt,
   List<CompletedWorkoutExercise>? main,
 }) {
-  final now = completedAt ?? DateTime.utc(2026, 9, 29, 10, 0, 0);
+  final now = completedAt ?? DateTime.now().toUtc().subtract(const Duration(hours: 1));
   final m = main ?? [makeEx()];
   return CompletedWorkout(
     id: id,
@@ -129,7 +129,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('No completed workouts yet'), findsOneWidget);
-      expect(find.text('Finish a workout and it will appear here.'), findsOneWidget);
+      expect(find.text('Finish a workout and your progress will appear here.'), findsOneWidget);
       expect(find.text('Start a workout'), findsOneWidget);
     });
 
@@ -152,8 +152,9 @@ void main() {
     });
 
     testWidgets('total workouts', (tester) async {
-      final w1 = makeWorkout(id: 'w1', completedAt: DateTime.utc(2026, 9, 28));
-      final w2 = makeWorkout(id: 'w2', completedAt: DateTime.utc(2026, 9, 27));
+      final now = DateTime.now().toUtc();
+      final w1 = makeWorkout(id: 'w1', completedAt: now.subtract(const Duration(days: 1)));
+      final w2 = makeWorkout(id: 'w2', completedAt: now.subtract(const Duration(days: 2)));
       // Use storage to save properly
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
@@ -169,7 +170,7 @@ void main() {
       await tester.tap(find.text('Progress'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Total workouts'), findsOneWidget);
+      expect(find.text('Saved workouts'), findsOneWidget);
       expect(find.text('2'), findsWidgets);
     });
 
@@ -268,8 +269,9 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
       final storage = WorkoutHistoryStorage(prefs);
-      final w1 = makeWorkout(id: 'w1', completedAt: DateTime.utc(2026, 9, 27, 10, 0, 0));
-      final w2 = makeWorkout(id: 'w2', completedAt: DateTime.utc(2026, 9, 28, 10, 0, 0));
+      final now = DateTime.now().toUtc();
+      final w1 = makeWorkout(id: 'w1', completedAt: now.subtract(const Duration(days: 2)));
+      final w2 = makeWorkout(id: 'w2', completedAt: now.subtract(const Duration(days: 1)));
       await storage.add(w1);
       await storage.add(w2);
 
@@ -290,8 +292,9 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
       final storage = WorkoutHistoryStorage(prefs);
+      final now = DateTime.now().toUtc();
       for (int i = 0; i < 15; i++) {
-        final w = makeWorkout(id: 'w$i', completedAt: DateTime.utc(2026, 9, 1).add(Duration(days: i)));
+        final w = makeWorkout(id: 'w$i', completedAt: now.subtract(Duration(days: i)));
         await storage.add(w);
       }
 

@@ -20,4 +20,7 @@ class AppRoutes {
   static String customWorkoutDetail(String workoutId) => '/workouts/custom/$workoutId';
   static String customWorkoutEdit(String workoutId) => '/workouts/custom/$workoutId/edit';
   static String customWorkoutPlayer(String workoutId) => '/workouts/custom/$workoutId/player';
+
+  // Progress history detail – M14 cleanup
+  static String progressHistoryDetail(String sessionId) => '/progress/history/$sessionId';
 }
