@@ -42,7 +42,7 @@ void main() {
 
     await tester.tap(find.text('Progress'));
     await tester.pumpAndSettle();
-    expect(find.text('Training Time'), findsOneWidget);
+    expect(find.text('Your progress'), findsOneWidget);
 
     await tester.tap(find.text('Profile'));
     await tester.pumpAndSettle();

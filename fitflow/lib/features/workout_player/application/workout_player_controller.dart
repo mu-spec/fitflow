@@ -8,6 +8,9 @@ import 'package:fitflow/features/workouts/domain/eligibility/exercise_eligibilit
 import 'package:fitflow/features/workouts/domain/eligibility/exercise_eligibility_engine.dart';
 import 'package:fitflow/features/workouts/domain/exercise.dart';
 import 'package:fitflow/features/workouts/domain/exercise_difficulty.dart';
+import 'package:fitflow/features/workouts/domain/history/completed_workout.dart';
+import 'package:fitflow/features/workouts/domain/history/completed_workout_exercise.dart';
+import 'package:fitflow/features/workouts/domain/movement_pattern.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_exercise_prescription.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_plan.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_section_type.dart';
@@ -38,6 +41,7 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
     UserFitnessProfile? userProfile,
     CapabilityProfile? capabilityProfile,
     List<Exercise>? catalog,
+    String? sessionIdOverride,
   })  : _execution = WorkoutPlayerExecution(plan),
         _autoStartTimer = autoStartTimer,
         _coach = coach ?? NoOpWorkoutCoach(),
@@ -45,6 +49,7 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
         _capabilityProfile = capabilityProfile,
         _catalog = catalog ?? ExerciseCatalog.all,
         _replacements = {},
+        sessionId = sessionIdOverride ?? _generateSessionId(),
         super(_initialState(plan, voiceEnabled: voiceEnabled));
 
   final WorkoutPlayerExecution _execution;
@@ -58,6 +63,19 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
   bool _isCompleting = false;
 
   final Map<String, WorkoutExercisePrescription> _replacements;
+
+  /// Stable session ID generated once when controller is created.
+  final String sessionId;
+
+  static int _sessionCounter = 0;
+
+  static String _generateSessionId() {
+    final now = DateTime.now().toUtc();
+    final counter = _sessionCounter++;
+    // Format: workout_20260929T123456789Z_counter
+    final iso = now.toIso8601String().replaceAll(RegExp(r'[:.\-]'), '').replaceAll('Z', '');
+    return 'workout_${iso}Z_${now.millisecondsSinceEpoch}_$counter';
+  }
 
   String _keyFor(int sectionIndex, int exerciseIndex) => '$sectionIndex-$exerciseIndex';
 
@@ -96,6 +114,26 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
     return List.unmodifiable(list);
   }
 
+  List<WorkoutExercisePrescription> get effectiveWarmupPrescriptions {
+    const warmupSectionIndex = 0;
+    final count = _execution.exerciseCountInSection(warmupSectionIndex);
+    final list = <WorkoutExercisePrescription>[];
+    for (int e = 0; e < count; e++) {
+      list.add(_effectivePrescriptionAt(warmupSectionIndex, e));
+    }
+    return List.unmodifiable(list);
+  }
+
+  List<WorkoutExercisePrescription> get effectiveCooldownPrescriptions {
+    const cooldownSectionIndex = 2;
+    final count = _execution.exerciseCountInSection(cooldownSectionIndex);
+    final list = <WorkoutExercisePrescription>[];
+    for (int e = 0; e < count; e++) {
+      list.add(_effectivePrescriptionAt(cooldownSectionIndex, e));
+    }
+    return List.unmodifiable(list);
+  }
+
   /// All effective prescriptions in order (warmup, main, cooldown) for completeness.
   List<WorkoutExercisePrescription> get effectiveAllPrescriptions {
     final list = <WorkoutExercisePrescription>[];
@@ -106,6 +144,50 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
       }
     }
     return List.unmodifiable(list);
+  }
+
+  /// Create immutable completed workout snapshot from current effective session.
+  /// Does not perform I/O. Uses effective prescriptions including replacements.
+  CompletedWorkout createCompletedWorkoutSnapshot({
+    required WorkoutPlan plan,
+    DateTime? completedAt,
+  }) {
+    final now = completedAt ?? DateTime.now().toUtc();
+    final warmup = effectiveWarmupPrescriptions.map((p) => _mapPrescriptionToCompleted(p, WorkoutSectionType.warmup)).toList();
+    final main = effectiveMainPrescriptions.map((p) => _mapPrescriptionToCompleted(p, WorkoutSectionType.main)).toList();
+    final cooldown = effectiveCooldownPrescriptions.map((p) => _mapPrescriptionToCompleted(p, WorkoutSectionType.cooldown)).toList();
+
+    final totalExercises = warmup.length + main.length + cooldown.length;
+    final totalSets = [...warmup, ...main, ...cooldown].fold<int>(0, (sum, ex) => sum + ex.sets);
+
+    return CompletedWorkout(
+      id: sessionId,
+      completedAt: now,
+      targetDuration: plan.targetDuration,
+      estimatedDuration: plan.estimatedDuration,
+      totalExerciseCount: totalExercises,
+      totalSetCount: totalSets,
+      warmup: List.unmodifiable(warmup),
+      main: List.unmodifiable(main),
+      cooldown: List.unmodifiable(cooldown),
+    );
+  }
+
+  static CompletedWorkoutExercise _mapPrescriptionToCompleted(
+    WorkoutExercisePrescription pres,
+    WorkoutSectionType sectionType,
+  ) {
+    return CompletedWorkoutExercise(
+      exerciseId: pres.exercise.id,
+      exerciseName: pres.exercise.name,
+      movementPattern: pres.exercise.movementPattern ?? (sectionType == WorkoutSectionType.warmup ? MovementPattern.warmup : sectionType == WorkoutSectionType.cooldown ? MovementPattern.cooldown : MovementPattern.push),
+      sectionType: sectionType,
+      sets: pres.sets,
+      repsPerSet: pres.repsPerSet,
+      workDuration: pres.workDuration,
+      restBetweenSets: pres.restBetweenSets,
+      difficulty: pres.exercise.difficulty,
+    );
   }
 
   static WorkoutPlayerState _initialState(WorkoutPlan plan, {bool voiceEnabled = true}) {

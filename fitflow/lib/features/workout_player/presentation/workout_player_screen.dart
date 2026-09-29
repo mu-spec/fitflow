@@ -17,6 +17,7 @@ import 'package:fitflow/features/workout_player/presentation/widgets/workout_pla
 import 'package:fitflow/features/workout_player/presentation/widgets/workout_player_section_break_view.dart';
 import 'package:fitflow/features/workout_player/presentation/widgets/workout_player_transition_view.dart';
 import 'package:fitflow/features/workout_preview/presentation/widgets/workout_preview_empty.dart';
+import 'package:fitflow/features/workouts/application/workout_history_controller.dart';
 import 'package:fitflow/features/workouts/domain/capability_profile.dart';
 import 'package:fitflow/features/workouts/domain/generation/workout_generation_context.dart';
 import 'package:fitflow/features/workouts/domain/generation/workout_generator.dart';
@@ -107,6 +108,7 @@ class _WorkoutPlayerContentState extends ConsumerState<_WorkoutPlayerContent> {
   late final AppLifecycleListener _lifecycleListener;
   bool _allowPop = false;
   late final WorkoutPlan _stablePlan;
+  final Set<String> _recordedSessionIds = {};
 
   @override
   void initState() {
@@ -125,6 +127,32 @@ class _WorkoutPlayerContentState extends ConsumerState<_WorkoutPlayerContent> {
         }
       },
     );
+  }
+
+  void _maybeRecordHistory(WorkoutPlayerState state) {
+    if (state.phase != WorkoutPlayerPhase.completed) return;
+    try {
+      final controller = ref.read(workoutPlayerControllerProvider(_stablePlan).notifier);
+      final sessionId = controller.sessionId;
+      if (_recordedSessionIds.contains(sessionId)) return;
+      _recordedSessionIds.add(sessionId);
+
+      // Create snapshot – does not perform I/O
+      final completedWorkout = controller.createCompletedWorkoutSnapshot(plan: _stablePlan);
+
+      // Fire-and-forget, do not block UI, do not crash on failure
+      // ignore: discarded_futures
+      ref.read(workoutHistoryProvider.notifier).addWorkout(completedWorkout).then((success) {
+        // On failure, allow retry opportunity but do not spam
+        if (!success) {
+          _recordedSessionIds.remove(sessionId);
+        }
+      }, onError: (_) {
+        _recordedSessionIds.remove(sessionId);
+      });
+    } catch (_) {
+      // History failure must not break Player
+    }
   }
 
   @override
@@ -221,6 +249,16 @@ class _WorkoutPlayerContentState extends ConsumerState<_WorkoutPlayerContent> {
   Widget build(BuildContext context) {
     final state = ref.watch(workoutPlayerControllerProvider(_stablePlan));
     final controller = ref.read(workoutPlayerControllerProvider(_stablePlan).notifier);
+
+    // Record history exactly once when workout completes
+    // Use microtask to avoid calling provider during build
+    if (state.phase == WorkoutPlayerPhase.completed) {
+      Future.microtask(() {
+        if (mounted) {
+          _maybeRecordHistory(state);
+        }
+      });
+    }
 
     final isActiveSession = state.phase == WorkoutPlayerPhase.work ||
         state.phase == WorkoutPlayerPhase.rest ||
