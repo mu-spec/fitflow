@@ -10,9 +10,11 @@ import 'package:fitflow/features/workout_preview/presentation/widgets/workout_pr
 import 'package:fitflow/features/workout_preview/presentation/widgets/workout_preview_exercise_row.dart';
 import 'package:fitflow/features/workout_preview/presentation/widgets/workout_preview_section_header.dart';
 import 'package:fitflow/features/workout_preview/presentation/widgets/workout_preview_summary_card.dart';
+import 'package:fitflow/features/workouts/application/workout_session_mode_controller.dart';
 import 'package:fitflow/features/workouts/domain/capability_profile.dart';
 import 'package:fitflow/features/workouts/domain/generation/workout_generation_context.dart';
 import 'package:fitflow/features/workouts/domain/generation/workout_generator.dart';
+import 'package:fitflow/features/workouts/domain/session/workout_session_mode.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_exercise_prescription.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_plan.dart';
 import 'package:fitflow/features/workouts/state/capability_profile_controller.dart';
@@ -20,7 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// Workout Preview screen showing exact deterministic WorkoutPlan.
+/// Workout Preview screen showing exact deterministic WorkoutPlan + M12 mode.
 class WorkoutPreviewScreen extends ConsumerWidget {
   const WorkoutPreviewScreen({super.key});
 
@@ -28,6 +30,7 @@ class WorkoutPreviewScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final userProfileAsync = ref.watch(userFitnessProfileProvider);
     final capabilityProfileAsync = ref.watch(capabilityProfileProvider);
+    final sessionMode = ref.watch(workoutSessionModeProvider);
 
     if (userProfileAsync is AsyncLoading || capabilityProfileAsync is AsyncLoading) {
       return Scaffold(
@@ -74,6 +77,7 @@ class WorkoutPreviewScreen extends ConsumerWidget {
     final generationContext = WorkoutGenerationContext(
       userProfile: userProfile,
       capabilityProfile: capabilityProfile,
+      sessionMode: sessionMode,
     );
 
     final WorkoutPlan? plan = WorkoutGenerator.generateCatalog(generationContext);
@@ -98,7 +102,16 @@ class WorkoutPreviewScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  WorkoutPreviewSummaryCard(plan: plan, userProfile: userProfile),
+                  WorkoutPreviewSummaryCard(
+                    plan: plan,
+                    userProfile: userProfile,
+                    effectiveDuration: generationContext.effectiveWorkoutDuration,
+                    sessionMode: sessionMode,
+                  ),
+                  if (sessionMode != WorkoutSessionMode.standard) ...[
+                    const SizedBox(height: 12),
+                    _ModeBadge(mode: sessionMode),
+                  ],
                   const SizedBox(height: 24),
                   // Warm-up
                   WorkoutPreviewSectionHeader(
@@ -160,6 +173,38 @@ class WorkoutPreviewScreen extends ConsumerWidget {
           child: WorkoutPreviewExerciseRow(prescription: pres),
         );
       }).toList(),
+    );
+  }
+}
+
+class _ModeBadge extends StatelessWidget {
+  const _ModeBadge({required this.mode});
+  final WorkoutSessionMode mode;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: colorScheme.secondaryContainer,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.info_outline, size: 16, color: colorScheme.onSecondaryContainer),
+          const SizedBox(width: 8),
+          Text(
+            '${mode.label} • Temporary for this workout',
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: colorScheme.onSecondaryContainer,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

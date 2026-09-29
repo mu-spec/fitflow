@@ -7,9 +7,10 @@ import 'package:fitflow/features/workouts/domain/movement_pattern.dart';
 import 'package:fitflow/features/workouts/domain/ranking/exercise_ranking_engine.dart';
 import 'package:fitflow/features/workouts/domain/ranking/exercise_ranking_result.dart';
 
-/// Deterministic candidate pool resolver (5D-1).
+/// Deterministic candidate pool resolver (5D-1 + M12).
 ///
 /// - Uses existing eligibility + ranking via rankForUser (no duplication)
+/// - M12: uses effectiveCapabilityProfile for ranking but original UserFitnessProfile for goal/equipment/etc
 /// - Classifies by movement pattern and tags only (no name/description)
 /// - Preserves ranking order within each pool
 /// - No duplicate pool membership (precedence warmup > cooldown > main)
@@ -26,10 +27,11 @@ class WorkoutCandidateResolver {
     WorkoutGenerationContext context,
   ) {
     // Pipeline: eligibility + ranking via existing engine (single source of truth)
+    // M12: use effectiveCapabilityProfile for ranking, original userProfile unchanged
     final ranked = ExerciseRankingEngine.rankForUser(
       exercises,
       context.userProfile,
-      context.capabilityProfile,
+      context.effectiveCapabilityProfile,
     );
 
     final warmup = <ExerciseRankingResult>[];

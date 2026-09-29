@@ -3,6 +3,8 @@ import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/workout_player/application/workout_player_controller.dart';
 import 'package:fitflow/features/workout_player/application/workout_player_state.dart';
 import 'package:fitflow/features/workout_player/presentation/widgets/adaptive_progression_feedback_sheet.dart';
+import 'package:fitflow/features/workouts/application/workout_session_mode_controller.dart';
+import 'package:fitflow/features/workouts/domain/session/workout_session_mode.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_exercise_prescription.dart';
 import 'package:fitflow/features/workouts/state/capability_profile_controller.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_plan.dart';
@@ -11,16 +13,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 /// Completed phase view - truthful data only, no calories/XP/streaks/history.
-/// Now includes Tune next workout secondary action for adaptive progression.
+/// M12: Tune disabled for temporary modes, reset mode on Done.
 class WorkoutPlayerCompletedView extends ConsumerWidget {
   const WorkoutPlayerCompletedView({
     super.key,
     required this.plan,
     required this.state,
+    this.sessionMode = WorkoutSessionMode.standard,
   });
 
   final WorkoutPlan plan;
   final WorkoutPlayerState state;
+  final WorkoutSessionMode sessionMode;
 
   String _formatDuration(Duration? d) {
     if (d == null) return '—';
@@ -76,6 +80,22 @@ class WorkoutPlayerCompletedView extends ConsumerWidget {
     );
   }
 
+  void _handleDone(BuildContext context, WidgetRef ref) {
+    // Reset to standard when leaving completion after non-standard
+    if (sessionMode != WorkoutSessionMode.standard) {
+      try {
+        ref.read(workoutSessionModeProvider.notifier).reset();
+      } catch (_) {}
+    }
+    if (context.mounted) {
+      try {
+        context.go(AppRoutes.home);
+      } catch (_) {
+        ref.read(appRouterProvider).go(AppRoutes.home);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
@@ -84,6 +104,7 @@ class WorkoutPlayerCompletedView extends ConsumerWidget {
     final totalExercises = plan.totalExerciseCount;
     final completedSets = state.completedSets;
     final totalSets = state.totalSets;
+    final isTemporary = sessionMode != WorkoutSessionMode.standard;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -116,6 +137,24 @@ class WorkoutPlayerCompletedView extends ConsumerWidget {
           ),
           textAlign: TextAlign.center,
         ),
+        if (isTemporary) ...[
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: colorScheme.secondaryContainer,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              'This was a temporary ${sessionMode.label} workout. Your movement levels stay unchanged.',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSecondaryContainer,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
         const SizedBox(height: 24),
         Card(
           child: Padding(
@@ -142,26 +181,19 @@ class WorkoutPlayerCompletedView extends ConsumerWidget {
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 24),
-        SizedBox(
-          width: double.infinity,
-          child: FilledButton(
-            onPressed: () => _openTuneSheet(context, ref),
-            child: const Text('Tune next workout'),
+        if (!isTemporary)
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: () => _openTuneSheet(context, ref),
+              child: const Text('Tune next workout'),
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
+        if (!isTemporary) const SizedBox(height: 8),
         SizedBox(
           width: double.infinity,
           child: OutlinedButton(
-            onPressed: () {
-              if (context.mounted) {
-                try {
-                  context.go(AppRoutes.home);
-                } catch (_) {
-                  ref.read(appRouterProvider).go(AppRoutes.home);
-                }
-              }
-            },
+            onPressed: () => _handleDone(context, ref),
             child: const Text('Done'),
           ),
         ),

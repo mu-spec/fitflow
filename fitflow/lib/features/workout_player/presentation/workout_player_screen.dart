@@ -18,9 +18,11 @@ import 'package:fitflow/features/workout_player/presentation/widgets/workout_pla
 import 'package:fitflow/features/workout_player/presentation/widgets/workout_player_transition_view.dart';
 import 'package:fitflow/features/workout_preview/presentation/widgets/workout_preview_empty.dart';
 import 'package:fitflow/features/workouts/application/workout_history_controller.dart';
+import 'package:fitflow/features/workouts/application/workout_session_mode_controller.dart';
 import 'package:fitflow/features/workouts/domain/capability_profile.dart';
 import 'package:fitflow/features/workouts/domain/generation/workout_generation_context.dart';
 import 'package:fitflow/features/workouts/domain/generation/workout_generator.dart';
+import 'package:fitflow/features/workouts/domain/session/workout_session_mode.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_plan.dart';
 import 'package:fitflow/features/workouts/state/capability_profile_controller.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +36,7 @@ class WorkoutPlayerScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final userProfileAsync = ref.watch(userFitnessProfileProvider);
     final capabilityProfileAsync = ref.watch(capabilityProfileProvider);
+    final sessionMode = ref.watch(workoutSessionModeProvider);
 
     if (userProfileAsync is AsyncLoading || capabilityProfileAsync is AsyncLoading) {
       return Scaffold(
@@ -80,6 +83,7 @@ class WorkoutPlayerScreen extends ConsumerWidget {
     final generationContext = WorkoutGenerationContext(
       userProfile: userProfile,
       capabilityProfile: capabilityProfile,
+      sessionMode: sessionMode,
     );
 
     final WorkoutPlan? plan = WorkoutGenerator.generateCatalog(generationContext);
@@ -91,14 +95,15 @@ class WorkoutPlayerScreen extends ConsumerWidget {
       );
     }
 
-    return _WorkoutPlayerContent(plan: plan);
+    return _WorkoutPlayerContent(plan: plan, sessionMode: sessionMode);
   }
 }
 
 class _WorkoutPlayerContent extends ConsumerStatefulWidget {
-  const _WorkoutPlayerContent({required this.plan});
+  const _WorkoutPlayerContent({required this.plan, required this.sessionMode});
 
   final WorkoutPlan plan;
+  final WorkoutSessionMode sessionMode;
 
   @override
   ConsumerState<_WorkoutPlayerContent> createState() => _WorkoutPlayerContentState();
@@ -108,13 +113,15 @@ class _WorkoutPlayerContentState extends ConsumerState<_WorkoutPlayerContent> {
   late final AppLifecycleListener _lifecycleListener;
   bool _allowPop = false;
   late final WorkoutPlan _stablePlan;
+  late final WorkoutSessionMode _stableMode;
   final Set<String> _recordedSessionIds = {};
 
   @override
   void initState() {
     super.initState();
-    // Capture stable session plan to prevent rebuilds when capability profile changes
+    // Capture stable session plan and mode to prevent rebuilds when capability profile or mode changes
     _stablePlan = widget.plan;
+    _stableMode = widget.sessionMode;
     _lifecycleListener = AppLifecycleListener(
       onInactive: _handleAppInactive,
       onPause: _handleAppInactive,
@@ -158,8 +165,8 @@ class _WorkoutPlayerContentState extends ConsumerState<_WorkoutPlayerContent> {
   @override
   void didUpdateWidget(covariant _WorkoutPlayerContent oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Intentionally ignore new widget.plan to keep session stable
-    // This prevents completed Player from resetting when capability profile changes
+    // Intentionally ignore new widget.plan and sessionMode to keep session stable
+    // This prevents completed Player from resetting when capability profile or mode changes
   }
 
   @override
@@ -300,6 +307,14 @@ class _WorkoutPlayerContentState extends ConsumerState<_WorkoutPlayerContent> {
         appBar: AppBar(
           title: const Text('Workout player'),
           actions: [
+            if (_stableMode != WorkoutSessionMode.standard)
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: Chip(
+                  label: Text(_stableMode.label),
+                  visualDensity: VisualDensity.compact,
+                ),
+              ),
             IconButton(
               tooltip: state.voiceEnabled ? 'Voice on' : 'Muted',
               onPressed: () => controller.toggleVoice(),
@@ -393,7 +408,7 @@ class _WorkoutPlayerContentState extends ConsumerState<_WorkoutPlayerContent> {
   ) {
     switch (state.phase) {
       case WorkoutPlayerPhase.ready:
-        return _ReadyView(state: state);
+        return _ReadyView(state: state, sessionMode: _stableMode);
       case WorkoutPlayerPhase.work:
         return WorkoutPlayerExerciseCenter(state: state);
       case WorkoutPlayerPhase.rest:
@@ -403,15 +418,16 @@ class _WorkoutPlayerContentState extends ConsumerState<_WorkoutPlayerContent> {
       case WorkoutPlayerPhase.sectionBreak:
         return WorkoutPlayerSectionBreakView(state: state);
       case WorkoutPlayerPhase.completed:
-        return WorkoutPlayerCompletedView(plan: _stablePlan, state: state);
+        return WorkoutPlayerCompletedView(plan: _stablePlan, state: state, sessionMode: _stableMode);
     }
   }
 }
 
 class _ReadyView extends StatelessWidget {
-  const _ReadyView({required this.state});
+  const _ReadyView({required this.state, required this.sessionMode});
 
   final WorkoutPlayerState state;
+  final WorkoutSessionMode sessionMode;
 
   @override
   Widget build(BuildContext context) {
@@ -453,6 +469,23 @@ class _ReadyView extends StatelessWidget {
             ),
           ),
         ),
+        if (sessionMode != WorkoutSessionMode.standard) ...[
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.secondaryContainer,
+              borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
+            ),
+            child: Text(
+              '${sessionMode.label} • Temporary for this workout',
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: theme.colorScheme.onSecondaryContainer,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
         const SizedBox(height: 16),
         Text(
           prescription.exercise.name,

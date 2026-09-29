@@ -9,22 +9,23 @@ import 'package:fitflow/features/workouts/domain/generation/workout_volume_fille
 import 'package:fitflow/features/workouts/domain/workout/workout_plan.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_section_type.dart';
 
-/// Deterministic complete workout generator — Final Milestone.
+/// Deterministic complete workout generator — Final Milestone + M12.
 ///
 /// Flow:
-/// 1. resolve candidates
+/// 1. resolve candidates (uses effectiveCapabilityProfile via resolver)
 /// 2. diversify MAIN candidates (deterministic two-pass unique movement first)
 /// 3. build warmup using builder
 /// 4. build main using diversified candidates
 /// 5. build cooldown using builder
 /// 6. require all three non-empty
-/// 7. fill warmup/main/cooldown volume via round-robin set increments within budgets
+/// 7. fill warmup/main/cooldown volume via round-robin set increments within budgets (effective duration)
 /// 8. build WorkoutPlan
 /// 9. validate plan
 ///
 /// Preserves existing pipeline:
 /// Eligibility → Ranking → Candidate Pools → Section Builder → WorkoutPlan
 /// Reuses all existing systems, no duplication.
+/// M12: uses effectiveWorkoutDuration for limits and effective timeBudget.
 class WorkoutGenerator {
   const WorkoutGenerator._();
 
@@ -41,14 +42,14 @@ class WorkoutGenerator {
     List<Exercise> exercises,
     WorkoutGenerationContext context,
   ) {
-    // 1. Resolve eligible/ranked candidates (5D-1)
+    // 1. Resolve eligible/ranked candidates (5D-1, M12 uses effective capability)
     final candidates = WorkoutCandidateResolver.resolve(exercises, context);
 
-    // 2. Explicit count policy single source of truth
+    // 2. Explicit count policy single source of truth – M12 uses effective duration
     final limits = WorkoutGenerationLimits.fromWorkoutDuration(
-        context.userProfile.workoutDuration);
+        context.effectiveWorkoutDuration);
 
-    // 3. Section budgets from context.timeBudget (5C-2)
+    // 3. Section budgets from context.timeBudget (M12 derived from effective duration)
     final warmupBudget =
         context.timeBudget.budgetFor(WorkoutSectionType.warmup);
     final mainBudget = context.timeBudget.budgetFor(WorkoutSectionType.main);
@@ -115,7 +116,7 @@ class WorkoutGenerator {
       return null;
     }
 
-    // 9. Plan construction using context.timeBudget
+    // 9. Plan construction using context.timeBudget (effective)
     final plan = WorkoutPlan(
       warmup: filledWarmup,
       main: filledMain,
