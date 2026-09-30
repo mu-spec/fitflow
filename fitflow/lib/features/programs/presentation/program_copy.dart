@@ -55,8 +55,15 @@ class ProgramCopy {
   static const String generationFailed =
       "This program workout can't be generated with your current setup.";
   static const String startWorkout = 'Start workout';
-  static const String startUnavailable =
-      'Workout start will be available after program setup finishes.';
+
+  // Player (Part 2)
+  static const String playerTitle = 'Program workout';
+  static const String playerWorkoutNotFound = 'Program workout not found';
+  static const String playerWorkoutNotFoundBody =
+      "This workout isn't part of the program. Go back and choose one from the program.";
+  static const String backToPrograms = 'Back to programs';
+  static const String backToProgram = 'Back to program';
+  static const String programWorkoutCompleted = 'Program workout completed.';
 
   // Not found
   static const String programNotFound = 'Program not found';

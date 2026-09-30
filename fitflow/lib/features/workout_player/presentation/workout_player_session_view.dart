@@ -2,6 +2,7 @@ import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/features/workout_player/application/workout_player_controller.dart';
 import 'package:fitflow/features/workout_player/application/workout_player_state.dart';
 import 'package:fitflow/features/workout_player/domain/workout_player_phase.dart';
+import 'package:fitflow/features/workout_player/domain/workout_player_completion.dart';
 import 'package:fitflow/features/workout_player/domain/workout_replacement_option.dart';
 import 'package:fitflow/features/workout_player/domain/workout_session_origin.dart';
 import 'package:fitflow/features/workout_player/presentation/widgets/workout_player_completed_view.dart';
@@ -18,7 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// Reusable session view for both adaptive (generated) and custom workouts.
+/// Reusable session view for adaptive (generated), custom and program workouts.
 /// Single execution engine – timers, sets, rest, transitions, section breaks, TTS, pause, lifecycle, exit confirmation, M9, history.
 class WorkoutPlayerSessionView extends ConsumerStatefulWidget {
   const WorkoutPlayerSessionView({
@@ -28,6 +29,8 @@ class WorkoutPlayerSessionView extends ConsumerStatefulWidget {
     required this.sessionOrigin,
     this.onDone,
     this.doneRoute,
+    this.onWorkoutCompleted,
+    this.completionNote,
   });
 
   final WorkoutPlan plan;
@@ -35,6 +38,14 @@ class WorkoutPlayerSessionView extends ConsumerStatefulWidget {
   final WorkoutSessionOrigin sessionOrigin;
   final VoidCallback? onDone;
   final String? doneRoute;
+
+  /// Optional completion hook (M16). Fired only when the phase becomes
+  /// `completed` — never on Done, Tune, rebuilds or exit. Independent of the
+  /// M11 history save: neither waits for, nor depends on, the other.
+  final WorkoutCompletionCallback? onWorkoutCompleted;
+
+  /// Optional small factual line shown on the completion screen.
+  final String? completionNote;
 
   @override
   ConsumerState<WorkoutPlayerSessionView> createState() => _WorkoutPlayerSessionViewState();
@@ -47,6 +58,7 @@ class _WorkoutPlayerSessionViewState extends ConsumerState<WorkoutPlayerSessionV
   late final WorkoutSessionMode _stableMode;
   late final WorkoutSessionOrigin _stableOrigin;
   final Set<String> _recordedSessionIds = {};
+  final Set<String> _notifiedSessionIds = {};
 
   @override
   void initState() {
@@ -88,6 +100,39 @@ class _WorkoutPlayerSessionViewState extends ConsumerState<WorkoutPlayerSessionV
       });
     } catch (_) {
       // History failure must not break Player
+    }
+  }
+
+  /// Fires [WorkoutPlayerSessionView.onWorkoutCompleted] at most once per
+  /// Player session. A `false` result or an exception releases the guard so a
+  /// later rebuild can retry; a `true` result is final for this session.
+  void _maybeNotifyCompletion(WorkoutPlayerState state) {
+    if (state.phase != WorkoutPlayerPhase.completed) return;
+    final callback = widget.onWorkoutCompleted;
+    if (callback == null) return;
+    try {
+      final controller = ref.read(workoutPlayerControllerProvider(_stablePlan).notifier);
+      final sessionId = controller.sessionId;
+      if (_notifiedSessionIds.contains(sessionId)) return;
+      _notifiedSessionIds.add(sessionId);
+
+      final completion = WorkoutPlayerCompletion(
+        playerSessionId: sessionId,
+        completedWorkout: controller.createCompletedWorkoutSnapshot(plan: _stablePlan),
+        plan: _stablePlan,
+        origin: _stableOrigin,
+      );
+
+      // ignore: discarded_futures
+      callback(completion).then((handled) {
+        if (!handled) {
+          _notifiedSessionIds.remove(sessionId);
+        }
+      }, onError: (_) {
+        _notifiedSessionIds.remove(sessionId);
+      });
+    } catch (_) {
+      // Completion hook failure must not break Player
     }
   }
 
@@ -187,6 +232,7 @@ class _WorkoutPlayerSessionViewState extends ConsumerState<WorkoutPlayerSessionV
       Future.microtask(() {
         if (mounted) {
           _maybeRecordHistory(state);
+          _maybeNotifyCompletion(state);
         }
       });
     }
@@ -229,7 +275,7 @@ class _WorkoutPlayerSessionViewState extends ConsumerState<WorkoutPlayerSessionV
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(_stableOrigin == WorkoutSessionOrigin.custom ? 'Custom workout' : 'Workout player'),
+          title: Text(_appBarTitle(_stableOrigin)),
           actions: [
             if (_stableOrigin == WorkoutSessionOrigin.adaptive && _stableMode != WorkoutSessionMode.standard)
               Padding(
@@ -349,8 +395,20 @@ class _WorkoutPlayerSessionViewState extends ConsumerState<WorkoutPlayerSessionV
           sessionOrigin: _stableOrigin,
           onDone: widget.onDone,
           doneRoute: widget.doneRoute,
+          completionNote: widget.completionNote,
         );
     }
+  }
+}
+
+String _appBarTitle(WorkoutSessionOrigin origin) {
+  switch (origin) {
+    case WorkoutSessionOrigin.custom:
+      return 'Custom workout';
+    case WorkoutSessionOrigin.program:
+      return 'Program workout';
+    case WorkoutSessionOrigin.adaptive:
+      return 'Workout player';
   }
 }
 
@@ -428,6 +486,23 @@ class _ReadyView extends StatelessWidget {
             ),
             child: Text(
               'Custom workout • Your prescription',
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: theme.colorScheme.onSecondaryContainer,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+        if (sessionOrigin == WorkoutSessionOrigin.program) ...[
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.secondaryContainer,
+              borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
+            ),
+            child: Text(
+              'Program workout • ${WorkoutSessionMode.standard.label}',
               style: theme.textTheme.labelMedium?.copyWith(
                 color: theme.colorScheme.onSecondaryContainer,
                 fontWeight: FontWeight.w600,

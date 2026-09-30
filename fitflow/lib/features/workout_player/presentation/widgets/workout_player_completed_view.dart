@@ -16,6 +16,8 @@ import 'package:go_router/go_router.dart';
 /// Completed phase view - truthful data only, no calories/XP/streaks.
 /// M12: Tune disabled for temporary modes, reset mode on Done.
 /// M13: Custom origin – no Tune, protection copy, configurable Done destination.
+/// M16: Program origin – normal Standard completion (Tune visible), optional
+/// factual note, Done returns to the program (via [onDone]/[doneRoute]).
 class WorkoutPlayerCompletedView extends ConsumerWidget {
   const WorkoutPlayerCompletedView({
     super.key,
@@ -25,7 +27,16 @@ class WorkoutPlayerCompletedView extends ConsumerWidget {
     this.sessionOrigin = WorkoutSessionOrigin.adaptive,
     this.onDone,
     this.doneRoute,
+    this.completionNote,
   });
+
+  /// Shared truthful copy for every origin (M11 local history only).
+  static const String historySavedCopy =
+      'Completed workouts are saved to your history on this device.';
+
+  /// Default factual note for program sessions. Does not claim progress was
+  /// saved — persistence is reported truthfully on the program detail screen.
+  static const String programCompletedCopy = 'Program workout completed.';
 
   final WorkoutPlan plan;
   final WorkoutPlayerState state;
@@ -33,6 +44,7 @@ class WorkoutPlayerCompletedView extends ConsumerWidget {
   final WorkoutSessionOrigin sessionOrigin;
   final VoidCallback? onDone;
   final String? doneRoute;
+  final String? completionNote;
 
   String _formatDuration(Duration? d) {
     if (d == null) return '—';
@@ -81,6 +93,7 @@ class WorkoutPlayerCompletedView extends ConsumerWidget {
               effectiveMainPrescriptions: effectiveMain,
               currentProfile: capabilityProfile,
               scrollController: scrollController,
+              returnRoute: doneRoute,
             );
           },
         );
@@ -107,8 +120,11 @@ class WorkoutPlayerCompletedView extends ConsumerWidget {
     }
 
     // Default handling based on origin
-    if (sessionOrigin == WorkoutSessionOrigin.custom) {
-      // Custom completion returns to Workouts tab
+    if (sessionOrigin == WorkoutSessionOrigin.custom ||
+        sessionOrigin == WorkoutSessionOrigin.program) {
+      // Custom completion returns to Workouts tab. Program screens always
+      // provide onDone/doneRoute; this is only a safe fallback that never
+      // touches the Home session mode.
       try {
         context.go(AppRoutes.workouts);
       } catch (_) {
@@ -142,6 +158,8 @@ class WorkoutPlayerCompletedView extends ConsumerWidget {
     final totalSets = state.totalSets;
     final isTemporary = sessionOrigin == WorkoutSessionOrigin.adaptive && sessionMode != WorkoutSessionMode.standard;
     final isCustom = sessionOrigin == WorkoutSessionOrigin.custom;
+    final isProgram = sessionOrigin == WorkoutSessionOrigin.program;
+    final note = completionNote ?? (isProgram ? programCompletedCopy : null);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -210,6 +228,17 @@ class WorkoutPlayerCompletedView extends ConsumerWidget {
             ),
           ),
         ],
+        if (note != null) ...[
+          const SizedBox(height: 12),
+          Text(
+            note,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
         const SizedBox(height: 24),
         Card(
           child: Padding(
@@ -229,7 +258,7 @@ class WorkoutPlayerCompletedView extends ConsumerWidget {
         ),
         const SizedBox(height: 16),
         Text(
-          'Session progress is not saved in this version.',
+          historySavedCopy,
           style: theme.textTheme.bodySmall?.copyWith(
             color: colorScheme.onSurfaceVariant,
           ),

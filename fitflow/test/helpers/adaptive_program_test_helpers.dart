@@ -10,8 +10,12 @@ import 'package:fitflow/features/onboarding/data/workout_preference.dart';
 import 'package:fitflow/features/onboarding/state/user_fitness_profile_controller.dart';
 import 'package:fitflow/features/programs/application/adaptive_programs_controller.dart';
 import 'package:fitflow/features/programs/presentation/program_detail_screen.dart';
+import 'package:fitflow/features/programs/presentation/program_session_player_screen.dart';
 import 'package:fitflow/features/programs/presentation/program_session_preview_screen.dart';
 import 'package:fitflow/features/programs/presentation/programs_overview_screen.dart';
+import 'package:fitflow/features/workout_player/application/workout_player_controller.dart';
+import 'package:fitflow/features/workout_player/domain/workout_player_phase.dart';
+import 'package:fitflow/features/workout_player/presentation/workout_player_session_view.dart';
 import 'package:fitflow/features/workouts/domain/capability_profile.dart';
 import 'package:fitflow/features/workouts/presentation/workouts_screen.dart';
 import 'package:fitflow/features/workouts/state/capability_profile_controller.dart';
@@ -83,11 +87,17 @@ List<Override> programOverrides({
   ];
 }
 
-/// Router covering the Workouts tab + all program routes.
+/// Router covering the Workouts tab + all program routes (preview + Player)
+/// and a minimal Home stub so Home-bound navigation stays safe in tests.
 GoRouter programTestRouter({String initialLocation = AppRoutes.workouts}) {
   return GoRouter(
     initialLocation: initialLocation,
     routes: [
+      GoRoute(
+        path: AppRoutes.home,
+        builder: (context, state) =>
+            const Scaffold(body: Center(child: Text('Home stub'))),
+      ),
       GoRoute(
         path: AppRoutes.workouts,
         builder: (context, state) =>
@@ -109,6 +119,16 @@ GoRouter programTestRouter({String initialLocation = AppRoutes.workouts}) {
                       programId: state.pathParameters['programId']!,
                       sessionId: state.pathParameters['sessionId']!,
                     ),
+                    routes: [
+                      GoRoute(
+                        path: 'player',
+                        builder: (context, state) =>
+                            ProgramSessionPlayerScreen(
+                          programId: state.pathParameters['programId']!,
+                          sessionId: state.pathParameters['sessionId']!,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -161,5 +181,70 @@ Future<void> programScrollToTop(WidgetTester tester) async {
   for (var i = 0; i < 20; i++) {
     await tester.drag(list, const Offset(0, 800));
     await tester.pumpAndSettle();
+  }
+}
+
+/// The shared Player view currently on screen (exactly one expected).
+WorkoutPlayerSessionView programPlayerView(WidgetTester tester) =>
+    tester.widget<WorkoutPlayerSessionView>(find.byType(WorkoutPlayerSessionView));
+
+/// Controller backing the on-screen shared Player (same instance the view
+/// watches, keyed by its frozen plan).
+WorkoutPlayerController programPlayerController(WidgetTester tester) {
+  final finder = find.byType(WorkoutPlayerSessionView);
+  final view = tester.widget<WorkoutPlayerSessionView>(finder);
+  final container = ProviderScope.containerOf(tester.element(finder));
+  return container.read(workoutPlayerControllerProvider(view.plan).notifier);
+}
+
+/// Drives a Player controller through every phase until `completed`, using
+/// only the real controller API (no engine shortcuts).
+Future<void> driveProgramPlayerToCompletion(
+  WidgetTester tester,
+  WorkoutPlayerController controller,
+) async {
+  var safety = 0;
+  while (controller.state.phase != WorkoutPlayerPhase.completed &&
+      safety < 5000) {
+    final state = controller.state;
+    switch (state.phase) {
+      case WorkoutPlayerPhase.ready:
+        controller.beginWorkout();
+        break;
+      case WorkoutPlayerPhase.work:
+        if (state.isRepsExercise) {
+          controller.completeSet();
+        } else {
+          var guard = 0;
+          while (controller.state.phase == WorkoutPlayerPhase.work &&
+              controller.state.remaining > Duration.zero &&
+              guard < 10000) {
+            controller.tick();
+            guard++;
+          }
+          if (controller.state.phase == WorkoutPlayerPhase.work &&
+              controller.state.remaining == Duration.zero) {
+            controller.tick();
+          }
+        }
+        break;
+      case WorkoutPlayerPhase.rest:
+        controller.skipRest();
+        break;
+      case WorkoutPlayerPhase.transition:
+        controller.skipTransition();
+        break;
+      case WorkoutPlayerPhase.sectionBreak:
+        controller.continueSection();
+        break;
+      case WorkoutPlayerPhase.completed:
+        break;
+    }
+    safety++;
+  }
+  expect(controller.state.phase, WorkoutPlayerPhase.completed);
+  // Let the completion microtask, history save and completion callback run.
+  for (var i = 0; i < 6; i++) {
+    await tester.pump(const Duration(milliseconds: 50));
   }
 }

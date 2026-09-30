@@ -20,11 +20,18 @@ class AdaptiveProgressionFeedbackSheet extends ConsumerStatefulWidget {
     required this.effectiveMainPrescriptions,
     required this.currentProfile,
     required this.scrollController,
+    this.returnRoute,
   });
 
   final List<WorkoutExercisePrescription> effectiveMainPrescriptions;
   final CapabilityProfile currentProfile;
   final ScrollController scrollController;
+
+  /// Where Skip / Apply navigate afterwards. Defaults to Home (M10 behaviour);
+  /// program sessions pass their program detail route (M16).
+  final String? returnRoute;
+
+  String get _destination => returnRoute ?? AppRoutes.home;
 
   @override
   ConsumerState<AdaptiveProgressionFeedbackSheet> createState() =>
@@ -130,7 +137,7 @@ class _AdaptiveProgressionFeedbackSheetState
         // Navigate cleanly to home before provider rebuild can reset player
         if (context.mounted) {
           try {
-            context.go(AppRoutes.home);
+            context.go(widget._destination);
           } catch (_) {
             Navigator.of(context).maybePop();
           }
@@ -311,7 +318,7 @@ class _AdaptiveProgressionFeedbackSheetState
                           // Skip – do not change capability or evidence
                           if (context.mounted) {
                             try {
-                              context.go(AppRoutes.home);
+                              context.go(widget._destination);
                             } catch (_) {
                               // In tests without GoRouter, just pop or do nothing
                               Navigator.of(context).maybePop();

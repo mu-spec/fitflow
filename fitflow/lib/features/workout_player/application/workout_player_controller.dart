@@ -737,11 +737,16 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
 }
 
 /// Provider for controller, family with WorkoutPlan.
+///
+/// Profile and capability are read once when the session is created so that
+/// a profile/capability change *during* an active workout never recreates the
+/// controller (which would reset the session). Future sessions read the
+/// latest state because a new controller is created per plan.
 final workoutPlayerControllerProvider = StateNotifierProvider.autoDispose
     .family<WorkoutPlayerController, WorkoutPlayerState, WorkoutPlan>((ref, plan) {
   final coach = ref.watch(workoutCoachProvider);
-  final userProfile = ref.watch(userFitnessProfileProvider).value;
-  final capProfile = ref.watch(capabilityProfileProvider).value;
+  final userProfile = ref.read(userFitnessProfileProvider).value;
+  final capProfile = ref.read(capabilityProfileProvider).value;
   return WorkoutPlayerController(
     plan: plan,
     coach: coach,

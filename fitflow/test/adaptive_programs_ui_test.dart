@@ -461,7 +461,8 @@ void main() {
       expect(expectedIds.sublist(0, rows.length), rows);
     });
 
-    testWidgets('Start is disabled with factual Part 1 copy', (tester) async {
+    testWidgets('Start is enabled and no transitional Part 1 copy remains',
+        (tester) async {
       SharedPreferences.setMockInitialValues({});
       await pumpAt(
           tester,
@@ -474,14 +475,11 @@ void main() {
           matching: find.byType(FilledButton),
         ),
       );
-      expect(button.onPressed, isNull);
+      expect(button.onPressed, isNotNull);
       expect(
           find.text(
               'Workout start will be available after program setup finishes.'),
-          findsOneWidget);
-      await tester.tap(find.text('Start workout'), warnIfMissed: false);
-      await tester.pumpAndSettle();
-      expect(find.byType(ProgramSessionPreviewScreen), findsOneWidget);
+          findsNothing);
     });
 
     testWidgets('Home Low Energy / Comeback cannot change the program plan',

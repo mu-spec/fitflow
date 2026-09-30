@@ -5,6 +5,7 @@ import 'package:fitflow/features/main/presentation/main_shell.dart';
 import 'package:fitflow/features/onboarding/presentation/onboarding_screen.dart';
 import 'package:fitflow/features/profile/presentation/profile_screen.dart';
 import 'package:fitflow/features/programs/presentation/program_detail_screen.dart';
+import 'package:fitflow/features/programs/presentation/program_session_player_screen.dart';
 import 'package:fitflow/features/programs/presentation/program_session_preview_screen.dart';
 import 'package:fitflow/features/programs/presentation/programs_overview_screen.dart';
 import 'package:fitflow/features/progress/presentation/progress_history_detail_screen.dart';
@@ -125,6 +126,18 @@ class AppRouter {
                                 programId: state.pathParameters['programId']!,
                                 sessionId: state.pathParameters['sessionId']!,
                               ),
+                              routes: [
+                                GoRoute(
+                                  path: 'player',
+                                  builder: (context, state) =>
+                                      ProgramSessionPlayerScreen(
+                                    programId:
+                                        state.pathParameters['programId']!,
+                                    sessionId:
+                                        state.pathParameters['sessionId']!,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),

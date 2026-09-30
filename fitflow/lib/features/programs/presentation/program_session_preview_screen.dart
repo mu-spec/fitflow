@@ -24,8 +24,7 @@ import 'package:go_router/go_router.dart';
 /// Program session preview — generated at load from the CURRENT profile and
 /// capability through the existing generator. Never persisted.
 ///
-/// Part 1: Start is shown disabled with factual copy. Player execution is
-/// owned by Part 2.
+/// Start navigates to the program Player route (Part 2).
 class ProgramSessionPreviewScreen extends ConsumerWidget {
   const ProgramSessionPreviewScreen({
     super.key,
@@ -111,8 +110,6 @@ class ProgramSessionPreviewScreen extends ConsumerWidget {
       capabilityProfile: capability,
     );
 
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final plan = resolution.plan;
 
     return Scaffold(
@@ -173,21 +170,19 @@ class ProgramSessionPreviewScreen extends ConsumerWidget {
                   const SizedBox(height: 8),
                   _exerciseList(plan.cooldown.exercises),
                   const SizedBox(height: 24),
-                  // Part 1: transitional, implementation-safe disabled Start.
+                  // Part 2: Start opens the shared Player for this planned
+                  // session. The Player generates its own frozen plan from
+                  // the current profile/capability at open time.
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton.icon(
-                      onPressed: null,
+                      onPressed: () => context.push(
+                        AppRoutes.programSessionPlayer(
+                            definition.id, session.id),
+                      ),
                       icon: const Icon(Icons.play_arrow_rounded),
                       label: const Text(ProgramCopy.startWorkout),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    ProgramCopy.startUnavailable,
-                    textAlign: TextAlign.center,
-                    style: theme.textTheme.bodySmall
-                        ?.copyWith(color: colors.onSurfaceVariant),
                   ),
                 ],
                 const SizedBox(height: 16),

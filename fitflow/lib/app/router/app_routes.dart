@@ -34,4 +34,8 @@ class AppRoutes {
       '$programs/${Uri.encodeComponent(programId)}';
   static String programSessionPreview(String programId, String sessionId) =>
       '${programDetail(programId)}/session/${Uri.encodeComponent(sessionId)}';
+
+  // Adaptive programs – M16 Part 2 (Player)
+  static String programSessionPlayer(String programId, String sessionId) =>
+      '${programSessionPreview(programId, sessionId)}/player';
 }
