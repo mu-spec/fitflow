@@ -27,4 +27,11 @@ class AppRoutes {
 
   // Progress history detail – M14 cleanup
   static String progressHistoryDetail(String sessionId) => '/progress/history/$sessionId';
+
+  // Adaptive programs – M16 Part 1
+  static const String programs = '/workouts/programs';
+  static String programDetail(String programId) =>
+      '$programs/${Uri.encodeComponent(programId)}';
+  static String programSessionPreview(String programId, String sessionId) =>
+      '${programDetail(programId)}/session/${Uri.encodeComponent(sessionId)}';
 }

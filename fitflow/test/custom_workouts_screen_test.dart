@@ -130,7 +130,7 @@ void main() {
     expect(find.textContaining('15 minutes'), findsWidgets);
   });
 
-  testWidgets('Workouts screen placeholders for Recommended and Programs', (tester) async {
+  testWidgets('Workouts screen keeps Recommended placeholder and real Programs entry', (tester) async {
     SharedPreferences.setMockInitialValues({});
     await tester.pumpWidget(const ProviderScope(child: FitFlowApp()));
     await completeOnboardingToHome(tester);
@@ -141,6 +141,12 @@ void main() {
 
     expect(find.text('Recommended'), findsOneWidget);
     expect(find.text('Programs'), findsOneWidget);
+    // M16 Part 1: the Programs placeholder was replaced by a real entry.
+    expect(find.text('Structured multi-week training plans.'), findsNothing);
+    expect(
+        find.text(
+            'Adaptive multi-week workouts built around your current level and setup.'),
+        findsOneWidget);
   });
 
   testWidgets('Workouts screen 320px width no overflow', (tester) async {

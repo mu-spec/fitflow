@@ -4,6 +4,7 @@ import 'package:fitflow/core/widgets/placeholder_row.dart';
 import 'package:fitflow/core/widgets/placeholder_section.dart';
 import 'package:fitflow/features/onboarding/data/workout_duration.dart';
 import 'package:fitflow/features/onboarding/state/user_fitness_profile_controller.dart';
+import 'package:fitflow/features/programs/presentation/widgets/workouts_program_cards.dart';
 import 'package:fitflow/features/workouts/data/exercise_catalog.dart';
 import 'package:fitflow/features/workouts/domain/custom/custom_workout_controller.dart';
 import 'package:fitflow/features/workouts/domain/custom/custom_workout_plan_resolver.dart';
@@ -40,7 +41,10 @@ class WorkoutsScreen extends ConsumerWidget {
             ),
             const PlaceholderSection(
                 title: 'Recommended', subtitle: 'Workouts picked for your level and history.'),
-            const PlaceholderSection(title: 'Programs', subtitle: 'Structured multi-week training plans.'),
+            // M16 Part 1 – real Programs entry replaces the old placeholder.
+            const ProgramsEntryRow(),
+            const ActiveProgramCard(),
+            const RecommendedProgramCard(),
             const SizedBox(height: 8),
             _CreateCustomRow(onTap: () => context.push(AppRoutes.customWorkoutNew)),
             PlaceholderRow(

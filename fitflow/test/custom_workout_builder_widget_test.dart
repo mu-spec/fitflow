@@ -16,6 +16,9 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump(const Duration(milliseconds: 500));
 
+    // M16 Part 1 added program cards above this row; scroll it into view.
+    await tester.ensureVisible(find.text('Create custom workout'));
+    await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(find.text('Create custom workout'));
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump(const Duration(milliseconds: 500));
@@ -36,6 +39,9 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump(const Duration(milliseconds: 500));
 
+    // M16 Part 1 added program cards above this row; scroll it into view.
+    await tester.ensureVisible(find.text('Create custom workout'));
+    await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(find.text('Create custom workout'));
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump(const Duration(milliseconds: 500));
@@ -53,6 +59,9 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump(const Duration(milliseconds: 500));
 
+    // M16 Part 1 added program cards above this row; scroll it into view.
+    await tester.ensureVisible(find.text('Create custom workout'));
+    await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(find.text('Create custom workout'));
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump(const Duration(milliseconds: 500));
@@ -80,6 +89,9 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump(const Duration(milliseconds: 500));
 
+    // M16 Part 1 added program cards above this row; scroll it into view.
+    await tester.ensureVisible(find.text('Create custom workout'));
+    await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(find.text('Create custom workout'));
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump(const Duration(milliseconds: 500));
@@ -103,6 +115,9 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump(const Duration(milliseconds: 500));
 
+    // M16 Part 1 added program cards above this row; scroll it into view.
+    await tester.ensureVisible(find.text('Create custom workout'));
+    await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(find.text('Create custom workout'));
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump(const Duration(milliseconds: 500));
