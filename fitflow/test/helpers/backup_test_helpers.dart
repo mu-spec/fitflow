@@ -201,12 +201,12 @@ AdaptiveProgramsState backupPrograms() {
     updatedAt: started.add(const Duration(days: 3)),
     completions: [
       AdaptiveProgramSessionCompletion(
-        plannedSessionId: 'w1s1',
+        plannedSessionId: 'balanced_foundations_w1_s1',
         playerSessionId: 'session_a',
         completedAt: started.add(const Duration(days: 1)),
       ),
       AdaptiveProgramSessionCompletion(
-        plannedSessionId: 'w1s2',
+        plannedSessionId: 'balanced_foundations_w1_s2',
         playerSessionId: 'session_b',
         completedAt: started.add(const Duration(days: 3)),
       ),

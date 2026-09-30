@@ -129,7 +129,8 @@ void main() {
       final completions =
           (balanced['completions'] as List).cast<Map<String, dynamic>>();
       expect(completions.length, 2);
-      expect(completions.first['plannedSessionId'], 'w1s1');
+      expect(
+          completions.first['plannedSessionId'], 'balanced_foundations_w1_s1');
       expect(completions.first['playerSessionId'], 'session_a');
       expect(completions.first['completedAt'], '2026-08-21T06:00:00.000Z');
       expect(p.containsKey('definitions'), isFalse);

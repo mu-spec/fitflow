@@ -20,6 +20,8 @@ import 'package:fitflow/features/reminders/domain/workout_reminder_weekday.dart'
 import 'package:fitflow/features/settings/data/appearance_mode.dart';
 import 'package:fitflow/features/workouts/domain/adaptive/adaptive_progression_evidence.dart';
 import 'package:fitflow/features/workouts/domain/capability_profile.dart';
+import 'package:fitflow/features/workouts/data/workout_history_storage.dart';
+import 'package:fitflow/features/workouts/domain/custom/custom_workout_limits.dart';
 import 'package:fitflow/features/workouts/domain/custom/custom_workout_template.dart';
 import 'package:fitflow/features/workouts/domain/history/completed_workout.dart';
 import 'package:fitflow/features/workouts/domain/movement_capability.dart';
@@ -301,12 +303,18 @@ class BackupCodec {
     return profile;
   }
 
+  /// Evidence must be COMPLETE: exactly the ten trainable patterns, each
+  /// once, each 0 or 1. Missing keys are rejected — never filled with zero
+  /// (the tolerant runtime `fromMap` default is not acceptable for restore).
   static AdaptiveProgressionEvidence _evidence(Object? raw) {
     final m = _object(raw, 'evidence');
     final counts = _object(m['counts'], 'evidence.counts');
     final byName = {
       for (final p in CapabilityProfile.trainablePatterns) p.name: p,
     };
+    if (counts.length != CapabilityProfile.trainablePatterns.length) {
+      throw _Invalid('evidence count ${counts.length}');
+    }
     final parsed = <MovementPattern, int>{};
     for (final entry in counts.entries) {
       final pattern = byName[entry.key];
@@ -317,11 +325,21 @@ class BackupCodec {
       }
       parsed[pattern] = value;
     }
+    for (final pattern in CapabilityProfile.trainablePatterns) {
+      if (!parsed.containsKey(pattern)) {
+        throw _Invalid('evidence missing ${pattern.name}');
+      }
+    }
     return AdaptiveProgressionEvidence.fromMap(parsed);
   }
 
+  /// Bounded: the app keeps at most [WorkoutHistoryStorage.maxEntries]; a
+  /// larger backup is rejected instead of being silently trimmed on restore.
   static List<CompletedWorkout> _history(Object? raw) {
     final list = _list(raw, 'history');
+    if (list.length > WorkoutHistoryStorage.maxEntries) {
+      throw _Invalid('history count ${list.length}');
+    }
     final out = <CompletedWorkout>[];
     final ids = <String>{};
     for (final item in list) {
@@ -337,8 +355,13 @@ class BackupCodec {
     return _sortedHistory(out);
   }
 
+  /// Bounded: at most [CustomWorkoutLimits.maxTemplates]; larger backups are
+  /// rejected instead of being silently truncated by the storage encoder.
   static List<CustomWorkoutTemplate> _templates(Object? raw) {
     final list = _list(raw, 'customWorkouts');
+    if (list.length > CustomWorkoutLimits.maxTemplates) {
+      throw _Invalid('customWorkouts count ${list.length}');
+    }
     final out = <CustomWorkoutTemplate>[];
     final ids = <String>{};
     for (final item in list) {
@@ -362,22 +385,8 @@ class BackupCodec {
     final list = _list(m['progress'], 'programs.progress');
     final byId = <String, AdaptiveProgramProgress>{};
     for (final item in list) {
-      final pm = _object(item, 'program progress');
-      final completionsRaw = _list(pm['completions'], 'program.completions');
-      for (final c in completionsRaw) {
-        final cm = _object(c, 'program completion');
-        if (AdaptiveProgramSessionCompletion.fromJson(cm) == null) {
-          throw const _Invalid('program completion');
-        }
-      }
-      final progress = AdaptiveProgramProgress.fromJson(pm);
-      if (progress == null) throw const _Invalid('program progress');
-      if (!AdaptiveProgramCatalog.contains(progress.programId)) {
-        throw _Invalid('unknown program ${progress.programId}');
-      }
-      if (byId.containsKey(progress.programId)) {
-        throw _Invalid('duplicate program ${progress.programId}');
-      }
+      final progress =
+          _programProgress(_object(item, 'program progress'), byId);
       byId[progress.programId] = progress;
     }
     final activeRaw = m['activeProgramId'];
@@ -390,6 +399,78 @@ class BackupCodec {
     }
     return AdaptiveProgramsState(
         activeProgramId: active, progressByProgram: byId);
+  }
+
+  /// Strict, lossless parse of ONE program progress record. The tolerant
+  /// runtime `AdaptiveProgramProgress.fromJson` (which falls back to
+  /// `startedAt` for a bad `updatedAt`, skips malformed completions and
+  /// de-duplicates) is deliberately NOT used as the validator.
+  static AdaptiveProgramProgress _programProgress(
+      Map<String, Object?> pm, Map<String, AdaptiveProgramProgress> seen) {
+    final programIdRaw = pm['programId'];
+    if (programIdRaw is! String || programIdRaw.isEmpty) {
+      throw const _Invalid('program.programId');
+    }
+    final definition = AdaptiveProgramCatalog.byId(programIdRaw);
+    if (definition == null) throw _Invalid('unknown program $programIdRaw');
+    if (seen.containsKey(programIdRaw)) {
+      throw _Invalid('duplicate program $programIdRaw');
+    }
+    final startedAt = _timestamp(pm['startedAt'], 'program.startedAt');
+    final updatedAt = _timestamp(pm['updatedAt'], 'program.updatedAt');
+
+    final completionsRaw = _list(pm['completions'], 'program.completions');
+    final completions = <AdaptiveProgramSessionCompletion>[];
+    final plannedIds = <String>{};
+    final playerIds = <String>{};
+    for (final c in completionsRaw) {
+      final cm = _object(c, 'program completion');
+      final planned = cm['plannedSessionId'];
+      final player = cm['playerSessionId'];
+      if (planned is! String || planned.isEmpty) {
+        throw const _Invalid('completion.plannedSessionId');
+      }
+      if (player is! String || player.isEmpty) {
+        throw const _Invalid('completion.playerSessionId');
+      }
+      // The planned session must exist AND belong to THIS program.
+      if (!definition.containsSession(planned)) {
+        throw _Invalid('completion session $planned not in $programIdRaw');
+      }
+      final completedAt =
+          _timestamp(cm['completedAt'], 'completion.completedAt');
+      if (!plannedIds.add(planned)) {
+        throw _Invalid('duplicate planned session $planned');
+      }
+      if (!playerIds.add(player)) {
+        throw _Invalid('duplicate player session $player');
+      }
+      completions.add(AdaptiveProgramSessionCompletion(
+        plannedSessionId: planned,
+        playerSessionId: player,
+        completedAt: completedAt,
+      ));
+    }
+
+    final progress = AdaptiveProgramProgress(
+      programId: programIdRaw,
+      startedAt: startedAt,
+      updatedAt: updatedAt,
+      completions: completions,
+    );
+    // Guard: the domain constructor de-duplicates; nothing may be lost here.
+    if (progress.completions.length != completionsRaw.length) {
+      throw _Invalid('program $programIdRaw completions dropped');
+    }
+    return progress;
+  }
+
+  /// Required ISO-8601 timestamp; never substituted.
+  static DateTime _timestamp(Object? raw, String what) {
+    if (raw is! String) throw _Invalid(what);
+    final parsed = DateTime.tryParse(raw);
+    if (parsed == null) throw _Invalid(what);
+    return parsed.toUtc();
   }
 
   static BackupReminderPreferences _reminders(Object? raw) {
