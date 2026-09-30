@@ -68,7 +68,7 @@ class WorkoutRemindersController extends StateNotifier<WorkoutRemindersState> {
       state = state.copyWith(preferences: prefs, isLoaded: true);
       await _service.initialize();
       await _refreshPermission();
-      if (state.enabled) await _reconcile();
+      await _reconcile();
     } catch (_) {
       // Notifications are never fatal.
       if (mounted) state = state.copyWith(isLoaded: true);
@@ -82,7 +82,7 @@ class WorkoutRemindersController extends StateNotifier<WorkoutRemindersState> {
     await initialize();
     if (!mounted) return;
     await _refreshPermission();
-    if (state.enabled) await _reconcile();
+    await _reconcile();
   }
 
   Future<void> onAppResumed() => refreshStatus();
@@ -140,15 +140,26 @@ class WorkoutRemindersController extends StateNotifier<WorkoutRemindersState> {
   }
 
   /// Disable flow (§22): cancel the seven owned IDs, persist enabled=false.
-  /// If persistence fails, the previous schedule is restored (best effort)
-  /// so UI, storage and OS schedule never disagree.
+  /// `enabled=false` is persisted only once every cancellation is known to
+  /// have succeeded. If any cancellation or persistence fails, the previous
+  /// enabled state stays the source of truth and its schedule is restored
+  /// (best effort) so UI, storage and OS schedule never disagree.
   Future<bool> disable() async {
     if (state.isBusy) return false;
     final previous = state.preferences;
     state = state.copyWith(isBusy: true);
     try {
+      var allCancelled = true;
       for (final id in WorkoutReminderIds.allWeekly) {
-        await _service.cancel(id);
+        if (!await _service.cancel(id)) allCancelled = false;
+      }
+      if (!allCancelled) {
+        // Some reminders may still be pending: no fake OFF state.
+        final restored = await _restoreSchedule(previous);
+        if (!mounted) return false;
+        state = state.copyWith(lastScheduleFailed: !restored);
+        _emit(WorkoutReminderMessage.saveFailed);
+        return false;
       }
       final next = previous.copyWith(enabled: false, clearTimezoneId: true);
       final saved = await _storage.save(next);
@@ -281,27 +292,28 @@ class WorkoutRemindersController extends StateNotifier<WorkoutRemindersState> {
       scheduledNow.add(occurrence.notificationId);
     }
     if (!ok) {
-      final restored = await _rollback(previous, previousIds, scheduledNow);
-      if (mounted) {
-        state = state.copyWith(lastScheduleFailed: previous.enabled && !restored);
-        _emit(WorkoutReminderMessage.scheduleFailed);
-      }
+      await _rollbackAndReport(
+          previous, previousIds, scheduledNow, WorkoutReminderMessage.scheduleFailed);
       return false;
     }
 
-    // Cancel obsolete owned IDs (days no longer selected).
+    // Obsolete owned IDs (days no longer selected) must be gone before the
+    // new preference becomes the persisted truth.
+    var obsoleteCancelled = true;
     for (final id in previousIds.difference(scheduledNow)) {
-      await _service.cancel(id);
+      if (!await _service.cancel(id)) obsoleteCancelled = false;
+    }
+    if (!obsoleteCancelled) {
+      await _rollbackAndReport(
+          previous, previousIds, scheduledNow, WorkoutReminderMessage.scheduleFailed);
+      return false;
     }
 
     final toPersist = desired.copyWith(lastScheduledTimezoneId: tzId);
     final saved = await _storage.save(toPersist);
     if (!saved) {
-      final restored = await _rollback(previous, previousIds, scheduledNow);
-      if (mounted) {
-        state = state.copyWith(lastScheduleFailed: previous.enabled && !restored);
-        _emit(WorkoutReminderMessage.saveFailed);
-      }
+      await _rollbackAndReport(
+          previous, previousIds, scheduledNow, WorkoutReminderMessage.saveFailed);
       return false;
     }
     if (mounted) {
@@ -310,19 +322,37 @@ class WorkoutRemindersController extends StateNotifier<WorkoutRemindersState> {
     return true;
   }
 
+  /// Rolls back to [previous] and exposes the outcome truthfully: the
+  /// schedule-error flag is set whenever the previous schedule could not be
+  /// fully restored (including a stray newly-created reminder that failed to
+  /// cancel), regardless of whether [previous] was enabled.
+  Future<void> _rollbackAndReport(
+    WorkoutReminderPreferences previous,
+    Set<int> previousIds,
+    Set<int> scheduledNow,
+    WorkoutReminderMessage message,
+  ) async {
+    final restored = await _rollback(previous, previousIds, scheduledNow);
+    if (!mounted) return;
+    state = state.copyWith(lastScheduleFailed: !restored);
+    _emit(message);
+  }
+
   /// Best-effort restoration of the previous state: drop newly created IDs
   /// that the previous schedule did not own, then re-create the previous
-  /// schedule if it was enabled. Returns true when the previous schedule is
-  /// fully in place afterwards.
+  /// schedule if it was enabled. Returns true only when every such
+  /// cancellation succeeded AND the previous schedule is fully in place.
   Future<bool> _rollback(
     WorkoutReminderPreferences previous,
     Set<int> previousIds,
     Set<int> scheduledNow,
   ) async {
+    var newCancelled = true;
     for (final id in scheduledNow.difference(previousIds)) {
-      await _service.cancel(id);
+      if (!await _service.cancel(id)) newCancelled = false;
     }
-    return _restoreSchedule(previous);
+    final restored = await _restoreSchedule(previous);
+    return newCancelled && restored;
   }
 
   Future<bool> _restoreSchedule(WorkoutReminderPreferences previous) async {
@@ -352,10 +382,24 @@ class WorkoutRemindersController extends StateNotifier<WorkoutRemindersState> {
     return allOk;
   }
 
-  /// Timezone / pending-schedule reconciliation for an enabled preference.
+  /// Pending-schedule / timezone reconciliation (§36).
+  ///
+  /// Enabled: compares the exact set of pending FitFlow weekly IDs
+  /// (17001–17007, filtered through [WorkoutReminderIds.isWeeklyOwned]) with
+  /// the IDs the selected weekdays require. Extra owned IDs are cancelled,
+  /// and a reschedule happens only when the timezone changed or an expected
+  /// ID is missing. Unrelated IDs (including the 17999 test notification) are
+  /// ignored and never cancelled.
+  ///
+  /// Disabled: any stray owned weekly ID (e.g. after an incomplete rollback)
+  /// is cancelled so the OS matches the persisted OFF state.
   Future<void> _reconcile() async {
     final prefs = state.preferences;
-    if (!prefs.enabled || !prefs.isSchedulable) return;
+    if (!prefs.enabled) {
+      await _reconcileDisabled();
+      return;
+    }
+    if (!prefs.isSchedulable) return;
     if (state.permission == WorkoutReminderPermissionStatus.denied) {
       // Blocked by Android: keep the user's schedule; status shows blocked.
       return;
@@ -366,20 +410,46 @@ class WorkoutRemindersController extends StateNotifier<WorkoutRemindersState> {
       state = state.copyWith(lastScheduleFailed: true);
       return;
     }
-    var needsReschedule = tzId != prefs.lastScheduledTimezoneId;
-    if (!needsReschedule) {
-      final pending = await _service.pendingIds();
-      if (pending != null) {
-        final expected = prefs.weekdays.map(WorkoutReminderIds.forWeekday);
-        needsReschedule = !expected.every(pending.contains);
+    final expected = prefs.weekdays.map(WorkoutReminderIds.forWeekday).toSet();
+    final pending = await _service.pendingIds();
+    if (!mounted) return;
+    final pendingOwned =
+        pending?.where(WorkoutReminderIds.isWeeklyOwned).toSet();
+
+    var extrasCancelled = true;
+    var missing = false;
+    if (pendingOwned != null) {
+      for (final id in pendingOwned.difference(expected)) {
+        if (!await _service.cancel(id)) extrasCancelled = false;
       }
+      missing = !expected.every(pendingOwned.contains);
     }
-    if (!needsReschedule) {
-      if (state.lastScheduleFailed) {
-        state = state.copyWith(lastScheduleFailed: false);
+    if (!mounted) return;
+
+    final needsReschedule = tzId != prefs.lastScheduledTimezoneId || missing;
+    if (needsReschedule) {
+      final ok = await _applySchedule(prefs);
+      if (ok && !extrasCancelled && mounted) {
+        state = state.copyWith(lastScheduleFailed: true);
       }
       return;
     }
-    await _applySchedule(prefs);
+    if (state.lastScheduleFailed != !extrasCancelled) {
+      state = state.copyWith(lastScheduleFailed: !extrasCancelled);
+    }
+  }
+
+  Future<void> _reconcileDisabled() async {
+    final pending = await _service.pendingIds();
+    if (!mounted || pending == null) return;
+    final stray = pending.where(WorkoutReminderIds.isWeeklyOwned).toSet();
+    var allCancelled = true;
+    for (final id in stray) {
+      if (!await _service.cancel(id)) allCancelled = false;
+    }
+    if (!mounted) return;
+    if (state.lastScheduleFailed != !allCancelled) {
+      state = state.copyWith(lastScheduleFailed: !allCancelled);
+    }
   }
 }

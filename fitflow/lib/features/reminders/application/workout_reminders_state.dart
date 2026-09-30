@@ -48,7 +48,13 @@ class WorkoutRemindersState {
 
   /// Truthful user-facing status.
   WorkoutReminderScheduleStatus get status {
-    if (!preferences.enabled) return WorkoutReminderScheduleStatus.off;
+    if (!preferences.enabled) {
+      // A failed rollback may have left an owned reminder pending; never
+      // claim a clean OFF state until reconciliation repairs it.
+      return lastScheduleFailed
+          ? WorkoutReminderScheduleStatus.scheduleError
+          : WorkoutReminderScheduleStatus.off;
+    }
     if (permission == WorkoutReminderPermissionStatus.denied) {
       return WorkoutReminderScheduleStatus.permissionBlocked;
     }

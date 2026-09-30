@@ -26,4 +26,8 @@ class WorkoutReminderIds {
       List<int>.unmodifiable(WorkoutReminderWeekday.all.map(forWeekday));
 
   static bool isOwned(int id) => weekdayForId(id) != null || id == test;
+
+  /// True only for the recurring weekly IDs 17001–17007. The immediate test
+  /// notification (17999) is never part of schedule consistency checks.
+  static bool isWeeklyOwned(int id) => weekdayForId(id) != null;
 }

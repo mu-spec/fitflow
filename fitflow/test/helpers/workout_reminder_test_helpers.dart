@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fitflow/features/reminders/application/workout_reminder_notification_service.dart';
 import 'package:fitflow/features/reminders/application/workout_reminders_controller.dart';
 import 'package:fitflow/features/reminders/data/workout_reminder_storage.dart';
+import 'package:fitflow/features/reminders/domain/workout_reminder_ids.dart';
 import 'package:fitflow/features/reminders/domain/workout_reminder_permission_status.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -41,6 +42,9 @@ class FakeWorkoutReminderNotificationService
 
   /// Fail scheduling only for these IDs (simulates partial failure).
   Set<int> failIds = {};
+
+  /// Fail cancellation only for these IDs (the reminder stays pending).
+  Set<int> failCancelIds = {};
 
   int initializeCalls = 0;
   int permissionQueries = 0;
@@ -100,9 +104,22 @@ class FakeWorkoutReminderNotificationService
   @override
   Future<bool> cancel(int id) async {
     cancelled.add(id);
-    if (!cancelSucceeds) return false;
+    if (!cancelSucceeds || failCancelIds.contains(id)) return false;
     scheduled.remove(id);
     return true;
+  }
+
+  /// Simulates a reminder left pending in the OS (e.g. a stale weekly ID or
+  /// an unrelated notification) without going through the controller.
+  void injectPending(int id) {
+    ensureTimezones();
+    scheduled[id] = WorkoutReminderScheduleRequest(
+      id: id,
+      weekday: WorkoutReminderIds.weekdayForId(id) ?? 1,
+      scheduledAt: tz.TZDateTime.now(tz.getLocation('Asia/Karachi')),
+      title: 'stale',
+      body: 'stale',
+    );
   }
 
   @override
