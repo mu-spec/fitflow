@@ -1,4 +1,5 @@
 import 'package:fitflow/app/router/app_routes.dart';
+import 'package:fitflow/features/backup/presentation/backup_restore_screen.dart';
 import 'package:fitflow/features/capability_assessment/presentation/capability_assessment_screen.dart';
 import 'package:fitflow/features/home/presentation/home_screen.dart';
 import 'package:fitflow/features/main/presentation/main_shell.dart';
@@ -32,9 +33,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 class AppRouter {
   AppRouter._();
 
-  static GoRouter create() {
+  /// [initialLocation] defaults to the splash start gate; tests may start
+  /// directly on a nested route.
+  static GoRouter create({String initialLocation = AppRoutes.splash}) {
     return GoRouter(
-      initialLocation: AppRoutes.splash,
+      initialLocation: initialLocation,
       routes: [
         GoRoute(
           path: AppRoutes.splash,
@@ -205,6 +208,13 @@ class AppRouter {
                     GoRoute(
                       path: 'settings',
                       builder: (context, state) => const SettingsScreen(),
+                      routes: [
+                        GoRoute(
+                          path: 'backup-restore',
+                          builder: (context, state) =>
+                              const BackupRestoreScreen(),
+                        ),
+                      ],
                     ),
                   ],
                 ),

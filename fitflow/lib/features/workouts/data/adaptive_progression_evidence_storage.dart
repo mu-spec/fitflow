@@ -68,12 +68,15 @@ class AdaptiveProgressionEvidenceStorage {
 
   Future<bool> save(AdaptiveProgressionEvidence evidence) async {
     try {
-      final encoded = jsonEncode(evidence.toJson());
-      return await _prefs.setString(evidenceKey, encoded);
+      return await _prefs.setString(evidenceKey, encode(evidence));
     } catch (_) {
       return false;
     }
   }
+
+  /// The exact stored representation of [evidence] (shared with M18 restore).
+  static String encode(AdaptiveProgressionEvidence evidence) =>
+      jsonEncode(evidence.toJson());
 
   Future<void> clear() async {
     await _prefs.remove(evidenceKey);

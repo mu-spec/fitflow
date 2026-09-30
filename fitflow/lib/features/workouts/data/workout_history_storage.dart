@@ -87,22 +87,26 @@ class WorkoutHistoryStorage {
   /// Replace entire history (used for testing or clear).
   Future<bool> saveAll(List<CompletedWorkout> workouts) async {
     try {
-      // Deduplicate and sort newest first, trim
-      final seen = <String>{};
-      final deduped = <CompletedWorkout>[];
-      for (final cw in workouts) {
-        if (seen.contains(cw.id)) continue;
-        seen.add(cw.id);
-        deduped.add(cw);
-      }
-      deduped.sort((a, b) => b.completedAt.compareTo(a.completedAt));
-      final trimmed = deduped.length > maxEntries ? deduped.take(maxEntries).toList() : deduped;
-      final jsonList = trimmed.map((e) => e.toJson()).toList();
-      final encoded = jsonEncode(jsonList);
-      return await _prefs.setString(key, encoded);
+      return await _prefs.setString(key, encode(workouts));
     } catch (_) {
       return false;
     }
+  }
+
+  /// The exact stored representation of [workouts]: de-duplicated by id,
+  /// newest first, trimmed to [maxEntries] (shared with M18 restore).
+  static String encode(List<CompletedWorkout> workouts) {
+    final seen = <String>{};
+    final deduped = <CompletedWorkout>[];
+    for (final cw in workouts) {
+      if (seen.contains(cw.id)) continue;
+      seen.add(cw.id);
+      deduped.add(cw);
+    }
+    deduped.sort((a, b) => b.completedAt.compareTo(a.completedAt));
+    final trimmed =
+        deduped.length > maxEntries ? deduped.take(maxEntries).toList() : deduped;
+    return jsonEncode(trimmed.map((e) => e.toJson()).toList());
   }
 
   Future<bool> clear() async {

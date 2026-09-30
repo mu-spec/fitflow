@@ -59,16 +59,18 @@ class UserFitnessProfileStorage {
 
   /// Persists [profile] as JSON. Returns whether the write succeeded.
   Future<bool> save(UserFitnessProfile profile) async {
-    final encoded = jsonEncode({
-      'goal': profile.goal.name,
-      'experience': profile.experience.name,
-      'workoutDuration': profile.workoutDuration.name,
-      'environment': profile.environment.name,
-      'equipment': [for (final e in profile.equipment) e.name],
-      'preferences': [for (final p in profile.preferences) p.name],
-    });
-    return _prefs.setString(profileKey, encoded);
+    return _prefs.setString(profileKey, encode(profile));
   }
+
+  /// The exact stored representation of [profile] (shared with M18 restore).
+  static String encode(UserFitnessProfile profile) => jsonEncode({
+        'goal': profile.goal.name,
+        'experience': profile.experience.name,
+        'workoutDuration': profile.workoutDuration.name,
+        'environment': profile.environment.name,
+        'equipment': [for (final e in profile.equipment) e.name],
+        'preferences': [for (final p in profile.preferences) p.name],
+      });
 
   /// Removes any stored profile.
   Future<void> clear() async {

@@ -13,6 +13,9 @@ class AppRoutes {
   static const String profile = '/profile';
   static const String settings = '/profile/settings';
 
+  /// Manual local backup & restore (M18), nested under Settings.
+  static const String backupRestore = '$settings/backup-restore';
+
   static String exerciseDetail(String exerciseId) =>
       '/workouts/exercise-library/$exerciseId';
 

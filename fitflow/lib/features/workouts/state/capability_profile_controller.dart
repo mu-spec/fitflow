@@ -36,6 +36,12 @@ class CapabilityProfileController extends AsyncNotifier<CapabilityProfile?> {
     }
   }
 
+  /// Re-reads the persisted capability profile (used after a backup restore).
+  Future<void> reload() async {
+    final prefs = await SharedPreferences.getInstance();
+    state = AsyncData(CapabilityProfileStorage(prefs).load());
+  }
+
   /// Clears persisted capability profile.
   Future<void> clearProfile() async {
     final prefs = await SharedPreferences.getInstance();

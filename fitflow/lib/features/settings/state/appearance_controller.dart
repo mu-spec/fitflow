@@ -11,6 +11,13 @@ class AppearanceController extends AsyncNotifier<AppearanceMode> {
     return AppearanceStorage(prefs).load();
   }
 
+  /// Re-reads the persisted mode (used after a backup restore) so the theme
+  /// switches immediately without a loading flash.
+  Future<void> reload() async {
+    final prefs = await SharedPreferences.getInstance();
+    state = AsyncData(await AppearanceStorage(prefs).load());
+  }
+
   Future<void> setMode(AppearanceMode mode) async {
     state = AsyncData(mode);
     final prefs = await SharedPreferences.getInstance();

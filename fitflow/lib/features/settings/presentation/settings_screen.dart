@@ -1,4 +1,5 @@
 import 'package:fitflow/app/config/app_dimensions.dart';
+import 'package:fitflow/features/backup/presentation/widgets/backup_restore_settings_entry.dart';
 import 'package:fitflow/features/reminders/presentation/widgets/workout_reminders_section.dart';
 import 'package:fitflow/features/settings/data/appearance_mode.dart';
 import 'package:fitflow/features/settings/state/appearance_controller.dart';
@@ -61,6 +62,8 @@ class SettingsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
             const WorkoutRemindersSection(),
+            const SizedBox(height: 24),
+            const BackupRestoreSettingsEntry(),
           ],
         ),
       ),

@@ -64,9 +64,12 @@ class CapabilityProfileStorage {
       throw ArgumentError('CapabilityProfile must be valid to save');
     }
 
-    final encoded = jsonEncode(profile.toJson());
-    return _prefs.setString(profileKey, encoded);
+    return _prefs.setString(profileKey, encode(profile));
   }
+
+  /// The exact stored representation of [profile] (shared with M18 restore).
+  static String encode(CapabilityProfile profile) =>
+      jsonEncode(profile.toJson());
 
   /// Removes any stored capability profile.
   Future<void> clear() async {

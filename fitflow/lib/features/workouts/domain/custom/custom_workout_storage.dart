@@ -84,27 +84,34 @@ class CustomWorkoutStorage {
     }
   }
 
+  /// De-duplicates by id (most recently updated wins), sorts most recently
+  /// updated first and retains at most [CustomWorkoutLimits.maxTemplates].
+  static List<CustomWorkoutTemplate> normalise(
+      List<CustomWorkoutTemplate> templates) {
+    final map = <String, CustomWorkoutTemplate>{};
+    for (final t in templates) {
+      final existing = map[t.id];
+      if (existing == null || t.updatedAt.isAfter(existing.updatedAt)) {
+        map[t.id] = t;
+      }
+    }
+    var deduped = map.values.toList();
+    deduped.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+    if (deduped.length > CustomWorkoutLimits.maxTemplates) {
+      deduped = deduped.sublist(0, CustomWorkoutLimits.maxTemplates);
+    }
+    return List.unmodifiable(deduped);
+  }
+
+  /// The exact stored representation of [templates] (shared with M18 restore).
+  static String encode(List<CustomWorkoutTemplate> templates) =>
+      jsonEncode(normalise(templates).map((e) => e.toJson()).toList());
+
   /// Returns persisted list on success, null on write failure.
   Future<List<CustomWorkoutTemplate>?> saveAll(List<CustomWorkoutTemplate> templates) async {
     try {
-      // Deduplicate by id, keep most recently updated per id.
-      final map = <String, CustomWorkoutTemplate>{};
-      for (final t in templates) {
-        final existing = map[t.id];
-        if (existing == null || t.updatedAt.isAfter(existing.updatedAt)) {
-          map[t.id] = t;
-        }
-      }
-      var deduped = map.values.toList();
-      // Sort by updatedAt descending
-      deduped.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
-      // Retain max 50 most recently updated
-      if (deduped.length > CustomWorkoutLimits.maxTemplates) {
-        deduped = deduped.sublist(0, CustomWorkoutLimits.maxTemplates);
-      }
-
-      final jsonList = deduped.map((e) => e.toJson()).toList();
-      final encoded = jsonEncode(jsonList);
+      final deduped = normalise(templates);
+      final encoded = jsonEncode(deduped.map((e) => e.toJson()).toList());
 
       final prefs = await _prefs();
       final success = await _write(prefs, key, encoded);
@@ -112,7 +119,7 @@ class CustomWorkoutStorage {
         return null;
       }
 
-      return List.unmodifiable(deduped);
+      return deduped;
     } catch (_) {
       return null;
     }

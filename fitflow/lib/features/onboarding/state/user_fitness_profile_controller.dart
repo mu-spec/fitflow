@@ -22,6 +22,12 @@ class UserFitnessProfileController
     }
     return saved;
   }
+
+  /// Re-reads the persisted profile (used after a backup restore).
+  Future<void> reload() async {
+    final prefs = await SharedPreferences.getInstance();
+    state = AsyncData(UserFitnessProfileStorage(prefs).load());
+  }
 }
 
 final userFitnessProfileProvider = AsyncNotifierProvider<

@@ -87,6 +87,33 @@ class WorkoutRemindersController extends StateNotifier<WorkoutRemindersState> {
 
   Future<void> onAppResumed() => refreshStatus();
 
+  /// After a backup restore replaced `workout_reminders_v1`: reload the
+  /// restored USER intent, query the live OS permission (never request it)
+  /// and run the normal reconciliation against the CURRENT device timezone
+  /// (the restored preference carries no timezone id).
+  ///
+  /// Returns true when reminders need attention afterwards: scheduling
+  /// failed, or the restored intent is enabled but Android blocks
+  /// notifications. Data restore success is decided by the caller.
+  Future<bool> reloadAfterRestore() async {
+    await initialize();
+    final prefs = await _storage.load();
+    if (!mounted) return false;
+    state = state.copyWith(
+      preferences: prefs,
+      isLoaded: true,
+      lastScheduleFailed: false,
+      clearMessage: true,
+    );
+    await _refreshPermission();
+    if (!mounted) return false;
+    await _reconcile();
+    if (!mounted) return false;
+    return state.lastScheduleFailed ||
+        (state.enabled &&
+            state.permission == WorkoutReminderPermissionStatus.denied);
+  }
+
   void clearMessage() {
     if (state.message != null) state = state.copyWith(clearMessage: true);
   }
