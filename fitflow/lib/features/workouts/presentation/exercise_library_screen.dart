@@ -169,14 +169,20 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
           // Filter controls + result count
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
+            // Wrap keeps the controls row overflow-free at narrow widths and
+            // large text scales: single line with space-between when it fits,
+            // graceful second line instead of clipping when it does not.
+            child: Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 8,
+              runSpacing: 8,
               children: [
                 OutlinedButton.icon(
                   onPressed: _openFilterSheet,
                   icon: const Icon(Icons.tune, size: 18),
                   label: Text(hasActiveFilters ? 'Filters ($activeCount)' : 'Filters'),
                 ),
-                const SizedBox(width: 8),
                 if (hasActiveFilters)
                   TextButton(
                     onPressed: _clearFilters,
@@ -187,7 +193,6 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                     onPressed: _clearAll,
                     child: const Text('Clear all'),
                   ),
-                const Spacer(),
                 Text(
                   '${filtered.length} exercises',
                   style: theme.textTheme.titleSmall?.copyWith(
