@@ -75,7 +75,7 @@ class CustomWorkoutDetailScreen extends ConsumerWidget {
             return const Center(child: Text('Workout not found.'));
           }
 
-          final catalogById = {for (final Exercise e in ExerciseCatalog.all) e.id: e};
+          final catalogById = ExerciseCatalog.byIdMap;
 
           WorkoutPlan? resolvedPlan;
           List<CustomWorkoutResolverIssue> issues = const [];

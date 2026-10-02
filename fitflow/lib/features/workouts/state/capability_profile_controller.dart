@@ -1,16 +1,19 @@
+import 'package:fitflow/core/persistence/shared_preferences_provider.dart';
 import 'package:fitflow/features/workouts/data/capability_profile_storage.dart';
 import 'package:fitflow/features/workouts/domain/capability_profile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 /// Loads persisted capability profile on startup and manages save/clear.
 ///
 /// Exposes `AsyncValue<CapabilityProfile?>` where null means no valid profile.
 /// Keeps UserFitnessProfile separate (preferences vs dynamic ability).
+///
+/// Preferences acquisition goes through the canonical
+/// [sharedPreferencesProvider] seam (M21 Part 1).
 class CapabilityProfileController extends AsyncNotifier<CapabilityProfile?> {
   @override
   Future<CapabilityProfile?> build() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await ref.watch(sharedPreferencesProvider.future);
     return CapabilityProfileStorage(prefs).load();
   }
 
@@ -23,7 +26,7 @@ class CapabilityProfileController extends AsyncNotifier<CapabilityProfile?> {
       return false;
     }
     try {
-      final prefs = await SharedPreferences.getInstance();
+      final prefs = await ref.read(sharedPreferencesProvider.future);
       final saved = await CapabilityProfileStorage(prefs).save(profile);
       if (saved) {
         state = AsyncData(profile);
@@ -38,13 +41,13 @@ class CapabilityProfileController extends AsyncNotifier<CapabilityProfile?> {
 
   /// Re-reads the persisted capability profile (used after a backup restore).
   Future<void> reload() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await ref.read(sharedPreferencesProvider.future);
     state = AsyncData(CapabilityProfileStorage(prefs).load());
   }
 
   /// Clears persisted capability profile.
   Future<void> clearProfile() async {
-    final prefs = await SharedPreferences.getInstance();
+    final prefs = await ref.read(sharedPreferencesProvider.future);
     await CapabilityProfileStorage(prefs).clear();
     state = const AsyncData(null);
   }

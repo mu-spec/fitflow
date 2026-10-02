@@ -10,7 +10,6 @@ import 'package:fitflow/features/workouts/data/exercise_catalog.dart';
 import 'package:fitflow/features/workouts/domain/capability_profile.dart';
 import 'package:fitflow/features/workouts/domain/custom/custom_workout_controller.dart';
 import 'package:fitflow/features/workouts/domain/custom/custom_workout_plan_resolver.dart';
-import 'package:fitflow/features/workouts/domain/exercise.dart';
 import 'package:fitflow/features/workouts/domain/session/workout_session_mode.dart';
 import 'package:fitflow/features/workouts/state/capability_profile_controller.dart';
 import 'package:flutter/material.dart';
@@ -94,7 +93,7 @@ class CustomWorkoutPlayerScreen extends ConsumerWidget {
       );
     }
 
-    final catalogById = {for (final Exercise e in ExerciseCatalog.all) e.id: e};
+    final catalogById = ExerciseCatalog.byIdMap;
 
     final resolution = CustomWorkoutPlanResolver.resolve(
       template: template,

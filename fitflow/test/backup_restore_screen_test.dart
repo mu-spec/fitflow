@@ -304,8 +304,11 @@ void main() {
       expect(container.read(appearanceControllerProvider).value,
           AppearanceMode.dark);
 
-      // Left the backup screen via the start gate, not forced Home.
-      expect(router.state.uri.path, AppRoutes.splash);
+      // Restore restarts through the splash start gate, not a forced Home
+      // route. Since M21 Part 1 removed the fixed splash delay, the gate
+      // routes as soon as the restored persisted state resolves — settle
+      // until Home is reached instead of observing an intermediate splash
+      // tick that no longer exists.
       await tester.pump(AppConstants.splashDelay);
       await settle(tester, 8);
       expect(router.state.uri.path, AppRoutes.home);

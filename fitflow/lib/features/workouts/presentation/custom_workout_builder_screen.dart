@@ -183,7 +183,7 @@ class _CustomWorkoutBuilderScreenState extends ConsumerState<CustomWorkoutBuilde
       cooldown: _cooldown,
     );
 
-    final catalogById = {for (final Exercise e in ExerciseCatalog.all) e.id: e};
+    final catalogById = ExerciseCatalog.byIdMap;
     final validation = CustomWorkoutValidator.validateTemplate(template: template, catalogById: catalogById);
     if (!validation.isValid) {
       if (mounted) {
@@ -263,7 +263,7 @@ class _CustomWorkoutBuilderScreenState extends ConsumerState<CustomWorkoutBuilde
   }
 
   void _editPrescription(CustomWorkoutExerciseEntry entry, WorkoutSectionType sectionType) async {
-    final catalogById = {for (final Exercise e in ExerciseCatalog.all) e.id: e};
+    final catalogById = ExerciseCatalog.byIdMap;
     final exercise = catalogById[entry.exerciseId];
     if (exercise == null) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Exercise not found in catalog.')));
@@ -548,7 +548,7 @@ class _SectionEditor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final catalogById = {for (final Exercise e in ExerciseCatalog.all) e.id: e};
+    final catalogById = ExerciseCatalog.byIdMap;
 
     return Card(
       child: Padding(

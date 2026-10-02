@@ -3277,6 +3277,13 @@ abstract final class ExerciseCatalog {
     for (final exercise in all) exercise.id: exercise,
   });
 
+  /// Canonical immutable id → exercise lookup.
+  ///
+  /// Built once from [all] and reused everywhere; call sites must not rebuild
+  /// their own `{for (final e in ExerciseCatalog.all) e.id: e}` maps on hot
+  /// paths (M21 Part 1). The returned map is unmodifiable.
+  static Map<String, Exercise> get byIdMap => _byId;
+
   /// Returns null for an unknown ID; never mutates the catalog.
   static Exercise? byId(String id) => _byId[id];
 }

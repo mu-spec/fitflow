@@ -9,7 +9,6 @@ import 'package:fitflow/features/workouts/data/exercise_catalog.dart';
 import 'package:fitflow/features/workouts/domain/custom/custom_workout_controller.dart';
 import 'package:fitflow/features/workouts/domain/custom/custom_workout_plan_resolver.dart';
 import 'package:fitflow/features/workouts/domain/custom/custom_workout_template.dart';
-import 'package:fitflow/features/workouts/domain/exercise.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_plan.dart';
 import 'package:fitflow/features/workouts/state/capability_profile_controller.dart';
 import 'package:flutter/material.dart';
@@ -170,7 +169,7 @@ class _CustomWorkoutCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final catalogById = {for (final Exercise e in ExerciseCatalog.all) e.id: e};
+    final catalogById = ExerciseCatalog.byIdMap;
 
     // Try to resolve for estimated and movement focus chips – diagnostic only, no fabricated stats if fails
     WorkoutPlan? resolvedPlan;

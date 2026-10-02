@@ -41,12 +41,14 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
     CapabilityProfile? capabilityProfile,
     List<Exercise>? catalog,
     String? sessionIdOverride,
+    Stopwatch Function()? stopwatchFactory,
   })  : _execution = WorkoutPlayerExecution(plan),
         _autoStartTimer = autoStartTimer,
         _coach = coach ?? NoOpWorkoutCoach(),
         _userProfile = userProfile,
         _capabilityProfile = capabilityProfile,
         _catalog = catalog ?? ExerciseCatalog.all,
+        _stopwatchFactory = stopwatchFactory ?? Stopwatch.new,
         _replacements = {},
         sessionId = sessionIdOverride ?? _generateSessionId(),
         super(_initialState(plan, voiceEnabled: voiceEnabled));
@@ -57,9 +59,30 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
   final UserFitnessProfile? _userProfile;
   final CapabilityProfile? _capabilityProfile;
   final List<Exercise> _catalog;
+
+  /// Monotonic timing seam (M21 Part 1). Production uses a real [Stopwatch];
+  /// tests may inject a controllable fake to verify deadline-aware ticks.
+  final Stopwatch Function() _stopwatchFactory;
+
+  /// Deadline bookkeeping for the currently timed phase. When a live timer
+  /// drives a phase, remaining time is the more advanced of (a) one
+  /// deterministic decrement per tick and (b) monotonic elapsed time, so
+  /// delayed ticks or event-loop stalls cannot accumulate incorrect
+  /// countdown time while normal ticking stays byte-identical to the
+  /// deterministic model (M21 Part 1).
+  Stopwatch? _phaseStopwatch;
+  Duration _phaseDeadline = Duration.zero;
+  int _elapsedTicks = 0;
+  bool _deadlineActive = false;
+
   Timer? _timer;
   bool _isDisposed = false;
   bool _isCompleting = false;
+
+  /// Whether a countdown timer is currently active. The controller is
+  /// designed to own at most ONE timer at any time (M21 Part 1).
+  @visibleForTesting
+  bool get hasActiveTimer => _timer?.isActive ?? false;
 
   final Map<String, WorkoutExercisePrescription> _replacements;
 
@@ -506,6 +529,32 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
 
     if (_isCompleting) return;
 
+    // Deadline-aware path: a live timer drives this phase. Take the more
+    // advanced of the deterministic per-tick decrement and the monotonic
+    // deadline, so delayed ticks never accumulate drift while normal ticks
+    // behave exactly like the deterministic model. One state update per
+    // visible countdown second; duplicate/early ticks are skipped so a tick
+    // stays lightweight (M21 Part 1).
+    if (_deadlineActive && _phaseStopwatch != null) {
+      _elapsedTicks += 1;
+      final decremented = _phaseDeadline - Duration(seconds: _elapsedTicks);
+      final byDeadline = _phaseDeadline - _phaseStopwatch!.elapsed;
+      final remaining = decremented < byDeadline ? decremented : byDeadline;
+      if (remaining <= Duration.zero) {
+        _resetDeadline();
+        state = state.copyWith(remaining: Duration.zero);
+        _handleTimerZero();
+        return;
+      }
+      final seconds = (remaining.inMicroseconds + 999999) ~/ 1000000;
+      final displayRemaining = Duration(seconds: seconds);
+      if (displayRemaining == state.remaining) return;
+      state = state.copyWith(remaining: displayRemaining);
+      return;
+    }
+
+    // Fallback: deterministic one-second decrement per tick when no live
+    // timer drives the phase (manual ticks, autoStart disabled in tests).
     final newRemaining = state.remaining - const Duration(seconds: 1);
     if (newRemaining <= Duration.zero) {
       state = state.copyWith(remaining: Duration.zero);
@@ -552,6 +601,7 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
 
     if (durationToTrack == null) return;
     if (durationToTrack <= Duration.zero) {
+      // Zero-duration phases complete via microtask; they never spin a timer.
       Future.microtask(() {
         if (_isDisposed) return;
         if (state.isPaused) return;
@@ -560,6 +610,12 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
       return;
     }
 
+    // Exactly one timer is ever created per timed phase; _cancelTimer above
+    // guarantees no previous timer survives a phase change or resume.
+    _phaseStopwatch = _stopwatchFactory()..start();
+    _phaseDeadline = durationToTrack;
+    _elapsedTicks = 0;
+    _deadlineActive = true;
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
       tick();
     });
@@ -568,6 +624,14 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
   void _cancelTimer() {
     _timer?.cancel();
     _timer = null;
+    _resetDeadline();
+  }
+
+  void _resetDeadline() {
+    _deadlineActive = false;
+    _phaseStopwatch?.stop();
+    _phaseStopwatch = null;
+    _elapsedTicks = 0;
   }
 
   void _handleTimerZero() {

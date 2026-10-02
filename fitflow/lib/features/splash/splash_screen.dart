@@ -1,6 +1,7 @@
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/core/constants/app_constants.dart';
 import 'package:fitflow/features/onboarding/state/user_fitness_profile_controller.dart';
+import 'package:fitflow/features/splash/startup_destination.dart';
 import 'package:fitflow/features/workouts/state/capability_profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,61 +15,60 @@ class SplashScreen extends ConsumerStatefulWidget {
 }
 
 class _SplashScreenState extends ConsumerState<SplashScreen> {
+  bool _navigated = false;
+
   @override
   void initState() {
     super.initState();
     _decideNextRoute();
   }
 
-  /// Splash → load persisted profiles → deterministic routing:
+  /// Loads one persisted startup value independently, converting thrown
+  /// errors into [StartupLoadState.failed] so a transient read failure is
+  /// distinguishable from a genuinely missing value.
+  Future<StartupLoadState> _loadState(Future<Object?> Function() load) async {
+    try {
+      final value = await load();
+      return value != null
+          ? StartupLoadState.present
+          : StartupLoadState.missing;
+    } on Object {
+      return StartupLoadState.failed;
+    }
+  }
+
+  /// Splash → load required persisted state concurrently → deterministic
+  /// routing with no artificial delay:
   /// No UserFitnessProfile → Onboarding
   /// UserFitnessProfile + no CapabilityProfile → Capability Assessment
   /// Both valid → Home
-  /// Corrupt capability JSON is treated as null by storage, so goes to assessment.
+  ///
+  /// Only the two routing dependencies are awaited. Reminders, notification
+  /// scheduling, TTS, backup, history analytics, and Programs never block
+  /// this decision.
   Future<void> _decideNextRoute() async {
-    await Future<void>.delayed(AppConstants.splashDelay);
+    final results = await Future.wait([
+      _loadState(() => ref.read(userFitnessProfileProvider.future)),
+      _loadState(() => ref.read(capabilityProfileProvider.future)),
+    ]);
 
-    bool hasUserProfile = false;
-    bool hasCapabilityProfile = false;
+    final destination = decideStartupDestination(
+      userProfile: results[0],
+      capabilityProfile: results[1],
+    );
 
-    try {
-      // Wait for both required persisted states before deciding route
-      final results = await Future.wait([
-        ref.read(userFitnessProfileProvider.future),
-        ref.read(capabilityProfileProvider.future),
-      ]);
-      final userProfile = results[0];
-      final capabilityProfile = results[1];
-      hasUserProfile = userProfile != null;
-      hasCapabilityProfile = capabilityProfile != null;
-    } on Object {
-      // If anything throws, treat as missing and fallback safely
-      // hasUserProfile stays false if user load fails
-      // For safety, try to load user profile individually
-      try {
-        hasUserProfile =
-            await ref.read(userFitnessProfileProvider.future) != null;
-      } on Object {
-        hasUserProfile = false;
-      }
-      try {
-        hasCapabilityProfile =
-            await ref.read(capabilityProfileProvider.future) != null;
-      } on Object {
-        hasCapabilityProfile = false;
-      }
-    }
-
-    if (!mounted) {
+    if (!mounted || _navigated) {
       return;
     }
+    _navigated = true;
 
-    if (!hasUserProfile) {
-      context.go(AppRoutes.onboarding);
-    } else if (!hasCapabilityProfile) {
-      context.go(AppRoutes.capabilityAssessment);
-    } else {
-      context.go(AppRoutes.home);
+    switch (destination) {
+      case StartupDestination.onboarding:
+        context.go(AppRoutes.onboarding);
+      case StartupDestination.capabilityAssessment:
+        context.go(AppRoutes.capabilityAssessment);
+      case StartupDestination.home:
+        context.go(AppRoutes.home);
     }
   }
 
