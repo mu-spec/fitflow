@@ -31,7 +31,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
       await tester.pump(const Duration(milliseconds: 500));
       await tester.pump(const Duration(milliseconds: 500));
-      expect(find.text('80 exercises'), findsOneWidget);
+      expect(find.text('88 exercises'), findsOneWidget);
 
       // Search for Standard Push-Up to make it visible reliably
       await tester.enterText(find.byType(TextField), 'Standard Push-Up');
@@ -241,7 +241,7 @@ void main() {
       }
 
       expect(countFinder(), findsOneWidget);
-      expect(find.text('80 exercises'), findsOneWidget);
+      expect(find.text('88 exercises'), findsOneWidget);
 
       // Search still works
       await tester.enterText(find.byType(TextField), 'push');
@@ -250,20 +250,20 @@ void main() {
       expect(find.textContaining('Push-Up'), findsWidgets);
       // Count should be less than 80
       final countAfterSearch = tester.widget<Text>(countFinder()).data!;
-      expect(countAfterSearch, isNot('80 exercises'));
-      expect(int.parse(countAfterSearch.split(' ').first), lessThan(80));
+      expect(countAfterSearch, isNot('88 exercises'));
+      expect(int.parse(countAfterSearch.split(' ').first), lessThan(88));
 
       // Clear search
       await tester.tap(find.byIcon(Icons.clear));
       await tester.pump(const Duration(milliseconds: 500));
-      expect(find.text('80 exercises'), findsOneWidget);
+      expect(find.text('88 exercises'), findsOneWidget);
 
       // Quick filter still works
       await tester.tap(find.text('No equipment'));
       await tester.pump(const Duration(milliseconds: 500));
       // Should filter
       final countAfterFilter = tester.widget<Text>(countFinder()).data!;
-      expect(int.parse(countAfterFilter.split(' ').first), lessThan(80));
+      expect(int.parse(countAfterFilter.split(' ').first), lessThan(88));
       expect(int.parse(countAfterFilter.split(' ').first), greaterThan(0));
     });
   });

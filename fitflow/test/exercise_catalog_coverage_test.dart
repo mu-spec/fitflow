@@ -229,4 +229,91 @@ void main() {
       expect(codes, contains('setup.no_equipment_candidates'));
     });
   });
+
+  group('meaningful equipment coverage', () {
+    final result = ExerciseCatalogCoverageReport.generate();
+
+    test('production catalog counts cover every meaningful selectable gear',
+        () {
+      final counts = result.equipmentCounts;
+      expect(counts[WorkoutEquipment.chair] ?? 0, greaterThan(0));
+      expect(counts[WorkoutEquipment.bench] ?? 0, greaterThan(0));
+      expect(counts[WorkoutEquipment.towel] ?? 0, greaterThan(0));
+      expect(counts[WorkoutEquipment.resistanceBands] ?? 0, greaterThanOrEqualTo(2));
+      expect(counts[WorkoutEquipment.dumbbells] ?? 0, greaterThanOrEqualTo(2));
+      expect(counts[WorkoutEquipment.kettlebell] ?? 0, greaterThanOrEqualTo(2));
+      expect(counts[WorkoutEquipment.pullUpBar] ?? 0, greaterThanOrEqualTo(2));
+    });
+
+    test('equipment coverage produces no release-blocking gear gaps', () {
+      final gearGaps = result.releaseBlockingGaps
+          .where((d) => d.code == 'equipment.no_exercises')
+          .toList();
+      expect(gearGaps, isEmpty, reason: result.describe());
+    });
+
+    test('Exercise Mat is exempt: zero mat count is not a release blocker',
+        () {
+      // A mat is a comfort accessory for floor work; exercises must remain
+      // usable without one, so the catalog must not require it and its zero
+      // count must never be reported as blocking.
+      expect(result.equipmentCounts[WorkoutEquipment.exerciseMat] ?? 0, 0);
+      expect(
+        ExerciseCatalogCoverageReport.equipmentCoverageExemptions,
+        contains(WorkoutEquipment.exerciseMat),
+      );
+      for (final exercise in ExerciseCatalog.all) {
+        expect(
+          exercise.requiredEquipment,
+          isNot(contains(WorkoutEquipment.exerciseMat)),
+          reason: exercise.id,
+        );
+      }
+      expect(
+        result.releaseBlockingGaps.map((d) => d.message).join(' '),
+        isNot(contains('exerciseMat')),
+      );
+    });
+
+    test('selectable gear with zero exercises is release-blocking', () {
+      // Synthetic catalog: everything bodyweight — chair/bench/towel/bands/
+      // dumbbells/kettlebell/pull-up bar all unlock nothing.
+      final catalog = <Exercise>[
+        for (final pattern in CapabilityProfile.trainablePatterns)
+          syntheticExercise(id: 'a_${pattern.name}', pattern: pattern),
+        for (final pattern in CapabilityProfile.trainablePatterns)
+          syntheticExercise(id: 'b_${pattern.name}', pattern: pattern),
+        syntheticExercise(id: 'warmup', pattern: MovementPattern.warmup),
+        syntheticExercise(id: 'cooldown', pattern: MovementPattern.cooldown),
+      ];
+      final report = ExerciseCatalogCoverageReport.generate(catalog: catalog);
+      final gearGaps = report.releaseBlockingGaps
+          .where((d) => d.code == 'equipment.no_exercises')
+          .toList();
+      final missingNames = gearGaps.map((d) => d.message).join(' ');
+      for (final item in const [
+        WorkoutEquipment.chair,
+        WorkoutEquipment.bench,
+        WorkoutEquipment.towel,
+        WorkoutEquipment.resistanceBands,
+        WorkoutEquipment.dumbbells,
+        WorkoutEquipment.kettlebell,
+        WorkoutEquipment.pullUpBar,
+      ]) {
+        expect(missingNames, contains(item.name));
+      }
+      // Exempt gear never appears as a gap.
+      expect(missingNames, isNot(contains('none')));
+      expect(missingNames, isNot(contains('exerciseMat')));
+    });
+
+    test('describe() reports equipment counts with the mat exemption note',
+        () {
+      final text = result.describe();
+      expect(text, contains('equipment ['));
+      expect(text, contains('dumbbells:2'));
+      expect(text, contains('exerciseMat:0'));
+      expect(text, contains('exempt'));
+    });
+  });
 }

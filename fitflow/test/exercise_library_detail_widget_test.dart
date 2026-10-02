@@ -49,7 +49,7 @@ void main() {
           size: const Size(320, 640));
 
       expect(find.text('Filters'), findsOneWidget);
-      expect(find.text('80 exercises'), findsOneWidget);
+      expect(find.text('88 exercises'), findsOneWidget);
       expect(find.text('Search exercises'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
@@ -59,7 +59,7 @@ void main() {
           size: const Size(1200, 800));
 
       expect(find.text('Filters'), findsOneWidget);
-      expect(find.text('80 exercises'), findsOneWidget);
+      expect(find.text('88 exercises'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 
@@ -67,7 +67,7 @@ void main() {
       await pumpRoute(tester, AppRoutes.exerciseLibrary,
           size: const Size(844, 390));
 
-      expect(find.text('80 exercises'), findsOneWidget);
+      expect(find.text('88 exercises'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 
@@ -75,7 +75,7 @@ void main() {
       await pumpRoute(tester, AppRoutes.exerciseLibrary, textScale: 1.5);
 
       expect(find.text('Filters'), findsOneWidget);
-      expect(find.text('80 exercises'), findsOneWidget);
+      expect(find.text('88 exercises'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 
@@ -90,14 +90,14 @@ void main() {
           .widgetList<Text>(find.byType(Text))
           .map((w) => w.data ?? '')
           .firstWhere((t) => t.endsWith('exercises'));
-      expect(countText, isNot('80 exercises'));
+      expect(countText, isNot('88 exercises'));
       expect(find.text('Standard Push-Up'), findsNothing);
       expect(find.textContaining('Plank'), findsWidgets);
 
       // The search field's clear icon restores the full list.
       await tester.tap(find.byTooltip('Clear search'));
       await tester.pump(const Duration(milliseconds: 300));
-      expect(find.text('80 exercises'), findsOneWidget);
+      expect(find.text('88 exercises'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   });

@@ -93,8 +93,10 @@ void main() {
 
     test('no catalog exercise requires equipment the app does not model '
         'as available user gear', () {
-      // Factual coverage statement: bands/dumbbells/kettlebell/pull-up bar
-      // exist in the enum but the catalog intentionally needs none of them.
+      // After M20 final stabilization the catalog may legitimately require
+      // the meaningful selectable gear (chair/bench/towel/bands/dumbbells/
+      // kettlebell/pull-up bar). Exercise Mat stays exempt: it is a comfort
+      // accessory and must never be mandatory for an exercise.
       final usedEquipment = ExerciseCatalog.all
           .expand((e) => e.requiredEquipment)
           .toSet()
@@ -105,11 +107,20 @@ void main() {
             WorkoutEquipment.chair,
             WorkoutEquipment.bench,
             WorkoutEquipment.towel,
+            WorkoutEquipment.resistanceBands,
+            WorkoutEquipment.dumbbells,
+            WorkoutEquipment.kettlebell,
+            WorkoutEquipment.pullUpBar,
           ],
           contains(item),
           reason: 'unexpected equipment requirement: $item',
         );
       }
+      expect(
+        usedEquipment,
+        isNot(contains(WorkoutEquipment.exerciseMat)),
+        reason: 'mat is a comfort accessory and must never be required',
+      );
     });
   });
 

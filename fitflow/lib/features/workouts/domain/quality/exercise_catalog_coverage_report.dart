@@ -85,6 +85,36 @@ class PatternCoverageSummary {
 /// No consumer UI, no persistence. Detects only meaningful release-blocking
 /// gaps; it does not impose arbitrary quotas.
 abstract final class ExerciseCatalogCoverageReport {
+  /// Minimum active-exercise counts for meaningful SELECTABLE equipment.
+  ///
+  /// FitFlow lets users pick this gear, so a selection that unlocks no
+  /// exercise content contradicts the equipment-aware design. Chair, bench,
+  /// and towel already have content and must keep at least one exercise;
+  /// the four gear categories need at least two exercises each for the
+  /// selection to have a meaningful effect.
+  static const Map<WorkoutEquipment, int> meaningfulEquipmentMinimums =
+      <WorkoutEquipment, int>{
+    WorkoutEquipment.chair: 1,
+    WorkoutEquipment.bench: 1,
+    WorkoutEquipment.towel: 1,
+    WorkoutEquipment.resistanceBands: 2,
+    WorkoutEquipment.dumbbells: 2,
+    WorkoutEquipment.kettlebell: 2,
+    WorkoutEquipment.pullUpBar: 2,
+  };
+
+  /// Equipment values intentionally exempt from required-content coverage.
+  ///
+  /// `none` is the normal equipment-free baseline, not gear to "cover".
+  /// `exerciseMat` is a comfort accessory for floor work: it must never be
+  /// made mandatory for exercises that can safely be done without one, so a
+  /// zero mat count is NOT a release blocker.
+  static const Set<WorkoutEquipment> equipmentCoverageExemptions =
+      <WorkoutEquipment>{
+    WorkoutEquipment.none,
+    WorkoutEquipment.exerciseMat,
+  };
+
   /// Generates a coverage report for [catalog] (defaults to the production
   /// [ExerciseCatalog]) and validates capability-assessment anchor names
   /// against it.
@@ -210,6 +240,34 @@ abstract final class ExerciseCatalogCoverageReport {
       ));
     }
 
+    // Equipment coverage: meaningful selectable gear must unlock content.
+    final equipmentCounts = <WorkoutEquipment, int>{
+      for (final item in WorkoutEquipment.values) item: 0,
+    };
+    for (final exercise in active) {
+      for (final item in exercise.requiredEquipment) {
+        equipmentCounts[item] = (equipmentCounts[item] ?? 0) + 1;
+      }
+    }
+    meaningfulEquipmentMinimums.forEach((item, minimum) {
+      final count = equipmentCounts[item] ?? 0;
+      if (count == 0) {
+        diagnostics.add(CoverageDiagnostic(
+          code: 'equipment.no_exercises',
+          message: 'selectable equipment ${item.name} has no active '
+              'exercises; selecting it unlocks no content',
+          severity: CoverageSeverity.releaseBlocking,
+        ));
+      } else if (count < minimum) {
+        diagnostics.add(CoverageDiagnostic(
+          code: 'equipment.sparse_coverage',
+          message: 'selectable equipment ${item.name} has only $count '
+              'active exercise(s); expected at least $minimum',
+          severity: CoverageSeverity.informational,
+        ));
+      }
+    });
+
     // Capability-assessment anchor names must resolve to active exercises.
     final byName = <String, Exercise>{
       for (final e in active) e.name.toLowerCase(): e,
@@ -243,6 +301,7 @@ abstract final class ExerciseCatalogCoverageReport {
       warmupCount: warmupCount,
       cooldownCount: cooldownCount,
       noEquipmentTrainableCount: noEquipmentTrainable,
+      equipmentCounts: Map.unmodifiable(equipmentCounts),
       diagnostics: List.unmodifiable(diagnostics),
       exerciseCount: active.length,
     );
@@ -256,6 +315,7 @@ class ExerciseCatalogCoverageResult {
     required this.warmupCount,
     required this.cooldownCount,
     required this.noEquipmentTrainableCount,
+    required this.equipmentCounts,
     required this.diagnostics,
     required this.exerciseCount,
   });
@@ -267,6 +327,12 @@ class ExerciseCatalogCoverageResult {
   final int cooldownCount;
   final int noEquipmentTrainableCount;
   final int exerciseCount;
+
+  /// Active exercise counts per WorkoutEquipment.
+  ///
+  /// `none` counts equipment-free exercises; `exerciseMat` is exempt from
+  /// required-content coverage (comfort accessory, never mandatory).
+  final Map<WorkoutEquipment, int> equipmentCounts;
 
   final List<CoverageDiagnostic> diagnostics;
 
@@ -308,6 +374,11 @@ class ExerciseCatalogCoverageResult {
       '  warmup=$warmupCount cooldown=$cooldownCount '
       'noEquipmentTrainable=$noEquipmentTrainableCount',
     );
+    final equipmentLine = equipmentCounts.entries
+        .map((e) => '${e.key.name}:${e.value}')
+        .join(' ');
+    buffer.writeln('  equipment [$equipmentLine] '
+        '(exerciseMat exempt: comfort accessory, never mandatory)');
     for (final diagnostic in diagnostics) {
       buffer.writeln('  $diagnostic');
     }

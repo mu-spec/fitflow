@@ -25,10 +25,10 @@ void main() {
     expect(report.warnings, isEmpty, reason: report.describe());
   });
 
-  test('exercise count remains 80 unless a critical addition is justified',
+  test('exercise count reflects the M20 stabilization (80 + 8 meaningful equipment exercises)',
       () {
     // If this needs to change, the milestone report must explain why.
-    expect(catalog, hasLength(80));
+    expect(catalog, hasLength(88));
   });
 
   test('all exercise ids are unique and normalized snake_case', () {
@@ -96,7 +96,10 @@ void main() {
 
   test('catalog order is deterministic and unchanged', () {
     expect(catalog.first.id, 'pushup_wall');
-    expect(catalog.last.id, 'figure_four_stretch');
+    // Original 80 keep their stable order; the M20 stabilization appended
+    // the eight equipment exercises after them.
+    expect(catalog[79].id, 'figure_four_stretch');
+    expect(catalog.last.id, 'scapular_pullup');
     expect(ExerciseCatalog.byId('pushup_standard'), isNotNull);
     expect(ExerciseCatalog.byId('not_a_real_exercise'), isNull);
   });

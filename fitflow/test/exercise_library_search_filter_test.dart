@@ -3,12 +3,9 @@ import 'package:fitflow/features/workouts/data/exercise_catalog.dart';
 import 'package:fitflow/features/workouts/domain/exercise.dart';
 import 'package:fitflow/features/workouts/domain/exercise_difficulty.dart';
 import 'package:fitflow/features/workouts/domain/exercise_position.dart';
-import 'package:fitflow/features/workouts/domain/exercise_type.dart';
 import 'package:fitflow/features/workouts/domain/impact_level.dart';
-import 'package:fitflow/features/workouts/domain/joint_load.dart';
 import 'package:fitflow/features/workouts/domain/movement_pattern.dart';
 import 'package:fitflow/features/workouts/domain/noise_level.dart';
-import 'package:fitflow/features/workouts/domain/space_requirement.dart';
 import 'package:fitflow/features/workouts/presentation/exercise_library_filter.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -65,33 +62,26 @@ void main() {
       }
     });
 
-    test('"dumbbell" returns zero rows truthfully (catalog has none) and '
-        'equipment search itself works', () {
-      // The catalog truthfully contains no dumbbell exercises.
+    test('"dumbbell" finds the stabilized dumbbell exercises via name and '
+        'equipment label', () {
+      // After M20 final stabilization the catalog carries two dumbbell
+      // exercises; the existing search architecture (name / muscles /
+      // pattern label / equipment labels / tags) finds them.
       final results = applyExerciseLibraryFilter(
         catalog,
         const ExerciseLibraryFilter(searchQuery: 'dumbbell'),
       );
-      expect(results, isEmpty);
-
-      // The search mechanism itself covers equipment labels: a synthetic
-      // dumbbell exercise would be findable without any enhancement.
-      final synthetic = Exercise(
-        id: 'synthetic_dumbbell_row',
-        name: 'Synthetic Dumbbell Row',
-        difficulty: ExerciseDifficulty.level2,
-        impactLevel: ImpactLevel.low,
-        noiseLevel: NoiseLevel.quiet,
-        spaceRequirement: SpaceRequirement.small,
-        wristLoad: JointLoad.low,
-        kneeLoad: JointLoad.none,
-        requiredEquipment: const {WorkoutEquipment.dumbbells},
-        exerciseType: ExerciseType.reps,
-        defaultReps: 8,
-        defaultRest: const Duration(seconds: 30),
-        active: true,
+      expect(
+        ids(results),
+        containsAll(<String>['squat_goblet_dumbbell', 'row_bent_over_dumbbell']),
       );
-      expect(exerciseMatchesSearch(synthetic, 'dumbbell'), isTrue);
+      for (final exercise in results) {
+        expect(
+          exercise.requiredEquipment,
+          contains(WorkoutEquipment.dumbbells),
+          reason: exercise.id,
+        );
+      }
     });
   });
 

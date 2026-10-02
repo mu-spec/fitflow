@@ -12,7 +12,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   final all = ExerciseCatalog.all;
 
-  test('contains exactly the requested 80 exercises in stable order', () {
+  test('contains exactly the requested 88 exercises in stable order', () {
     expect(all.map((e) => e.name).toList(), [
       'Wall Push-Up',
       'Incline Push-Up',
@@ -94,13 +94,21 @@ void main() {
       'Standing Mountain Climber',
       'Cobra Stretch',
       'Figure-Four Stretch',
+      'Resistance Band Pull-Apart',
+      'Resistance Band Row',
+      'Dumbbell Goblet Squat',
+      'Dumbbell Bent-Over Row',
+      'Kettlebell Deadlift',
+      'Kettlebell Goblet Squat',
+      'Dead Hang on Pull-Up Bar',
+      'Scapular Pull-Up',
     ]);
-    expect(all, hasLength(80));
+    expect(all, hasLength(88));
   });
 
   test('IDs and normalized names are unique', () {
-    expect(all.map((e) => e.id).toSet(), hasLength(80));
-    expect(all.map((e) => e.name.trim().toLowerCase()).toSet(), hasLength(80));
+    expect(all.map((e) => e.id).toSet(), hasLength(88));
+    expect(all.map((e) => e.name.trim().toLowerCase()).toSet(), hasLength(88));
   });
 
   test('every definition validates and contains meaningful metadata', () {

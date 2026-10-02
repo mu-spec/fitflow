@@ -2986,6 +2986,290 @@ abstract final class ExerciseCatalog {
       assetPath: null,
       active: true,
     ),
+    Exercise(
+      id: "pull_apart_resistance_band",
+      name: "Resistance Band Pull-Apart",
+      shortDescription:
+          "A standing upper-back movement pulling a held resistance band apart horizontally in front of the body.",
+      movementPattern: MovementPattern.pull,
+      difficulty: ExerciseDifficulty.level1,
+      bodyPosition: ExercisePosition.standing,
+      impactLevel: ImpactLevel.low,
+      noiseLevel: NoiseLevel.quiet,
+      spaceRequirement: SpaceRequirement.tiny,
+      wristLoad: JointLoad.low,
+      kneeLoad: JointLoad.none,
+      primaryMuscles: {MuscleGroup.shoulders, MuscleGroup.upperBack},
+      secondaryMuscles: {MuscleGroup.forearms},
+      requiredEquipment: {WorkoutEquipment.resistanceBands},
+      exerciseType: ExerciseType.reps,
+      defaultReps: 12,
+      defaultRest: Duration(seconds: 30),
+      instructions: [
+        "Stand tall holding a light resistance band with both hands at shoulder height, arms extended and hands about shoulder-width apart.",
+        "Keeping arms nearly straight, pull the band apart until it opens across your chest, drawing the shoulder blades together.",
+        "Return to the start with control, keeping tension on the band throughout the set."
+      ],
+      commonMistakes: [
+        "Shrugging the shoulders toward the ears while pulling",
+        "Letting the band snap back instead of controlling the return"
+      ],
+      breathingGuidance: "Exhale as you pull the band apart; inhale on the return.",
+      tags: {"resistance_band", "shoulder_emphasis", "pull"},
+      assetPath: null,
+      active: true,
+    ),
+    Exercise(
+      id: "row_resistance_band",
+      name: "Resistance Band Row",
+      shortDescription:
+          "A bent-over standing row pulling an anchored resistance band toward the torso to load the upper back.",
+      movementPattern: MovementPattern.pull,
+      difficulty: ExerciseDifficulty.level2,
+      bodyPosition: ExercisePosition.standing,
+      impactLevel: ImpactLevel.low,
+      noiseLevel: NoiseLevel.quiet,
+      spaceRequirement: SpaceRequirement.small,
+      wristLoad: JointLoad.low,
+      kneeLoad: JointLoad.low,
+      primaryMuscles: {MuscleGroup.upperBack, MuscleGroup.lats},
+      secondaryMuscles: {MuscleGroup.biceps, MuscleGroup.shoulders},
+      requiredEquipment: {WorkoutEquipment.resistanceBands},
+      exerciseType: ExerciseType.reps,
+      defaultReps: 12,
+      defaultRest: Duration(seconds: 30),
+      instructions: [
+        "Anchor the band at chest height or loop it around a sturdy post, then step back until there is light tension with arms extended.",
+        "Hinge slightly at the hips with a braced trunk, and row the handles toward your lower ribs, elbows tracking alongside the body.",
+        "Squeeze the shoulder blades together at the end of the pull, then extend the arms slowly back to the start."
+      ],
+      commonMistakes: [
+        "Rounding the lower back instead of holding a hinged, braced trunk",
+        "Jerking the torso backward to create momentum on the pull"
+      ],
+      breathingGuidance: "Exhale as you row the band in; inhale as the arms extend.",
+      tags: {"resistance_band", "back_emphasis", "pull"},
+      assetPath: null,
+      active: true,
+    ),
+    Exercise(
+      id: "squat_goblet_dumbbell",
+      name: "Dumbbell Goblet Squat",
+      shortDescription:
+          "A squat holding a single dumbbell vertically against the chest to counterbalance the torso.",
+      movementPattern: MovementPattern.squat,
+      difficulty: ExerciseDifficulty.level2,
+      bodyPosition: ExercisePosition.standing,
+      impactLevel: ImpactLevel.low,
+      noiseLevel: NoiseLevel.quiet,
+      spaceRequirement: SpaceRequirement.small,
+      wristLoad: JointLoad.low,
+      kneeLoad: JointLoad.moderate,
+      primaryMuscles: {MuscleGroup.quadriceps, MuscleGroup.glutes},
+      secondaryMuscles: {
+        MuscleGroup.hamstrings,
+        MuscleGroup.abs,
+        MuscleGroup.calves
+      },
+      requiredEquipment: {WorkoutEquipment.dumbbells},
+      exerciseType: ExerciseType.reps,
+      defaultReps: 10,
+      defaultRest: Duration(seconds: 45),
+      instructions: [
+        "Cup one end of a dumbbell with both hands and hold it vertically against your chest, elbows pointing down.",
+        "Squat down between your knees until thighs reach a comfortable depth, keeping the chest tall and heels planted.",
+        "Drive through the whole foot to stand back up without locking the knees at the top."
+      ],
+      commonMistakes: [
+        "Letting the heels lift off the floor at the bottom of the squat",
+        "Allowing the dumbbell to drift away from the chest and pull the torso forward"
+      ],
+      breathingGuidance: "Inhale on the way down; exhale as you drive back up.",
+      tags: {"dumbbell", "squat", "loaded"},
+      assetPath: null,
+      active: true,
+    ),
+    Exercise(
+      id: "row_bent_over_dumbbell",
+      name: "Dumbbell Bent-Over Row",
+      shortDescription:
+          "A bent-over row lifting dumbbells toward the hips while the torso stays hinged and braced.",
+      movementPattern: MovementPattern.pull,
+      difficulty: ExerciseDifficulty.level2,
+      bodyPosition: ExercisePosition.standing,
+      impactLevel: ImpactLevel.low,
+      noiseLevel: NoiseLevel.quiet,
+      spaceRequirement: SpaceRequirement.small,
+      wristLoad: JointLoad.low,
+      kneeLoad: JointLoad.low,
+      primaryMuscles: {MuscleGroup.upperBack, MuscleGroup.lats},
+      secondaryMuscles: {MuscleGroup.biceps, MuscleGroup.shoulders},
+      requiredEquipment: {WorkoutEquipment.dumbbells},
+      exerciseType: ExerciseType.reps,
+      defaultReps: 10,
+      defaultRest: Duration(seconds: 45),
+      instructions: [
+        "Stand holding a dumbbell in each hand, hinge forward about 45 degrees with a flat back and soft knees.",
+        "Let the dumbbells hang at arm's length, then row them toward your lower hips, keeping elbows close to your sides.",
+        "Pause briefly with the shoulder blades drawn together, then lower the weights slowly to the start."
+      ],
+      commonMistakes: [
+        "Standing back up during the set instead of holding the hinge position",
+        "Swinging the dumbbells with momentum rather than rowing with the back and arms"
+      ],
+      breathingGuidance: "Exhale as you row up; inhale as you lower the weights.",
+      tags: {"dumbbell", "back_emphasis", "pull"},
+      assetPath: null,
+      active: true,
+    ),
+    Exercise(
+      id: "deadlift_kettlebell",
+      name: "Kettlebell Deadlift",
+      shortDescription:
+          "A hip-hinge deadlift lifting a kettlebell from the floor by extending the hips and knees.",
+      movementPattern: MovementPattern.hinge,
+      difficulty: ExerciseDifficulty.level2,
+      bodyPosition: ExercisePosition.standing,
+      impactLevel: ImpactLevel.low,
+      noiseLevel: NoiseLevel.quiet,
+      spaceRequirement: SpaceRequirement.small,
+      wristLoad: JointLoad.low,
+      kneeLoad: JointLoad.low,
+      primaryMuscles: {MuscleGroup.glutes, MuscleGroup.hamstrings},
+      secondaryMuscles: {
+        MuscleGroup.quadriceps,
+        MuscleGroup.abs,
+        MuscleGroup.lowerBack
+      },
+      requiredEquipment: {WorkoutEquipment.kettlebell},
+      exerciseType: ExerciseType.reps,
+      defaultReps: 10,
+      defaultRest: Duration(seconds: 45),
+      instructions: [
+        "Place a kettlebell between your ankles, stand with feet about hip-width apart, and hinge down to grip the handle with both hands.",
+        "Set a flat back and braced trunk, then stand up by driving through the feet and extending hips and knees together.",
+        "Lower the kettlebell back along the same path with control, keeping the back flat throughout."
+      ],
+      commonMistakes: [
+        "Rounding the back while lifting from the floor",
+        "Turning the lift into a squat by bending the knees first instead of hinging"
+      ],
+      breathingGuidance: "Inhale at the bottom; exhale as you stand up with the kettlebell.",
+      tags: {"kettlebell", "hinge", "loaded"},
+      assetPath: null,
+      active: true,
+    ),
+    Exercise(
+      id: "squat_goblet_kettlebell",
+      name: "Kettlebell Goblet Squat",
+      shortDescription:
+          "A squat holding a kettlebell by the horns against the chest to keep the torso upright.",
+      movementPattern: MovementPattern.squat,
+      difficulty: ExerciseDifficulty.level2,
+      bodyPosition: ExercisePosition.standing,
+      impactLevel: ImpactLevel.low,
+      noiseLevel: NoiseLevel.quiet,
+      spaceRequirement: SpaceRequirement.small,
+      wristLoad: JointLoad.low,
+      kneeLoad: JointLoad.moderate,
+      primaryMuscles: {MuscleGroup.quadriceps, MuscleGroup.glutes},
+      secondaryMuscles: {
+        MuscleGroup.hamstrings,
+        MuscleGroup.abs,
+        MuscleGroup.calves
+      },
+      requiredEquipment: {WorkoutEquipment.kettlebell},
+      exerciseType: ExerciseType.reps,
+      defaultReps: 10,
+      defaultRest: Duration(seconds: 45),
+      instructions: [
+        "Hold a kettlebell by the horns at chest height with elbows tucked, feet slightly wider than hip-width.",
+        "Squat down between your knees to a comfortable depth, keeping the chest tall and the weight close to the body.",
+        "Push through the whole foot to rise, finishing tall without leaning back."
+      ],
+      commonMistakes: [
+        "Letting the knees collapse inward on the way down",
+        "Holding the kettlebell far from the chest so the trunk tips forward"
+      ],
+      breathingGuidance: "Inhale on the descent; exhale as you stand up.",
+      tags: {"kettlebell", "squat", "loaded"},
+      assetPath: null,
+      active: true,
+    ),
+    Exercise(
+      id: "dead_hang_pullup_bar",
+      name: "Dead Hang on Pull-Up Bar",
+      shortDescription:
+          "A supported hang from a pull-up bar holding the full body weight on the hands and arms.",
+      movementPattern: MovementPattern.pull,
+      difficulty: ExerciseDifficulty.level2,
+      bodyPosition: ExercisePosition.hanging,
+      impactLevel: ImpactLevel.low,
+      noiseLevel: NoiseLevel.quiet,
+      spaceRequirement: SpaceRequirement.small,
+      wristLoad: JointLoad.high,
+      kneeLoad: JointLoad.none,
+      primaryMuscles: {MuscleGroup.forearms, MuscleGroup.lats},
+      secondaryMuscles: {
+        MuscleGroup.shoulders,
+        MuscleGroup.upperBack,
+        MuscleGroup.abs
+      },
+      requiredEquipment: {WorkoutEquipment.pullUpBar},
+      exerciseType: ExerciseType.timed,
+      defaultDuration: Duration(seconds: 20),
+      defaultRest: Duration(seconds: 45),
+      instructions: [
+        "Grip a secure pull-up bar slightly wider than shoulder-width, then step or hop up until the arms are fully extended.",
+        "Hang with relaxed shoulders or gently drawn down, body quiet and still, feet clear of the floor.",
+        "Hold for the target time, then release under control and land softly."
+      ],
+      commonMistakes: [
+        "Gripping with the thumbs on the same side as the fingers instead of wrapping them around the bar",
+        "Swinging the body while hanging instead of staying still"
+      ],
+      breathingGuidance: "Breathe steadily throughout the hang; do not hold your breath.",
+      tags: {"pullup_bar", "hanging", "grip_emphasis"},
+      assetPath: null,
+      active: true,
+    ),
+    Exercise(
+      id: "scapular_pullup",
+      name: "Scapular Pull-Up",
+      shortDescription:
+          "A short pull from a hang drawing the shoulder blades down and back without bending the elbows.",
+      movementPattern: MovementPattern.pull,
+      difficulty: ExerciseDifficulty.level3,
+      bodyPosition: ExercisePosition.hanging,
+      impactLevel: ImpactLevel.low,
+      noiseLevel: NoiseLevel.quiet,
+      spaceRequirement: SpaceRequirement.small,
+      wristLoad: JointLoad.high,
+      kneeLoad: JointLoad.none,
+      primaryMuscles: {MuscleGroup.lats, MuscleGroup.upperBack},
+      secondaryMuscles: {
+        MuscleGroup.shoulders,
+        MuscleGroup.forearms,
+        MuscleGroup.abs
+      },
+      requiredEquipment: {WorkoutEquipment.pullUpBar},
+      exerciseType: ExerciseType.reps,
+      defaultReps: 6,
+      defaultRest: Duration(seconds: 60),
+      instructions: [
+        "Hang from a secure pull-up bar with straight arms and shoulders settled, feet clear of the floor.",
+        "Without bending the elbows, pull the shoulder blades down and back so the body rises a short distance.",
+        "Hold for a beat at the top, then lower back to the full hang with control before the next rep."
+      ],
+      commonMistakes: [
+        "Bending the elbows and turning the movement into a full pull-up",
+        "Swinging or kicking the legs to create lift instead of moving only the shoulder blades"
+      ],
+      breathingGuidance: "Exhale as you draw the shoulder blades down; inhale as you lower.",
+      tags: {"pullup_bar", "hanging", "pull"},
+      assetPath: null,
+      active: true,
+    ),
 
   ]);
 

@@ -22,7 +22,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
     expect(find.text('Your workouts'), findsOneWidget);
     expect(find.text('Exercise Library'), findsOneWidget);
-    expect(find.text('Browse 80 exercises'), findsOneWidget);
+    expect(find.text('Browse 88 exercises'), findsOneWidget);
 
     // Open Exercise Library via tapping the row - must succeed if route is registered
     await tester.tap(find.byType(PlaceholderRow).first);
@@ -34,7 +34,7 @@ void main() {
     expect(find.text('Exercise Library'), findsWidgets);
 
     // Verify live result count shows 80 exercises
-    expect(find.text('80 exercises'), findsOneWidget);
+    expect(find.text('88 exercises'), findsOneWidget);
 
     // Verify Search field appears with placeholder 'Search exercises'
     expect(find.byType(TextField), findsOneWidget);
