@@ -1,5 +1,6 @@
 import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/features/workout_player/application/workout_player_state.dart';
+import 'package:fitflow/features/workout_player/presentation/player_accessibility.dart';
 import 'package:flutter/material.dart';
 
 /// Center area showing exercise icon, name, movement, set, large reps or countdown.
@@ -70,11 +71,12 @@ class WorkoutPlayerExerciseCenter extends StatelessWidget {
             color: colorScheme.secondaryContainer,
             borderRadius: BorderRadius.circular(20),
           ),
-          child: Icon(
-            _iconForMovement(exercise.movementPattern?.name),
-            size: 40,
-            color: colorScheme.onSecondaryContainer,
-            semanticLabel: exercise.movementPattern?.label ?? 'Exercise',
+          child: ExcludeSemantics(
+            child: Icon(
+              _iconForMovement(exercise.movementPattern?.name),
+              size: 40,
+              color: colorScheme.onSecondaryContainer,
+            ),
           ),
         ),
         const SizedBox(height: 16),
@@ -128,14 +130,16 @@ class WorkoutPlayerExerciseCenter extends StatelessWidget {
         if (isTimed)
           Column(
             children: [
-              Text(
-                _formatRemaining(state.remaining),
-                style: theme.textTheme.displayLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: state.isPaused ? colorScheme.onSurfaceVariant : colorScheme.primary,
+              PlayerTimerSemantics(
+                label: 'Remaining ${state.remaining.inSeconds} seconds',
+                child: Text(
+                  _formatRemaining(state.remaining),
+                  style: theme.textTheme.displayLarge?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: state.isPaused ? colorScheme.onSurfaceVariant : colorScheme.primary,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                semanticsLabel: 'Remaining ${state.remaining.inSeconds} seconds',
-                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 4),
               Text(

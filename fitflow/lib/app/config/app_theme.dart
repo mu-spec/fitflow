@@ -1,4 +1,5 @@
 import 'package:fitflow/app/config/app_dimensions.dart';
+import 'package:fitflow/core/accessibility/system_motion.dart';
 import 'package:flutter/material.dart';
 
 /// Centralized FitFlow Material 3 themes.
@@ -45,6 +46,31 @@ class AppTheme {
         elevation: 0,
         backgroundColor: isDark ? const Color(0xFF131A17) : Colors.white,
         indicatorColor: colorScheme.secondaryContainer,
+      ),
+      pageTransitionsTheme: SystemMotionTheme.transitions(reducedMotion: false),
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(
+          minimumSize: const Size(
+            SystemMotion.minTouchTarget,
+            SystemMotion.minTouchTarget,
+          ),
+          tapTargetSize: MaterialTapTargetSize.padded,
+        ),
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          minimumSize: const Size(64, SystemMotion.minTouchTarget),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          minimumSize: const Size(64, SystemMotion.minTouchTarget),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          minimumSize: const Size(48, SystemMotion.minTouchTarget),
+        ),
       ),
     );
   }

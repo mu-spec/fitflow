@@ -5,6 +5,7 @@ import 'package:fitflow/features/workout_player/domain/workout_player_phase.dart
 import 'package:fitflow/features/workout_player/domain/workout_player_completion.dart';
 import 'package:fitflow/features/workout_player/domain/workout_replacement_option.dart';
 import 'package:fitflow/features/workout_player/domain/workout_session_origin.dart';
+import 'package:fitflow/features/workout_player/presentation/player_accessibility.dart';
 import 'package:fitflow/features/workout_player/presentation/widgets/workout_player_completed_view.dart';
 import 'package:fitflow/features/workout_player/presentation/widgets/workout_player_controls.dart';
 import 'package:fitflow/features/workout_player/presentation/widgets/workout_player_exercise_center.dart';
@@ -290,15 +291,18 @@ class _WorkoutPlayerSessionViewState extends ConsumerState<WorkoutPlayerSessionV
                 ),
               ),
             IconButton(
-              tooltip: state.voiceEnabled ? 'Voice on' : 'Muted',
+              tooltip: state.voiceEnabled ? 'Mute voice' : 'Enable voice',
               onPressed: () => controller.toggleVoice(),
-              icon: Icon(state.voiceEnabled ? Icons.volume_up_rounded : Icons.volume_off_rounded),
+              icon: Icon(
+                state.voiceEnabled ? Icons.volume_up_rounded : Icons.volume_off_rounded,
+                semanticLabel: state.voiceEnabled ? 'Mute voice' : 'Enable voice',
+              ),
             ),
             if (state.phase != WorkoutPlayerPhase.ready &&
                 state.phase != WorkoutPlayerPhase.completed &&
                 state.phase != WorkoutPlayerPhase.sectionBreak)
               IconButton(
-                tooltip: state.isPaused ? 'Resume' : 'Pause',
+                tooltip: state.isPaused ? 'Resume workout' : 'Pause workout',
                 onPressed: () {
                   if (state.isPaused) {
                     controller.resume();
@@ -306,7 +310,10 @@ class _WorkoutPlayerSessionViewState extends ConsumerState<WorkoutPlayerSessionV
                     controller.pause();
                   }
                 },
-                icon: Icon(state.isPaused ? Icons.play_arrow_rounded : Icons.pause_rounded),
+                icon: Icon(
+                  state.isPaused ? Icons.play_arrow_rounded : Icons.pause_rounded,
+                  semanticLabel: state.isPaused ? 'Resume workout' : 'Pause workout',
+                ),
               ),
           ],
         ),
@@ -316,56 +323,68 @@ class _WorkoutPlayerSessionViewState extends ConsumerState<WorkoutPlayerSessionV
               constraints: const BoxConstraints(maxWidth: 720),
               child: Padding(
                 padding: const EdgeInsets.all(AppDimens.screenPadding),
-                child: Column(
-                  children: [
-                    WorkoutPlayerProgressHeader(state: state),
-                    const SizedBox(height: 16),
-                    if (state.isCurrentReplaced)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.secondaryContainer,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                state.originalExerciseName != null
-                                    ? 'Replaced ${state.originalExerciseName}'
-                                    : 'Replaced',
-                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                              ),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final phase = _buildPhaseBody(context, state, controller);
+                    final actions = <Widget>[
+                      const SizedBox(height: 8),
+                      if (controller.canReplaceCurrentExercise)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton.icon(
+                              onPressed: _handleReplaceExercise,
+                              icon: const Icon(Icons.swap_horiz_rounded),
+                              label: const Text('Replace exercise'),
                             ),
-                          ],
-                        ),
-                      ),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        child: _buildPhaseBody(context, state, controller),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    if (controller.canReplaceCurrentExercise)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton.icon(
-                            onPressed: _handleReplaceExercise,
-                            icon: const Icon(Icons.swap_horiz_rounded),
-                            label: const Text('Replace exercise'),
                           ),
                         ),
+                      WorkoutPlayerControls(
+                        state: state,
+                        controller: controller,
+                        plan: _stablePlan,
                       ),
-                    const SizedBox(height: 8),
-                    WorkoutPlayerControls(state: state, controller: controller, plan: _stablePlan),
-                    const SizedBox(height: 8),
-                  ],
+                      const SizedBox(height: 8),
+                    ];
+                    final header = <Widget>[
+                      PlayerPhaseAnnouncement(
+                        message: playerPhaseAnnouncement(state),
+                      ),
+                      WorkoutPlayerProgressHeader(state: state),
+                      const SizedBox(height: 16),
+                      if (state.isCurrentReplaced)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Text(
+                            state.originalExerciseName != null
+                                ? 'Replaced ${state.originalExerciseName}'
+                                : 'Replaced',
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                          ),
+                        ),
+                    ];
+                    // Short landscape heights cannot pin the controls without
+                    // overflowing. Taller layouts keep them on screen.
+                    if (constraints.maxHeight < 360) {
+                      return SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [...header, phase, ...actions],
+                        ),
+                      );
+                    }
+                    return Column(
+                      children: [
+                        ...header,
+                        Expanded(child: SingleChildScrollView(child: phase)),
+                        ...actions,
+                      ],
+                    );
+                  },
                 ),
               ),
             ),
@@ -587,7 +606,20 @@ class _ReplacementPicker extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Replace exercise', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Replace exercise',
+                  style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Cancel'),
+              ),
+            ],
+          ),
           const SizedBox(height: 12),
           Text('Current: ${currentPrescription.exercise.name}', style: theme.textTheme.bodyMedium),
           if (originalExerciseName != null) ...[
@@ -657,9 +689,14 @@ class _ReplacementPicker extends StatelessWidget {
                               const SizedBox(height: 12),
                               SizedBox(
                                 width: double.infinity,
-                                child: FilledButton(
-                                  onPressed: () => onSelect(option),
-                                  child: const Text('Use this exercise'),
+                                child: Semantics(
+                                  button: true,
+                                  label: 'Replace with ${exercise.name}',
+                                  hint: option.reasonLabels.join('. '),
+                                  child: FilledButton(
+                                    onPressed: () => onSelect(option),
+                                    child: const Text('Use this exercise'),
+                                  ),
                                 ),
                               ),
                             ],

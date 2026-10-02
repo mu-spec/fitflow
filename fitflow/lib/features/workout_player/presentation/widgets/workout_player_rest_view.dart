@@ -1,4 +1,5 @@
 import 'package:fitflow/features/workout_player/application/workout_player_state.dart';
+import 'package:fitflow/features/workout_player/presentation/player_accessibility.dart';
 import 'package:flutter/material.dart';
 
 /// Rest UI: Rest, countdown, exercise name, upcoming set number, Skip rest.
@@ -42,14 +43,16 @@ class WorkoutPlayerRestView extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
-        Text(
-          _formatRemaining(state.remaining),
-          style: theme.textTheme.displayLarge?.copyWith(
-            fontWeight: FontWeight.w800,
-            color: state.isPaused ? colorScheme.onSurfaceVariant : colorScheme.primary,
+        PlayerTimerSemantics(
+          label: 'Rest remaining ${state.remaining.inSeconds} seconds',
+          child: Text(
+            _formatRemaining(state.remaining),
+            style: theme.textTheme.displayLarge?.copyWith(
+              fontWeight: FontWeight.w800,
+              color: state.isPaused ? colorScheme.onSurfaceVariant : colorScheme.primary,
+            ),
+            textAlign: TextAlign.center,
           ),
-          semanticsLabel: 'Rest remaining ${state.remaining.inSeconds} seconds',
-          textAlign: TextAlign.center,
         ),
         const SizedBox(height: 4),
         Text(

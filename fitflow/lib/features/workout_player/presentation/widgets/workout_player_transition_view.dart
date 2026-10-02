@@ -1,4 +1,5 @@
 import 'package:fitflow/features/workout_player/application/workout_player_state.dart';
+import 'package:fitflow/features/workout_player/presentation/player_accessibility.dart';
 import 'package:flutter/material.dart';
 
 /// Transition UI: Next exercise, next exercise name, countdown, Skip transition.
@@ -43,14 +44,16 @@ class WorkoutPlayerTransitionView extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
-        Text(
-          _formatRemaining(state.remaining),
-          style: theme.textTheme.displayLarge?.copyWith(
-            fontWeight: FontWeight.w800,
-            color: state.isPaused ? colorScheme.onSurfaceVariant : colorScheme.primary,
+        PlayerTimerSemantics(
+          label: 'Transition remaining ${state.remaining.inSeconds} seconds',
+          child: Text(
+            _formatRemaining(state.remaining),
+            style: theme.textTheme.displayLarge?.copyWith(
+              fontWeight: FontWeight.w800,
+              color: state.isPaused ? colorScheme.onSurfaceVariant : colorScheme.primary,
+            ),
+            textAlign: TextAlign.center,
           ),
-          semanticsLabel: 'Transition remaining ${state.remaining.inSeconds} seconds',
-          textAlign: TextAlign.center,
         ),
         const SizedBox(height: 4),
         Text(
@@ -61,10 +64,12 @@ class WorkoutPlayerTransitionView extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         if (next != null) ...[
-          Icon(
-            Icons.fitness_center_outlined,
-            size: 48,
-            color: colorScheme.onSurfaceVariant,
+          ExcludeSemantics(
+            child: Icon(
+              Icons.fitness_center_outlined,
+              size: 48,
+              color: colorScheme.onSurfaceVariant,
+            ),
           ),
           const SizedBox(height: 12),
           Text(

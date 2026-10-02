@@ -101,7 +101,14 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                     icon: Icons.save_alt_rounded,
                     title: BackupCopy.createTitle,
                     description: BackupCopy.createDescription,
-                    action: FilledButton.icon(
+                    action: Semantics(
+                      button: true,
+                      enabled: !state.isBusy,
+                      label: state.phase == BackupRestorePhase.creating
+                          ? 'Creating backup'
+                          : BackupCopy.createButton,
+                      hint: BackupCopy.createDescription,
+                      child: FilledButton.icon(
                       key: BackupRestoreScreen.createButtonKey,
                       onPressed: state.isBusy ? null : controller.createBackup,
                       icon: state.phase == BackupRestorePhase.creating
@@ -112,18 +119,25 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                           : const Icon(Icons.download_rounded),
                       label: const Text(BackupCopy.createButton),
                     ),
+                    ),
                   ),
                   const SizedBox(height: 24),
                   _SectionCard(
                     icon: Icons.restore_rounded,
                     title: BackupCopy.restoreTitle,
                     description: BackupCopy.restoreDescription,
-                    action: OutlinedButton.icon(
+                    action: Semantics(
+                      button: true,
+                      enabled: !state.isBusy,
+                      label: BackupCopy.chooseFileButton,
+                      hint: BackupCopy.restoreDescription,
+                      child: OutlinedButton.icon(
                       key: BackupRestoreScreen.chooseFileButtonKey,
                       onPressed:
                           state.isBusy ? null : controller.pickAndValidate,
                       icon: const Icon(Icons.folder_open_rounded),
                       label: const Text(BackupCopy.chooseFileButton),
+                    ),
                     ),
                   ),
                   if (state.preview != null) ...[

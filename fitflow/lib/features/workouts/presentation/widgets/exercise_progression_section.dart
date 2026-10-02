@@ -42,7 +42,10 @@ class ExerciseProgressionSection extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             // Family context: Step X of Y
-            Row(
+            Wrap(
+              spacing: 8,
+              runSpacing: 6,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -58,7 +61,6 @@ class ExerciseProgressionSection extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
                 Text(
                   '${progression.step} / ${progression.total}',
                   style: theme.textTheme.bodySmall?.copyWith(

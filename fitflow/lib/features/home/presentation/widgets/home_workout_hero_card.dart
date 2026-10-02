@@ -56,9 +56,12 @@ class HomeWorkoutHeroCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.today_outlined, size: 18, color: colorScheme.onPrimaryContainer),
+                ExcludeSemantics(
+                  child: Icon(Icons.today_outlined, size: 18, color: colorScheme.onPrimaryContainer),
+                ),
                 const SizedBox(width: 8),
-                Text(
+                Flexible(
+                  child: Text(
                   "TODAY'S WORKOUT",
                   style: theme.textTheme.labelSmall?.copyWith(
                     letterSpacing: 1.0,
@@ -66,7 +69,7 @@ class HomeWorkoutHeroCard extends StatelessWidget {
                     color: colorScheme.onPrimaryContainer,
                   ),
                 ),
-                const Spacer(),
+                ),
                 if (isTemporary)
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -96,14 +99,14 @@ class HomeWorkoutHeroCard extends StatelessWidget {
             Text(
               '$targetFormatted target • ~$estimatedFormatted planned',
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onPrimaryContainer.withValues(alpha: 0.85),
+                color: colorScheme.onPrimaryContainer,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               '${plan.totalExerciseCount} exercises • ${userProfile.goal.label}',
               style: theme.textTheme.bodySmall?.copyWith(
-                color: colorScheme.onPrimaryContainer.withValues(alpha: 0.75),
+                color: colorScheme.onPrimaryContainer,
               ),
             ),
             if (isTemporary) ...[
@@ -111,7 +114,7 @@ class HomeWorkoutHeroCard extends StatelessWidget {
               Text(
                 'Temporary for this workout',
                 style: theme.textTheme.labelSmall?.copyWith(
-                  color: colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
+                  color: colorScheme.onPrimaryContainer,
                   fontStyle: FontStyle.italic,
                 ),
               ),

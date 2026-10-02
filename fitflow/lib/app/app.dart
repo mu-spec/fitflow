@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fitflow/app/config/app_theme.dart';
+import 'package:fitflow/core/accessibility/system_motion.dart';
 import 'package:fitflow/app/router/app_router.dart';
 import 'package:fitflow/core/constants/app_constants.dart';
 import 'package:fitflow/features/reminders/application/workout_reminder_navigation.dart';
@@ -83,6 +84,9 @@ class _FitFlowAppState extends ConsumerState<FitFlowApp> {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: appearanceMode.toThemeMode(),
+      builder: (context, child) => SystemMotionTheme(
+        child: child ?? const SizedBox.shrink(),
+      ),
       routerConfig: ref.watch(appRouterProvider),
     );
   }

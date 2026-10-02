@@ -1,4 +1,5 @@
 import 'package:fitflow/app/config/app_dimensions.dart';
+import 'package:fitflow/core/accessibility/accessible_actions.dart';
 import 'package:fitflow/features/onboarding/presentation/widgets/onboarding_progress.dart';
 import 'package:flutter/material.dart';
 
@@ -65,18 +66,15 @@ class OnboardingShell extends StatelessWidget {
                 AppDimens.screenPadding,
                 16,
               ),
-              child: Row(
-                children: [
-                  TextButton(
-                    onPressed: canGoBack ? onBack : null,
-                    child: const Text('Back'),
-                  ),
-                  const Spacer(),
-                  FilledButton(
-                    onPressed: canContinue ? onContinue : null,
-                    child: Text(trailingLabel),
-                  ),
-                ],
+              child: FitFlowActionPair(
+                leading: TextButton(
+                  onPressed: canGoBack ? onBack : null,
+                  child: const Text('Back'),
+                ),
+                trailing: FilledButton(
+                  onPressed: canContinue ? onContinue : null,
+                  child: Text(trailingLabel),
+                ),
               ),
             ),
           ],

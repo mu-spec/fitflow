@@ -68,14 +68,16 @@ class ExerciseFilterSheet extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Text('Filters', style: theme.textTheme.titleLarge),
-                  const Spacer(),
+                  Expanded(
+                    child: Text('Filters', style: theme.textTheme.titleLarge),
+                  ),
                   if (filter.hasActiveFilters)
                     TextButton(
                       onPressed: () => onChanged(filter.clearFilters()),
                       child: const Text('Clear filters'),
                     ),
                   IconButton(
+                    tooltip: 'Close',
                     icon: const Icon(Icons.close),
                     onPressed: () => Navigator.of(context).pop(),
                   ),

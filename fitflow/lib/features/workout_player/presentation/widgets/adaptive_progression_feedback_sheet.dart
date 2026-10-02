@@ -1,4 +1,5 @@
 import 'package:fitflow/app/router/app_routes.dart';
+import 'package:fitflow/core/accessibility/accessible_actions.dart';
 import 'package:fitflow/core/persistence/shared_preferences_provider.dart';
 import 'package:fitflow/features/workouts/application/adaptive_progression_controller.dart';
 import 'package:fitflow/features/workouts/data/capability_profile_storage.dart';
@@ -199,8 +200,10 @@ class _AdaptiveProgressionFeedbackSheetState
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                crossAxisAlignment: WrapCrossAlignment.center,
                                 children: [
                                   Text(pattern.name.toUpperCase(),
                                       style: theme.textTheme.titleMedium
@@ -213,41 +216,26 @@ class _AdaptiveProgressionFeedbackSheetState
                                         color: theme.colorScheme.secondaryContainer,
                                         borderRadius: BorderRadius.circular(8),
                                       ),
-                                      child: Text(currentLevel.label,
-                                          style: theme.textTheme.labelSmall),
+                                      child: Text(
+                                        currentLevel.label,
+                                        style: theme.textTheme.labelSmall,
+                                      ),
                                     ),
                                 ],
                               ),
                               const SizedBox(height: 8),
-                              // Segmented buttons
-                              SegmentedButton<MovementWorkoutFeedback>(
-                                segments: const [
-                                  ButtonSegment(
-                                    value: MovementWorkoutFeedback.tooHard,
-                                    label: Text('Too hard'),
-                                  ),
-                                  ButtonSegment(
-                                    value: MovementWorkoutFeedback.justRight,
-                                    label: Text('Just right'),
-                                  ),
-                                  ButtonSegment(
-                                    value: MovementWorkoutFeedback.easy,
-                                    label: Text('Easy'),
-                                  ),
-                                ],
-                                selected: selectedFeedback != null ? {selectedFeedback} : {},
-                                onSelectionChanged: (Set<MovementWorkoutFeedback> newSelection) {
+                              _FeedbackChoices(
+                                selected: selectedFeedback,
+                                onChanged: (next) {
                                   setState(() {
-                                    if (newSelection.isEmpty) {
+                                    if (next == null) {
                                       _feedback.remove(pattern);
                                     } else {
-                                      _feedback[pattern] = newSelection.first;
+                                      _feedback[pattern] = next;
                                     }
                                   });
                                   _updatePreview();
                                 },
-                                multiSelectionEnabled: false,
-                                emptySelectionAllowed: true,
                               ),
                               if (decision != null) ...[
                                 const SizedBox(height: 8),
@@ -309,43 +297,102 @@ class _AdaptiveProgressionFeedbackSheetState
             ),
           ],
           const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: _isApplying
-                      ? null
-                      : () {
-                          // Skip – do not change capability or evidence
-                          if (context.mounted) {
-                            try {
-                              context.go(widget._destination);
-                            } catch (_) {
-                              // In tests without GoRouter, just pop or do nothing
-                              Navigator.of(context).maybePop();
-                            }
-                          }
-                        },
-                  child: const Text('Skip'),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: FilledButton(
-                  onPressed: (_feedback.isEmpty || _isApplying) ? null : _applyAndFinish,
-                  child: _isApplying
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Text('Apply & finish'),
-                ),
-              ),
-            ],
+          FitFlowActionPair(
+            expand: true,
+            leading: OutlinedButton(
+              onPressed: _isApplying
+                  ? null
+                  : () {
+                      // Skip – do not change capability or evidence
+                      if (context.mounted) {
+                        try {
+                          context.go(widget._destination);
+                        } catch (_) {
+                          // In tests without GoRouter, just pop or do nothing
+                          Navigator.of(context).maybePop();
+                        }
+                      }
+                    },
+              child: const Text('Skip'),
+            ),
+            trailing: FilledButton(
+              onPressed: (_feedback.isEmpty || _isApplying) ? null : _applyAndFinish,
+              child: _isApplying
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Apply & finish'),
+            ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class _FeedbackChoices extends StatelessWidget {
+  const _FeedbackChoices({
+    required this.selected,
+    required this.onChanged,
+  });
+
+  final MovementWorkoutFeedback? selected;
+  final ValueChanged<MovementWorkoutFeedback?> onChanged;
+
+  static const _options = <MovementWorkoutFeedback>[
+    MovementWorkoutFeedback.tooHard,
+    MovementWorkoutFeedback.justRight,
+    MovementWorkoutFeedback.easy,
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final scale = MediaQuery.textScalerOf(context).scale(1);
+    final narrow = MediaQuery.sizeOf(context).width < 520;
+    if (scale < 1.3 && !narrow) {
+      return SegmentedButton<MovementWorkoutFeedback>(
+        segments: [
+          for (final option in _options)
+            ButtonSegment(
+              value: option,
+              label: Text(option.label),
+              tooltip: option.description,
+            ),
+        ],
+        selected: selected != null ? {selected!} : {},
+        onSelectionChanged: (next) {
+          onChanged(next.isEmpty ? null : next.first);
+        },
+        multiSelectionEnabled: false,
+        emptySelectionAllowed: true,
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final option in _options)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Semantics(
+              button: true,
+              selected: selected == option,
+              inMutuallyExclusiveGroup: true,
+              label: '${option.label}. ${option.description}',
+              child: OutlinedButton.icon(
+                onPressed: () => onChanged(selected == option ? null : option),
+                icon: Icon(
+                  selected == option
+                      ? Icons.check_circle
+                      : Icons.radio_button_unchecked,
+                ),
+                label: Text(option.label),
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

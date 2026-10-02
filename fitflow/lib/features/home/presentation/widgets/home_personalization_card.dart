@@ -45,9 +45,11 @@ class HomePersonalizationCard extends StatelessWidget {
               children: [
                 Icon(Icons.person_outline, size: 18, color: colorScheme.primary),
                 const SizedBox(width: 8),
-                Text(
-                  'Built for you',
-                  style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                Expanded(
+                  child: Text(
+                    'Built for you',
+                    style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                  ),
                 ),
               ],
             ),
@@ -69,28 +71,33 @@ class HomePersonalizationCard extends StatelessWidget {
 
   Widget _buildRow(BuildContext context, String label, String value) {
     final theme = Theme.of(context);
+    final large = MediaQuery.textScalerOf(context).scale(1) > 1.3;
+    final labelStyle = theme.textTheme.labelSmall?.copyWith(
+      color: theme.colorScheme.onSurfaceVariant,
+      fontWeight: FontWeight.w500,
+    );
+    final valueStyle = theme.textTheme.bodySmall?.copyWith(
+      fontWeight: FontWeight.w500,
+    );
+    if (large) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: labelStyle),
+          const SizedBox(height: 2),
+          Text(value, style: valueStyle),
+        ],
+      );
+    }
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
           width: 90,
-          child: Text(
-            label,
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
+          child: Text(label, style: labelStyle),
         ),
         const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            value,
-            style: theme.textTheme.bodySmall?.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
+        Expanded(child: Text(value, style: valueStyle)),
       ],
     );
   }

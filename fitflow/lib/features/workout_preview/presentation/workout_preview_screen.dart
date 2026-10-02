@@ -192,15 +192,18 @@ class _ModeBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.info_outline, size: 16, color: colorScheme.onSecondaryContainer),
+          ExcludeSemantics(
+            child: Icon(Icons.info_outline, size: 16, color: colorScheme.onSecondaryContainer),
+          ),
           const SizedBox(width: 8),
-          Text(
-            '${mode.label} • Temporary for this workout',
-            style: theme.textTheme.labelMedium?.copyWith(
-              color: colorScheme.onSecondaryContainer,
-              fontWeight: FontWeight.w600,
+          Expanded(
+            child: Text(
+              '${mode.label} • Temporary for this workout',
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: colorScheme.onSecondaryContainer,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],

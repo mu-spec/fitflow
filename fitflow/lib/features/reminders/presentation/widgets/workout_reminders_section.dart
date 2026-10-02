@@ -286,21 +286,17 @@ class _WeekdayPicker extends StatelessWidget {
             label: WorkoutReminderWeekday.fullName(weekday),
             button: true,
             selected: selected.contains(weekday),
-            child: ExcludeSemantics(
-              child: FilterChip(
-                key: ValueKey<String>('reminder_weekday_$weekday'),
-                label: SizedBox(
-                  width: 16,
-                  child: Text(
-                    WorkoutReminderWeekday.letter(weekday),
-                    textAlign: TextAlign.center,
-                  ),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+              child: ExcludeSemantics(
+                child: FilterChip(
+                  key: ValueKey<String>('reminder_weekday_$weekday'),
+                  label: Text(WorkoutReminderWeekday.letter(weekday)),
+                  showCheckmark: true,
+                  selected: selected.contains(weekday),
+                  onSelected: enabled ? (_) => onToggle(weekday) : null,
+                  materialTapTargetSize: MaterialTapTargetSize.padded,
                 ),
-                showCheckmark: false,
-                selected: selected.contains(weekday),
-                onSelected: enabled ? (_) => onToggle(weekday) : null,
-                visualDensity: VisualDensity.compact,
-                materialTapTargetSize: MaterialTapTargetSize.padded,
               ),
             ),
           ),

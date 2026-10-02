@@ -29,14 +29,25 @@ class OnboardingOptionCard extends StatelessWidget {
     final helper = helperText;
     final radius = BorderRadius.circular(AppDimens.radiusMedium);
 
+    final stateLabel = selected ? 'Selected' : 'Not selected';
+    final spoken = helper == null
+        ? '$label. $stateLabel'
+        : '$label. $helper. $stateLabel';
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
-      child: Material(
+      child: Semantics(
+        button: true,
+        selected: selected,
+        inMutuallyExclusiveGroup: !multiSelect,
+        label: spoken,
+        child: Material(
         color: selected
             ? colorScheme.secondaryContainer
             : colorScheme.surfaceContainerLow,
         borderRadius: radius,
-        child: InkWell(
+        child: ExcludeSemantics(
+          child: InkWell(
           borderRadius: radius,
           onTap: onSelected,
           child: Padding(
@@ -70,22 +81,26 @@ class OnboardingOptionCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                Icon(
-                  multiSelect
-                      ? (selected
-                            ? Icons.check_box
-                            : Icons.check_box_outline_blank)
-                      : (selected
-                            ? Icons.check_circle
-                            : Icons.radio_button_unchecked),
-                  color: selected
-                      ? colorScheme.onSecondaryContainer
-                      : colorScheme.outline,
+                ExcludeSemantics(
+                  child: Icon(
+                    multiSelect
+                        ? (selected
+                              ? Icons.check_box
+                              : Icons.check_box_outline_blank)
+                        : (selected
+                              ? Icons.check_circle
+                              : Icons.radio_button_unchecked),
+                    color: selected
+                        ? colorScheme.onSecondaryContainer
+                        : colorScheme.outline,
+                  ),
                 ),
               ],
             ),
           ),
         ),
+        ),
+      ),
       ),
     );
   }

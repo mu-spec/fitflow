@@ -63,15 +63,16 @@ class WorkoutPreviewSummaryCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Text(
-                  'Today\'s session',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    letterSpacing: 1.0,
-                    fontWeight: FontWeight.w600,
-                    color: colorScheme.onPrimaryContainer,
+                Expanded(
+                  child: Text(
+                    'Today\'s session',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      letterSpacing: 1.0,
+                      fontWeight: FontWeight.w600,
+                      color: colorScheme.onPrimaryContainer,
+                    ),
                   ),
                 ),
-                const Spacer(),
                 if (isTemporary)
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -114,7 +115,7 @@ class WorkoutPreviewSummaryCard extends StatelessWidget {
               Text(
                 'Temporary for this workout',
                 style: theme.textTheme.labelSmall?.copyWith(
-                  color: colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
+                  color: colorScheme.onPrimaryContainer,
                   fontStyle: FontStyle.italic,
                 ),
               ),
@@ -133,11 +134,13 @@ class WorkoutPreviewSummaryCard extends StatelessWidget {
       children: [
         Icon(icon, size: 16, color: colorScheme.onPrimaryContainer),
         const SizedBox(width: 6),
-        Text(
-          text,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: colorScheme.onPrimaryContainer,
-            fontWeight: FontWeight.w500,
+        Flexible(
+          child: Text(
+            text,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: colorScheme.onPrimaryContainer,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
       ],

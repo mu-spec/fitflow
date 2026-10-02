@@ -93,18 +93,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             title: 'System default',
                             subtitle: 'Follow your device setting.',
                             value: AppearanceMode.system,
+                            selected: mode == AppearanceMode.system,
                             enabled: !_savingAppearance,
                           ),
                           _AppearanceOption(
                             title: 'Light',
                             subtitle: 'Always use the light theme.',
                             value: AppearanceMode.light,
+                            selected: mode == AppearanceMode.light,
                             enabled: !_savingAppearance,
                           ),
                           _AppearanceOption(
                             title: 'Dark',
                             subtitle: 'Always use the dark theme.',
                             value: AppearanceMode.dark,
+                            selected: mode == AppearanceMode.dark,
                             enabled: !_savingAppearance,
                           ),
                         ],
@@ -147,23 +150,35 @@ class _AppearanceOption extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.value,
+    required this.selected,
     this.enabled = true,
   });
 
   final String title;
   final String subtitle;
   final AppearanceMode value;
+  final bool selected;
 
   /// Disabled while an appearance write is in flight.
   final bool enabled;
 
   @override
   Widget build(BuildContext context) {
-    return RadioListTile<AppearanceMode>(
-      title: Text(title),
-      subtitle: Text(subtitle),
-      value: value,
+    return Semantics(
+      button: true,
       enabled: enabled,
+      selected: selected,
+      inMutuallyExclusiveGroup: true,
+      label: selected ? '$title, selected' : title,
+      hint: subtitle,
+      child: ExcludeSemantics(
+        child: RadioListTile<AppearanceMode>(
+          title: Text(title),
+          subtitle: Text(subtitle),
+          value: value,
+          enabled: enabled,
+        ),
+      ),
     );
   }
 }

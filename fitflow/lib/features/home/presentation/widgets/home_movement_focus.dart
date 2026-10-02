@@ -47,9 +47,11 @@ class HomeMovementFocus extends StatelessWidget {
               children: [
                 Icon(Icons.center_focus_strong_outlined, size: 18, color: colorScheme.primary),
                 const SizedBox(width: 8),
-                Text(
-                  "Today's focus",
-                  style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                Expanded(
+                  child: Text(
+                    "Today's focus",
+                    style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                  ),
                 ),
               ],
             ),

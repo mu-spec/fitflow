@@ -30,6 +30,7 @@ class WorkoutPlayerProgressHeader extends StatelessWidget {
       children: [
         // Section + progress row
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: Column(
@@ -55,7 +56,8 @@ class WorkoutPlayerProgressHeader extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            Column(
+            Flexible(
+              child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
@@ -74,6 +76,7 @@ class WorkoutPlayerProgressHeader extends StatelessWidget {
                 ),
               ],
             ),
+            ),
           ],
         ),
         const SizedBox(height: 12),
@@ -83,6 +86,8 @@ class WorkoutPlayerProgressHeader extends StatelessWidget {
           color: colorScheme.primary,
           minHeight: 6,
           borderRadius: BorderRadius.circular(3),
+          semanticsLabel:
+              'Workout progress, ${state.completedSets} of ${state.totalSets} sets',
         ),
       ],
     );

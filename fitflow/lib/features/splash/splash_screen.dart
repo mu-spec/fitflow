@@ -168,36 +168,48 @@ class _RecoveryBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          Icons.error_outline,
-          size: 48,
-          color: theme.colorScheme.error,
-        ),
-        const SizedBox(height: 16),
-        Text(
-          SplashScreen.recoveryTitle,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w700,
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ExcludeSemantics(
+            child: Icon(
+              Icons.error_outline,
+              size: 48,
+              color: theme.colorScheme.error,
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          SplashScreen.recoveryBody,
-          textAlign: TextAlign.center,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
+          const SizedBox(height: 16),
+          Text(
+            SplashScreen.recoveryTitle,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
           ),
-        ),
-        const SizedBox(height: 24),
-        FilledButton(
-          onPressed: inFlight ? null : onRetry,
-          child: const Text(SplashScreen.recoveryAction),
-        ),
-      ],
+          const SizedBox(height: 8),
+          Text(
+            SplashScreen.recoveryBody,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Semantics(
+            button: true,
+            enabled: !inFlight,
+            label: SplashScreen.recoveryAction,
+            hint: "Reloads local data without changing it",
+            child: ExcludeSemantics(
+              child: FilledButton(
+                onPressed: inFlight ? null : onRetry,
+                child: const Text(SplashScreen.recoveryAction),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
