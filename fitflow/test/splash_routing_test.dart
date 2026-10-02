@@ -15,7 +15,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  const userProfile = UserFitnessProfile(
+  final userProfile = UserFitnessProfile(
     goal: FitnessGoal.generalFitness,
     experience: ExperienceLevel.regularTraining,
     workoutDuration: WorkoutDuration.twentyMinutes,

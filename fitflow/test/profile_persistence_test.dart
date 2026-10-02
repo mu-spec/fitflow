@@ -16,7 +16,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'helpers/test_helpers.dart';
 
 void main() {
-  const profile = UserFitnessProfile(
+  final profile = UserFitnessProfile(
     goal: FitnessGoal.buildStrength,
     experience: ExperienceLevel.regularTraining,
     workoutDuration: WorkoutDuration.twentyMinutes,
@@ -64,7 +64,7 @@ void main() {
       final prefs = await SharedPreferences.getInstance();
       final storage = UserFitnessProfileStorage(prefs);
 
-      const noPreferences = UserFitnessProfile(
+      final noPreferences = UserFitnessProfile(
         goal: FitnessGoal.generalFitness,
         experience: ExperienceLevel.completelyNew,
         workoutDuration: WorkoutDuration.thirtyMinutes,

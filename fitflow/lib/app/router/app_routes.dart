@@ -13,6 +13,11 @@ class AppRoutes {
   static const String profile = '/profile';
   static const String settings = '/profile/settings';
 
+  // Editable profile entries – M19 Part 1
+  static const String fitnessProfile = '$profile/fitness-profile';
+  static const String equipment = '$profile/equipment';
+  static const String workoutPreferences = '$profile/workout-preferences';
+
   /// Manual local backup & restore (M18), nested under Settings.
   static const String backupRestore = '$settings/backup-restore';
 

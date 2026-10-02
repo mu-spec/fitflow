@@ -4,19 +4,24 @@ import 'package:fitflow/features/onboarding/data/training_environment.dart';
 import 'package:fitflow/features/onboarding/data/workout_duration.dart';
 import 'package:fitflow/features/onboarding/data/workout_equipment.dart';
 import 'package:fitflow/features/onboarding/data/workout_preference.dart';
+import 'package:flutter/foundation.dart';
 
-/// The user's initial FitFlow profile, built from onboarding selections.
+/// The user's FitFlow fitness profile.
 ///
-/// In-memory only for now — it is not persisted yet.
+/// Created from the onboarding selections and editable from the Profile tab
+/// (M19). Persisted as a single JSON object under
+/// `UserFitnessProfileStorage.profileKey` (`user_fitness_profile`) — this is
+/// the app's only persisted profile object; there is one profile per device.
 class UserFitnessProfile {
-  const UserFitnessProfile({
+  UserFitnessProfile({
     required this.goal,
     required this.experience,
     required this.workoutDuration,
     required this.environment,
-    this.equipment = const {},
-    this.preferences = const {},
-  });
+    Set<WorkoutEquipment> equipment = const {},
+    Set<WorkoutPreference> preferences = const {},
+  }) : equipment = Set<WorkoutEquipment>.unmodifiable(equipment),
+       preferences = Set<WorkoutPreference>.unmodifiable(preferences);
 
   /// Main training goal.
   final FitnessGoal goal;
@@ -30,9 +35,60 @@ class UserFitnessProfile {
   /// Usual training environment.
   final TrainingEnvironment environment;
 
-  /// Equipment the user has available.
+  /// Equipment the user has available. Unmodifiable; never mutated after
+  /// construction (externally changing the input set has no effect here).
   final Set<WorkoutEquipment> equipment;
 
-  /// Optional workout preferences; may be empty.
+  /// Optional workout preferences; may be empty. Unmodifiable; never mutated
+  /// after construction (externally changing the input set has no effect
+  /// here).
   final Set<WorkoutPreference> preferences;
+
+  /// A copy of this profile with the given fields replaced. Unspecified
+  /// fields keep their current values. Set arguments are defensively copied,
+  /// just like in the constructor.
+  UserFitnessProfile copyWith({
+    FitnessGoal? goal,
+    ExperienceLevel? experience,
+    WorkoutDuration? workoutDuration,
+    TrainingEnvironment? environment,
+    Set<WorkoutEquipment>? equipment,
+    Set<WorkoutPreference>? preferences,
+  }) {
+    return UserFitnessProfile(
+      goal: goal ?? this.goal,
+      experience: experience ?? this.experience,
+      workoutDuration: workoutDuration ?? this.workoutDuration,
+      environment: environment ?? this.environment,
+      equipment: equipment ?? this.equipment,
+      preferences: preferences ?? this.preferences,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UserFitnessProfile &&
+          goal == other.goal &&
+          experience == other.experience &&
+          workoutDuration == other.workoutDuration &&
+          environment == other.environment &&
+          setEquals(equipment, other.equipment) &&
+          setEquals(preferences, other.preferences);
+
+  @override
+  int get hashCode => Object.hash(
+        goal,
+        experience,
+        workoutDuration,
+        environment,
+        Object.hashAllUnordered(equipment),
+        Object.hashAllUnordered(preferences),
+      );
+
+  @override
+  String toString() =>
+      'UserFitnessProfile(goal: $goal, experience: $experience, '
+      'workoutDuration: $workoutDuration, environment: $environment, '
+      'equipment: $equipment, preferences: $preferences)';
 }

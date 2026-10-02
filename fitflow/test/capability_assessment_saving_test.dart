@@ -18,7 +18,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'helpers/test_helpers.dart';
 
 void main() {
-  const userProfileRegular = UserFitnessProfile(
+  final userProfileRegular = UserFitnessProfile(
     goal: FitnessGoal.generalFitness,
     experience: ExperienceLevel.regularTraining,
     workoutDuration: WorkoutDuration.twentyMinutes,

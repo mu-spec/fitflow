@@ -22,7 +22,7 @@ void main() {
   final w1s1 = balanced.sessionById('balanced_foundations_w1_s1')!; // general
   final w1s3 = balanced.sessionById('balanced_foundations_w1_s3')!; // endurance
 
-  UserFitnessProfile richProfile() => const UserFitnessProfile(
+  UserFitnessProfile richProfile() => UserFitnessProfile(
         goal: FitnessGoal.buildMuscle,
         experience: ExperienceLevel.regularTraining,
         workoutDuration: WorkoutDuration.twentyMinutes,

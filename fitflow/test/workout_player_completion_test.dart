@@ -37,7 +37,7 @@ CapabilityProfile createFullProfile(CapabilityLevel level) {
 }
 
 UserFitnessProfile createUserProfile() {
-  return const UserFitnessProfile(
+  return UserFitnessProfile(
     goal: FitnessGoal.generalFitness,
     experience: ExperienceLevel.regularTraining,
     workoutDuration: WorkoutDuration.twentyMinutes,

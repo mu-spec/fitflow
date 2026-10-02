@@ -4,7 +4,10 @@ import 'package:fitflow/features/capability_assessment/presentation/capability_a
 import 'package:fitflow/features/home/presentation/home_screen.dart';
 import 'package:fitflow/features/main/presentation/main_shell.dart';
 import 'package:fitflow/features/onboarding/presentation/onboarding_screen.dart';
+import 'package:fitflow/features/profile/presentation/equipment_editor_screen.dart';
+import 'package:fitflow/features/profile/presentation/fitness_profile_editor_screen.dart';
 import 'package:fitflow/features/profile/presentation/profile_screen.dart';
+import 'package:fitflow/features/profile/presentation/workout_preferences_editor_screen.dart';
 import 'package:fitflow/features/programs/presentation/program_detail_screen.dart';
 import 'package:fitflow/features/programs/presentation/program_session_player_screen.dart';
 import 'package:fitflow/features/programs/presentation/program_session_preview_screen.dart';
@@ -205,6 +208,21 @@ class AppRouter {
                   path: AppRoutes.profile,
                   builder: (context, state) => const ProfileScreen(),
                   routes: [
+                    GoRoute(
+                      path: 'fitness-profile',
+                      builder: (context, state) =>
+                          const FitnessProfileEditorScreen(),
+                    ),
+                    GoRoute(
+                      path: 'equipment',
+                      builder: (context, state) =>
+                          const EquipmentEditorScreen(),
+                    ),
+                    GoRoute(
+                      path: 'workout-preferences',
+                      builder: (context, state) =>
+                          const WorkoutPreferencesEditorScreen(),
+                    ),
                     GoRoute(
                       path: 'settings',
                       builder: (context, state) => const SettingsScreen(),

@@ -18,7 +18,7 @@ import 'package:fitflow/features/workouts/domain/movement_pattern.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 UserFitnessProfile _defaultUserProfile() {
-  return const UserFitnessProfile(
+  return UserFitnessProfile(
     goal: FitnessGoal.generalFitness,
     experience: ExperienceLevel.completelyNew,
     workoutDuration: WorkoutDuration.fifteenMinutes,
