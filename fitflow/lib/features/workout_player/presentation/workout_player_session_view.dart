@@ -92,10 +92,12 @@ class _WorkoutPlayerSessionViewState extends ConsumerState<WorkoutPlayerSessionV
 
       // ignore: discarded_futures
       ref.read(workoutHistoryProvider.notifier).addWorkout(completedWorkout).then((success) {
+        if (!mounted) return;
         if (!success) {
           _recordedSessionIds.remove(sessionId);
         }
       }, onError: (_) {
+        if (!mounted) return;
         _recordedSessionIds.remove(sessionId);
       });
     } catch (_) {
@@ -125,10 +127,12 @@ class _WorkoutPlayerSessionViewState extends ConsumerState<WorkoutPlayerSessionV
 
       // ignore: discarded_futures
       callback(completion).then((handled) {
+        if (!mounted) return;
         if (!handled) {
           _notifiedSessionIds.remove(sessionId);
         }
       }, onError: (_) {
+        if (!mounted) return;
         _notifiedSessionIds.remove(sessionId);
       });
     } catch (_) {

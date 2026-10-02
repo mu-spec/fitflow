@@ -1,6 +1,7 @@
 import 'package:fitflow/app/router/app_routes.dart';
+import 'package:fitflow/core/persistence/shared_preferences_provider.dart';
 import 'package:fitflow/features/workouts/application/adaptive_progression_controller.dart';
-import 'package:fitflow/features/workouts/data/adaptive_progression_evidence_storage.dart';
+import 'package:fitflow/features/workouts/data/capability_profile_storage.dart';
 import 'package:fitflow/features/workouts/domain/adaptive/adaptive_progression_decision.dart';
 import 'package:fitflow/features/workouts/domain/adaptive/adaptive_progression_engine.dart';
 import 'package:fitflow/features/workouts/domain/adaptive/adaptive_progression_evidence.dart';
@@ -12,7 +13,6 @@ import 'package:fitflow/features/workouts/state/capability_profile_controller.da
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AdaptiveProgressionFeedbackSheet extends ConsumerStatefulWidget {
   const AdaptiveProgressionFeedbackSheet({
@@ -54,21 +54,19 @@ class _AdaptiveProgressionFeedbackSheetState
 
   Future<void> _loadEvidence() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final storage = AdaptiveProgressionEvidenceStorage(prefs);
+      final storage =
+          await ref.read(adaptiveProgressionEvidenceStorageProvider.future);
       final evidence = storage.load();
-      if (mounted) {
-        setState(() {
-          _currentEvidence = evidence;
-        });
-        _updatePreview();
-      }
+      if (!mounted) return;
+      setState(() {
+        _currentEvidence = evidence;
+      });
+      _updatePreview();
     } catch (_) {
-      if (mounted) {
-        setState(() {
-          _currentEvidence = AdaptiveProgressionEvidence.zero();
-        });
-      }
+      if (!mounted) return;
+      setState(() {
+        _currentEvidence = AdaptiveProgressionEvidence.zero();
+      });
     }
   }
 
@@ -108,20 +106,23 @@ class _AdaptiveProgressionFeedbackSheetState
   }
 
   Future<void> _applyAndFinish() async {
-    if (_feedback.isEmpty) return;
+    if (_isApplying || _feedback.isEmpty) return;
+    _isApplying = true;
     setState(() {
-      _isApplying = true;
       _errorMessage = null;
     });
 
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final evidenceStorage = AdaptiveProgressionEvidenceStorage(prefs);
+      final prefs = await ref.read(sharedPreferencesProvider.future);
+      final evidenceStorage =
+          await ref.read(adaptiveProgressionEvidenceStorageProvider.future);
       final capabilityController = ref.read(capabilityProfileProvider.notifier);
 
       final controller = AdaptiveProgressionController(
         capabilityController: capabilityController,
         evidenceStorage: evidenceStorage,
+        readPersistedCapability: () async =>
+            CapabilityProfileStorage(prefs).load(),
       );
 
       final result = await controller.applyFeedback(

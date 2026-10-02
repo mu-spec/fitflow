@@ -6,9 +6,16 @@ import 'package:fitflow/features/workouts/domain/movement_pattern.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AdaptiveProgressionEvidenceStorage {
-  AdaptiveProgressionEvidenceStorage(this._prefs);
+  AdaptiveProgressionEvidenceStorage(
+    this._prefs, {
+    Future<bool> Function(String encoded)? writeString,
+  }) : _writeString = writeString;
 
   final SharedPreferences _prefs;
+
+  /// Optional write seam so tests can fail or throw a persistence attempt
+  /// without replacing the whole storage. Production leaves this null.
+  final Future<bool> Function(String encoded)? _writeString;
 
   static const String evidenceKey = 'adaptive_progression_evidence_v1';
 
@@ -68,7 +75,12 @@ class AdaptiveProgressionEvidenceStorage {
 
   Future<bool> save(AdaptiveProgressionEvidence evidence) async {
     try {
-      return await _prefs.setString(evidenceKey, encode(evidence));
+      final encoded = encode(evidence);
+      final write = _writeString;
+      if (write != null) {
+        return await write(encoded);
+      }
+      return await _prefs.setString(evidenceKey, encoded);
     } catch (_) {
       return false;
     }

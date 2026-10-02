@@ -1,13 +1,24 @@
 import 'dart:convert';
 
+import 'package:fitflow/core/persistence/mutation_queue.dart';
 import 'package:fitflow/features/workouts/domain/history/completed_workout.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Local SharedPreferences storage for completed workouts, versioned key, bounded to 100.
 class WorkoutHistoryStorage {
-  WorkoutHistoryStorage(this._prefs);
+  WorkoutHistoryStorage(
+    this._prefs, {
+    Future<bool> Function(String key, String value)? writeString,
+    Future<bool> Function(String key)? remove,
+  })  : _writeString = writeString,
+        _remove = remove;
 
   final SharedPreferences _prefs;
+  final Future<bool> Function(String key, String value)? _writeString;
+  final Future<bool> Function(String key)? _remove;
+
+  /// Serializes read-modify-write so concurrent adds cannot drop a workout.
+  final MutationQueue _writes = MutationQueue();
 
   static const String key = 'workout_history_v1';
   static const int maxEntries = 100;
@@ -63,7 +74,11 @@ class WorkoutHistoryStorage {
 
   /// Save a single completed workout, deduplicate by id, newest first, cap 100.
   /// Returns true if saved or already exists, false on failure.
-  Future<bool> add(CompletedWorkout workout) async {
+  Future<bool> add(CompletedWorkout workout) {
+    return _writes.enqueue(() => _addNow(workout));
+  }
+
+  Future<bool> _addNow(CompletedWorkout workout) async {
     try {
       final existing = load();
       // If session ID exists → success/no-op
@@ -75,22 +90,30 @@ class WorkoutHistoryStorage {
       // Trim to max 100, drop oldest
       final trimmed = newList.length > maxEntries ? newList.take(maxEntries).toList() : newList;
 
-      final jsonList = trimmed.map((e) => e.toJson()).toList();
-      final encoded = jsonEncode(jsonList);
-      final result = await _prefs.setString(key, encoded);
-      return result;
+      final encoded = jsonEncode(trimmed.map((e) => e.toJson()).toList());
+      return await _setString(key, encoded);
     } catch (_) {
       return false;
     }
   }
 
   /// Replace entire history (used for testing or clear).
-  Future<bool> saveAll(List<CompletedWorkout> workouts) async {
+  Future<bool> saveAll(List<CompletedWorkout> workouts) {
+    return _writes.enqueue(() => _saveAllNow(workouts));
+  }
+
+  Future<bool> _saveAllNow(List<CompletedWorkout> workouts) async {
     try {
-      return await _prefs.setString(key, encode(workouts));
+      return await _setString(key, encode(workouts));
     } catch (_) {
       return false;
     }
+  }
+
+  Future<bool> _setString(String storageKey, String value) {
+    final write = _writeString;
+    if (write != null) return write(storageKey, value);
+    return _prefs.setString(storageKey, value);
   }
 
   /// The exact stored representation of [workouts]: de-duplicated by id,
@@ -109,11 +132,15 @@ class WorkoutHistoryStorage {
     return jsonEncode(trimmed.map((e) => e.toJson()).toList());
   }
 
-  Future<bool> clear() async {
-    try {
-      return await _prefs.remove(key);
-    } catch (_) {
-      return false;
-    }
+  Future<bool> clear() {
+    return _writes.enqueue(() async {
+      try {
+        final remove = _remove;
+        if (remove != null) return await remove(key);
+        return await _prefs.remove(key);
+      } catch (_) {
+        return false;
+      }
+    });
   }
 }

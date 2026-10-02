@@ -1,3 +1,4 @@
+import 'package:fitflow/core/persistence/mutation_queue.dart';
 import 'package:fitflow/features/workouts/domain/custom/custom_workout_storage.dart';
 import 'package:fitflow/features/workouts/domain/custom/custom_workout_template.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,10 +15,12 @@ final customWorkoutControllerProvider =
 
 class CustomWorkoutController extends StateNotifier<AsyncValue<List<CustomWorkoutTemplate>>> {
   CustomWorkoutController(this._storage) : super(const AsyncValue.loading()) {
-    _load();
+    _loaded = _load();
   }
 
   final CustomWorkoutStorage _storage;
+  final MutationQueue _mutations = MutationQueue();
+  late final Future<void> _loaded;
 
   Future<void> _load() async {
     try {
@@ -30,50 +33,57 @@ class CustomWorkoutController extends StateNotifier<AsyncValue<List<CustomWorkou
     }
   }
 
-  Future<void> refresh() async {
-    state = const AsyncValue.loading();
-    await _load();
+  Future<void> refresh() {
+    return _mutations.enqueue(() async {
+      await _loaded;
+      if (mounted) state = const AsyncValue.loading();
+      await _load();
+    });
   }
 
-  Future<bool> create(CustomWorkoutTemplate template) async {
-    try {
+  /// Serializes [action] so each mutation reads the latest persisted list.
+  /// A thrown action returns false and does not block the next one.
+  Future<bool> _enqueue(Future<bool> Function() action) {
+    return _mutations.enqueue(() async {
+      try {
+        await _loaded;
+        return await action();
+      } catch (_) {
+        return false;
+      }
+    });
+  }
+
+  void _publish(List<CustomWorkoutTemplate> templates) {
+    if (!mounted) return;
+    state = AsyncValue.data(templates);
+  }
+
+  Future<bool> create(CustomWorkoutTemplate template) {
+    return _enqueue(() async {
       final result = await _storage.create(template);
-      if (result == null) {
-        // Write failure – preserve previous state
-        return false;
-      }
-      state = AsyncValue.data(result);
+      if (result == null) return false;
+      _publish(result);
       return true;
-    } catch (_) {
-      // Exception – preserve previous state, truthful failure
-      return false;
-    }
+    });
   }
 
-  Future<bool> update(CustomWorkoutTemplate template) async {
-    try {
+  Future<bool> update(CustomWorkoutTemplate template) {
+    return _enqueue(() async {
       final result = await _storage.update(template);
-      if (result == null) {
-        return false;
-      }
-      state = AsyncValue.data(result);
+      if (result == null) return false;
+      _publish(result);
       return true;
-    } catch (_) {
-      return false;
-    }
+    });
   }
 
-  Future<bool> delete(String id) async {
-    try {
+  Future<bool> delete(String id) {
+    return _enqueue(() async {
       final result = await _storage.delete(id);
-      if (result == null) {
-        return false;
-      }
-      state = AsyncValue.data(result);
+      if (result == null) return false;
+      _publish(result);
       return true;
-    } catch (_) {
-      return false;
-    }
+    });
   }
 
   CustomWorkoutTemplate? findByIdSync(String id) {

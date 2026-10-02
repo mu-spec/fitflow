@@ -274,14 +274,43 @@ class WorkoutPlayerCompletedView extends ConsumerWidget {
             ),
           ),
         if (!isTemporary && !isCustom) const SizedBox(height: 8),
-        SizedBox(
-          width: double.infinity,
-          child: OutlinedButton(
-            onPressed: () => _handleDone(context, ref),
-            child: const Text('Done'),
-          ),
+        _OnceOutlinedButton(
+          onPressed: () => _handleDone(context, ref),
+          child: const Text('Done'),
         ),
       ],
+    );
+  }
+}
+
+/// Ignores repeat presses so a rapid double-tap cannot run Done twice.
+class _OnceOutlinedButton extends StatefulWidget {
+  const _OnceOutlinedButton({required this.onPressed, required this.child});
+
+  final VoidCallback onPressed;
+  final Widget child;
+
+  @override
+  State<_OnceOutlinedButton> createState() => _OnceOutlinedButtonState();
+}
+
+class _OnceOutlinedButtonState extends State<_OnceOutlinedButton> {
+  bool _fired = false;
+
+  void _press() {
+    if (_fired) return;
+    setState(() => _fired = true);
+    widget.onPressed();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton(
+        onPressed: _fired ? null : _press,
+        child: widget.child,
+      ),
     );
   }
 }

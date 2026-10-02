@@ -1,3 +1,4 @@
+import 'package:fitflow/core/persistence/mutation_queue.dart';
 import 'package:fitflow/features/programs/data/adaptive_programs_storage.dart';
 import 'package:fitflow/features/programs/domain/adaptive_program_catalog.dart';
 import 'package:fitflow/features/programs/domain/adaptive_program_definition.dart';
@@ -31,6 +32,11 @@ final adaptiveProgramsControllerProvider = StateNotifierProvider<
 /// Every mutating method persists first and only replaces state on success;
 /// on persistence failure the previous successful state is preserved and the
 /// method returns `false`.
+///
+/// Mutations run serially in request order (M21 Part 2). Each one derives its
+/// base from the latest successfully committed state, so overlapping
+/// completions cannot overwrite each other. A thrown write does not block
+/// the next queued mutation.
 class AdaptiveProgramsController
     extends StateNotifier<AsyncValue<AdaptiveProgramsState>> {
   AdaptiveProgramsController(
@@ -38,15 +44,22 @@ class AdaptiveProgramsController
     DateTime Function()? clock,
   })  : _clock = clock ?? (() => DateTime.now().toUtc()),
         super(const AsyncValue.loading()) {
-    _load();
+    _loaded = _load();
   }
 
   final AdaptiveProgramsStorage _storage;
   final DateTime Function() _clock;
+  final MutationQueue _mutations = MutationQueue();
+  late final Future<void> _loaded;
+
+  /// Latest state that survived persistence. Mutations read this, not a
+  /// snapshot captured when the request was enqueued.
+  AdaptiveProgramsState _committed = AdaptiveProgramsState.empty;
 
   Future<void> _load() async {
     try {
       final loaded = await _storage.load();
+      _committed = loaded;
       if (!mounted) return;
       state = AsyncValue.data(loaded);
     } catch (e, st) {
@@ -55,9 +68,12 @@ class AdaptiveProgramsController
     }
   }
 
-  Future<void> refresh() async {
-    state = const AsyncValue.loading();
-    await _load();
+  Future<void> refresh() {
+    return _mutations.enqueue(() async {
+      await _loaded;
+      if (mounted) state = const AsyncValue.loading();
+      await _load();
+    });
   }
 
   /// Current successful state or the empty state.
@@ -68,36 +84,46 @@ class AdaptiveProgramsController
   // Mutations
   // ---------------------------------------------------------------------------
 
+  Future<bool> _enqueue(Future<bool> Function() action) {
+    return _mutations.enqueue(() async {
+      try {
+        await _loaded;
+        return await action();
+      } catch (_) {
+        return false;
+      }
+    });
+  }
+
   Future<bool> _commit(AdaptiveProgramsState next) async {
-    try {
-      final ok = await _storage.save(next);
-      if (!ok) return false;
-      if (!mounted) return false;
-      state = AsyncValue.data(next);
-      return true;
-    } catch (_) {
-      return false;
-    }
+    final ok = await _storage.save(next);
+    if (!ok) return false;
+    _committed = next;
+    if (!mounted) return true;
+    state = AsyncValue.data(next);
+    return true;
   }
 
   /// Starts [programId] fresh when it has no progress, or resumes it when it
   /// does. In both cases it becomes the single active program. Progress of
   /// any previously active program is kept.
-  Future<bool> startOrResumeProgram(String programId, {DateTime? now}) async {
-    if (!AdaptiveProgramCatalog.contains(programId)) return false;
-    final base = current;
-    final existing = base.progressFor(programId);
-    var next = base.copyWith(activeProgramId: programId);
-    if (existing == null) {
-      next = next.withProgress(
-        AdaptiveProgramProgress.fresh(
-          programId: programId,
-          startedAt: (now ?? _clock()).toUtc(),
-        ),
-      );
-    }
-    if (next == base) return true;
-    return _commit(next);
+  Future<bool> startOrResumeProgram(String programId, {DateTime? now}) {
+    if (!AdaptiveProgramCatalog.contains(programId)) return Future.value(false);
+    return _enqueue(() async {
+      final base = _committed;
+      final existing = base.progressFor(programId);
+      var next = base.copyWith(activeProgramId: programId);
+      if (existing == null) {
+        next = next.withProgress(
+          AdaptiveProgramProgress.fresh(
+            programId: programId,
+            startedAt: (now ?? _clock()).toUtc(),
+          ),
+        );
+      }
+      if (next == base) return true;
+      return _commit(next);
+    });
   }
 
   /// Switches the active program to [programId]. Existing progress is
@@ -108,16 +134,17 @@ class AdaptiveProgramsController
 
   /// Clears only the saved program progress of [programId] and re-initialises
   /// it fresh. Workout history is untouched. Active program is unchanged.
-  Future<bool> restartProgram(String programId, {DateTime? now}) async {
-    if (!AdaptiveProgramCatalog.contains(programId)) return false;
-    final base = current;
-    final next = base.withProgress(
-      AdaptiveProgramProgress.fresh(
-        programId: programId,
-        startedAt: (now ?? _clock()).toUtc(),
-      ),
-    );
-    return _commit(next);
+  Future<bool> restartProgram(String programId, {DateTime? now}) {
+    if (!AdaptiveProgramCatalog.contains(programId)) return Future.value(false);
+    return _enqueue(() async {
+      final next = _committed.withProgress(
+        AdaptiveProgramProgress.fresh(
+          programId: programId,
+          startedAt: (now ?? _clock()).toUtc(),
+        ),
+      );
+      return _commit(next);
+    });
   }
 
   /// Records that [plannedSessionId] of [programId] was completed by the
@@ -128,35 +155,40 @@ class AdaptiveProgramsController
   /// - duplicate Player session → counted once (no write, returns true)
   /// - unknown program or session not in the definition → false
   /// - out-of-order completion is allowed
+  ///
+  /// Concurrent calls are serialized. Each one sees the latest committed
+  /// progress, so two different sessions both survive and a duplicate does not.
   Future<bool> markSessionCompleted({
     required String programId,
     required String plannedSessionId,
     required String playerSessionId,
     DateTime? completedAt,
-  }) async {
+  }) {
     final definition = AdaptiveProgramCatalog.byId(programId);
-    if (definition == null) return false;
-    if (!definition.containsSession(plannedSessionId)) return false;
-    if (playerSessionId.isEmpty) return false;
+    if (definition == null) return Future.value(false);
+    if (!definition.containsSession(plannedSessionId)) return Future.value(false);
+    if (playerSessionId.isEmpty) return Future.value(false);
 
-    final base = current;
-    final at = (completedAt ?? _clock()).toUtc();
-    final existing = base.progressFor(programId) ??
-        AdaptiveProgramProgress.fresh(programId: programId, startedAt: at);
+    return _enqueue(() async {
+      final base = _committed;
+      final at = (completedAt ?? _clock()).toUtc();
+      final existing = base.progressFor(programId) ??
+          AdaptiveProgramProgress.fresh(programId: programId, startedAt: at);
 
-    final completion = AdaptiveProgramSessionCompletion(
-      plannedSessionId: plannedSessionId,
-      playerSessionId: playerSessionId,
-      completedAt: at,
-    );
+      final completion = AdaptiveProgramSessionCompletion(
+        plannedSessionId: plannedSessionId,
+        playerSessionId: playerSessionId,
+        completedAt: at,
+      );
 
-    if (!existing.wouldAccept(completion)) {
-      // Already counted — idempotent no-op.
-      return true;
-    }
+      if (!existing.wouldAccept(completion)) {
+        // Already counted — idempotent no-op.
+        return true;
+      }
 
-    final next = base.withProgress(existing.withCompletion(completion));
-    return _commit(next);
+      final next = base.withProgress(existing.withCompletion(completion));
+      return _commit(next);
+    });
   }
 
   // ---------------------------------------------------------------------------

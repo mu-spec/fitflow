@@ -244,7 +244,7 @@ void main() {
       expect(result.success, false);
     });
 
-    test('failed promotion cannot leave stale promotion-ready evidence', () async {
+    test('failed promotion rolls evidence back so both keys stay aligned', () async {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
       final evidenceStorage = AdaptiveProgressionEvidenceStorage(prefs);
@@ -259,15 +259,18 @@ void main() {
       final profile = createProfile(CapabilityLevel.level2);
       final pres = makePres(MovementPattern.push, CapabilityLevel.level2);
 
-      await controller.applyFeedback(
+      final result = await controller.applyFeedback(
         currentProfile: profile,
         effectiveMainPrescriptions: [pres],
         feedbackByMovement: {MovementPattern.push: MovementWorkoutFeedback.easy},
         now: DateTime.utc(2026, 1, 2),
       );
 
-      // Evidence should be reset to 0 (conservative), not left at 1 which could promote repeatedly
-      expect(evidenceStorage.load().countFor(MovementPattern.push), 0);
+      // M21 Part 2: a failed capability write must not leave evidence advanced.
+      expect(result.success, isFalse);
+      expect(result.status, AdaptiveProgressionApplyStatus.failed);
+      expect(evidenceStorage.load().countFor(MovementPattern.push), 1);
+      expect(capController.saved, isNull);
     });
 
     test('only rated movement capability changes', () async {

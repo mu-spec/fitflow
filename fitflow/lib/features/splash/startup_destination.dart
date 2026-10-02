@@ -1,5 +1,5 @@
 /// Pure startup routing decision, extracted from the splash widget so it is
-/// deterministic and unit-testable (M21 Part 1).
+/// deterministic and unit-testable (M21).
 ///
 /// Splash loads exactly the persisted state required for routing — the user
 /// fitness profile and the capability profile — and routes as soon as both
@@ -12,14 +12,20 @@ enum StartupDestination {
   onboarding,
   capabilityAssessment,
   home,
+
+  /// A required read threw. Show a retryable recovery state and do not route.
+  recovery,
 }
 
 /// Outcome of loading one persisted startup value.
 ///
 /// [missing] means the storage read succeeded and reported no (valid) value.
-/// [failed] means the read itself threw; it must be treated differently from
-/// a genuinely missing value so a fully configured user is not silently sent
-/// back to onboarding by one transient storage failure.
+/// [failed] means the read itself threw. It must never be treated as normal
+/// application state: a transient read failure is not onboarding, assessment,
+/// or home.
+///
+/// Storage that deliberately converts malformed JSON into null (capability
+/// profiles, for example) reports [missing], not [failed].
 enum StartupLoadState {
   present,
   missing,
@@ -28,21 +34,20 @@ enum StartupLoadState {
 
 /// Decides the startup destination from the two required persisted states.
 ///
-/// Rules:
+/// Rules (M21 Part 2):
+/// - either required read [StartupLoadState.failed] -> [StartupDestination.recovery]
 /// - profile present + capability present -> home
-/// - profile present + capability missing/failed -> capability assessment
-///   (storage deliberately converts corrupt capability JSON to null, which is
-///   indistinguishable from missing and equally re-assessable)
-/// - profile missing -> onboarding (an empty store is the only normal source
-///   of a clean null on first launch)
-/// - profile failed -> NEVER onboarding: onboarding would overwrite a profile
-///   that likely exists on disk. A present capability proves a configured
-///   user, so route home; otherwise fall back to the non-destructive
-///   capability assessment. Broader failure recovery is Part 2 scope.
+/// - profile present + capability missing -> capability assessment
+///   (corrupt capability JSON that storage loads as null is missing, not failed)
+/// - profile missing (and capability read did not fail) -> onboarding
 StartupDestination decideStartupDestination({
   required StartupLoadState userProfile,
   required StartupLoadState capabilityProfile,
 }) {
+  if (userProfile == StartupLoadState.failed ||
+      capabilityProfile == StartupLoadState.failed) {
+    return StartupDestination.recovery;
+  }
   switch (userProfile) {
     case StartupLoadState.present:
       return capabilityProfile == StartupLoadState.present
@@ -51,8 +56,6 @@ StartupDestination decideStartupDestination({
     case StartupLoadState.missing:
       return StartupDestination.onboarding;
     case StartupLoadState.failed:
-      return capabilityProfile == StartupLoadState.present
-          ? StartupDestination.home
-          : StartupDestination.capabilityAssessment;
+      return StartupDestination.recovery;
   }
 }

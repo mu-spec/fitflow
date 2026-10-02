@@ -45,6 +45,45 @@ class CapabilityProfileController extends AsyncNotifier<CapabilityProfile?> {
     state = AsyncData(CapabilityProfileStorage(prefs).load());
   }
 
+  /// Publishes [profile] as the in-memory committed capability without writing.
+  ///
+  /// Used after a checked M10 rollback so the provider cannot claim a
+  /// capability change that did not survive persistence. Safe if this notifier
+  /// is disposed or not attached to a container.
+  void adoptPersistedProfile(CapabilityProfile? profile) {
+    try {
+      state = AsyncData(profile);
+    } on Object {
+      // Disposed or not mounted in a ProviderContainer.
+    }
+  }
+
+  /// Whether in-memory state equals [profile].
+  ///
+  /// Null when this notifier is not attached to a container.
+  bool? memoryMatches(CapabilityProfile? profile) {
+    try {
+      return state.valueOrNull == profile;
+    } on Object {
+      return null;
+    }
+  }
+
+  /// Drops an in-memory capability change that did not survive persistence.
+  void rejectUncommittedChange({
+    required CapabilityProfile original,
+    required CapabilityProfile proposed,
+  }) {
+    try {
+      final current = state.valueOrNull;
+      if (current == proposed && current != original) {
+        state = AsyncData(original);
+      }
+    } on Object {
+      // Not attached. Persistence remains the source of truth.
+    }
+  }
+
   /// Clears persisted capability profile.
   Future<void> clearProfile() async {
     final prefs = await ref.read(sharedPreferencesProvider.future);

@@ -62,43 +62,48 @@ void main() {
       );
     });
 
-    test('capability load failure behaves like missing (re-assessable)',
-        () {
+    test('capability load failure is recovery, not assessment', () {
       expect(
         decideStartupDestination(
           userProfile: StartupLoadState.present,
           capabilityProfile: StartupLoadState.failed,
         ),
-        StartupDestination.capabilityAssessment,
+        StartupDestination.recovery,
       );
     });
 
-    test('profile load failure with present capability routes home, '
-        'never onboarding', () {
+    test('profile load failure never routes home or onboarding', () {
       expect(
         decideStartupDestination(
           userProfile: StartupLoadState.failed,
           capabilityProfile: StartupLoadState.present,
         ),
-        StartupDestination.home,
+        StartupDestination.recovery,
       );
-    });
-
-    test('profile load failure without capability falls back to the '
-        'non-destructive assessment, never onboarding', () {
       expect(
         decideStartupDestination(
           userProfile: StartupLoadState.failed,
           capabilityProfile: StartupLoadState.missing,
         ),
-        StartupDestination.capabilityAssessment,
+        StartupDestination.recovery,
       );
       expect(
         decideStartupDestination(
           userProfile: StartupLoadState.failed,
           capabilityProfile: StartupLoadState.failed,
         ),
-        StartupDestination.capabilityAssessment,
+        StartupDestination.recovery,
+      );
+    });
+
+    test('missing profile plus failed capability is recovery, not onboarding',
+        () {
+      expect(
+        decideStartupDestination(
+          userProfile: StartupLoadState.missing,
+          capabilityProfile: StartupLoadState.failed,
+        ),
+        StartupDestination.recovery,
       );
     });
   });

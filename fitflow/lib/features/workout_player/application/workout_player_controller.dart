@@ -238,6 +238,7 @@ class WorkoutPlayerController extends StateNotifier<WorkoutPlayerState> {
   }
 
   void _speak(String message) {
+    if (_isDisposed) return;
     if (!state.voiceEnabled) return;
     if (message.trim().isEmpty) return;
     try {
