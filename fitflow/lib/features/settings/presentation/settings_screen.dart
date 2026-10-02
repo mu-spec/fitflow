@@ -7,66 +7,137 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Secondary settings screen, opened from the Profile tab.
-class SettingsScreen extends ConsumerWidget {
+///
+/// Sections (M19 Part 2): Appearance, Workout reminders (M17), Data (M18
+/// backup & restore), plus a small factual local-data footer. Appearance
+/// selection uses persist-first semantics: a failed write keeps the previous
+/// mode active and shows an honest error message.
+class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
 
+  /// Exact copy shown when an appearance change could not be persisted.
+  static const String appearanceSaveFailedMessage =
+      "Couldn't save appearance. Try again.";
+
+  /// Factual footer copy — FitFlow has no accounts and stores data locally.
+  static const String localDataFooter =
+      'FitFlow works without an account. Your workout data is stored on this device unless you create a backup.';
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+  /// Whether an appearance write is in flight; blocks duplicate selections.
+  bool _savingAppearance = false;
+
+  Future<void> _selectAppearance(AppearanceMode mode) async {
+    if (_savingAppearance) {
+      return;
+    }
+    setState(() => _savingAppearance = true);
+    final saved = await ref
+        .read(appearanceControllerProvider.notifier)
+        .setMode(mode);
+    if (!mounted) {
+      return;
+    }
+    setState(() => _savingAppearance = false);
+    if (!saved) {
+      // The previous mode remains active; report the failure truthfully.
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          const SnackBar(
+            content: Text(SettingsScreen.appearanceSaveFailedMessage),
+          ),
+        );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final mode = ref.watch(appearanceControllerProvider).value ??
         AppearanceMode.system;
-    final controller = ref.read(appearanceControllerProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppDimens.screenPadding),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Appearance',
-              style: theme.textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: AppDimens.itemGap),
-            RadioGroup<AppearanceMode>(
-              groupValue: mode,
-              onChanged: (value) {
-                if (value != null) {
-                  controller.setMode(value);
-                }
-              },
-              child: Card(
-                margin: EdgeInsets.zero,
-                child: const Column(
-                  children: [
-                    _AppearanceOption(
-                      title: 'System default',
-                      subtitle: 'Follow your device setting.',
-                      value: AppearanceMode.system,
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 720),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(AppDimens.screenPadding),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _sectionTitle(theme, 'Appearance'),
+                  const SizedBox(height: AppDimens.itemGap),
+                  RadioGroup<AppearanceMode>(
+                    groupValue: mode,
+                    onChanged: (value) {
+                      // Duplicate in-flight writes are blocked here and in
+                      // the controller; the tiles are also disabled below.
+                      if (value == null || _savingAppearance) {
+                        return;
+                      }
+                      // ignore: discarded_futures
+                      _selectAppearance(value);
+                    },
+                    child: Card(
+                      margin: EdgeInsets.zero,
+                      child: Column(
+                        children: [
+                          _AppearanceOption(
+                            title: 'System default',
+                            subtitle: 'Follow your device setting.',
+                            value: AppearanceMode.system,
+                            enabled: !_savingAppearance,
+                          ),
+                          _AppearanceOption(
+                            title: 'Light',
+                            subtitle: 'Always use the light theme.',
+                            value: AppearanceMode.light,
+                            enabled: !_savingAppearance,
+                          ),
+                          _AppearanceOption(
+                            title: 'Dark',
+                            subtitle: 'Always use the dark theme.',
+                            value: AppearanceMode.dark,
+                            enabled: !_savingAppearance,
+                          ),
+                        ],
+                      ),
                     ),
-                    _AppearanceOption(
-                      title: 'Light',
-                      subtitle: 'Always use the light theme.',
-                      value: AppearanceMode.light,
+                  ),
+                  const SizedBox(height: 24),
+                  const WorkoutRemindersSection(),
+                  const SizedBox(height: 24),
+                  _sectionTitle(theme, 'Data'),
+                  const SizedBox(height: AppDimens.itemGap),
+                  const BackupRestoreSettingsEntry(),
+                  const SizedBox(height: 24),
+                  Text(
+                    SettingsScreen.localDataFooter,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
-                    _AppearanceOption(
-                      title: 'Dark',
-                      subtitle: 'Always use the dark theme.',
-                      value: AppearanceMode.dark,
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 24),
-            const WorkoutRemindersSection(),
-            const SizedBox(height: 24),
-            const BackupRestoreSettingsEntry(),
-          ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _sectionTitle(ThemeData theme, String title) {
+    return Text(
+      title,
+      style: theme.textTheme.titleMedium
+          ?.copyWith(fontWeight: FontWeight.w600),
     );
   }
 }
@@ -76,11 +147,15 @@ class _AppearanceOption extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.value,
+    this.enabled = true,
   });
 
   final String title;
   final String subtitle;
   final AppearanceMode value;
+
+  /// Disabled while an appearance write is in flight.
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +163,7 @@ class _AppearanceOption extends StatelessWidget {
       title: Text(title),
       subtitle: Text(subtitle),
       value: value,
+      enabled: enabled,
     );
   }
 }
