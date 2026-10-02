@@ -213,7 +213,7 @@ abstract final class ExerciseCatalog {
     Exercise(
       id: "squat_chair",
       name: "Chair Sit-to-Stand",
-      shortDescription: "Stand from a chair and sit back down with control.",
+      shortDescription: "A controlled sit-to-stand and return using a stable chair.",
       movementPattern: MovementPattern.squat,
       difficulty: ExerciseDifficulty.level1,
       bodyPosition: ExercisePosition.standing,
@@ -400,7 +400,7 @@ abstract final class ExerciseCatalog {
       id: "dead_bug",
       name: "Dead Bug",
       shortDescription:
-          "Alternate opposite arm and leg reaches while keeping the trunk stable.",
+          "An alternating arm and leg reach from your back while keeping the trunk stable.",
       movementPattern: MovementPattern.core,
       difficulty: ExerciseDifficulty.level1,
       bodyPosition: ExercisePosition.floor,
@@ -588,7 +588,7 @@ abstract final class ExerciseCatalog {
       id: "bridge_glute",
       name: "Glute Bridge",
       shortDescription:
-          "Lift the hips from the floor using both feet for support.",
+          "A hip lift from the floor using both feet for support.",
       movementPattern: MovementPattern.glute,
       difficulty: ExerciseDifficulty.level1,
       bodyPosition: ExercisePosition.floor,
@@ -664,7 +664,7 @@ abstract final class ExerciseCatalog {
       id: "march_in_place",
       name: "March in Place",
       shortDescription:
-          "A gentle alternating march without leaving the ground on both feet.",
+          "A gentle alternating march that keeps one foot grounded at all times.",
       movementPattern: MovementPattern.warmup,
       difficulty: ExerciseDifficulty.level1,
       bodyPosition: ExercisePosition.standing,
@@ -701,7 +701,7 @@ abstract final class ExerciseCatalog {
       id: "high_knees",
       name: "High Knees",
       shortDescription:
-          "Running in place with alternating high knee drives and brief flight phases.",
+          "A run in place with alternating high knee drives and brief flight phases.",
       movementPattern: MovementPattern.cardio,
       difficulty: ExerciseDifficulty.level3,
       bodyPosition: ExercisePosition.standing,
@@ -937,7 +937,7 @@ abstract final class ExerciseCatalog {
       defaultRest: Duration(seconds: 30),
       instructions: [
         "Lie face down with arms angled overhead into a Y and thumbs pointing up.",
-        "Keep your neck long and gently raise your hands a few centimetres without lifting your ribs.",
+        "Keep your neck long and gently raise your hands a few centimeters without lifting your ribs.",
         "Pause briefly, then lower slowly, keeping shoulders away from your ears."
       ],
       commonMistakes: [
@@ -1213,7 +1213,7 @@ abstract final class ExerciseCatalog {
       ],
       commonMistakes: [
         "Pulling the head forward with the hands",
-        "Pedalling quickly while letting the lower back arch"
+        "Pedaling quickly while letting the lower back arch"
       ],
       breathingGuidance:
           "Exhale with each rotation; inhale through the transition.",
@@ -1243,14 +1243,14 @@ abstract final class ExerciseCatalog {
       instructions: [
         "Lie on your back with knees bent and feet flat, arms reaching toward your heels.",
         "Lift shoulder blades slightly and slide your right hand toward your right heel with a small side bend.",
-        "Return through centre and reach left; complete ten reaches per side without straining the neck."
+        "Return through center and reach left; complete ten reaches per side without straining the neck."
       ],
       commonMistakes: [
         "Reaching so far that the neck strains",
         "Swinging the arms instead of moving the trunk"
       ],
       breathingGuidance:
-          "Exhale on each reach; inhale returning toward centre.",
+          "Exhale on each reach; inhale returning toward center.",
       tags: {"bodyweight", "alternating", "reps_per_side", "heel_reach"},
       assetPath: null,
       active: true,
@@ -1503,7 +1503,7 @@ abstract final class ExerciseCatalog {
       id: "good_morning",
       name: "Good Morning",
       shortDescription:
-          "Standing hip hinge with hands behind head, folding forward with flat back and returning upright.",
+          "A standing hip hinge with hands behind the head, folding forward with a flat back and returning upright.",
       movementPattern: MovementPattern.hinge,
       difficulty: ExerciseDifficulty.level2,
       bodyPosition: ExercisePosition.standing,
@@ -1540,7 +1540,7 @@ abstract final class ExerciseCatalog {
       id: "hip_hinge",
       name: "Hip Hinge",
       shortDescription:
-          "Fundamental hip-hinge pattern drill with hands on hips and soft knees.",
+          "A fundamental hip-hinge pattern drill with hands on hips and soft knees.",
       movementPattern: MovementPattern.hinge,
       difficulty: ExerciseDifficulty.level1,
       bodyPosition: ExercisePosition.standing,
@@ -1576,7 +1576,7 @@ abstract final class ExerciseCatalog {
       id: "hip_hinge_single_leg",
       name: "Single-Leg Hip Hinge",
       shortDescription:
-          "Unilateral hinge balancing on one leg with the opposite leg extending straight back.",
+          "A unilateral hinge balanced on one leg with the opposite leg extending straight back.",
       movementPattern: MovementPattern.hinge,
       difficulty: ExerciseDifficulty.level3,
       bodyPosition: ExercisePosition.standing,
@@ -1622,7 +1622,7 @@ abstract final class ExerciseCatalog {
       id: "donkey_kick",
       name: "Donkey Kick",
       shortDescription:
-          "Quadruped hip extension driving heel toward ceiling with knee bent at ninety degrees.",
+          "A quadruped hip extension driving the heel toward the ceiling with the knee bent at ninety degrees.",
       movementPattern: MovementPattern.glute,
       difficulty: ExerciseDifficulty.level1,
       bodyPosition: ExercisePosition.floor,
@@ -1659,7 +1659,7 @@ abstract final class ExerciseCatalog {
       id: "fire_hydrant",
       name: "Fire Hydrant",
       shortDescription:
-          "Quadruped hip abduction lifting the bent knee outward while keeping the pelvis stable.",
+          "A quadruped hip abduction lifting the bent knee outward while keeping the pelvis stable.",
       movementPattern: MovementPattern.glute,
       difficulty: ExerciseDifficulty.level1,
       bodyPosition: ExercisePosition.floor,
@@ -1696,7 +1696,7 @@ abstract final class ExerciseCatalog {
       id: "pushup_pike",
       name: "Pike Push-Up",
       shortDescription:
-          "Inverted-V press emphasizing shoulders by bending elbows to lower the head toward the floor.",
+          "An inverted-V press emphasizing the shoulders by bending the elbows to lower the head toward the floor.",
       movementPattern: MovementPattern.push,
       difficulty: ExerciseDifficulty.level3,
       bodyPosition: ExercisePosition.floor,
@@ -1733,7 +1733,7 @@ abstract final class ExerciseCatalog {
       id: "pushup_close_grip",
       name: "Close-Grip Push-Up",
       shortDescription:
-          "Narrow-hand push-up emphasizing triceps while keeping elbows close to the ribs.",
+          "A narrow-hand push-up emphasizing the triceps while keeping elbows close to the ribs.",
       movementPattern: MovementPattern.push,
       difficulty: ExerciseDifficulty.level3,
       bodyPosition: ExercisePosition.floor,
@@ -1766,7 +1766,7 @@ abstract final class ExerciseCatalog {
       id: "pushup_wide",
       name: "Wide Push-Up",
       shortDescription:
-          "Wide-hand push-up increasing chest stretch and horizontal pressing range.",
+          "A wide-hand push-up increasing the chest stretch and horizontal pressing range.",
       movementPattern: MovementPattern.push,
       difficulty: ExerciseDifficulty.level3,
       bodyPosition: ExercisePosition.floor,
@@ -1799,7 +1799,7 @@ abstract final class ExerciseCatalog {
       id: "shoulder_tap",
       name: "Shoulder Tap",
       shortDescription:
-          "High-plank anti-rotation drill alternately tapping opposite shoulder while resisting trunk twist.",
+          "A high-plank anti-rotation drill alternately tapping the opposite shoulder while resisting trunk twist.",
       movementPattern: MovementPattern.core,
       difficulty: ExerciseDifficulty.level2,
       bodyPosition: ExercisePosition.floor,
@@ -1838,7 +1838,7 @@ abstract final class ExerciseCatalog {
       id: "plank_up_down",
       name: "Plank Up-Down",
       shortDescription:
-          "Dynamic plank transitioning between high-plank hands and forearm support.",
+          "A dynamic plank transitioning between high-plank hands and forearm support.",
       movementPattern: MovementPattern.core,
       difficulty: ExerciseDifficulty.level3,
       bodyPosition: ExercisePosition.floor,
@@ -1917,7 +1917,7 @@ abstract final class ExerciseCatalog {
       id: "butt_kicks",
       name: "Butt Kicks",
       shortDescription:
-          "Jogging in place driving heels toward glutes with quick arm swings.",
+          "A jog in place driving the heels toward the glutes with quick arm swings.",
       movementPattern: MovementPattern.cardio,
       difficulty: ExerciseDifficulty.level2,
       bodyPosition: ExercisePosition.standing,
@@ -1954,7 +1954,7 @@ abstract final class ExerciseCatalog {
       id: "skater_step",
       name: "Skater Step",
       shortDescription:
-          "Lateral stepping skater with soft side lunges and arm swings without leaving the floor.",
+          "A lateral stepping skater with soft side lunges and arm swings without leaving the floor.",
       movementPattern: MovementPattern.cardio,
       difficulty: ExerciseDifficulty.level2,
       bodyPosition: ExercisePosition.standing,
@@ -1977,7 +1977,7 @@ abstract final class ExerciseCatalog {
       instructions: [
         "Stand with feet hip-width apart, knees soft, and arms relaxed, allowing lateral space on each side.",
         "Step one foot diagonally behind the other, bending front knee softly as you sweep arms across your body.",
-        "Push off the front foot and step to the other side, keeping hops tiny or feet grounded for a no-jumping option."
+        "Push off the front foot and step to the other side, keeping the feet grounded and the movement smooth."
       ],
       commonMistakes: [
         "Jumping high instead of stepping softly",
@@ -1992,7 +1992,7 @@ abstract final class ExerciseCatalog {
       id: "squat_knee_drive",
       name: "Squat to Knee Drive",
       shortDescription:
-          "Bodyweight squat followed by alternating standing knee drives for power and balance.",
+          "A bodyweight squat followed by alternating standing knee drives for power and balance.",
       movementPattern: MovementPattern.squat,
       difficulty: ExerciseDifficulty.level2,
       bodyPosition: ExercisePosition.standing,
@@ -2036,7 +2036,7 @@ abstract final class ExerciseCatalog {
       id: "shadow_boxing",
       name: "Shadow Boxing",
       shortDescription:
-          "Standing alternating punches with light foot movement and core rotation.",
+          "A standing alternating punch drill with light foot movement and core rotation.",
       movementPattern: MovementPattern.cardio,
       difficulty: ExerciseDifficulty.level2,
       bodyPosition: ExercisePosition.standing,
@@ -2074,7 +2074,7 @@ abstract final class ExerciseCatalog {
       id: "single_leg_stand",
       name: "Single-Leg Stand",
       shortDescription:
-          "Quiet single-leg balance hold with eyes forward and hands at hips.",
+          "A quiet single-leg balance hold with eyes forward and hands at hips.",
       movementPattern: MovementPattern.balance,
       difficulty: ExerciseDifficulty.level1,
       bodyPosition: ExercisePosition.standing,
@@ -2091,7 +2091,7 @@ abstract final class ExerciseCatalog {
       defaultRest: Duration(seconds: 15),
       instructions: [
         "Stand tall with feet hip-width apart and hands on hips, focusing gaze at a fixed point ahead.",
-        "Shift weight onto one foot and lift the opposite foot a few centimetres, keeping the standing knee soft and hips level.",
+        "Shift weight onto one foot and lift the opposite foot a few centimeters, keeping the standing knee soft and hips level.",
         "Hold for twenty seconds with steady breathing, then switch sides without hopping."
       ],
       commonMistakes: [
@@ -2107,7 +2107,7 @@ abstract final class ExerciseCatalog {
       id: "standing_knee_raise",
       name: "Standing Knee Raise",
       shortDescription:
-          "Controlled standing knee lift to hip height with trunk upright and hands at hips.",
+          "A controlled standing knee lift to hip height with the trunk upright and hands at hips.",
       movementPattern: MovementPattern.balance,
       difficulty: ExerciseDifficulty.level1,
       bodyPosition: ExercisePosition.standing,
@@ -2145,7 +2145,7 @@ abstract final class ExerciseCatalog {
       id: "ankle_circles",
       name: "Ankle Circles",
       shortDescription:
-          "Standing ankle mobility circles lifting one foot and rotating the ankle joint.",
+          "A standing ankle mobility drill lifting one foot and rotating the ankle joint.",
       movementPattern: MovementPattern.mobility,
       difficulty: ExerciseDifficulty.level1,
       bodyPosition: ExercisePosition.standing,
@@ -2178,7 +2178,7 @@ abstract final class ExerciseCatalog {
       id: "arm_circles",
       name: "Arm Circles",
       shortDescription:
-          "Standing small-to-large arm rotations for shoulder mobility and warm-up.",
+          "A standing small-to-large arm rotation drill for shoulder mobility and warm-up.",
       movementPattern: MovementPattern.mobility,
       difficulty: ExerciseDifficulty.level1,
       bodyPosition: ExercisePosition.standing,
@@ -2211,7 +2211,7 @@ abstract final class ExerciseCatalog {
       id: "world_greatest_stretch",
       name: "World's Greatest Stretch",
       shortDescription:
-          "Dynamic mobility flow stepping into deep lunge, rotating trunk, and reaching overhead.",
+          "A dynamic mobility flow stepping into a deep lunge, rotating the trunk, and reaching overhead.",
       movementPattern: MovementPattern.mobility,
       difficulty: ExerciseDifficulty.level2,
       bodyPosition: ExercisePosition.floor,
@@ -2258,7 +2258,7 @@ abstract final class ExerciseCatalog {
       id: "pushup_diamond",
       name: "Diamond Push-Up",
       shortDescription:
-          "Close narrow diamond hand position push-up emphasizing triceps and inner chest with elbows tucked.",
+          "A diamond hand-position push-up emphasizing the triceps and inner chest with elbows tucked.",
       movementPattern: MovementPattern.push,
       difficulty: ExerciseDifficulty.level4,
       bodyPosition: ExercisePosition.floor,
@@ -2294,7 +2294,7 @@ abstract final class ExerciseCatalog {
       id: "pushup_down_dog",
       name: "Push-Up to Downward Dog",
       shortDescription:
-          "Standard push-up flow linking into inverted-V stretch, pressing hips toward ceiling between reps.",
+          "A standard push-up flow linking into an inverted-V stretch, pressing the hips toward the ceiling between reps.",
       movementPattern: MovementPattern.push,
       difficulty: ExerciseDifficulty.level3,
       bodyPosition: ExercisePosition.floor,
@@ -2332,7 +2332,7 @@ abstract final class ExerciseCatalog {
       id: "wall_shoulder_press",
       name: "Wall Shoulder Press",
       shortDescription:
-          "Standing wall-supported overhead press sliding arms along wall with back against surface.",
+          "A standing wall-supported overhead press sliding the arms along the wall with the back against the surface.",
       movementPattern: MovementPattern.push,
       difficulty: ExerciseDifficulty.level1,
       bodyPosition: ExercisePosition.standing,
@@ -2365,10 +2365,10 @@ abstract final class ExerciseCatalog {
       id: "dip_chair",
       name: "Triceps Dip on Chair",
       shortDescription:
-          "Seated chair-supported dip lowering hips toward floor with hands on stable seat edge behind you.",
+          "A seated chair-supported dip lowering the hips toward the floor with hands on a stable seat edge.",
       movementPattern: MovementPattern.push,
       difficulty: ExerciseDifficulty.level2,
-      bodyPosition: ExercisePosition.floor,
+      bodyPosition: ExercisePosition.seated,
       impactLevel: ImpactLevel.low,
       noiseLevel: NoiseLevel.quiet,
       spaceRequirement: SpaceRequirement.small,
@@ -2398,7 +2398,7 @@ abstract final class ExerciseCatalog {
       id: "squat_sumo",
       name: "Sumo Squat",
       shortDescription:
-          "Wide-stance squat with toes turned out emphasizing inner thighs and glutes.",
+          "A wide-stance squat with toes turned out emphasizing the inner thighs and glutes.",
       movementPattern: MovementPattern.squat,
       difficulty: ExerciseDifficulty.level2,
       bodyPosition: ExercisePosition.standing,
@@ -2431,7 +2431,7 @@ abstract final class ExerciseCatalog {
       id: "squat_pulse",
       name: "Squat Pulse",
       shortDescription:
-          "Held squat bottom with small pulsing movements to increase time under tension.",
+          "A held squat bottom with small pulsing movements to increase time under tension.",
       movementPattern: MovementPattern.squat,
       difficulty: ExerciseDifficulty.level2,
       bodyPosition: ExercisePosition.standing,
@@ -2448,7 +2448,7 @@ abstract final class ExerciseCatalog {
       defaultRest: Duration(seconds: 30),
       instructions: [
         "Stand with feet about shoulder-width apart, brace trunk, and lower into a comfortable squat with knees over toes and heels down.",
-        "At the bottom, perform small pulses by rising a few centimetres and lowering again without standing fully between pulses.",
+        "At the bottom, perform small pulses by rising a few centimeters and lowering again without standing fully between pulses.",
         "Complete ten pulses while keeping chest tall and weight over mid-foot, then stand smoothly."
       ],
       commonMistakes: [
@@ -2464,7 +2464,7 @@ abstract final class ExerciseCatalog {
       id: "lunge_curtsy",
       name: "Curtsy Lunge",
       shortDescription:
-          "Stepping leg diagonally behind standing leg into deep lunge with slight torso lean.",
+          "A diagonal step of one leg behind the standing leg into a deep lunge with a slight torso lean.",
       movementPattern: MovementPattern.lunge,
       difficulty: ExerciseDifficulty.level2,
       bodyPosition: ExercisePosition.standing,
@@ -2509,7 +2509,7 @@ abstract final class ExerciseCatalog {
       id: "lunge_lateral",
       name: "Lateral Lunge",
       shortDescription:
-          "Side-stepping lunge shifting hips laterally over bent leg while keeping opposite leg straight.",
+          "A side-stepping lunge shifting the hips laterally over the bent leg while keeping the opposite leg straight.",
       movementPattern: MovementPattern.lunge,
       difficulty: ExerciseDifficulty.level2,
       bodyPosition: ExercisePosition.standing,
@@ -2549,7 +2549,7 @@ abstract final class ExerciseCatalog {
       id: "bridge_march",
       name: "Glute Bridge March",
       shortDescription:
-          "Held glute bridge with alternating slow knee lifts maintaining level hips.",
+          "A held glute bridge with alternating slow knee lifts while keeping the hips level.",
       movementPattern: MovementPattern.glute,
       difficulty: ExerciseDifficulty.level2,
       bodyPosition: ExercisePosition.floor,
@@ -2591,7 +2591,7 @@ abstract final class ExerciseCatalog {
       id: "frog_pump",
       name: "Frog Pump",
       shortDescription:
-          "Supine glute bridge with soles together and knees splayed, driving hips upward.",
+          "A supine glute bridge with the soles together and knees splayed, driving the hips upward.",
       movementPattern: MovementPattern.glute,
       difficulty: ExerciseDifficulty.level2,
       bodyPosition: ExercisePosition.floor,
@@ -2613,7 +2613,7 @@ abstract final class ExerciseCatalog {
       ],
       commonMistakes: [
         "Bringing knees together at the top and losing the frog position",
-        "Overarchiving the lower back to lift higher"
+        "Overarching the lower back to lift higher"
       ],
       breathingGuidance: "Exhale as hips rise; inhale as you lower.",
       tags: {"bodyweight", "hip_external_rotation", "glute_emphasis"},
@@ -2624,7 +2624,7 @@ abstract final class ExerciseCatalog {
       id: "plank_reach",
       name: "Plank Reach",
       shortDescription:
-          "High plank alternating forward arm reaches while resisting trunk rotation.",
+          "A high plank alternating forward arm reaches while resisting trunk rotation.",
       movementPattern: MovementPattern.core,
       difficulty: ExerciseDifficulty.level2,
       bodyPosition: ExercisePosition.floor,
@@ -2663,7 +2663,7 @@ abstract final class ExerciseCatalog {
       id: "plank_side_knee",
       name: "Side Plank Knee Down",
       shortDescription:
-          "Modified side plank supported on forearm and lower knee for reduced lever.",
+          "A modified side plank supported on the forearm and lower knee for a shorter lever.",
       movementPattern: MovementPattern.core,
       difficulty: ExerciseDifficulty.level1,
       bodyPosition: ExercisePosition.floor,
@@ -2703,7 +2703,7 @@ abstract final class ExerciseCatalog {
       id: "russian_twist",
       name: "Russian Twist",
       shortDescription:
-          "Seated trunk rotation sweeping hands side to side with feet elevated or grounded.",
+          "A seated trunk rotation sweeping the hands side to side with feet elevated or grounded.",
       movementPattern: MovementPattern.core,
       difficulty: ExerciseDifficulty.level2,
       bodyPosition: ExercisePosition.seated,
@@ -2736,7 +2736,7 @@ abstract final class ExerciseCatalog {
       id: "leg_raise",
       name: "Leg Raise",
       shortDescription:
-          "Supine straight-leg lift raising legs toward ceiling while pressing lower back into floor.",
+          "A supine straight-leg lift raising the legs toward the ceiling while pressing the lower back into the floor.",
       movementPattern: MovementPattern.core,
       difficulty: ExerciseDifficulty.level2,
       bodyPosition: ExercisePosition.floor,
@@ -2769,7 +2769,7 @@ abstract final class ExerciseCatalog {
       id: "flutter_kicks",
       name: "Flutter Kicks",
       shortDescription:
-          "Supine alternating small leg flutters just above floor for lower abdominal endurance.",
+          "Supine alternating small leg flutters just above the floor for lower abdominal endurance.",
       movementPattern: MovementPattern.core,
       difficulty: ExerciseDifficulty.level2,
       bodyPosition: ExercisePosition.floor,
@@ -2786,7 +2786,7 @@ abstract final class ExerciseCatalog {
       defaultRest: Duration(seconds: 30),
       instructions: [
         "Lie on your back with legs extended, hands at sides or under hips, and press lower back gently toward the floor.",
-        "Lift both legs a few centimetres off the floor, brace abs, and make small alternating up-and-down flutters without letting the back arch.",
+        "Lift both legs a few centimeters off the floor, brace abs, and make small alternating up-and-down flutters without letting the back arch.",
         "Continue for twenty seconds at a controlled rhythm, keeping legs straight but knees soft."
       ],
       commonMistakes: [
@@ -2802,7 +2802,7 @@ abstract final class ExerciseCatalog {
       id: "burpee_low_impact",
       name: "Low-Impact Burpee",
       shortDescription:
-          "Step-back burpee without jump: squat, step feet to plank, step forward, stand, reaching overhead.",
+          "A step-back burpee without a jump, moving from a squat to a plank and back to standing with an overhead reach.",
       movementPattern: MovementPattern.cardio,
       difficulty: ExerciseDifficulty.level3,
       bodyPosition: ExercisePosition.floor,
@@ -2873,7 +2873,7 @@ abstract final class ExerciseCatalog {
       id: "mountain_climber_standing",
       name: "Standing Mountain Climber",
       shortDescription:
-          "Standing alternating knee drives toward chest with light arm swing, no floor contact.",
+          "A standing alternating knee drive toward the chest with light arm swing and no floor contact.",
       movementPattern: MovementPattern.cardio,
       difficulty: ExerciseDifficulty.level1,
       bodyPosition: ExercisePosition.standing,
@@ -2918,7 +2918,7 @@ abstract final class ExerciseCatalog {
       id: "cobra_stretch",
       name: "Cobra Stretch",
       shortDescription:
-          "Prone gentle back extension with hands under shoulders lifting chest while keeping hips grounded.",
+          "A gentle prone back extension lifting the chest with hands under the shoulders while keeping the hips grounded.",
       movementPattern: MovementPattern.mobility,
       difficulty: ExerciseDifficulty.level1,
       bodyPosition: ExercisePosition.floor,
@@ -2951,7 +2951,7 @@ abstract final class ExerciseCatalog {
       id: "figure_four_stretch",
       name: "Figure-Four Stretch",
       shortDescription:
-          "Supine hip stretch crossing ankle over opposite knee and hugging thigh toward chest.",
+          "A supine hip stretch crossing the ankle over the opposite knee and hugging the thigh toward the chest.",
       movementPattern: MovementPattern.mobility,
       difficulty: ExerciseDifficulty.level1,
       bodyPosition: ExercisePosition.floor,
