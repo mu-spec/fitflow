@@ -1,4 +1,5 @@
 import 'package:fitflow/app/config/app_dimensions.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/onboarding/state/user_fitness_profile_controller.dart';
 import 'package:fitflow/features/programs/application/adaptive_programs_controller.dart';
@@ -215,7 +216,7 @@ class _ProgramActions extends ConsumerWidget {
             : Icons.play_circle_outline),
         label: Text(status.hasProgress
             ? ProgramCopy.resumeProgram
-            : ProgramCopy.startProgram),
+            : context.l10n.programStart),
       ));
     }
 

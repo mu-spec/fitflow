@@ -1,4 +1,5 @@
 import 'package:fitflow/features/workout_player/application/workout_player_controller.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/features/workout_player/application/workout_player_state.dart';
 import 'package:fitflow/features/workout_player/domain/workout_player_phase.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_plan.dart';
@@ -27,7 +28,7 @@ class WorkoutPlayerControls extends StatelessWidget {
           child: FilledButton.icon(
             onPressed: controller.beginWorkout,
             icon: const Icon(Icons.play_arrow_rounded),
-            label: const Text('Begin workout'),
+            label: Text(context.l10n.beginWorkout),
           ),
         );
 
@@ -37,7 +38,7 @@ class WorkoutPlayerControls extends StatelessWidget {
             width: double.infinity,
             child: FilledButton(
               onPressed: state.isPaused ? null : controller.completeSet,
-              child: const Text('Set complete'),
+              child: Text(context.l10n.setComplete),
             ),
           );
         } else {
@@ -55,7 +56,7 @@ class WorkoutPlayerControls extends StatelessWidget {
                     }
                   },
                   icon: Icon(state.isPaused ? Icons.play_arrow_rounded : Icons.pause_rounded),
-                  label: Text(state.isPaused ? 'Resume' : 'Pause'),
+                  label: Text(state.isPaused ? context.l10n.resume : context.l10n.pause),
                 ),
               ),
             ],
@@ -67,7 +68,7 @@ class WorkoutPlayerControls extends StatelessWidget {
           width: double.infinity,
           child: OutlinedButton(
             onPressed: state.isPaused ? null : controller.skipRest,
-            child: const Text('Skip rest'),
+            child: Text(context.l10n.skipRest),
           ),
         );
 
@@ -76,7 +77,7 @@ class WorkoutPlayerControls extends StatelessWidget {
           width: double.infinity,
           child: OutlinedButton(
             onPressed: state.isPaused ? null : controller.skipTransition,
-            child: const Text('Skip transition'),
+            child: Text(context.l10n.skipTransition),
           ),
         );
 
@@ -86,7 +87,7 @@ class WorkoutPlayerControls extends StatelessWidget {
           width: double.infinity,
           child: FilledButton(
             onPressed: controller.continueSection,
-            child: Text(isWarmup ? 'Continue' : 'Start cooldown'),
+            child: Text(isWarmup ? context.l10n.continueLabel : context.l10n.startCooldown),
           ),
         );
 

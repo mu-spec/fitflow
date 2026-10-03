@@ -1,4 +1,5 @@
 import 'package:fitflow/app/router/app_routes.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/core/constants/app_constants.dart';
 import 'package:fitflow/core/persistence/shared_preferences_provider.dart';
 import 'package:fitflow/features/onboarding/state/user_fitness_profile_controller.dart';
@@ -181,7 +182,7 @@ class _RecoveryBody extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            SplashScreen.recoveryTitle,
+            context.l10n.splashRecoveryTitle,
             textAlign: TextAlign.center,
             style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w700,
@@ -189,7 +190,7 @@ class _RecoveryBody extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            SplashScreen.recoveryBody,
+            context.l10n.splashRecoveryBody,
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyLarge?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
@@ -199,12 +200,12 @@ class _RecoveryBody extends StatelessWidget {
           Semantics(
             button: true,
             enabled: !inFlight,
-            label: SplashScreen.recoveryAction,
-            hint: "Reloads local data without changing it",
+            label: context.l10n.splashRecoveryAction,
+            hint: context.l10n.splashRecoveryHint,
             child: ExcludeSemantics(
               child: FilledButton(
                 onPressed: inFlight ? null : onRetry,
-                child: const Text(SplashScreen.recoveryAction),
+                child: Text(context.l10n.splashRecoveryAction),
               ),
             ),
           ),

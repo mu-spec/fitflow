@@ -1,4 +1,6 @@
 import 'package:fitflow/features/onboarding/data/workout_equipment.dart';
+import 'package:fitflow/l10n/enum_labels.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/features/onboarding/presentation/widgets/onboarding_option_card.dart';
 import 'package:fitflow/features/onboarding/state/onboarding_controller.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +20,7 @@ class EquipmentStepContent extends ConsumerWidget {
       children: [
         for (final equipment in WorkoutEquipment.values)
           OnboardingOptionCard(
-            label: equipment.label,
+            label: equipmentLabel(context.l10n, equipment),
             selected: state.equipment.contains(equipment),
             multiSelect: true,
             onSelected: () => controller.toggleEquipment(equipment),

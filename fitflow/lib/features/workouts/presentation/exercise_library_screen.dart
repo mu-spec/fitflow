@@ -1,4 +1,5 @@
 import 'package:fitflow/app/router/app_routes.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/features/workouts/data/exercise_catalog.dart';
 import 'package:fitflow/features/workouts/domain/exercise.dart';
 import 'package:fitflow/features/workouts/presentation/exercise_library_filter.dart';
@@ -90,7 +91,7 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
     if (allExercises.isEmpty) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Exercise Library'),
+          title: Text(context.l10n.exerciseLibraryTitle),
           centerTitle: false,
         ),
         body: _EmptyState(theme: theme),
@@ -104,7 +105,7 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Exercise Library'),
+        title: Text(context.l10n.exerciseLibraryTitle),
         centerTitle: false,
       ),
       body: Column(
@@ -117,13 +118,13 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
               controller: _searchController,
               onChanged: _updateSearch,
               decoration: InputDecoration(
-                hintText: 'Search exercises',
+                hintText: context.l10n.searchExercises,
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: hasSearch
                     ? IconButton(
                         icon: const Icon(Icons.clear),
                         onPressed: _clearSearch,
-                        tooltip: 'Clear search',
+                        tooltip: context.l10n.clearSearch,
                       )
                     : null,
                 border: const OutlineInputBorder(),
@@ -139,7 +140,7 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
               child: Row(
                 children: [
                   FilterChip(
-                    label: const Text('No equipment'),
+                    label: Text(context.l10n.quickNoEquipment),
                     selected: _filter.noEquipment,
                     onSelected: (v) => setState(() => _filter = _filter.copyWith(noEquipment: v)),
                   ),
@@ -157,7 +158,7 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                   ),
                   const SizedBox(width: 8),
                   FilterChip(
-                    label: const Text('Quiet'),
+                    label: Text(context.l10n.quickQuiet),
                     selected: _filter.quiet,
                     onSelected: (v) => setState(() => _filter = _filter.copyWith(quiet: v)),
                   ),
@@ -181,7 +182,7 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                 OutlinedButton.icon(
                   onPressed: _openFilterSheet,
                   icon: const Icon(Icons.tune, size: 18),
-                  label: Text(hasActiveFilters ? 'Filters ($activeCount)' : 'Filters'),
+                  label: Text(hasActiveFilters ? context.l10n.filtersWithCount(activeCount) : context.l10n.filters),
                 ),
                 if (hasActiveFilters)
                   TextButton(

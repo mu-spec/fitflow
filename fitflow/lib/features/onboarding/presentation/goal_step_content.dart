@@ -1,4 +1,6 @@
 import 'package:fitflow/features/onboarding/data/fitness_goal.dart';
+import 'package:fitflow/l10n/enum_labels.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/features/onboarding/presentation/widgets/onboarding_option_card.dart';
 import 'package:fitflow/features/onboarding/state/onboarding_controller.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +19,7 @@ class GoalStepContent extends ConsumerWidget {
       children: [
         for (final goal in FitnessGoal.values)
           OnboardingOptionCard(
-            label: goal.label,
+            label: fitnessGoalLabel(context.l10n, goal),
             selected: state.goal == goal,
             onSelected: () => controller.selectGoal(goal),
           ),

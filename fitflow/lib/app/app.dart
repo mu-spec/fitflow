@@ -2,8 +2,9 @@ import 'dart:async';
 
 import 'package:fitflow/app/config/app_theme.dart';
 import 'package:fitflow/core/accessibility/system_motion.dart';
+import 'package:fitflow/l10n/app_localizations.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/app/router/app_router.dart';
-import 'package:fitflow/core/constants/app_constants.dart';
 import 'package:fitflow/features/reminders/application/workout_reminder_navigation.dart';
 import 'package:fitflow/features/reminders/application/workout_reminders_controller.dart';
 import 'package:fitflow/features/settings/data/appearance_mode.dart';
@@ -79,11 +80,13 @@ class _FitFlowAppState extends ConsumerState<FitFlowApp> {
         AppearanceMode.system;
 
     return MaterialApp.router(
-      title: AppConstants.appName,
+      onGenerateTitle: (context) => context.l10n.appTitle,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: appearanceMode.toThemeMode(),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       builder: (context, child) => SystemMotionTheme(
         child: child ?? const SizedBox.shrink(),
       ),

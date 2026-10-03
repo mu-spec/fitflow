@@ -1,4 +1,5 @@
 import 'package:fitflow/app/config/app_dimensions.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/progress/domain/training_analytics_engine.dart';
 import 'package:fitflow/features/progress/presentation/widgets/progress_activity_chart.dart';
@@ -44,10 +45,10 @@ class ProgressScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Your progress',
+                      Text(context.l10n.yourProgress,
                           style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
                       const SizedBox(height: 8),
-                      Text('Based on workout history stored on this device.',
+                      Text(context.l10n.progressDeviceNote,
                           style: theme.textTheme.bodyMedium
                               ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
                       const SizedBox(height: 32),
@@ -57,17 +58,17 @@ class ProgressScreen extends ConsumerWidget {
                             Icon(Icons.insights_outlined,
                                 size: 64, color: theme.colorScheme.onSurfaceVariant),
                             const SizedBox(height: 16),
-                            Text('No completed workouts yet',
+                            Text(context.l10n.noCompletedWorkouts,
                                 style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
                             const SizedBox(height: 8),
-                            Text('Finish a workout and your progress will appear here.',
+                            Text(context.l10n.finishWorkoutHint,
                                 style: theme.textTheme.bodyMedium
                                     ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                                 textAlign: TextAlign.center),
                             const SizedBox(height: 24),
                             FilledButton(
                               onPressed: () => context.go(AppRoutes.home),
-                              child: const Text('Start a workout'),
+                              child: Text(context.l10n.startAWorkout),
                             ),
                           ],
                         ),

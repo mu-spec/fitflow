@@ -1,4 +1,5 @@
 import 'package:fitflow/app/config/app_dimensions.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/core/accessibility/accessible_actions.dart';
 import 'package:fitflow/features/onboarding/presentation/widgets/onboarding_progress.dart';
 import 'package:flutter/material.dart';
@@ -69,7 +70,7 @@ class OnboardingShell extends StatelessWidget {
               child: FitFlowActionPair(
                 leading: TextButton(
                   onPressed: canGoBack ? onBack : null,
-                  child: const Text('Back'),
+                  child: Text(context.l10n.back),
                 ),
                 trailing: FilledButton(
                   onPressed: canContinue ? onContinue : null,

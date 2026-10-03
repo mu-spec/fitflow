@@ -1,4 +1,6 @@
 import 'package:fitflow/features/progress/domain/training_analytics.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
+import 'package:fitflow/l10n/locale_format.dart';
 import 'package:flutter/material.dart';
 
 class ProgressPeriodComparison extends StatelessWidget {
@@ -31,10 +33,8 @@ class ProgressPeriodComparison extends StatelessWidget {
     return '${_formatDuration(delta)} planned';
   }
 
-  String _formatWorkoutsDelta(int delta) {
-    if (delta == 0) return 'No change';
-    final sign = delta > 0 ? '+' : '';
-    return '$sign$delta workouts';
+  String _formatWorkoutsDelta(BuildContext context, int delta) {
+    return FitFlowLocaleFormat.formatWorkoutDelta(context.l10n, delta);
   }
 
   String _formatSetsDelta(int delta) {
@@ -70,7 +70,7 @@ class ProgressPeriodComparison extends StatelessWidget {
                   label: 'Workouts',
                   current: '${analytics.currentPeriod.workoutCount}',
                   previous: '${analytics.previousPeriod.workoutCount}',
-                  delta: _formatWorkoutsDelta(workoutDelta),
+                  delta: _formatWorkoutsDelta(context, workoutDelta),
                   isPositive: workoutDelta > 0,
                   isNegative: workoutDelta < 0,
                 ),

@@ -1,4 +1,5 @@
 import 'package:fitflow/app/router/app_routes.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/features/onboarding/state/user_fitness_profile_controller.dart';
 import 'package:fitflow/features/workouts/domain/capability_assessment_answer.dart';
 import 'package:fitflow/features/workouts/domain/capability_assessment_catalog.dart';
@@ -134,7 +135,7 @@ class _CapabilityAssessmentScreenState
     // If user profile is null, recovery to onboarding
     if (userProfile == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Movement Check')),
+        appBar: AppBar(title: Text(context.l10n.movementCheckTitle)),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
@@ -186,11 +187,15 @@ class _CapabilityAssessmentScreenState
       },
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Movement Check'),
+          title: Text(context.l10n.movementCheckTitle),
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
+            icon: Icon(
+              Directionality.of(context) == TextDirection.rtl
+                  ? Icons.arrow_forward
+                  : Icons.arrow_back,
+            ),
             onPressed: () => context.go(AppRoutes.onboarding),
-            tooltip: 'Back to onboarding',
+            tooltip: context.l10n.backToOnboarding,
           ),
         ),
         body: SafeArea(

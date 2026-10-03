@@ -1,4 +1,6 @@
 import 'package:fitflow/app/router/app_routes.dart';
+import 'package:fitflow/l10n/enum_labels.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/features/onboarding/data/onboarding_pages.dart';
 import 'package:fitflow/features/onboarding/presentation/environment_step_content.dart';
 import 'package:fitflow/features/onboarding/presentation/equipment_step_content.dart';
@@ -23,9 +25,6 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 }
 
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
-  static const String _getStartedLabel = 'Get Started';
-  static const String _continueLabel = 'Continue';
-
   int _index = 0;
 
   bool get _isLastPage => _index == OnboardingPages.all.length - 1;
@@ -97,11 +96,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     return OnboardingShell(
       step: _index + 1,
       totalSteps: pages.length,
-      title: page.title,
+      title: onboardingTitle(context.l10n, page.id),
       content: _buildContent(page),
       canGoBack: _index > 0,
       canContinue: _canContinue(state),
-      trailingLabel: _isLastPage ? _getStartedLabel : _continueLabel,
+      trailingLabel: _isLastPage ? context.l10n.getStarted : context.l10n.continueLabel,
       onBack: _showPreviousPage,
       onContinue: _showNextPage,
     );

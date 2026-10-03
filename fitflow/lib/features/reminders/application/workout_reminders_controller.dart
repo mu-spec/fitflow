@@ -7,7 +7,7 @@ import 'package:fitflow/features/reminders/domain/workout_reminder_permission_st
 import 'package:fitflow/features/reminders/domain/workout_reminder_preferences.dart';
 import 'package:fitflow/features/reminders/domain/workout_reminder_schedule_calculator.dart';
 import 'package:fitflow/features/reminders/domain/workout_reminder_time.dart';
-import 'package:fitflow/features/reminders/presentation/workout_reminder_copy.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:timezone/timezone.dart' as tz;
 
@@ -220,8 +220,8 @@ class WorkoutRemindersController extends StateNotifier<WorkoutRemindersState> {
     }
     final ok = await _service.showNow(
       id: WorkoutReminderIds.test,
-      title: WorkoutReminderCopy.testTitle,
-      body: WorkoutReminderCopy.testBody,
+      title: englishAppLocalizations().reminderTestTitle,
+      body: englishAppLocalizations().reminderTestBody,
       payload: workoutReminderPayload,
     );
     if (!mounted) return false;
@@ -309,8 +309,8 @@ class WorkoutRemindersController extends StateNotifier<WorkoutRemindersState> {
         id: occurrence.notificationId,
         weekday: occurrence.weekday,
         scheduledAt: occurrence.scheduledAt,
-        title: WorkoutReminderCopy.notificationTitle,
-        body: WorkoutReminderCopy.notificationBody,
+        title: englishAppLocalizations().reminderNotificationTitle,
+        body: englishAppLocalizations().reminderNotificationBody,
       ));
       if (!success) {
         ok = false;
@@ -401,8 +401,8 @@ class WorkoutRemindersController extends StateNotifier<WorkoutRemindersState> {
         id: occurrence.notificationId,
         weekday: occurrence.weekday,
         scheduledAt: occurrence.scheduledAt,
-        title: WorkoutReminderCopy.notificationTitle,
-        body: WorkoutReminderCopy.notificationBody,
+        title: englishAppLocalizations().reminderNotificationTitle,
+        body: englishAppLocalizations().reminderNotificationBody,
       ));
       allOk = allOk && ok;
     }

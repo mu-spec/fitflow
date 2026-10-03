@@ -1,4 +1,6 @@
 import 'package:fitflow/app/router/app_routes.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
+import 'package:fitflow/l10n/locale_format.dart';
 import 'package:fitflow/features/workouts/domain/history/completed_workout.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -16,9 +18,8 @@ class ProgressRecentWorkouts extends StatelessWidget {
     return '${s}s';
   }
 
-  String _formatDateTime(DateTime dt) {
-    final local = dt.toLocal();
-    return '${local.year}-${local.month.toString().padLeft(2, '0')}-${local.day.toString().padLeft(2, '0')} ${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
+  String _formatDateTime(BuildContext context, DateTime dt) {
+    return FitFlowLocaleFormat.formatDateTime(context, dt);
   }
 
   @override
@@ -29,7 +30,7 @@ class ProgressRecentWorkouts extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Recent workouts',
+        Text(context.l10n.recentWorkouts,
             style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
         const SizedBox(height: 16),
         ...history.take(10).map((workout) {
@@ -43,7 +44,7 @@ class ProgressRecentWorkouts extends StatelessWidget {
             child: _RecentWorkoutCard(
               workout: workout,
               movementChips: movementChips,
-              formattedDate: _formatDateTime(workout.completedAt),
+              formattedDate: _formatDateTime(context, workout.completedAt),
               formattedDuration: _formatDuration(workout.estimatedDuration ?? workout.targetDuration),
             ),
           );

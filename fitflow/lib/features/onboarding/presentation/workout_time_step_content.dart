@@ -1,4 +1,6 @@
 import 'package:fitflow/features/onboarding/data/workout_duration.dart';
+import 'package:fitflow/l10n/enum_labels.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/features/onboarding/presentation/widgets/onboarding_option_card.dart';
 import 'package:fitflow/features/onboarding/state/onboarding_controller.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +19,7 @@ class WorkoutTimeStepContent extends ConsumerWidget {
       children: [
         for (final duration in WorkoutDuration.values)
           OnboardingOptionCard(
-            label: duration.label,
+            label: workoutDurationLabel(context.l10n, duration),
             selected: state.workoutDuration == duration,
             onSelected: () => controller.selectWorkoutDuration(duration),
           ),

@@ -1,4 +1,6 @@
 import 'package:fitflow/app/router/app_routes.dart';
+import 'package:fitflow/l10n/enum_labels.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/core/accessibility/accessible_actions.dart';
 import 'package:fitflow/core/persistence/shared_preferences_provider.dart';
 import 'package:fitflow/features/workouts/application/adaptive_progression_controller.dart';
@@ -357,7 +359,7 @@ class _FeedbackChoices extends StatelessWidget {
           for (final option in _options)
             ButtonSegment(
               value: option,
-              label: Text(option.label),
+              label: Text(feedbackLabel(context.l10n, option)),
               tooltip: option.description,
             ),
         ],
@@ -380,7 +382,7 @@ class _FeedbackChoices extends StatelessWidget {
               button: true,
               selected: selected == option,
               inMutuallyExclusiveGroup: true,
-              label: '${option.label}. ${option.description}',
+              label: '${feedbackLabel(context.l10n, option)}. ${feedbackDescription(context.l10n, option)}',
               child: OutlinedButton.icon(
                 onPressed: () => onChanged(selected == option ? null : option),
                 icon: Icon(
@@ -388,7 +390,7 @@ class _FeedbackChoices extends StatelessWidget {
                       ? Icons.check_circle
                       : Icons.radio_button_unchecked,
                 ),
-                label: Text(option.label),
+                label: Text(feedbackLabel(context.l10n, option)),
               ),
             ),
           ),

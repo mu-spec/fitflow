@@ -1,4 +1,5 @@
 import 'package:fitflow/app/config/app_dimensions.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/features/backup/presentation/widgets/backup_restore_settings_entry.dart';
 import 'package:fitflow/features/reminders/presentation/widgets/workout_reminders_section.dart';
 import 'package:fitflow/features/settings/data/appearance_mode.dart';
@@ -62,7 +63,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         AppearanceMode.system;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: AppBar(title: Text(context.l10n.settingsTitle)),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(

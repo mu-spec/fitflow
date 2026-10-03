@@ -1,4 +1,6 @@
 import 'package:fitflow/features/onboarding/data/experience_level.dart';
+import 'package:fitflow/l10n/enum_labels.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/features/onboarding/presentation/widgets/onboarding_option_card.dart';
 import 'package:fitflow/features/onboarding/state/onboarding_controller.dart';
 import 'package:flutter/material.dart';
@@ -17,8 +19,8 @@ class ExperienceStepContent extends ConsumerWidget {
       children: [
         for (final level in ExperienceLevel.values)
           OnboardingOptionCard(
-            label: level.label,
-            helperText: level.helperText,
+            label: experienceLabel(context.l10n, level),
+            helperText: experienceHelp(context.l10n, level),
             selected: state.experience == level,
             onSelected: () => controller.selectExperience(level),
           ),

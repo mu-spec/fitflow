@@ -1,4 +1,6 @@
 import 'package:fitflow/app/config/app_dimensions.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
+import 'package:fitflow/l10n/locale_format.dart';
 import 'package:fitflow/features/workouts/application/workout_history_controller.dart';
 import 'package:fitflow/features/workouts/domain/history/completed_workout_exercise.dart';
 import 'package:flutter/material.dart';
@@ -22,10 +24,8 @@ class ProgressHistoryDetailScreen extends ConsumerWidget {
     return '${s}s';
   }
 
-  String _formatDateTime(DateTime dt) {
-    final local = dt.toLocal();
-    // Simple locale-friendly formatting without extra dependency
-    return '${local.year}-${local.month.toString().padLeft(2, '0')}-${local.day.toString().padLeft(2, '0')} ${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
+  String _formatDateTime(BuildContext context, DateTime dt) {
+    return FitFlowLocaleFormat.formatDateTime(context, dt);
   }
 
   @override
@@ -34,7 +34,7 @@ class ProgressHistoryDetailScreen extends ConsumerWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Workout detail')),
+      appBar: AppBar(title: Text(context.l10n.workoutDetail)),
       body: historyAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
@@ -66,7 +66,7 @@ class ProgressHistoryDetailScreen extends ConsumerWidget {
                 children: [
                   Text('Completed workout', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
                   const SizedBox(height: 8),
-                  Text(_formatDateTime(workout.completedAt), style: theme.textTheme.bodyLarge),
+                  Text(_formatDateTime(context, workout.completedAt), style: theme.textTheme.bodyLarge),
                   const SizedBox(height: 16),
                   Card(
                     child: Padding(

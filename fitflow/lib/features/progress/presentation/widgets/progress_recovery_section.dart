@@ -1,4 +1,6 @@
 import 'package:fitflow/features/workouts/domain/recovery/movement_recovery_status.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
+import 'package:fitflow/l10n/locale_format.dart';
 import 'package:flutter/material.dart';
 
 class ProgressRecoverySection extends StatelessWidget {
@@ -11,23 +13,26 @@ class ProgressRecoverySection extends StatelessWidget {
   final List<MovementRecoveryStatus> recoveryStatuses;
   final DateTime now;
 
-  String _friendlyLastTrained(DateTime? last) {
-    if (last == null) return 'Never trained';
+  String _friendlyLastTrained(BuildContext context, DateTime? last) {
+    final l10n = context.l10n;
+    if (last == null) return l10n.lastTrainedNever;
     final diff = now.difference(last);
     if (diff.inMinutes < 60) {
       final mins = diff.inMinutes;
-      if (mins <= 1) return 'Last trained just now';
-      return 'Last trained $mins minutes ago';
+      if (mins <= 1) return l10n.lastTrainedJustNow;
+      return l10n.lastTrainedMinutes(mins);
     }
     if (diff.inHours < 24) {
       final hours = diff.inHours;
-      if (hours == 1) return 'Last trained 1 hour ago';
-      return 'Last trained $hours hours ago';
+      if (hours == 1) return l10n.lastTrainedOneHour;
+      return l10n.lastTrainedHours(hours);
     }
-    if (diff.inDays == 0) return 'Last trained today';
-    if (diff.inDays == 1) return 'Last trained yesterday';
-    if (diff.inDays < 7) return 'Last trained ${diff.inDays} days ago';
-    return 'Last trained ${last.toLocal().year}-${last.toLocal().month.toString().padLeft(2, '0')}-${last.toLocal().day.toString().padLeft(2, '0')}';
+    if (diff.inDays == 0) return l10n.lastTrainedToday;
+    if (diff.inDays == 1) return l10n.lastTrainedYesterday;
+    if (diff.inDays < 7) return l10n.lastTrainedDays(diff.inDays);
+    return l10n.lastTrainedOn(
+      FitFlowLocaleFormat.formatDate(MaterialLocalizations.of(context), last),
+    );
   }
 
   @override
@@ -63,7 +68,7 @@ class ProgressRecoverySection extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 12),
               child: _RecoveryCard(
                 status: status,
-                friendlyLastTrained: _friendlyLastTrained(status.lastTrained),
+                friendlyLastTrained: _friendlyLastTrained(context, status.lastTrained),
               ),
             );
           }),

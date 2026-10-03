@@ -1,0 +1,271 @@
+{
+  "@@locale": "en",
+  "@@description": "English is the only complete FitFlow V1 locale. Do not add a locale until the consumer-facing experience, including instructional content, has a reviewed translation.",
+  "appTitle": "FitFlow",
+  "@appTitle": {
+    "description": "Application title"
+  },
+  "navHome": "Home",
+  "navWorkouts": "Workouts",
+  "navProgress": "Progress",
+  "navProfile": "Profile",
+  "back": "Back",
+  "continueLabel": "Continue",
+  "getStarted": "Get Started",
+  "retry": "Retry",
+  "cancel": "Cancel",
+  "done": "Done",
+  "splashRecoveryTitle": "We couldn't load your local data.",
+  "splashRecoveryBody": "Your data hasn't been changed. Try again.",
+  "splashRecoveryAction": "Try again",
+  "splashRecoveryHint": "Reloads local data without changing it",
+  "onboardingWelcomeTitle": "Welcome to FitFlow",
+  "onboardingWelcomeBody": "Your workouts will adapt to your strength, time, space and equipment.",
+  "onboardingGoalTitle": "What is your main goal?",
+  "onboardingExperienceTitle": "What is your current experience?",
+  "onboardingTimeTitle": "How much time do you usually have?",
+  "onboardingEnvironmentTitle": "Where do you usually train?",
+  "onboardingEquipmentTitle": "What equipment do you have?",
+  "onboardingPreferencesTitle": "Let's customize your workouts",
+  "onboardingReadyTitle": "You're ready",
+  "onboardingReadyBody": "Next, FitFlow will use your preferences to build workouts around you.",
+  "goalGeneralFitness": "General fitness",
+  "goalBuildStrength": "Build strength",
+  "goalBuildMuscle": "Build muscle",
+  "goalLoseWeight": "Lose weight",
+  "goalImproveEndurance": "Improve endurance",
+  "goalImproveMobility": "Improve mobility",
+  "goalStayActive": "Stay active",
+  "experienceCompletelyNew": "Completely new",
+  "experienceCompletelyNewHelp": "You have not trained much before.",
+  "experienceSome": "Some experience",
+  "experienceSomeHelp": "You have trained now and then.",
+  "experienceRegular": "Regular training",
+  "experienceRegularHelp": "You train most weeks.",
+  "experienceExperienced": "Experienced",
+  "experienceExperiencedHelp": "You train consistently and know your way around.",
+  "environmentApartment": "Apartment / quiet space",
+  "environmentNormalHome": "Normal home",
+  "environmentSmallRoom": "Small room",
+  "environmentLargeRoom": "Large room",
+  "environmentHotel": "Hotel / travel",
+  "environmentOutdoor": "Outdoor",
+  "equipmentNone": "None",
+  "equipmentMat": "Exercise mat",
+  "equipmentChair": "Chair",
+  "equipmentBands": "Resistance bands",
+  "equipmentDumbbells": "Dumbbells",
+  "equipmentKettlebell": "Kettlebell",
+  "equipmentPullUpBar": "Pull-up bar",
+  "equipmentBench": "Bench",
+  "equipmentTowel": "Towel",
+  "preferenceNoJumping": "No jumping",
+  "preferenceLowImpact": "Low impact",
+  "preferenceNoFloor": "No floor exercises",
+  "preferenceStandingOnly": "Standing only",
+  "preferenceAvoidWrist": "Avoid wrist-heavy exercises",
+  "preferenceAvoidKnee": "Avoid deep knee bending",
+  "patternPush": "Push",
+  "patternPull": "Pull",
+  "patternSquat": "Squat",
+  "patternLunge": "Lunge",
+  "patternHinge": "Hinge",
+  "patternCore": "Core",
+  "patternGlute": "Glute",
+  "patternCardio": "Cardio",
+  "patternMobility": "Mobility",
+  "patternBalance": "Balance",
+  "patternWarmup": "Warmup",
+  "patternCooldown": "Cooldown",
+  "modeStandard": "Standard",
+  "modeStandardDescription": "Your normal adaptive workout.",
+  "modeLowEnergy": "Low Energy",
+  "modeLowEnergyDescription": "A shorter, easier workout for today.",
+  "modeComeback": "Comeback",
+  "modeComebackDescription": "A gentler return workout after time away.",
+  "modeDoesNotChangeLevels": "This doesn't change your movement levels.",
+  "feedbackTooHard": "Too hard",
+  "feedbackTooHardDescription": "Felt too difficult",
+  "feedbackJustRight": "Just right",
+  "feedbackJustRightDescription": "Felt about right",
+  "feedbackEasy": "Easy",
+  "feedbackEasyDescription": "Felt easy",
+  "appearanceLight": "Light",
+  "appearanceDark": "Dark",
+  "appearanceSystem": "System",
+  "viewWorkout": "View workout",
+  "viewWorkoutHint": "Opens the workout preview",
+  "startWorkout": "Start workout",
+  "beginWorkout": "Begin workout",
+  "setComplete": "Set complete",
+  "resume": "Resume",
+  "pause": "Pause",
+  "skipRest": "Skip rest",
+  "skipTransition": "Skip transition",
+  "startCooldown": "Start cooldown",
+  "exerciseLibraryTitle": "Exercise Library",
+  "searchExercises": "Search exercises",
+  "clearSearch": "Clear search",
+  "filters": "Filters",
+  "filtersWithCount": "Filters ({count})",
+  "@filtersWithCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "quickNoEquipment": "No equipment",
+  "quickStandingOnly": "Standing only",
+  "quickLowImpact": "Low impact",
+  "quickQuiet": "Quiet",
+  "movementCheckTitle": "Movement Check",
+  "backToOnboarding": "Back to onboarding",
+  "settingsTitle": "Settings",
+  "yourProfile": "Your profile",
+  "setUpProfile": "Set up profile",
+  "yourProgress": "Your progress",
+  "progressDeviceNote": "Based on workout history stored on this device.",
+  "noCompletedWorkouts": "No completed workouts yet",
+  "finishWorkoutHint": "Finish a workout and your progress will appear here.",
+  "startAWorkout": "Start a workout",
+  "recentWorkouts": "Recent workouts",
+  "workoutDetail": "Workout detail",
+  "lastTrainedNever": "Never trained",
+  "lastTrainedJustNow": "Last trained just now",
+  "lastTrainedMinutes": "Last trained {count} minutes ago",
+  "@lastTrainedMinutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "lastTrainedOneHour": "Last trained 1 hour ago",
+  "lastTrainedHours": "Last trained {count} hours ago",
+  "@lastTrainedHours": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "lastTrainedToday": "Last trained today",
+  "lastTrainedYesterday": "Last trained yesterday",
+  "lastTrainedDays": "Last trained {count} days ago",
+  "@lastTrainedDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "lastTrainedOn": "Last trained {date}",
+  "@lastTrainedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderSectionTitle": "Workout reminders",
+  "reminderToggleTitle": "Workout reminders",
+  "reminderToggleSubtitle": "Weekly local reminders on the days and time you choose.",
+  "reminderDaysLabel": "Reminder days",
+  "reminderTimeLabel": "Reminder time",
+  "reminderSendTest": "Send test notification",
+  "reminderOpenSettings": "Open notification settings",
+  "reminderInexactNote": "Android may deliver reminders slightly later to reduce battery use.",
+  "reminderEveryDay": "Every day",
+  "reminderNoDays": "No days selected",
+  "reminderStatusOff": "Reminders are off.",
+  "reminderStatusScheduled": "Workout reminders are scheduled.",
+  "reminderStatusBlocked": "Reminders are enabled in FitFlow, but notifications are blocked by Android.",
+  "reminderStatusError": "Couldn't schedule reminders. Try again.",
+  "reminderPermissionNeeded": "Notification permission is needed to send workout reminders.",
+  "reminderSelectDay": "Select at least one day.",
+  "reminderSaveFailed": "Couldn't save reminder settings. Try again.",
+  "reminderTestSent": "Test notification sent.",
+  "reminderTestFailed": "Couldn't send a test notification.",
+  "reminderSettingsUnavailable": "Notification settings are not available on this device.",
+  "reminderNotificationTitle": "FitFlow workout reminder",
+  "reminderNotificationBody": "Your workout reminder is ready when you are.",
+  "reminderTestTitle": "FitFlow test reminder",
+  "reminderTestBody": "Notifications are working.",
+  "scheduleSummary": "{days} • {time}",
+  "@scheduleSummary": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "backupScreenTitle": "Backup & restore",
+  "backupSettingsSubtitle": "Save a copy of your FitFlow data or restore it on this device.",
+  "backupCreate": "Create backup",
+  "backupChooseFile": "Choose backup file",
+  "backupRestore": "Restore",
+  "programStart": "Start program",
+  "programResume": "Resume program",
+  "programContinue": "Continue",
+  "programView": "View program",
+  "minutes": "{count, plural, =1{1 minute} other{{count} minutes}}",
+  "@minutes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "seconds": "{count, plural, =1{1 second} other{{count} seconds}}",
+  "@seconds": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "minutesAndSeconds": "{minutes, plural, =1{1 minute} other{{minutes} minutes}} {seconds, plural, =1{1 second} other{{seconds} seconds}}",
+  "@minutesAndSeconds": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "workoutCount": "{count, plural, =1{1 workout} other{{count} workouts}}",
+  "@workoutCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "signedWorkoutCount": "{sign}{count, plural, =1{1 workout} other{{count} workouts}}",
+  "@signedWorkoutCount": {
+    "placeholders": {
+      "sign": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noChange": "No change",
+  "difficultyLevel": "Level {level}",
+  "@difficultyLevel": {
+    "description": "Exercise difficulty badge. Level number stays numeric.",
+    "placeholders": {
+      "level": {
+        "type": "String"
+      }
+    }
+  }
+}

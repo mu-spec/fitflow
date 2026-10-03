@@ -1,4 +1,6 @@
 import 'package:fitflow/app/config/app_dimensions.dart';
+import 'package:fitflow/l10n/enum_labels.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/onboarding/data/workout_equipment.dart';
 import 'package:fitflow/features/workouts/data/exercise_catalog.dart';
@@ -156,9 +158,8 @@ class _HeroSection extends StatelessWidget {
 
   final Exercise exercise;
 
-  String _levelLabel() {
-    final levelNumber = exercise.difficulty.name.replaceFirst('level', '');
-    return 'Level $levelNumber';
+  String _levelLabel(BuildContext context) {
+    return difficultyLabel(context.l10n, exercise.difficulty);
   }
 
   @override
@@ -225,7 +226,7 @@ class _HeroSection extends StatelessWidget {
               ),
             _MetaChip(
               icon: Icons.signal_cellular_alt,
-              label: _levelLabel(),
+              label: _levelLabel(context),
             ),
             _MetaChip(
               icon: exercise.exerciseType == ExerciseType.reps

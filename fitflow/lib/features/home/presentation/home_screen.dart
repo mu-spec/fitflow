@@ -1,4 +1,5 @@
 import 'package:fitflow/app/config/app_dimensions.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/home/presentation/widgets/home_adaptive_explanation.dart';
 import 'package:fitflow/features/home/presentation/widgets/home_empty_states.dart';
@@ -153,15 +154,15 @@ class HomeScreen extends ConsumerWidget {
                     width: double.infinity,
                     child: Semantics(
                       button: true,
-                      label: 'View workout',
-                      hint: 'Opens the workout preview',
+                      label: context.l10n.viewWorkout,
+                      hint: context.l10n.viewWorkoutHint,
                       child: ExcludeSemantics(
                         child: FilledButton.icon(
                           onPressed: () {
                             context.push(AppRoutes.workoutPreview);
                           },
                           icon: const Icon(Icons.visibility_outlined),
-                          label: const Text('View workout'),
+                          label: Text(context.l10n.viewWorkout),
                         ),
                       ),
                     ),

@@ -1,4 +1,6 @@
 import 'package:fitflow/features/onboarding/data/workout_preference.dart';
+import 'package:fitflow/l10n/enum_labels.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/features/onboarding/presentation/widgets/onboarding_option_card.dart';
 import 'package:fitflow/features/onboarding/state/onboarding_controller.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +32,7 @@ class PreferencesStepContent extends ConsumerWidget {
         ),
         for (final preference in WorkoutPreference.values)
           OnboardingOptionCard(
-            label: preference.label,
+            label: preferenceLabel(context.l10n, preference),
             selected: state.preferences.contains(preference),
             multiSelect: true,
             onSelected: () => controller.togglePreference(preference),

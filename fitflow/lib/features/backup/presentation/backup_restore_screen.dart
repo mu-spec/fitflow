@@ -1,4 +1,5 @@
 import 'package:fitflow/app/config/app_dimensions.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/backup/application/backup_restore_controller.dart';
 import 'package:fitflow/features/backup/presentation/backup_copy.dart';
@@ -84,7 +85,7 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text(BackupCopy.screenTitle)),
+      appBar: AppBar(title: Text(context.l10n.backupScreenTitle)),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -117,7 +118,7 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
                           : const Icon(Icons.download_rounded),
-                      label: const Text(BackupCopy.createButton),
+                      label: Text(context.l10n.backupCreate),
                     ),
                     ),
                   ),
@@ -136,7 +137,7 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                       onPressed:
                           state.isBusy ? null : controller.pickAndValidate,
                       icon: const Icon(Icons.folder_open_rounded),
-                      label: const Text(BackupCopy.chooseFileButton),
+                      label: Text(context.l10n.backupChooseFile),
                     ),
                     ),
                   ),

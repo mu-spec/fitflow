@@ -1,4 +1,5 @@
 import 'package:fitflow/app/config/app_dimensions.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/home/presentation/widgets/home_empty_states.dart';
 import 'package:fitflow/features/home/presentation/widgets/home_error_state.dart';
@@ -152,7 +153,7 @@ class WorkoutPreviewScreen extends ConsumerWidget {
                         context.push(AppRoutes.workoutPlayer);
                       },
                       icon: const Icon(Icons.play_arrow_rounded),
-                      label: const Text('Start workout'),
+                      label: Text(context.l10n.startWorkout),
                     ),
                   ),
                   const SizedBox(height: 16),

@@ -1,12 +1,12 @@
 import 'package:fitflow/app/config/app_dimensions.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
+import 'package:fitflow/l10n/locale_format.dart';
 import 'package:fitflow/features/reminders/application/workout_reminders_controller.dart';
 import 'package:fitflow/features/reminders/application/workout_reminders_state.dart';
 import 'package:fitflow/features/reminders/domain/workout_reminder_preferences.dart';
 import 'package:fitflow/features/reminders/domain/workout_reminder_permission_status.dart';
 import 'package:fitflow/features/reminders/domain/workout_reminder_schedule_status.dart';
 import 'package:fitflow/features/reminders/domain/workout_reminder_time.dart';
-import 'package:fitflow/features/reminders/domain/workout_reminder_weekday.dart';
-import 'package:fitflow/features/reminders/presentation/workout_reminder_copy.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -16,6 +16,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// [WorkoutRemindersController]; no plugin calls live here.
 class WorkoutRemindersSection extends ConsumerStatefulWidget {
   const WorkoutRemindersSection({super.key});
+
+  /// Locale-aware day names and time. Selected weekdays stay ISO values.
+  static String scheduleSummary(
+    BuildContext context,
+    WorkoutReminderPreferences prefs,
+  ) =>
+      _WorkoutRemindersSectionState.scheduleSummary(context, prefs);
 
   @override
   ConsumerState<WorkoutRemindersSection> createState() =>
@@ -49,7 +56,7 @@ class _WorkoutRemindersSectionState
     final picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay(hour: current.hour, minute: current.minute),
-      helpText: WorkoutReminderCopy.timeLabel,
+      helpText: context.l10n.reminderTimeLabel,
     );
     if (picked == null || !mounted) return;
     await ref
@@ -58,18 +65,16 @@ class _WorkoutRemindersSectionState
   }
 
   void _showMessage(WorkoutReminderMessage message) {
+    final l10n = context.l10n;
     final text = switch (message) {
-      WorkoutReminderMessage.permissionNeeded =>
-        WorkoutReminderCopy.permissionNeeded,
-      WorkoutReminderMessage.selectAtLeastOneDay =>
-        WorkoutReminderCopy.selectAtLeastOneDay,
-      WorkoutReminderMessage.scheduleFailed =>
-        WorkoutReminderCopy.statusScheduleError,
-      WorkoutReminderMessage.saveFailed => WorkoutReminderCopy.saveFailed,
-      WorkoutReminderMessage.testSent => WorkoutReminderCopy.testSent,
-      WorkoutReminderMessage.testFailed => WorkoutReminderCopy.testFailed,
+      WorkoutReminderMessage.permissionNeeded => l10n.reminderPermissionNeeded,
+      WorkoutReminderMessage.selectAtLeastOneDay => l10n.reminderSelectDay,
+      WorkoutReminderMessage.scheduleFailed => l10n.reminderStatusError,
+      WorkoutReminderMessage.saveFailed => l10n.reminderSaveFailed,
+      WorkoutReminderMessage.testSent => l10n.reminderTestSent,
+      WorkoutReminderMessage.testFailed => l10n.reminderTestFailed,
       WorkoutReminderMessage.settingsUnavailable =>
-        WorkoutReminderCopy.settingsUnavailable,
+        l10n.reminderSettingsUnavailable,
     };
     // The inline `Open notification settings` action below the status line
     // covers the denied case; keep the SnackBar simple so it never overflows
@@ -101,7 +106,7 @@ class _WorkoutRemindersSectionState
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          WorkoutReminderCopy.sectionTitle,
+          context.l10n.reminderSectionTitle,
           style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: AppDimens.itemGap),
@@ -114,8 +119,8 @@ class _WorkoutRemindersSectionState
               children: [
                 SwitchListTile.adaptive(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text(WorkoutReminderCopy.toggleTitle),
-                  subtitle: const Text(WorkoutReminderCopy.toggleSubtitle),
+                  title: Text(context.l10n.reminderToggleTitle),
+                  subtitle: Text(context.l10n.reminderToggleSubtitle),
                   value: prefs.enabled,
                   onChanged: state.isBusy
                       ? null
@@ -130,19 +135,19 @@ class _WorkoutRemindersSectionState
                     state.permission == WorkoutReminderPermissionStatus.denied) ...[
                   const SizedBox(height: 8),
                   Align(
-                    alignment: Alignment.centerLeft,
+                    alignment: AlignmentDirectional.centerStart,
                     child: OutlinedButton.icon(
                       onPressed: () {
                         // ignore: discarded_futures
                         controller.openNotificationSettings();
                       },
                       icon: const Icon(Icons.settings_outlined),
-                      label: const Text(WorkoutReminderCopy.openSettings),
+                      label: Text(context.l10n.reminderOpenSettings),
                     ),
                   ),
                 ],
                 const Divider(height: 24),
-                Text(WorkoutReminderCopy.daysLabel,
+                Text(context.l10n.reminderDaysLabel,
                     style: theme.textTheme.labelLarge),
                 const SizedBox(height: 8),
                 _WeekdayPicker(
@@ -156,7 +161,7 @@ class _WorkoutRemindersSectionState
                 if (prefs.weekdays.isEmpty) ...[
                   const SizedBox(height: 6),
                   Text(
-                    WorkoutReminderCopy.selectAtLeastOneDay,
+                    context.l10n.reminderSelectDay,
                     style: theme.textTheme.bodySmall?.copyWith(color: colors.error),
                   ),
                 ],
@@ -164,7 +169,7 @@ class _WorkoutRemindersSectionState
                 ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: const Icon(Icons.schedule_outlined),
-                  title: const Text(WorkoutReminderCopy.timeLabel),
+                  title: Text(context.l10n.reminderTimeLabel),
                   subtitle: Text(_formatTime(context, prefs.time)),
                   trailing: const Icon(Icons.edit_outlined),
                   enabled: !state.isBusy,
@@ -180,12 +185,12 @@ class _WorkoutRemindersSectionState
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  WorkoutReminderCopy.inexactNote,
+                  context.l10n.reminderInexactNote,
                   style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
                 ),
                 const SizedBox(height: 12),
                 Align(
-                  alignment: Alignment.centerLeft,
+                  alignment: AlignmentDirectional.centerStart,
                   child: FilledButton.tonalIcon(
                     onPressed: state.canSendTest
                         ? () {
@@ -194,7 +199,7 @@ class _WorkoutRemindersSectionState
                           }
                         : null,
                     icon: const Icon(Icons.notifications_active_outlined),
-                    label: const Text(WorkoutReminderCopy.sendTest),
+                    label: Text(context.l10n.reminderSendTest),
                   ),
                 ),
               ],
@@ -208,15 +213,21 @@ class _WorkoutRemindersSectionState
   static String _formatTime(BuildContext context, WorkoutReminderTime time) =>
       TimeOfDay(hour: time.hour, minute: time.minute).format(context);
 
-  /// `Mon, Wed, Fri • 7:00 PM` / `Every day • 8:30 AM` (time per locale).
+  /// Locale-aware day names and time. Selected weekdays stay ISO values.
   static String scheduleSummary(
       BuildContext context, WorkoutReminderPreferences prefs) {
+    final l10n = context.l10n;
     final time = _formatTime(context, prefs.time);
-    if (prefs.weekdays.isEmpty) return 'No days selected • $time';
+    final material = MaterialLocalizations.of(context);
+    if (prefs.weekdays.isEmpty) {
+      return l10n.scheduleSummary(l10n.reminderNoDays, time);
+    }
     final days = prefs.isEveryDay
-        ? WorkoutReminderCopy.everyDay
-        : prefs.weekdays.map(WorkoutReminderWeekday.shortName).join(', ');
-    return '$days • $time';
+        ? l10n.reminderEveryDay
+        : prefs.weekdays
+            .map((day) => FitFlowLocaleFormat.shortWeekday(material, day))
+            .join(', ');
+    return l10n.scheduleSummary(days, time);
   }
 }
 
@@ -229,24 +240,25 @@ class _StatusLine extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final l10n = context.l10n;
     final (String text, IconData icon, Color color) = switch (status) {
       WorkoutReminderScheduleStatus.off => (
-          WorkoutReminderCopy.statusOff,
+          l10n.reminderStatusOff,
           Icons.notifications_off_outlined,
           colors.onSurfaceVariant
         ),
       WorkoutReminderScheduleStatus.scheduled => (
-          WorkoutReminderCopy.statusScheduled,
+          l10n.reminderStatusScheduled,
           Icons.check_circle_outline,
           colors.primary
         ),
       WorkoutReminderScheduleStatus.permissionBlocked => (
-          WorkoutReminderCopy.statusBlocked,
+          l10n.reminderStatusBlocked,
           Icons.notifications_paused_outlined,
           colors.error
         ),
       WorkoutReminderScheduleStatus.scheduleError => (
-          WorkoutReminderCopy.statusScheduleError,
+          l10n.reminderStatusError,
           Icons.error_outline,
           colors.error
         ),
@@ -277,13 +289,17 @@ class _WeekdayPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final material = MaterialLocalizations.of(context);
+    final order = FitFlowLocaleFormat.weekdayDisplayOrder(
+      material.firstDayOfWeekIndex,
+    );
     return Wrap(
       spacing: 6,
       runSpacing: 6,
       children: [
-        for (final weekday in WorkoutReminderWeekday.all)
+        for (final weekday in order)
           Semantics(
-            label: WorkoutReminderWeekday.fullName(weekday),
+            label: FitFlowLocaleFormat.fullWeekday(material, weekday),
             button: true,
             selected: selected.contains(weekday),
             child: ConstrainedBox(
@@ -291,7 +307,9 @@ class _WeekdayPicker extends StatelessWidget {
               child: ExcludeSemantics(
                 child: FilterChip(
                   key: ValueKey<String>('reminder_weekday_$weekday'),
-                  label: Text(WorkoutReminderWeekday.letter(weekday)),
+                  label: Text(
+                    FitFlowLocaleFormat.narrowWeekday(material, weekday),
+                  ),
                   showCheckmark: true,
                   selected: selected.contains(weekday),
                   onSelected: enabled ? (_) => onToggle(weekday) : null,

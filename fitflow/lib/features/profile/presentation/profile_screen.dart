@@ -1,4 +1,5 @@
 import 'package:fitflow/app/config/app_dimensions.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/onboarding/data/user_fitness_profile.dart';
 import 'package:fitflow/features/onboarding/state/user_fitness_profile_controller.dart';
@@ -49,7 +50,7 @@ class _ProfileLoadingState extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Your profile', style: theme.textTheme.titleLarge),
+          Text(context.l10n.yourProfile, style: theme.textTheme.titleLarge),
           const SizedBox(height: 48),
           const Center(child: CircularProgressIndicator()),
           const SizedBox(height: 16),
@@ -82,7 +83,7 @@ class _ProfileErrorState extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Your profile', style: theme.textTheme.titleLarge),
+          Text(context.l10n.yourProfile, style: theme.textTheme.titleLarge),
           const SizedBox(height: 24),
           Card(
             elevation: 0,
@@ -115,7 +116,7 @@ class _ProfileErrorState extends StatelessWidget {
                   FilledButton.icon(
                     onPressed: onRetry,
                     icon: const Icon(Icons.refresh),
-                    label: const Text('Retry'),
+                    label: Text(context.l10n.retry),
                   ),
                 ],
               ),
@@ -141,7 +142,7 @@ class _ProfileMissingState extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Your profile', style: theme.textTheme.titleLarge),
+          Text(context.l10n.yourProfile, style: theme.textTheme.titleLarge),
           const SizedBox(height: 24),
           Card(
             elevation: 0,
@@ -166,7 +167,7 @@ class _ProfileMissingState extends StatelessWidget {
                   const SizedBox(height: 16),
                   FilledButton(
                     onPressed: onSetup,
-                    child: const Text('Set up profile'),
+                    child: Text(context.l10n.setUpProfile),
                   ),
                 ],
               ),
@@ -192,7 +193,7 @@ class _ProfileSummaryList extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Your profile', style: theme.textTheme.titleLarge),
+          Text(context.l10n.yourProfile, style: theme.textTheme.titleLarge),
           const SizedBox(height: 4),
           Text(
             'Your settings shape how FitFlow adapts future workouts.',
