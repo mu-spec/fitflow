@@ -36,9 +36,9 @@ void main() {
         isTrue);
     expect(pubspec.contains('share_plus'), isFalse);
     final lock = File('pubspec.lock').readAsStringSync();
-    final match =
-        RegExp(r'  file_picker:\n(?:.*\n){1,6}?    version: "([^"]+)"')
-            .firstMatch(lock);
+    final match = RegExp(
+      r'  file_picker:\r?\n(?:.*\r?\n){1,6}?    version: "([^"]+)"',
+    ).firstMatch(lock);
     expect(match, isNotNull);
     expect(match!.group(1)!.contains('-'), isFalse, reason: 'no prerelease');
   });
