@@ -63,8 +63,11 @@ void main() {
       expect(gradle.contains('VERSION_1_8'), isFalse);
     });
 
-    test('minSdk untouched (Flutter default ≥ 24, plugin requirement)', () {
-      expect(gradle, contains('minSdk = flutter.minSdkVersion'));
+    test('minSdk stays 24 and Play target/compile SDK are explicit', () {
+      expect(gradle, contains('minSdk = 24'));
+      expect(gradle, contains('targetSdk = 36'));
+      expect(gradle, contains('compileSdk = 36'));
+      expect(gradle.contains('flutter.minSdkVersion'), isFalse);
     });
   });
 

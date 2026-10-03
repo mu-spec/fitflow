@@ -142,14 +142,24 @@ class WorkoutPlayerStateForTest {
     );
     controller.beginWorkout();
     for (int i = 0; i < 100; i++) {
-      if (controller.state.phase == WorkoutPlayerPhase.completed) break;
+      if (controller.state.phase == WorkoutPlayerPhase.completed) {
+        break;
+      }
       if (controller.state.isTimedExercise) {
-        for (int t = 0; t < 40; t++) controller.tick();
+        for (int t = 0; t < 40; t++) {
+          controller.tick();
+        }
       } else {
         controller.completeSet();
-        if (controller.state.phase == WorkoutPlayerPhase.rest) controller.skipRest();
-        if (controller.state.phase == WorkoutPlayerPhase.transition) controller.skipTransition();
-        if (controller.state.phase == WorkoutPlayerPhase.sectionBreak) controller.continueSection();
+        if (controller.state.phase == WorkoutPlayerPhase.rest) {
+          controller.skipRest();
+        }
+        if (controller.state.phase == WorkoutPlayerPhase.transition) {
+          controller.skipTransition();
+        }
+        if (controller.state.phase == WorkoutPlayerPhase.sectionBreak) {
+          controller.continueSection();
+        }
       }
     }
     return controller.state;

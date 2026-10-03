@@ -55,7 +55,7 @@ class FakeCapabilityController extends CapabilityProfileController {
   FakeCapabilityController({this.failSave = false, CapabilityProfile? initial}) : _initial = initial;
   bool failSave;
   CapabilityProfile? saved;
-  CapabilityProfile? _initial;
+  final CapabilityProfile? _initial;
 
   @override
   Future<CapabilityProfile?> build() async => _initial;

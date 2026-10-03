@@ -14,6 +14,7 @@ import 'package:fitflow/features/programs/presentation/program_session_preview_s
 import 'package:fitflow/features/programs/presentation/programs_overview_screen.dart';
 import 'package:fitflow/features/progress/presentation/progress_history_detail_screen.dart';
 import 'package:fitflow/features/progress/presentation/progress_screen.dart';
+import 'package:fitflow/features/settings/presentation/privacy_policy_screen.dart';
 import 'package:fitflow/features/settings/presentation/settings_screen.dart';
 import 'package:fitflow/features/splash/splash_screen.dart';
 import 'package:fitflow/features/workout_player/presentation/custom_workout_player_screen.dart';
@@ -231,6 +232,11 @@ class AppRouter {
                           path: 'backup-restore',
                           builder: (context, state) =>
                               const BackupRestoreScreen(),
+                        ),
+                        GoRoute(
+                          path: 'privacy-policy',
+                          builder: (context, state) =>
+                              const PrivacyPolicyScreen(),
                         ),
                       ],
                     ),

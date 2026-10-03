@@ -28,3 +28,12 @@ Thumbs.db
 
 # Local Android SDK configuration
 android/local.properties
+
+# Signing secrets and local credentials. Never commit an upload key, password, or PAT.
+android/key.properties
+**/*.jks
+**/*.keystore
+**/*.pepk
+*.env
+*.env.*
+*.pat

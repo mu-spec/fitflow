@@ -1,0 +1,16 @@
+# Milestone bundles stay local. Do not commit them.
+*.bundle
+
+# Signing secrets and machine credentials.
+*.jks
+*.keystore
+*.pepk
+key.properties
+*.env
+*.env.*
+*.pat
+**/local.properties
+
+# Build outputs
+**/build/
+.gradle/

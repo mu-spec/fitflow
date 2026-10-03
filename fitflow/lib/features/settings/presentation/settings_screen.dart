@@ -1,4 +1,5 @@
 import 'package:fitflow/app/config/app_dimensions.dart';
+import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/features/backup/presentation/widgets/backup_restore_settings_entry.dart';
 import 'package:fitflow/features/reminders/presentation/widgets/workout_reminders_section.dart';
@@ -6,6 +7,7 @@ import 'package:fitflow/features/settings/data/appearance_mode.dart';
 import 'package:fitflow/features/settings/state/appearance_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 /// Secondary settings screen, opened from the Profile tab.
 ///
@@ -23,6 +25,8 @@ class SettingsScreen extends ConsumerStatefulWidget {
   /// Factual footer copy — FitFlow has no accounts and stores data locally.
   static const String localDataFooter =
       'FitFlow works without an account. Your workout data is stored on this device unless you create a backup.';
+
+  static const Key privacyPolicyTileKey = Key('privacy_policy_settings_tile');
 
   @override
   ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
@@ -121,6 +125,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   _sectionTitle(theme, 'Data'),
                   const SizedBox(height: AppDimens.itemGap),
                   const BackupRestoreSettingsEntry(),
+                  const SizedBox(height: AppDimens.itemGap),
+                  const _PrivacyPolicyEntry(),
                   const SizedBox(height: 24),
                   Text(
                     SettingsScreen.localDataFooter,
@@ -142,6 +148,28 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       title,
       style: theme.textTheme.titleMedium
           ?.copyWith(fontWeight: FontWeight.w600),
+    );
+  }
+}
+
+class _PrivacyPolicyEntry extends StatelessWidget {
+  const _PrivacyPolicyEntry();
+
+  static const Key tileKey = SettingsScreen.privacyPolicyTileKey;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
+      child: ListTile(
+        key: tileKey,
+        leading: const Icon(Icons.privacy_tip_outlined),
+        title: const Text('Privacy Policy'),
+        subtitle: const Text('How FitFlow handles information on this device.'),
+        trailing: const Icon(Icons.chevron_right_rounded),
+        onTap: () => context.go(AppRoutes.privacyPolicy),
+      ),
     );
   }
 }
