@@ -34,29 +34,32 @@ class FitFlowNavigationShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final expanded = FitFlowLayout.isExpanded(context);
-    if (expanded) {
+    return LayoutBuilder(builder: (context, constraints) {
+      final expanded = FitFlowLayout.fromWidth(constraints.maxWidth) ==
+          FitFlowWindowSize.expanded;
+      if (expanded) {
+        return Scaffold(
+          body: Row(
+            children: [
+              _FitFlowNavigationRail(
+                destinations: destinations,
+                selectedIndex: selectedIndex,
+                onSelected: onSelected,
+              ),
+              Expanded(child: body),
+            ],
+          ),
+        );
+      }
       return Scaffold(
-        body: Row(
-          children: [
-            _FitFlowNavigationRail(
-              destinations: destinations,
-              selectedIndex: selectedIndex,
-              onSelected: onSelected,
-            ),
-            Expanded(child: body),
-          ],
+        body: body,
+        bottomNavigationBar: _FitFlowBottomBar(
+          destinations: destinations,
+          selectedIndex: selectedIndex,
+          onSelected: onSelected,
         ),
       );
-    }
-    return Scaffold(
-      body: body,
-      bottomNavigationBar: _FitFlowBottomBar(
-        destinations: destinations,
-        selectedIndex: selectedIndex,
-        onSelected: onSelected,
-      ),
-    );
+    });
   }
 }
 
@@ -79,6 +82,7 @@ class _FitFlowBottomBar extends StatelessWidget {
         border: Border(top: BorderSide(color: theme.divider)),
       ),
       child: NavigationBar(
+        animationDuration: SystemMotion.standard(context),
         selectedIndex: selectedIndex,
         onDestinationSelected: onSelected,
         destinations: [
@@ -115,23 +119,27 @@ class _FitFlowNavigationRail extends StatelessWidget {
         decoration: BoxDecoration(
           border: Border(right: BorderSide(color: theme.divider)),
         ),
-        child: NavigationRail(
-          selectedIndex: selectedIndex,
-          onDestinationSelected: onSelected,
-          labelType: NavigationRailLabelType.all,
-          groupAlignment: -1,
-          minWidth: SystemMotion.minTouchTarget + 32,
-          destinations: [
-            for (final destination in destinations)
-              NavigationRailDestination(
-                icon: Icon(destination.icon),
-                selectedIcon: Icon(destination.selectedIcon),
-                label: Text(
-                  destination.label,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-          ],
+        child: SingleChildScrollView(
+          child: IntrinsicHeight(
+            child: NavigationRail(
+              selectedIndex: selectedIndex,
+              onDestinationSelected: onSelected,
+              labelType: NavigationRailLabelType.all,
+              groupAlignment: -1,
+              minWidth: SystemMotion.minTouchTarget + 32,
+              destinations: [
+                for (final destination in destinations)
+                  NavigationRailDestination(
+                    icon: Icon(destination.icon),
+                    selectedIcon: Icon(destination.selectedIcon),
+                    label: Text(
+                      destination.label,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+              ],
+            ),
+          ),
         ),
       ),
     );

@@ -1,5 +1,6 @@
 import 'package:fitflow/core/accessibility/system_motion.dart';
 import 'package:fitflow/core/design/fitflow_theme_extension.dart';
+import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:flutter/material.dart';
 
 /// Primary action. Uses the themed [FilledButton] so pressed, focused,
@@ -24,10 +25,24 @@ class FitFlowPrimaryButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final enabled = onPressed != null && !loading;
     final child = loading
-        ? const SizedBox(
-            width: 18,
-            height: 18,
-            child: CircularProgressIndicator(strokeWidth: 2),
+        ? Semantics(
+            label: '$label, loading',
+            liveRegion: true,
+            excludeSemantics: true,
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: FitFlowSpace.xs,
+              children: [
+                SizedBox.square(
+                  dimension: 18,
+                  child: SystemMotion.reduced(context)
+                      ? const Icon(Icons.hourglass_top, size: 18)
+                      : const CircularProgressIndicator(strokeWidth: 2),
+                ),
+                Text(label, textAlign: TextAlign.center),
+              ],
+            ),
           )
         : icon == null
             ? Text(label)
@@ -39,8 +54,6 @@ class FitFlowPrimaryButton extends StatelessWidget {
     );
     return _wrap(
       button,
-      semanticsLabel: loading ? '$label, loading' : label,
-      enabled: enabled,
       expand: expand,
     );
   }
@@ -69,8 +82,6 @@ class FitFlowSecondaryButton extends StatelessWidget {
         onPressed: onPressed,
         child: child,
       ),
-      semanticsLabel: label,
-      enabled: onPressed != null,
       expand: expand,
     );
   }
@@ -92,8 +103,6 @@ class FitFlowTertiaryButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return _wrap(
       TextButton(onPressed: onPressed, child: Text(label)),
-      semanticsLabel: label,
-      enabled: onPressed != null,
       expand: expand,
     );
   }
@@ -142,29 +151,21 @@ class _LabeledIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+    return Wrap(
+      alignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: FitFlowSpace.xs,
       children: [
         Icon(icon, size: 18),
-        const SizedBox(width: 8),
-        Text(label),
+        Text(label, textAlign: TextAlign.center),
       ],
     );
   }
 }
 
-Widget _wrap(
-  Widget button, {
-  required String semanticsLabel,
-  required bool enabled,
-  required bool expand,
-}) {
-  final labeled = Semantics(
-    button: true,
-    enabled: enabled,
-    label: semanticsLabel,
-    child: ExcludeSemantics(child: button),
-  );
-  if (!expand) return labeled;
-  return SizedBox(width: double.infinity, child: labeled);
+// Keep native button semantics, including screen-reader tap and focus actions.
+// Excluding the button's subtree would leave a named but inoperable control.
+Widget _wrap(Widget button, {required bool expand}) {
+  if (!expand) return button;
+  return SizedBox(width: double.infinity, child: button);
 }

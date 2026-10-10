@@ -53,12 +53,14 @@ class FitFlowStatusChip extends StatelessWidget {
               children: [
                 Icon(icon ?? fallbackIcon, size: 16, color: color),
                 const SizedBox(width: FitFlowSpace.xs),
-                Text(
-                  label,
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: onColor,
-                        fontWeight: FontWeight.w600,
-                      ),
+                Flexible(
+                  child: Text(
+                    label,
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          color: onColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                  ),
                 ),
               ],
             ),

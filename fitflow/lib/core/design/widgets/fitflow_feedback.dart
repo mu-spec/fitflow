@@ -1,5 +1,6 @@
 import 'package:fitflow/core/accessibility/system_motion.dart';
 import 'package:fitflow/core/design/fitflow_radius.dart';
+import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:fitflow/core/design/fitflow_typography.dart';
@@ -24,6 +25,7 @@ class FitFlowStat extends StatelessWidget {
     final text = Theme.of(context).textTheme;
     return Semantics(
       label: semanticsLabel ?? '$label $value',
+      excludeSemantics: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -62,6 +64,7 @@ class FitFlowProgress extends StatelessWidget {
     return Semantics(
       label: percent == null ? label : '$label, $percent percent',
       value: percent == null ? 'in progress' : '$percent%',
+      excludeSemantics: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -72,15 +75,18 @@ class FitFlowProgress extends StatelessWidget {
                 ),
           ),
           const SizedBox(height: FitFlowSpace.xs),
-          ClipRRect(
-            borderRadius: FitFlowRadius.pillBorder,
-            child: LinearProgressIndicator(
-              value: value,
-              minHeight: 8,
-              color: theme.brand,
-              backgroundColor: theme.subtleSurface,
+          if (value == null && SystemMotion.reduced(context))
+            const Icon(Icons.hourglass_top)
+          else
+            ClipRRect(
+              borderRadius: FitFlowRadius.pillBorder,
+              child: LinearProgressIndicator(
+                value: value,
+                minHeight: 8,
+                color: theme.brand,
+                backgroundColor: theme.subtleSurface,
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -151,14 +157,16 @@ class FitFlowLoading extends StatelessWidget {
     return Semantics(
       label: label,
       liveRegion: true,
+      excludeSemantics: true,
       child: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const SizedBox(
-              width: 28,
-              height: 28,
-              child: CircularProgressIndicator(strokeWidth: 2.5),
+            SizedBox.square(
+              dimension: 28,
+              child: SystemMotion.reduced(context)
+                  ? const Icon(Icons.hourglass_top, size: 28)
+                  : const CircularProgressIndicator(strokeWidth: 2.5),
             ),
             const SizedBox(height: FitFlowSpace.sm),
             Text(
@@ -243,6 +251,7 @@ class FitFlowConfirmDialog extends StatelessWidget {
   }) async {
     final result = await showDialog<bool>(
       context: context,
+      animationStyle: _overlayMotion(context),
       builder: (context) => FitFlowConfirmDialog(
         title: title,
         message: message,
@@ -302,6 +311,11 @@ class FitFlowSheet extends StatelessWidget {
     return showModalBottomSheet<T>(
       context: context,
       showDragHandle: true,
+      isScrollControlled: true,
+      useSafeArea: true,
+      constraints:
+          const BoxConstraints(maxWidth: FitFlowLayout.maxReadableWidth),
+      sheetAnimationStyle: _overlayMotion(context),
       builder: (context) => FitFlowSheet(title: title, child: child),
     );
   }
@@ -310,12 +324,13 @@ class FitFlowSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(
+      top: false,
+      child: SingleChildScrollView(
+        padding: EdgeInsets.fromLTRB(
           FitFlowSpace.xl,
           FitFlowSpace.xs,
           FitFlowSpace.xl,
-          FitFlowSpace.xl,
+          FitFlowSpace.xl + MediaQuery.viewInsetsOf(context).bottom,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -332,3 +347,9 @@ class FitFlowSheet extends StatelessWidget {
     );
   }
 }
+
+// Reuse the canonical motion tokens and M22 preference; no parallel motion API.
+AnimationStyle _overlayMotion(BuildContext context) => AnimationStyle(
+      duration: SystemMotion.emphasized(context),
+      reverseDuration: SystemMotion.standard(context),
+    );
