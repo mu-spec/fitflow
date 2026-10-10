@@ -109,7 +109,8 @@ void main() {
           isTrue);
     });
 
-    testWidgets('uses the same shared execution view, origin program, mode standard',
+    testWidgets(
+        'uses the same shared execution view, origin program, mode standard',
         (tester) async {
       await pumpPlayer(tester);
       expect(find.byType(WorkoutPlayerSessionView), findsOneWidget);
@@ -123,7 +124,8 @@ void main() {
       expect(find.textContaining('Your prescription'), findsNothing);
     });
 
-    testWidgets('Player plan equals the Part 1 resolver output for current state',
+    testWidgets(
+        'Player plan equals the Part 1 resolver output for current state',
         (tester) async {
       await pumpPlayer(tester);
       final view = programPlayerView(tester);
@@ -199,7 +201,24 @@ void main() {
       // Advance to the first Main exercise.
       controller.beginWorkout();
       var safety = 0;
-      while (!controller.canReplaceCurrentExercise && safety < 200) {
+      var options = controller.getReplacementOptions();
+      // A warmup mobility drill may now truthfully have no same-focus
+      // alternative. Keep the history contract by replacing the first
+      // exercise that still has one, instead of assuming the first
+      // replaceable exercise does.
+      while (options.isEmpty && safety < 400) {
+        final currentId = controller.state.currentPrescription.exercise.id;
+        if (controller.canReplaceCurrentExercise &&
+            currentId == 'arm_circles') {
+          expect(
+            options.map((option) => option.exercise.id),
+            isNot(contains('hip_flexor_stretch')),
+          );
+          expect(
+            options.map((option) => option.exercise.id),
+            isNot(contains('hamstring_stretch_standing')),
+          );
+        }
         final s = controller.state;
         switch (s.phase) {
           case WorkoutPlayerPhase.work:
@@ -228,10 +247,14 @@ void main() {
             break;
         }
         safety++;
+        if (controller.canReplaceCurrentExercise) {
+          options = controller.getReplacementOptions();
+        }
       }
       expect(controller.canReplaceCurrentExercise, isTrue);
-      final options = controller.getReplacementOptions();
-      expect(options, isNotEmpty);
+      expect(options, isNotEmpty,
+          reason:
+              'a later exercise should still have a same-focus replacement');
       final original = controller.state.currentPrescription.exercise.id;
       final replaced = controller.replaceCurrentExercise(options.first);
       expect(replaced, isTrue);
@@ -290,7 +313,8 @@ void main() {
   });
 
   group('Completion: history + program progress', () {
-    testWidgets('completion records history exactly once and progress exactly once',
+    testWidgets(
+        'completion records history exactly once and progress exactly once',
         (tester) async {
       await pumpPlayer(tester);
       final controller = programPlayerController(tester);
@@ -338,7 +362,8 @@ void main() {
       expect(json.containsKey('origin'), isFalse);
     });
 
-    testWidgets('failed progress save keeps session incomplete; history not duplicated; retry succeeds',
+    testWidgets(
+        'failed progress save keeps session incomplete; history not duplicated; retry succeeds',
         (tester) async {
       final toggle = _ToggleWrites()..allow = false;
       await pumpPlayer(
@@ -373,7 +398,8 @@ void main() {
       expect(await history(), hasLength(1));
     });
 
-    testWidgets('failed progress save: Done retries once, then detail shows incomplete when still failing',
+    testWidgets(
+        'failed progress save: Done retries once, then detail shows incomplete when still failing',
         (tester) async {
       final toggle = _ToggleWrites()..allow = false;
       final router = await pumpPlayer(
@@ -395,7 +421,8 @@ void main() {
       // Truthful: nothing was persisted, so no session is marked Completed.
       expect(find.text('1 of 12 workouts completed'), findsNothing);
       expect(find.text('Completed'), findsNothing);
-      expect(find.descendant(
+      expect(
+          find.descendant(
               of: find.ancestor(
                   of: find.text('Session 1').first,
                   matching: find.byType(ProgramSessionRow)),
@@ -404,7 +431,8 @@ void main() {
       expect(await history(), hasLength(1));
     });
 
-    testWidgets('history failure does not block program progress and never crashes',
+    testWidgets(
+        'history failure does not block program progress and never crashes',
         (tester) async {
       final failing = _FailingHistoryController();
       await pumpPlayer(
@@ -427,7 +455,8 @@ void main() {
     testWidgets('program completion shows Tune, factual note, corrected copy',
         (tester) async {
       await pumpPlayer(tester);
-      await driveProgramPlayerToCompletion(tester, programPlayerController(tester));
+      await driveProgramPlayerToCompletion(
+          tester, programPlayerController(tester));
       expect(find.text('Workout complete'), findsOneWidget);
       expect(find.text('Tune next workout'), findsOneWidget);
       expect(find.text('Program workout completed.'), findsOneWidget);
@@ -438,14 +467,17 @@ void main() {
       expect(find.textContaining('progress saved'), findsNothing);
       expect(find.textContaining('cloud'), findsNothing);
       expect(find.textContaining('sync'), findsNothing);
-      expect(find.textContaining('movement levels stay unchanged'), findsNothing);
-      expect(find.textContaining("don't change your movement levels"), findsNothing);
+      expect(
+          find.textContaining('movement levels stay unchanged'), findsNothing);
+      expect(find.textContaining("don't change your movement levels"),
+          findsNothing);
     });
 
     testWidgets('Done navigates to the correct program detail and keeps IDs',
         (tester) async {
       final router = await pumpPlayer(tester);
-      await driveProgramPlayerToCompletion(tester, programPlayerController(tester));
+      await driveProgramPlayerToCompletion(
+          tester, programPlayerController(tester));
       await tester.ensureVisible(find.text('Done'));
       await tester.tap(find.text('Done'));
       await tester.pumpAndSettle();
@@ -459,9 +491,12 @@ void main() {
             of: find.text(label).first,
             matching: find.byType(ProgramSessionRow),
           );
-      expect(find.descendant(of: rowOf('Session 1'), matching: find.text('Completed')),
+      expect(
+          find.descendant(
+              of: rowOf('Session 1'), matching: find.text('Completed')),
           findsOneWidget);
-      expect(find.descendant(of: rowOf('Session 2'), matching: find.text('Next')),
+      expect(
+          find.descendant(of: rowOf('Session 2'), matching: find.text('Next')),
           findsOneWidget);
     });
 
@@ -470,7 +505,8 @@ void main() {
       final router = programTestRouter(
           initialLocation: AppRoutes.programSessionPreview(_program, _s2));
       addTearDown(router.dispose);
-      await tester.pumpWidget(programTestApp(router: router, overrides: overrides()));
+      await tester
+          .pumpWidget(programTestApp(router: router, overrides: overrides()));
       await tester.pumpAndSettle();
       expect(find.byType(ProgramSessionPreviewScreen), findsOneWidget);
       await programScrollTo(tester, find.text('Start workout'), step: 300);
@@ -490,7 +526,8 @@ void main() {
 
     testWidgets('unknown program shows Program not found with safe return',
         (tester) async {
-      final router = await pumpPlayer(tester, programId: 'nope', sessionId: _s1);
+      final router =
+          await pumpPlayer(tester, programId: 'nope', sessionId: _s1);
       expect(find.text('Program not found'), findsWidgets);
       expect(find.byType(WorkoutPlayerSessionView), findsNothing);
       await tester.tap(find.text('Back to programs'));
@@ -499,9 +536,11 @@ void main() {
           AppRoutes.programs);
     });
 
-    testWidgets('unknown session shows Program workout not found with safe return',
+    testWidgets(
+        'unknown session shows Program workout not found with safe return',
         (tester) async {
-      final router = await pumpPlayer(tester, sessionId: 'balanced_foundations_w9_s9');
+      final router =
+          await pumpPlayer(tester, sessionId: 'balanced_foundations_w9_s9');
       expect(find.text('Program workout not found'), findsOneWidget);
       expect(find.byType(WorkoutPlayerSessionView), findsNothing);
       await tester.tap(find.text('Back to program'));
@@ -513,7 +552,8 @@ void main() {
   });
 
   group('M12 independence', () {
-    testWidgets('Home Low Energy before program: Player standard; Done keeps Home mode',
+    testWidgets(
+        'Home Low Energy before program: Player standard; Done keeps Home mode',
         (tester) async {
       final router = await pumpPlayer(tester);
       final el = tester.element(find.byType(ProgramSessionPlayerScreen));
@@ -527,28 +567,34 @@ void main() {
       expect(find.byType(ProgramSessionPreviewScreen), findsOneWidget);
       router.go(AppRoutes.programSessionPlayer(_program, _s1));
       await tester.pumpAndSettle();
-      expect(programPlayerView(tester).sessionMode, WorkoutSessionMode.standard);
+      expect(
+          programPlayerView(tester).sessionMode, WorkoutSessionMode.standard);
       expect(find.textContaining('Low energy'), findsNothing);
 
-      await driveProgramPlayerToCompletion(tester, programPlayerController(tester));
+      await driveProgramPlayerToCompletion(
+          tester, programPlayerController(tester));
       expect(find.text('Tune next workout'), findsOneWidget);
       expect(find.textContaining('temporary'), findsNothing);
       await tester.ensureVisible(find.text('Done'));
       await tester.tap(find.text('Done'));
       await tester.pumpAndSettle();
-      expect(container.read(workoutSessionModeProvider), WorkoutSessionMode.lowEnergy);
+      expect(container.read(workoutSessionModeProvider),
+          WorkoutSessionMode.lowEnergy);
       expect(find.byType(ProgramDetailScreen), findsOneWidget);
       // Later: Home mode still retained.
       await tester.pump(const Duration(seconds: 1));
-      expect(container.read(workoutSessionModeProvider), WorkoutSessionMode.lowEnergy);
+      expect(container.read(workoutSessionModeProvider),
+          WorkoutSessionMode.lowEnergy);
     });
   });
 
   group('M14 analytics', () {
-    testWidgets('TrainingAnalyticsEngine accepts program-completed history normally',
+    testWidgets(
+        'TrainingAnalyticsEngine accepts program-completed history normally',
         (tester) async {
       await pumpPlayer(tester);
-      await driveProgramPlayerToCompletion(tester, programPlayerController(tester));
+      await driveProgramPlayerToCompletion(
+          tester, programPlayerController(tester));
       final saved = await history();
       expect(saved, hasLength(1));
       final analytics = TrainingAnalyticsEngine.calculate(
@@ -560,12 +606,14 @@ void main() {
   });
 
   group('Full flow', () {
-    testWidgets('Start program → W1 S1 → preview → Player → complete → progress 1/12 → Done → detail',
+    testWidgets(
+        'Start program → W1 S1 → preview → Player → complete → progress 1/12 → Done → detail',
         (tester) async {
-      final router = programTestRouter(
-          initialLocation: AppRoutes.programDetail(_program));
+      final router =
+          programTestRouter(initialLocation: AppRoutes.programDetail(_program));
       addTearDown(router.dispose);
-      await tester.pumpWidget(programTestApp(router: router, overrides: overrides()));
+      await tester
+          .pumpWidget(programTestApp(router: router, overrides: overrides()));
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Start program'));
@@ -582,9 +630,11 @@ void main() {
       await tester.tap(find.text('Start workout'));
       await tester.pumpAndSettle();
       expect(find.byType(WorkoutPlayerSessionView), findsOneWidget);
-      expect(programPlayerView(tester).sessionOrigin, WorkoutSessionOrigin.program);
+      expect(programPlayerView(tester).sessionOrigin,
+          WorkoutSessionOrigin.program);
 
-      await driveProgramPlayerToCompletion(tester, programPlayerController(tester));
+      await driveProgramPlayerToCompletion(
+          tester, programPlayerController(tester));
       expect(find.text('Workout complete'), findsOneWidget);
       expect(await history(), hasLength(1));
 
@@ -598,9 +648,12 @@ void main() {
             of: find.text(label).first,
             matching: find.byType(ProgramSessionRow),
           );
-      expect(find.descendant(of: rowOf('Session 1'), matching: find.text('Completed')),
+      expect(
+          find.descendant(
+              of: rowOf('Session 1'), matching: find.text('Completed')),
           findsOneWidget);
-      expect(find.descendant(of: rowOf('Session 2'), matching: find.text('Next')),
+      expect(
+          find.descendant(of: rowOf('Session 2'), matching: find.text('Next')),
           findsOneWidget);
       expect(await history(), hasLength(1));
 
