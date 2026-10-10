@@ -136,12 +136,12 @@ void main() {
     await tester.pump();
 
     final node = tester.getSemantics(find.bySemanticsLabel(RegExp('Chair')));
-    expect(node.label, contains('Chair'));
-    expect(node.label, contains('Selected'));
+    expect(node.getSemanticsData().label, contains('Chair'));
+    expect(node.getSemanticsData().label, contains('Selected'));
     expect(_button(node), isTrue);
     expect(_selected(node), isTrue);
     expect(_exclusive(node), isFalse);
-    expect(find.byIcon(Icons.check_box), findsWidgets);
+    expect(tester.widget<CheckboxListTile>(find.widgetWithText(CheckboxListTile, 'Chair')).value, isTrue);
     } finally {
       handle.dispose();
     }

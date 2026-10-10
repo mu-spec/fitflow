@@ -1,4 +1,7 @@
-import 'package:fitflow/app/config/app_dimensions.dart';
+import 'package:fitflow/core/design/fitflow_spacing.dart';
+import 'package:fitflow/core/design/fitflow_theme_extension.dart';
+import 'package:fitflow/l10n/enum_labels.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/features/workouts/domain/movement_pattern.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_plan.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +19,10 @@ class HomeMovementFocus extends StatelessWidget {
       final pattern = pres.exercise.movementPattern;
       if (pattern == null) continue;
       // Only trainable patterns are expected in main, but include any
-      if (pattern == MovementPattern.warmup || pattern == MovementPattern.cooldown) continue;
+      if (pattern == MovementPattern.warmup ||
+          pattern == MovementPattern.cooldown) {
+        continue;
+      }
       if (!seen.contains(pattern)) {
         seen.add(pattern);
         ordered.add(pattern);
@@ -28,55 +34,22 @@ class HomeMovementFocus extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final patterns = _uniqueMainPatterns();
-    if (patterns.isEmpty) {
-      return const SizedBox.shrink();
-    }
-
-    final displayPatterns = patterns.take(5).toList();
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Card(
-      elevation: 0,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.center_focus_strong_outlined, size: 18, color: colorScheme.primary),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    "Today's focus",
-                    style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: displayPatterns.map((pattern) {
-                return Chip(
-                  label: Text(pattern.label),
-                  backgroundColor: colorScheme.secondaryContainer,
-                  labelStyle: theme.textTheme.labelMedium?.copyWith(
-                    color: colorScheme.onSecondaryContainer,
-                  ),
-                  side: BorderSide.none,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
-                  ),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                );
-              }).toList(),
-            ),
-          ],
-        ),
-      ),
-    );
+    if (patterns.isEmpty) return const SizedBox.shrink();
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Semantics(
+          header: true,
+          child: Text(context.l10n.homeFocus,
+              style: Theme.of(context).textTheme.titleSmall)),
+      const SizedBox(height: FitFlowSpace.xs),
+      Text(
+          patterns
+              .take(5)
+              .map((p) => movementPatternLabel(context.l10n, p))
+              .join(' · '),
+          style: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(color: FitFlowTheme.of(context).textSecondary)),
+    ]);
   }
 }

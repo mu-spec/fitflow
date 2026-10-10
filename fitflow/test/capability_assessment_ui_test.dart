@@ -128,15 +128,15 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
 
       // Verify via summary that changed movements show new levels
-      await scrollToKey(tester, const Key('save_and_continue_button'));
-      // Summary should contain Push L2, Squat L4, Core L1, Pull L3
-      expect(find.textContaining('Push L2'), findsOneWidget);
-      expect(find.textContaining('Squat L4'), findsOneWidget);
-      expect(find.textContaining('Core L1'), findsOneWidget);
-      expect(find.textContaining('Pull L3'), findsOneWidget);
-      expect(find.textContaining('Lunge L3'), findsOneWidget);
+      await scrollToKey(tester, const Key('assessment_summary'));
+      // Summary should contain Push · Basic, Squat · Strong, Core · Just starting, Pull · Solid
+      expect(find.textContaining('Push · Basic'), findsOneWidget);
+      expect(find.textContaining('Squat · Strong'), findsOneWidget);
+      expect(find.textContaining('Core · Just starting'), findsOneWidget);
+      expect(find.textContaining('Pull · Solid'), findsOneWidget);
+      expect(find.textContaining('Lunge · Solid'), findsOneWidget);
       // Verify Level 3 still appears (for unchanged movements)
-      expect(find.text('Level 3'), findsWidgets);
+      expect(find.textContaining('· Solid'), findsWidgets);
     });
   });
 

@@ -8,7 +8,7 @@ import 'package:fitflow/features/onboarding/presentation/experience_step_content
 import 'package:fitflow/features/onboarding/presentation/goal_step_content.dart';
 import 'package:fitflow/features/onboarding/presentation/onboarding_shell.dart';
 import 'package:fitflow/features/onboarding/presentation/preferences_step_content.dart';
-import 'package:fitflow/features/onboarding/presentation/widgets/onboarding_placeholder.dart';
+import 'package:fitflow/features/onboarding/presentation/widgets/onboarding_intro.dart';
 import 'package:fitflow/features/onboarding/presentation/workout_time_step_content.dart';
 import 'package:fitflow/features/onboarding/state/onboarding_controller.dart';
 import 'package:fitflow/features/onboarding/state/user_fitness_profile_controller.dart';
@@ -26,6 +26,8 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   int _index = 0;
+  bool _saving = false;
+  String? _saveError;
 
   bool get _isLastPage => _index == OnboardingPages.all.length - 1;
 
@@ -53,13 +55,27 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       return;
     }
 
-    final saved = await ref
-        .read(userFitnessProfileProvider.notifier)
-        .saveProfile(profile);
-    if (!mounted || !saved) {
+    if (_saving) return;
+    setState(() {
+      _saving = true;
+      _saveError = null;
+    });
+    bool saved;
+    try {
+      saved = await ref
+          .read(userFitnessProfileProvider.notifier)
+          .saveProfile(profile);
+    } on Object {
+      saved = false;
+    }
+    if (!mounted) return;
+    if (!saved) {
+      setState(() {
+        _saving = false;
+        _saveError = context.l10n.onboardingSaveError;
+      });
       return;
     }
-
     context.go(AppRoutes.capabilityAssessment);
   }
 
@@ -75,15 +91,16 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 
   Widget _buildContent(OnboardingPage page) {
-    final body = page.body;
+    final body = onboardingBody(context.l10n, page.id);
     return switch (page.id) {
+      'welcome' => const OnboardingIntro(),
       'goal' => const GoalStepContent(),
       'experience' => const ExperienceStepContent(),
       'workout_time' => const WorkoutTimeStepContent(),
       'environment' => const EnvironmentStepContent(),
       'equipment' => const EquipmentStepContent(),
       'preferences' => const PreferencesStepContent(),
-      _ => body != null ? Text(body) : const OnboardingPlaceholder(),
+      _ => Text(body ?? ''),
     };
   }
 
@@ -98,9 +115,27 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       totalSteps: pages.length,
       title: onboardingTitle(context.l10n, page.id),
       content: _buildContent(page),
+      description: switch (page.id) {
+        'welcome' => context.l10n.onboardingWelcomeBody,
+        'goal' => context.l10n.onboardingGoalHelp,
+        'experience' => context.l10n.onboardingExperienceHelp,
+        'workout_time' => context.l10n.onboardingTimeHelp,
+        'environment' => context.l10n.onboardingEnvironmentHelp,
+        'equipment' => context.l10n.onboardingEquipmentHelp,
+        'preferences' => context.l10n.onboardingPreferencesHelp,
+        'ready' => context.l10n.onboardingReadyHelp,
+        _ => null,
+      },
+      instruction: {'goal', 'experience', 'workout_time', 'environment'}
+              .contains(page.id)
+          ? context.l10n.onboardingSingleChoice
+          : null,
+      saving: _saving,
+      error: _saveError,
       canGoBack: _index > 0,
       canContinue: _canContinue(state),
-      trailingLabel: _isLastPage ? context.l10n.getStarted : context.l10n.continueLabel,
+      trailingLabel:
+          _isLastPage ? context.l10n.getStarted : context.l10n.continueLabel,
       onBack: _showPreviousPage,
       onContinue: _showNextPage,
     );

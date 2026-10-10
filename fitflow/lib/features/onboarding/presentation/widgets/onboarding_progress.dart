@@ -1,33 +1,32 @@
+import 'package:fitflow/core/accessibility/system_motion.dart';
+import 'package:fitflow/core/design/fitflow_motion.dart';
+import 'package:fitflow/core/design/fitflow_spacing.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:flutter/material.dart';
 
-/// Compact "x of y" label with a determinate progress bar.
 class OnboardingProgress extends StatelessWidget {
-  const OnboardingProgress({
-    super.key,
-    required this.step,
-    required this.totalSteps,
-  });
-
-  final int step;
-  final int totalSteps;
+  const OnboardingProgress(
+      {super.key, required this.step, required this.totalSteps});
+  final int step, totalSteps;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Column(
-      children: [
-        Text(
-          '$step of $totalSteps',
-          style: theme.textTheme.labelLarge
-              ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+    final label = context.l10n.onboardingProgress(step, totalSteps);
+    return Semantics(
+      label: label,
+      liveRegion: true,
+      excludeSemantics: true,
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(label, style: Theme.of(context).textTheme.labelMedium),
+        const SizedBox(height: FitFlowSpace.xs),
+        TweenAnimationBuilder<double>(
+          tween: Tween(end: step / totalSteps),
+          duration: SystemMotion.standard(context),
+          curve: FitFlowMotion.standardCurve,
+          builder: (context, value, _) =>
+              LinearProgressIndicator(value: value, minHeight: 4),
         ),
-        const SizedBox(height: 8),
-        LinearProgressIndicator(
-          value: step / totalSteps,
-          minHeight: 6,
-        ),
-      ],
+      ]),
     );
   }
 }

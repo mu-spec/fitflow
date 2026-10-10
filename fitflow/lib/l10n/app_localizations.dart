@@ -241,7 +241,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingReadyBody.
   ///
   /// In en, this message translates to:
-  /// **'Next, FitFlow will use your preferences to build workouts around you.'**
+  /// **'One last check: choose the exercise variations that feel right for you.'**
   String get onboardingReadyBody;
 
   /// No description provided for @goalGeneralFitness.
@@ -1113,6 +1113,744 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Level {level}'**
   String difficultyLevel(String level);
+
+  /// No description provided for @onboardingIntroEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'YOUR PERSONAL STARTING POINT'**
+  String get onboardingIntroEyebrow;
+
+  /// No description provided for @onboardingIntroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Training that fits your life.'**
+  String get onboardingIntroTitle;
+
+  /// No description provided for @onboardingIntroLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Your starting point'**
+  String get onboardingIntroLevel;
+
+  /// No description provided for @onboardingIntroLevelBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise variations matched to your movement ability.'**
+  String get onboardingIntroLevelBody;
+
+  /// No description provided for @onboardingIntroTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Your time, your space'**
+  String get onboardingIntroTime;
+
+  /// No description provided for @onboardingIntroTimeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Sessions shaped around the time and equipment you have.'**
+  String get onboardingIntroTimeBody;
+
+  /// No description provided for @onboardingIntroSimple.
+  ///
+  /// In en, this message translates to:
+  /// **'A few choices. A plan for you.'**
+  String get onboardingIntroSimple;
+
+  /// No description provided for @onboardingSingleChoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose one option to continue.'**
+  String get onboardingSingleChoice;
+
+  /// No description provided for @onboardingGoalHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Your goal helps shape the exercises in your sessions.'**
+  String get onboardingGoalHelp;
+
+  /// No description provided for @onboardingExperienceHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'This gives us a starting point. You can fine-tune each movement next.'**
+  String get onboardingExperienceHelp;
+
+  /// No description provided for @onboardingTimeHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your usual session length. You can go lighter when you need to.'**
+  String get onboardingTimeHelp;
+
+  /// No description provided for @onboardingEnvironmentHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'We’ll choose exercises that work in your training space.'**
+  String get onboardingEnvironmentHelp;
+
+  /// No description provided for @onboardingEquipmentHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Select all that you have. Choose None to train without equipment.'**
+  String get onboardingEquipmentHelp;
+
+  /// No description provided for @onboardingPreferencesHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Select any that suit you, or continue without a selection.'**
+  String get onboardingPreferencesHelp;
+
+  /// No description provided for @onboardingPreferencesNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences guide exercise selection; they are not medical advice.'**
+  String get onboardingPreferencesNote;
+
+  /// No description provided for @onboardingReadyHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Movement Check comes next. Your answers help us choose appropriate exercise variations.'**
+  String get onboardingReadyHelp;
+
+  /// No description provided for @onboardingSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t save your setup. Please try again.'**
+  String get onboardingSaveError;
+
+  /// No description provided for @onboardingSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving your setup…'**
+  String get onboardingSaving;
+
+  /// No description provided for @choiceSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected'**
+  String get choiceSelected;
+
+  /// No description provided for @choiceNotSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Not selected'**
+  String get choiceNotSelected;
+
+  /// No description provided for @assessmentIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Find your starting point'**
+  String get assessmentIntro;
+
+  /// No description provided for @assessmentBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Different movements can feel different. Review these suggestions to help FitFlow choose exercise variations that suit you.'**
+  String get assessmentBody;
+
+  /// No description provided for @assessmentSuggested.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested from your experience'**
+  String get assessmentSuggested;
+
+  /// No description provided for @assessmentChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Changed'**
+  String get assessmentChanged;
+
+  /// No description provided for @assessmentChoose.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose what feels right'**
+  String get assessmentChoose;
+
+  /// No description provided for @assessmentSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Your starting points'**
+  String get assessmentSummary;
+
+  /// No description provided for @assessmentSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save & Continue'**
+  String get assessmentSave;
+
+  /// No description provided for @assessmentSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving your movement profile…'**
+  String get assessmentSaving;
+
+  /// No description provided for @assessmentSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Your starting points are ready'**
+  String get assessmentSuccess;
+
+  /// No description provided for @assessmentLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading your profile…'**
+  String get assessmentLoading;
+
+  /// No description provided for @assessmentMissingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not find your fitness profile.'**
+  String get assessmentMissingTitle;
+
+  /// No description provided for @assessmentMissingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Please complete onboarding first.'**
+  String get assessmentMissingBody;
+
+  /// No description provided for @assessmentOnboarding.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to Onboarding'**
+  String get assessmentOnboarding;
+
+  /// No description provided for @assessmentInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Please review your movement choices and try again.'**
+  String get assessmentInvalid;
+
+  /// No description provided for @assessmentSaveError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save your movement profile. Please try again.'**
+  String get assessmentSaveError;
+
+  /// No description provided for @homeBrand.
+  ///
+  /// In en, this message translates to:
+  /// **'FITFLOW'**
+  String get homeBrand;
+
+  /// No description provided for @homeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your adaptive workout'**
+  String get homeTitle;
+
+  /// No description provided for @homeToday.
+  ///
+  /// In en, this message translates to:
+  /// **'TODAY’S WORKOUT'**
+  String get homeToday;
+
+  /// No description provided for @homeSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Adaptive Full Session'**
+  String get homeSession;
+
+  /// No description provided for @homeAdaptation.
+  ///
+  /// In en, this message translates to:
+  /// **'Built around your goal, space, equipment, and current ability.'**
+  String get homeAdaptation;
+
+  /// No description provided for @homeBuiltForYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Built for you'**
+  String get homeBuiltForYou;
+
+  /// No description provided for @homeSetupHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your setup and workout preferences'**
+  String get homeSetupHint;
+
+  /// No description provided for @homeAdaptationDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'FitFlow chose exercises that match your movement capabilities and current workout preferences.'**
+  String get homeAdaptationDetail;
+
+  /// No description provided for @homeFocus.
+  ///
+  /// In en, this message translates to:
+  /// **'Today’s focus'**
+  String get homeFocus;
+
+  /// No description provided for @homeTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'Target time'**
+  String get homeTarget;
+
+  /// No description provided for @homeExerciseLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercises'**
+  String get homeExerciseLabel;
+
+  /// No description provided for @homePlannedUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned time unavailable'**
+  String get homePlannedUnknown;
+
+  /// No description provided for @homePlannedShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Less than 1 min planned'**
+  String get homePlannedShort;
+
+  /// No description provided for @homeWarmup.
+  ///
+  /// In en, this message translates to:
+  /// **'Warm-up'**
+  String get homeWarmup;
+
+  /// No description provided for @homeMain.
+  ///
+  /// In en, this message translates to:
+  /// **'Main'**
+  String get homeMain;
+
+  /// No description provided for @homeCooldown.
+  ///
+  /// In en, this message translates to:
+  /// **'Cooldown'**
+  String get homeCooldown;
+
+  /// No description provided for @homeMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout mode'**
+  String get homeMode;
+
+  /// No description provided for @homeAdjust.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust'**
+  String get homeAdjust;
+
+  /// No description provided for @homeChooseMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose today\'s workout'**
+  String get homeChooseMode;
+
+  /// No description provided for @homeTemporary.
+  ///
+  /// In en, this message translates to:
+  /// **'Temporary for this workout'**
+  String get homeTemporary;
+
+  /// No description provided for @homeComebackSuggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Returning after some time away? Comeback gives you a shorter, gentler session without changing your movement levels.'**
+  String get homeComebackSuggestion;
+
+  /// No description provided for @homeUseComeback.
+  ///
+  /// In en, this message translates to:
+  /// **'Use Comeback'**
+  String get homeUseComeback;
+
+  /// No description provided for @homeBrowse.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse exercises'**
+  String get homeBrowse;
+
+  /// No description provided for @homeBrowseHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore the full exercise library'**
+  String get homeBrowseHelp;
+
+  /// No description provided for @homeGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal'**
+  String get homeGoal;
+
+  /// No description provided for @homeUsualTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Usual time'**
+  String get homeUsualTime;
+
+  /// No description provided for @homeEnvironment.
+  ///
+  /// In en, this message translates to:
+  /// **'Environment'**
+  String get homeEnvironment;
+
+  /// No description provided for @homeEquipment.
+  ///
+  /// In en, this message translates to:
+  /// **'Equipment'**
+  String get homeEquipment;
+
+  /// No description provided for @homePreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences'**
+  String get homePreferences;
+
+  /// No description provided for @homeNoPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'No special restrictions'**
+  String get homeNoPreferences;
+
+  /// No description provided for @homeLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading your adaptive workout...'**
+  String get homeLoading;
+
+  /// No description provided for @homeErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load your workout profile.'**
+  String get homeErrorTitle;
+
+  /// No description provided for @homeErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your saved data hasn’t been changed. Try loading it again.'**
+  String get homeErrorBody;
+
+  /// No description provided for @homeMissingProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Your fitness profile is incomplete.'**
+  String get homeMissingProfile;
+
+  /// No description provided for @homeMissingProfileBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete your profile to generate your adaptive workout.'**
+  String get homeMissingProfileBody;
+
+  /// No description provided for @homeCompleteProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete profile'**
+  String get homeCompleteProfile;
+
+  /// No description provided for @homeMissingAssessment.
+  ///
+  /// In en, this message translates to:
+  /// **'Your movement assessment is incomplete.'**
+  String get homeMissingAssessment;
+
+  /// No description provided for @homeMissingAssessmentBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete the movement check to tailor workouts to your current ability.'**
+  String get homeMissingAssessmentBody;
+
+  /// No description provided for @homeStartAssessment.
+  ///
+  /// In en, this message translates to:
+  /// **'Start assessment'**
+  String get homeStartAssessment;
+
+  /// No description provided for @homeNoPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'No complete workout available'**
+  String get homeNoPlan;
+
+  /// No description provided for @homeNoPlanBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your current environment, equipment, or workout preferences leave too few compatible exercises for a complete session.'**
+  String get homeNoPlanBody;
+
+  /// No description provided for @homeReviewProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your profile'**
+  String get homeReviewProfile;
+
+  /// No description provided for @onboardingProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{step} of {total}'**
+  String onboardingProgress(int step, int total);
+
+  /// No description provided for @assessmentProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of {total} movements ready'**
+  String assessmentProgress(int count, int total);
+
+  /// No description provided for @assessmentSummaryItem.
+  ///
+  /// In en, this message translates to:
+  /// **'{movement} · {choice}'**
+  String assessmentSummaryItem(String movement, String choice);
+
+  /// No description provided for @homeDurationTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min target'**
+  String homeDurationTarget(int minutes);
+
+  /// No description provided for @homePlanned.
+  ///
+  /// In en, this message translates to:
+  /// **'~{minutes} min planned'**
+  String homePlanned(int minutes);
+
+  /// No description provided for @homeExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 exercise} other{{count} exercises}}'**
+  String homeExercises(int count);
+
+  /// No description provided for @assessmentPushTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pushing strength'**
+  String get assessmentPushTitle;
+
+  /// No description provided for @assessmentPushPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'How comfortable are you with pushing exercises such as push-ups?'**
+  String get assessmentPushPrompt;
+
+  /// No description provided for @assessmentPushExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'Wall Push-Up · Knee Push-Up · Standard Push-Up'**
+  String get assessmentPushExamples;
+
+  /// No description provided for @assessmentPullTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pulling strength'**
+  String get assessmentPullTitle;
+
+  /// No description provided for @assessmentPullPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'How comfortable are you with pulling and upper-back exercises?'**
+  String get assessmentPullPrompt;
+
+  /// No description provided for @assessmentPullExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'Towel Row · Doorway Row · Reverse Snow Angel'**
+  String get assessmentPullExamples;
+
+  /// No description provided for @assessmentSquatTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Squat strength'**
+  String get assessmentSquatTitle;
+
+  /// No description provided for @assessmentSquatPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'How comfortable are you with squat-based lower-body exercises?'**
+  String get assessmentSquatPrompt;
+
+  /// No description provided for @assessmentSquatExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'Chair Sit-to-Stand · Bodyweight Squat · Tempo Squat'**
+  String get assessmentSquatExamples;
+
+  /// No description provided for @assessmentLungeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Lunge strength'**
+  String get assessmentLungeTitle;
+
+  /// No description provided for @assessmentLungePrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'How comfortable are you with split-stance and lunge movements?'**
+  String get assessmentLungePrompt;
+
+  /// No description provided for @assessmentLungeExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'Static Split Squat · Reverse Lunge · Bulgarian Split Squat'**
+  String get assessmentLungeExamples;
+
+  /// No description provided for @assessmentHingeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hinge strength'**
+  String get assessmentHingeTitle;
+
+  /// No description provided for @assessmentHingePrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'How comfortable are you with hip-hinge movements?'**
+  String get assessmentHingePrompt;
+
+  /// No description provided for @assessmentHingeExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'Hip Hinge · Good Morning · Single-Leg Hip Hinge'**
+  String get assessmentHingeExamples;
+
+  /// No description provided for @assessmentCoreTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Core stability'**
+  String get assessmentCoreTitle;
+
+  /// No description provided for @assessmentCorePrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'How comfortable are you with core stability exercises?'**
+  String get assessmentCorePrompt;
+
+  /// No description provided for @assessmentCoreExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'Dead Bug · Knee Plank · Forearm Plank'**
+  String get assessmentCoreExamples;
+
+  /// No description provided for @assessmentGluteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Glute strength'**
+  String get assessmentGluteTitle;
+
+  /// No description provided for @assessmentGlutePrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'How comfortable are you with glute-focused movements?'**
+  String get assessmentGlutePrompt;
+
+  /// No description provided for @assessmentGluteExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'Glute Bridge · Glute Bridge March · Single-Leg Glute Bridge'**
+  String get assessmentGluteExamples;
+
+  /// No description provided for @assessmentCardioTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cardio endurance'**
+  String get assessmentCardioTitle;
+
+  /// No description provided for @assessmentCardioPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'How comfortable are you with sustained home cardio movements?'**
+  String get assessmentCardioPrompt;
+
+  /// No description provided for @assessmentCardioExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'March in Place · Step Jack · High Knees'**
+  String get assessmentCardioExamples;
+
+  /// No description provided for @assessmentMobilityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobility'**
+  String get assessmentMobilityTitle;
+
+  /// No description provided for @assessmentMobilityPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'How comfortable are you moving through controlled mobility exercises?'**
+  String get assessmentMobilityPrompt;
+
+  /// No description provided for @assessmentMobilityExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'Cat-Cow · Hip Flexor Stretch · World\'s Greatest Stretch'**
+  String get assessmentMobilityExamples;
+
+  /// No description provided for @assessmentBalanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance'**
+  String get assessmentBalanceTitle;
+
+  /// No description provided for @assessmentBalancePrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'How comfortable are you maintaining control in balance-focused movements?'**
+  String get assessmentBalancePrompt;
+
+  /// No description provided for @assessmentBalanceExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'Single-Leg Stand · Standing Knee Raise · Single-Leg Hip Hinge'**
+  String get assessmentBalanceExamples;
+
+  /// No description provided for @assessmentChoice1.
+  ///
+  /// In en, this message translates to:
+  /// **'Just starting'**
+  String get assessmentChoice1;
+
+  /// No description provided for @assessmentChoice1Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Little or no experience with this movement, or only comfortable with very easy versions.'**
+  String get assessmentChoice1Body;
+
+  /// No description provided for @assessmentChoice2.
+  ///
+  /// In en, this message translates to:
+  /// **'Basic'**
+  String get assessmentChoice2;
+
+  /// No description provided for @assessmentChoice2Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Comfortable with easier versions and learning consistent form.'**
+  String get assessmentChoice2Body;
+
+  /// No description provided for @assessmentChoice3.
+  ///
+  /// In en, this message translates to:
+  /// **'Solid'**
+  String get assessmentChoice3;
+
+  /// No description provided for @assessmentChoice3Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Comfortable with standard versions of the movement with reasonable control.'**
+  String get assessmentChoice3Body;
+
+  /// No description provided for @assessmentChoice4.
+  ///
+  /// In en, this message translates to:
+  /// **'Strong'**
+  String get assessmentChoice4;
+
+  /// No description provided for @assessmentChoice4Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Comfortable with challenging variations and higher training demand.'**
+  String get assessmentChoice4Body;
+
+  /// No description provided for @assessmentChoice5.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced'**
+  String get assessmentChoice5;
+
+  /// No description provided for @assessmentChoice5Body.
+  ///
+  /// In en, this message translates to:
+  /// **'Comfortable with advanced variations and strong movement control.'**
+  String get assessmentChoice5Body;
 }
 
 class _AppLocalizationsDelegate

@@ -135,7 +135,7 @@ void main() {
       ];
       await tester.pumpWidget(buildHome(overrides: overrides));
       await tester.pumpAndSettle();
-      expect(find.text("Today's workout"), findsWidgets);
+      expect(find.text('Workout mode'), findsWidgets);
       expect(find.text('Adjust'), findsOneWidget);
     });
 
@@ -153,10 +153,10 @@ void main() {
       expect(find.text('Standard'), findsWidgets);
       expect(find.text('Low Energy'), findsWidgets);
       expect(find.text('Comeback'), findsWidgets);
-      expect(find.text('Your normal adaptive workout'), findsOneWidget);
-      expect(find.text('A shorter, easier workout for today'), findsOneWidget);
-      expect(find.text('A gentler return workout after time away'), findsOneWidget);
-      expect(find.text("This doesn't change your movement levels"), findsWidgets);
+      expect(find.text('Your normal adaptive workout.'), findsOneWidget);
+      expect(find.text('A shorter, easier workout for today.'), findsOneWidget);
+      expect(find.text('A gentler return workout after time away.'), findsOneWidget);
+      expect(find.text("This doesn't change your movement levels."), findsWidgets);
     });
 
     testWidgets('selecting Low Energy updates mode indicator', (tester) async {

@@ -35,8 +35,10 @@ void main() {
         find.widgetWithText(FilledButton, 'Continue'),
       );
 
-  int selectedBoxCount(WidgetTester tester) =>
-      find.byIcon(Icons.check_box).evaluate().length;
+  int selectedBoxCount(WidgetTester tester) => tester
+      .widgetList<CheckboxListTile>(find.byType(CheckboxListTile))
+      .where((tile) => tile.value == true)
+      .length;
 
   group('Equipment step', () {
     testWidgets('Continue disabled with no selection', (tester) async {
@@ -124,8 +126,7 @@ void main() {
       expect(find.text("Let's customize your workouts"), findsOneWidget);
       expect(
         find.text(
-          'These preferences help FitFlow adapt workouts and are not '
-          'medical advice.',
+          'Preferences guide exercise selection; they are not medical advice.',
         ),
         findsOneWidget,
       );

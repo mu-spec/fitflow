@@ -1,179 +1,91 @@
-import 'package:fitflow/app/config/app_dimensions.dart';
+import 'package:fitflow/app/router/app_routes.dart';
+import 'package:fitflow/core/design/fitflow_spacing.dart';
+import 'package:fitflow/core/design/fitflow_theme_extension.dart';
+import 'package:fitflow/core/design/widgets/fitflow_buttons.dart';
+import 'package:fitflow/core/design/widgets/fitflow_surfaces.dart';
+import 'package:fitflow/features/home/presentation/widgets/home_session_mode_widgets.dart';
 import 'package:fitflow/features/onboarding/data/user_fitness_profile.dart';
 import 'package:fitflow/features/onboarding/data/workout_duration.dart';
 import 'package:fitflow/features/workouts/domain/session/workout_session_mode.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_plan.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
-/// Hero card showing today's generated workout summary.
-/// M12: shows effective duration target and mode indicator.
+/// A single action-led anchor. All numbers come from the current generated plan.
 class HomeWorkoutHeroCard extends StatelessWidget {
-  const HomeWorkoutHeroCard({
-    super.key,
-    required this.plan,
-    required this.userProfile,
-    this.effectiveDuration,
-    this.sessionMode = WorkoutSessionMode.standard,
-  });
-
+  const HomeWorkoutHeroCard(
+      {super.key,
+      required this.plan,
+      required this.userProfile,
+      this.effectiveDuration,
+      this.sessionMode = WorkoutSessionMode.standard});
   final WorkoutPlan plan;
   final UserFitnessProfile userProfile;
   final WorkoutDuration? effectiveDuration;
   final WorkoutSessionMode sessionMode;
 
-  String _formatDuration(Duration? duration) {
-    if (duration == null) return '—';
-    final totalSeconds = duration.inSeconds;
-    if (totalSeconds < 60) {
-      return '< 1 min';
-    }
-    final minutes = (totalSeconds / 60).ceil();
-    return '$minutes min';
-  }
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    final targetMinutes = (effectiveDuration ?? userProfile.workoutDuration).minutes;
+    final l10n = context.l10n;
+    final colors = FitFlowTheme.of(context);
+    final text = Theme.of(context).textTheme;
+    final minutes = (effectiveDuration ?? userProfile.workoutDuration).minutes;
     final estimated = plan.estimatedDuration;
-    final estimatedFormatted = _formatDuration(estimated);
-    final targetFormatted = '$targetMinutes min';
-
-    final isTemporary = sessionMode != WorkoutSessionMode.standard;
-
-    return Card(
-      elevation: 0,
-      color: colorScheme.primaryContainer,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppDimens.cardRadius),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                ExcludeSemantics(
-                  child: Icon(Icons.today_outlined, size: 18, color: colorScheme.onPrimaryContainer),
-                ),
-                const SizedBox(width: 8),
-                Flexible(
-                  child: Text(
-                  "TODAY'S WORKOUT",
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    letterSpacing: 1.0,
-                    fontWeight: FontWeight.w600,
-                    color: colorScheme.onPrimaryContainer,
-                  ),
-                ),
-                ),
-                if (isTemporary)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: colorScheme.surface.withValues(alpha: 0.9),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      sessionMode.label,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: colorScheme.primary,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Adaptive Full Session',
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: colorScheme.onPrimaryContainer,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '$targetFormatted target • ~$estimatedFormatted planned',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onPrimaryContainer,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              '${plan.totalExerciseCount} exercises • ${userProfile.goal.label}',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colorScheme.onPrimaryContainer,
-              ),
-            ),
-            if (isTemporary) ...[
-              const SizedBox(height: 8),
-              Text(
-                'Temporary for this workout',
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: colorScheme.onPrimaryContainer,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ],
-            const SizedBox(height: 16),
-            Container(
-              decoration: BoxDecoration(
-                color: colorScheme.surface.withValues(alpha: 0.9),
-                borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
-              ),
-              padding: const EdgeInsets.all(12),
-              child: Row(
-                children: [
-                  _buildSectionCount(context, 'Warm-up', plan.warmup.exerciseCount, Icons.self_improvement_outlined),
-                  const SizedBox(width: 8),
-                  _buildDivider(context),
-                  const SizedBox(width: 8),
-                  _buildSectionCount(context, 'Main', plan.main.exerciseCount, Icons.fitness_center_outlined),
-                  const SizedBox(width: 8),
-                  _buildDivider(context),
-                  const SizedBox(width: 8),
-                  _buildSectionCount(context, 'Cooldown', plan.cooldown.exerciseCount, Icons.spa_outlined),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDivider(BuildContext context) {
-    return Container(
-      width: 1,
-      height: 36,
-      color: Theme.of(context).colorScheme.outlineVariant,
-    );
-  }
-
-  Widget _buildSectionCount(BuildContext context, String label, int count, IconData icon) {
-    final theme = Theme.of(context);
-    return Expanded(
-      child: Column(
-        children: [
-          Icon(icon, size: 20, color: theme.colorScheme.primary),
-          const SizedBox(height: 4),
-          Text(
-            '$count',
-            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-          ),
-          Text(
-            label,
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
+    final planned = estimated == null
+        ? l10n.homePlannedUnknown
+        : estimated.inSeconds < 60
+            ? l10n.homePlannedShort
+            : l10n.homePlanned((estimated.inSeconds / 60).ceil());
+    Widget count(String label, int count) => Semantics(
+          label: '$label: $count',
+          excludeSemantics: true,
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
+            Text('$count', style: text.titleSmall),
+            const SizedBox(width: FitFlowSpace.xxs),
+            Text(label, style: text.bodySmall),
+          ]),
+        );
+    return FitFlowSurface(
+      padding: const EdgeInsets.all(FitFlowSpace.lg),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Text(l10n.homeToday,
+            style: text.labelSmall?.copyWith(color: colors.brand)),
+        const SizedBox(height: FitFlowSpace.xs),
+        Text(l10n.homeSession, style: text.titleLarge),
+        const SizedBox(height: FitFlowSpace.md),
+        Text(l10n.homeDurationTarget(minutes),
+            key: const Key('home_target'),
+            style: text.headlineMedium?.copyWith(color: colors.brand)),
+        const SizedBox(height: FitFlowSpace.xxs),
+        Wrap(spacing: FitFlowSpace.sm, runSpacing: FitFlowSpace.xxs, children: [
+          Text(l10n.homeExercises(plan.totalExerciseCount),
+              style: text.bodyMedium),
+          Text(planned,
+              style: text.bodyMedium?.copyWith(color: colors.textSecondary)),
+        ]),
+        const SizedBox(height: FitFlowSpace.sm),
+        Text(l10n.homeAdaptation,
+            style: text.bodySmall?.copyWith(color: colors.textSecondary)),
+        const SizedBox(height: FitFlowSpace.lg),
+        Semantics(
+            hint: l10n.viewWorkoutHint,
+            child: FitFlowPrimaryButton(
+                label: l10n.viewWorkout,
+                icon: Icons.arrow_forward_rounded,
+                onPressed: () => context.push(AppRoutes.workoutPreview),
+                expand: true)),
+        const SizedBox(height: FitFlowSpace.sm),
+        const HomeSessionModeControl(),
+        const SizedBox(height: FitFlowSpace.sm),
+        const Divider(),
+        const SizedBox(height: FitFlowSpace.sm),
+        Wrap(spacing: FitFlowSpace.md, runSpacing: FitFlowSpace.xs, children: [
+          count(l10n.homeWarmup, plan.warmup.exerciseCount),
+          count(l10n.homeMain, plan.main.exerciseCount),
+          count(l10n.homeCooldown, plan.cooldown.exerciseCount),
+        ]),
+      ]),
     );
   }
 }

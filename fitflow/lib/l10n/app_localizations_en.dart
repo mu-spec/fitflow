@@ -83,7 +83,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingReadyBody =>
-      'Next, FitFlow will use your preferences to build workouts around you.';
+      'One last check: choose the exercise variations that feel right for you.';
 
   @override
   String get goalGeneralFitness => 'General fitness';
@@ -592,4 +592,437 @@ class AppLocalizationsEn extends AppLocalizations {
   String difficultyLevel(String level) {
     return 'Level $level';
   }
+
+  @override
+  String get onboardingIntroEyebrow => 'YOUR PERSONAL STARTING POINT';
+
+  @override
+  String get onboardingIntroTitle => 'Training that fits your life.';
+
+  @override
+  String get onboardingIntroLevel => 'Your starting point';
+
+  @override
+  String get onboardingIntroLevelBody =>
+      'Exercise variations matched to your movement ability.';
+
+  @override
+  String get onboardingIntroTime => 'Your time, your space';
+
+  @override
+  String get onboardingIntroTimeBody =>
+      'Sessions shaped around the time and equipment you have.';
+
+  @override
+  String get onboardingIntroSimple => 'A few choices. A plan for you.';
+
+  @override
+  String get onboardingSingleChoice => 'Choose one option to continue.';
+
+  @override
+  String get onboardingGoalHelp =>
+      'Your goal helps shape the exercises in your sessions.';
+
+  @override
+  String get onboardingExperienceHelp =>
+      'This gives us a starting point. You can fine-tune each movement next.';
+
+  @override
+  String get onboardingTimeHelp =>
+      'Choose your usual session length. You can go lighter when you need to.';
+
+  @override
+  String get onboardingEnvironmentHelp =>
+      'We’ll choose exercises that work in your training space.';
+
+  @override
+  String get onboardingEquipmentHelp =>
+      'Select all that you have. Choose None to train without equipment.';
+
+  @override
+  String get onboardingPreferencesHelp =>
+      'Select any that suit you, or continue without a selection.';
+
+  @override
+  String get onboardingPreferencesNote =>
+      'Preferences guide exercise selection; they are not medical advice.';
+
+  @override
+  String get onboardingReadyHelp =>
+      'Movement Check comes next. Your answers help us choose appropriate exercise variations.';
+
+  @override
+  String get onboardingSaveError =>
+      'Couldn’t save your setup. Please try again.';
+
+  @override
+  String get onboardingSaving => 'Saving your setup…';
+
+  @override
+  String get choiceSelected => 'Selected';
+
+  @override
+  String get choiceNotSelected => 'Not selected';
+
+  @override
+  String get assessmentIntro => 'Find your starting point';
+
+  @override
+  String get assessmentBody =>
+      'Different movements can feel different. Review these suggestions to help FitFlow choose exercise variations that suit you.';
+
+  @override
+  String get assessmentSuggested => 'Suggested from your experience';
+
+  @override
+  String get assessmentChanged => 'Changed';
+
+  @override
+  String get assessmentChoose => 'Choose what feels right';
+
+  @override
+  String get assessmentSummary => 'Your starting points';
+
+  @override
+  String get assessmentSave => 'Save & Continue';
+
+  @override
+  String get assessmentSaving => 'Saving your movement profile…';
+
+  @override
+  String get assessmentSuccess => 'Your starting points are ready';
+
+  @override
+  String get assessmentLoading => 'Loading your profile…';
+
+  @override
+  String get assessmentMissingTitle =>
+      'We could not find your fitness profile.';
+
+  @override
+  String get assessmentMissingBody => 'Please complete onboarding first.';
+
+  @override
+  String get assessmentOnboarding => 'Go to Onboarding';
+
+  @override
+  String get assessmentInvalid =>
+      'Please review your movement choices and try again.';
+
+  @override
+  String get assessmentSaveError =>
+      'Failed to save your movement profile. Please try again.';
+
+  @override
+  String get homeBrand => 'FITFLOW';
+
+  @override
+  String get homeTitle => 'Your adaptive workout';
+
+  @override
+  String get homeToday => 'TODAY’S WORKOUT';
+
+  @override
+  String get homeSession => 'Adaptive Full Session';
+
+  @override
+  String get homeAdaptation =>
+      'Built around your goal, space, equipment, and current ability.';
+
+  @override
+  String get homeBuiltForYou => 'Built for you';
+
+  @override
+  String get homeSetupHint => 'Your setup and workout preferences';
+
+  @override
+  String get homeAdaptationDetail =>
+      'FitFlow chose exercises that match your movement capabilities and current workout preferences.';
+
+  @override
+  String get homeFocus => 'Today’s focus';
+
+  @override
+  String get homeTarget => 'Target time';
+
+  @override
+  String get homeExerciseLabel => 'Exercises';
+
+  @override
+  String get homePlannedUnknown => 'Planned time unavailable';
+
+  @override
+  String get homePlannedShort => 'Less than 1 min planned';
+
+  @override
+  String get homeWarmup => 'Warm-up';
+
+  @override
+  String get homeMain => 'Main';
+
+  @override
+  String get homeCooldown => 'Cooldown';
+
+  @override
+  String get homeMode => 'Workout mode';
+
+  @override
+  String get homeAdjust => 'Adjust';
+
+  @override
+  String get homeChooseMode => 'Choose today\'s workout';
+
+  @override
+  String get homeTemporary => 'Temporary for this workout';
+
+  @override
+  String get homeComebackSuggestion =>
+      'Returning after some time away? Comeback gives you a shorter, gentler session without changing your movement levels.';
+
+  @override
+  String get homeUseComeback => 'Use Comeback';
+
+  @override
+  String get homeBrowse => 'Browse exercises';
+
+  @override
+  String get homeBrowseHelp => 'Explore the full exercise library';
+
+  @override
+  String get homeGoal => 'Goal';
+
+  @override
+  String get homeUsualTime => 'Usual time';
+
+  @override
+  String get homeEnvironment => 'Environment';
+
+  @override
+  String get homeEquipment => 'Equipment';
+
+  @override
+  String get homePreferences => 'Preferences';
+
+  @override
+  String get homeNoPreferences => 'No special restrictions';
+
+  @override
+  String get homeLoading => 'Loading your adaptive workout...';
+
+  @override
+  String get homeErrorTitle => 'We couldn\'t load your workout profile.';
+
+  @override
+  String get homeErrorBody =>
+      'Your saved data hasn’t been changed. Try loading it again.';
+
+  @override
+  String get homeMissingProfile => 'Your fitness profile is incomplete.';
+
+  @override
+  String get homeMissingProfileBody =>
+      'Complete your profile to generate your adaptive workout.';
+
+  @override
+  String get homeCompleteProfile => 'Complete profile';
+
+  @override
+  String get homeMissingAssessment => 'Your movement assessment is incomplete.';
+
+  @override
+  String get homeMissingAssessmentBody =>
+      'Complete the movement check to tailor workouts to your current ability.';
+
+  @override
+  String get homeStartAssessment => 'Start assessment';
+
+  @override
+  String get homeNoPlan => 'No complete workout available';
+
+  @override
+  String get homeNoPlanBody =>
+      'Your current environment, equipment, or workout preferences leave too few compatible exercises for a complete session.';
+
+  @override
+  String get homeReviewProfile => 'Review your profile';
+
+  @override
+  String onboardingProgress(int step, int total) {
+    return '$step of $total';
+  }
+
+  @override
+  String assessmentProgress(int count, int total) {
+    return '$count of $total movements ready';
+  }
+
+  @override
+  String assessmentSummaryItem(String movement, String choice) {
+    return '$movement · $choice';
+  }
+
+  @override
+  String homeDurationTarget(int minutes) {
+    return '$minutes min target';
+  }
+
+  @override
+  String homePlanned(int minutes) {
+    return '~$minutes min planned';
+  }
+
+  @override
+  String homeExercises(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count exercises',
+      one: '1 exercise',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get assessmentPushTitle => 'Pushing strength';
+
+  @override
+  String get assessmentPushPrompt =>
+      'How comfortable are you with pushing exercises such as push-ups?';
+
+  @override
+  String get assessmentPushExamples =>
+      'Wall Push-Up · Knee Push-Up · Standard Push-Up';
+
+  @override
+  String get assessmentPullTitle => 'Pulling strength';
+
+  @override
+  String get assessmentPullPrompt =>
+      'How comfortable are you with pulling and upper-back exercises?';
+
+  @override
+  String get assessmentPullExamples =>
+      'Towel Row · Doorway Row · Reverse Snow Angel';
+
+  @override
+  String get assessmentSquatTitle => 'Squat strength';
+
+  @override
+  String get assessmentSquatPrompt =>
+      'How comfortable are you with squat-based lower-body exercises?';
+
+  @override
+  String get assessmentSquatExamples =>
+      'Chair Sit-to-Stand · Bodyweight Squat · Tempo Squat';
+
+  @override
+  String get assessmentLungeTitle => 'Lunge strength';
+
+  @override
+  String get assessmentLungePrompt =>
+      'How comfortable are you with split-stance and lunge movements?';
+
+  @override
+  String get assessmentLungeExamples =>
+      'Static Split Squat · Reverse Lunge · Bulgarian Split Squat';
+
+  @override
+  String get assessmentHingeTitle => 'Hinge strength';
+
+  @override
+  String get assessmentHingePrompt =>
+      'How comfortable are you with hip-hinge movements?';
+
+  @override
+  String get assessmentHingeExamples =>
+      'Hip Hinge · Good Morning · Single-Leg Hip Hinge';
+
+  @override
+  String get assessmentCoreTitle => 'Core stability';
+
+  @override
+  String get assessmentCorePrompt =>
+      'How comfortable are you with core stability exercises?';
+
+  @override
+  String get assessmentCoreExamples => 'Dead Bug · Knee Plank · Forearm Plank';
+
+  @override
+  String get assessmentGluteTitle => 'Glute strength';
+
+  @override
+  String get assessmentGlutePrompt =>
+      'How comfortable are you with glute-focused movements?';
+
+  @override
+  String get assessmentGluteExamples =>
+      'Glute Bridge · Glute Bridge March · Single-Leg Glute Bridge';
+
+  @override
+  String get assessmentCardioTitle => 'Cardio endurance';
+
+  @override
+  String get assessmentCardioPrompt =>
+      'How comfortable are you with sustained home cardio movements?';
+
+  @override
+  String get assessmentCardioExamples =>
+      'March in Place · Step Jack · High Knees';
+
+  @override
+  String get assessmentMobilityTitle => 'Mobility';
+
+  @override
+  String get assessmentMobilityPrompt =>
+      'How comfortable are you moving through controlled mobility exercises?';
+
+  @override
+  String get assessmentMobilityExamples =>
+      'Cat-Cow · Hip Flexor Stretch · World\'s Greatest Stretch';
+
+  @override
+  String get assessmentBalanceTitle => 'Balance';
+
+  @override
+  String get assessmentBalancePrompt =>
+      'How comfortable are you maintaining control in balance-focused movements?';
+
+  @override
+  String get assessmentBalanceExamples =>
+      'Single-Leg Stand · Standing Knee Raise · Single-Leg Hip Hinge';
+
+  @override
+  String get assessmentChoice1 => 'Just starting';
+
+  @override
+  String get assessmentChoice1Body =>
+      'Little or no experience with this movement, or only comfortable with very easy versions.';
+
+  @override
+  String get assessmentChoice2 => 'Basic';
+
+  @override
+  String get assessmentChoice2Body =>
+      'Comfortable with easier versions and learning consistent form.';
+
+  @override
+  String get assessmentChoice3 => 'Solid';
+
+  @override
+  String get assessmentChoice3Body =>
+      'Comfortable with standard versions of the movement with reasonable control.';
+
+  @override
+  String get assessmentChoice4 => 'Strong';
+
+  @override
+  String get assessmentChoice4Body =>
+      'Comfortable with challenging variations and higher training demand.';
+
+  @override
+  String get assessmentChoice5 => 'Advanced';
+
+  @override
+  String get assessmentChoice5Body =>
+      'Comfortable with advanced variations and strong movement control.';
 }

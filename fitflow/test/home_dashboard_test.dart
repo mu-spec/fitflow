@@ -188,7 +188,7 @@ void main() {
       expect(find.text('Built around your goal, space, equipment, and current ability.'), findsOneWidget);
 
       // Hero card should appear
-      expect(find.textContaining("TODAY'S WORKOUT"), findsOneWidget);
+      expect(find.textContaining("TODAY’S WORKOUT"), findsOneWidget);
       expect(find.text('Adaptive Full Session'), findsOneWidget);
 
       // Target duration from user profile
@@ -227,6 +227,9 @@ void main() {
 
       await tester.pumpWidget(buildHomeScreen(overrides: overrides));
       await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Built for you'));
+      await tester.tap(find.text('Built for you'));
+      await tester.pumpAndSettle();
 
       expect(find.text('Built for you'), findsOneWidget);
       expect(find.text('Lose weight'), findsOneWidget);
@@ -253,6 +256,9 @@ void main() {
 
       await tester.pumpWidget(buildHomeScreen(overrides: overrides));
       await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Built for you'));
+      await tester.tap(find.text('Built for you'));
+      await tester.pumpAndSettle();
       expect(find.text('No equipment'), findsOneWidget);
       expect(find.textContaining('None, No equipment'), findsNothing);
     });
@@ -274,6 +280,9 @@ void main() {
 
       await tester.pumpWidget(buildHomeScreen(overrides: overrides));
       await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Built for you'));
+      await tester.tap(find.text('Built for you'));
+      await tester.pumpAndSettle();
       expect(find.textContaining('Dumbbells'), findsOneWidget);
       expect(find.textContaining('Exercise mat'), findsOneWidget);
     });
@@ -293,6 +302,9 @@ void main() {
 
       await tester.pumpWidget(buildHomeScreen(overrides: overrides));
       await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Built for you'));
+      await tester.tap(find.text('Built for you'));
+      await tester.pumpAndSettle();
       expect(find.text('No special restrictions'), findsOneWidget);
     });
 
@@ -310,6 +322,9 @@ void main() {
       ];
 
       await tester.pumpWidget(buildHomeScreen(overrides: overrides));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Built for you'));
+      await tester.tap(find.text('Built for you'));
       await tester.pumpAndSettle();
       expect(find.textContaining('Standing only'), findsOneWidget);
     });

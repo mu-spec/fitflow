@@ -231,6 +231,7 @@ void main() {
     await launchOnboarding(tester);
     await advanceToStep(tester, 'environment');
 
+    await tester.ensureVisible(find.text('Outdoor'));
     await tester.tap(find.text('Outdoor'));
     await tester.pumpAndSettle();
     expect(find.byIcon(Icons.check_circle), findsOneWidget);
@@ -269,6 +270,6 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
 
     expect(find.text('Movement Check'), findsWidgets);
-    expect(find.textContaining('Your workouts adapt'), findsOneWidget);
+    expect(find.textContaining('Different movements can feel different'), findsOneWidget);
   });
 }

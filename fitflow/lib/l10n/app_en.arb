@@ -28,7 +28,7 @@
   "onboardingEquipmentTitle": "What equipment do you have?",
   "onboardingPreferencesTitle": "Let's customize your workouts",
   "onboardingReadyTitle": "You're ready",
-  "onboardingReadyBody": "Next, FitFlow will use your preferences to build workouts around you.",
+  "onboardingReadyBody": "One last check: choose the exercise variations that feel right for you.",
   "goalGeneralFitness": "General fitness",
   "goalBuildStrength": "Build strength",
   "goalBuildMuscle": "Build muscle",
@@ -267,5 +267,179 @@
         "type": "String"
       }
     }
-  }
+  },
+  "onboardingIntroEyebrow": "YOUR PERSONAL STARTING POINT",
+  "onboardingIntroTitle": "Training that fits your life.",
+  "onboardingIntroLevel": "Your starting point",
+  "onboardingIntroLevelBody": "Exercise variations matched to your movement ability.",
+  "onboardingIntroTime": "Your time, your space",
+  "onboardingIntroTimeBody": "Sessions shaped around the time and equipment you have.",
+  "onboardingIntroSimple": "A few choices. A plan for you.",
+  "onboardingSingleChoice": "Choose one option to continue.",
+  "onboardingGoalHelp": "Your goal helps shape the exercises in your sessions.",
+  "onboardingExperienceHelp": "This gives us a starting point. You can fine-tune each movement next.",
+  "onboardingTimeHelp": "Choose your usual session length. You can go lighter when you need to.",
+  "onboardingEnvironmentHelp": "We’ll choose exercises that work in your training space.",
+  "onboardingEquipmentHelp": "Select all that you have. Choose None to train without equipment.",
+  "onboardingPreferencesHelp": "Select any that suit you, or continue without a selection.",
+  "onboardingPreferencesNote": "Preferences guide exercise selection; they are not medical advice.",
+  "onboardingReadyHelp": "Movement Check comes next. Your answers help us choose appropriate exercise variations.",
+  "onboardingSaveError": "Couldn’t save your setup. Please try again.",
+  "onboardingSaving": "Saving your setup…",
+  "choiceSelected": "Selected",
+  "choiceNotSelected": "Not selected",
+  "assessmentIntro": "Find your starting point",
+  "assessmentBody": "Different movements can feel different. Review these suggestions to help FitFlow choose exercise variations that suit you.",
+  "assessmentSuggested": "Suggested from your experience",
+  "assessmentChanged": "Changed",
+  "assessmentChoose": "Choose what feels right",
+  "assessmentSummary": "Your starting points",
+  "assessmentSave": "Save & Continue",
+  "assessmentSaving": "Saving your movement profile…",
+  "assessmentSuccess": "Your starting points are ready",
+  "assessmentLoading": "Loading your profile…",
+  "assessmentMissingTitle": "We could not find your fitness profile.",
+  "assessmentMissingBody": "Please complete onboarding first.",
+  "assessmentOnboarding": "Go to Onboarding",
+  "assessmentInvalid": "Please review your movement choices and try again.",
+  "assessmentSaveError": "Failed to save your movement profile. Please try again.",
+  "homeBrand": "FITFLOW",
+  "homeTitle": "Your adaptive workout",
+  "homeToday": "TODAY’S WORKOUT",
+  "homeSession": "Adaptive Full Session",
+  "homeAdaptation": "Built around your goal, space, equipment, and current ability.",
+  "homeBuiltForYou": "Built for you",
+  "homeSetupHint": "Your setup and workout preferences",
+  "homeAdaptationDetail": "FitFlow chose exercises that match your movement capabilities and current workout preferences.",
+  "homeFocus": "Today’s focus",
+  "homeTarget": "Target time",
+  "homeExerciseLabel": "Exercises",
+  "homePlannedUnknown": "Planned time unavailable",
+  "homePlannedShort": "Less than 1 min planned",
+  "homeWarmup": "Warm-up",
+  "homeMain": "Main",
+  "homeCooldown": "Cooldown",
+  "homeMode": "Workout mode",
+  "homeAdjust": "Adjust",
+  "homeChooseMode": "Choose today's workout",
+  "homeTemporary": "Temporary for this workout",
+  "homeComebackSuggestion": "Returning after some time away? Comeback gives you a shorter, gentler session without changing your movement levels.",
+  "homeUseComeback": "Use Comeback",
+  "homeBrowse": "Browse exercises",
+  "homeBrowseHelp": "Explore the full exercise library",
+  "homeGoal": "Goal",
+  "homeUsualTime": "Usual time",
+  "homeEnvironment": "Environment",
+  "homeEquipment": "Equipment",
+  "homePreferences": "Preferences",
+  "homeNoPreferences": "No special restrictions",
+  "homeLoading": "Loading your adaptive workout...",
+  "homeErrorTitle": "We couldn't load your workout profile.",
+  "homeErrorBody": "Your saved data hasn’t been changed. Try loading it again.",
+  "homeMissingProfile": "Your fitness profile is incomplete.",
+  "homeMissingProfileBody": "Complete your profile to generate your adaptive workout.",
+  "homeCompleteProfile": "Complete profile",
+  "homeMissingAssessment": "Your movement assessment is incomplete.",
+  "homeMissingAssessmentBody": "Complete the movement check to tailor workouts to your current ability.",
+  "homeStartAssessment": "Start assessment",
+  "homeNoPlan": "No complete workout available",
+  "homeNoPlanBody": "Your current environment, equipment, or workout preferences leave too few compatible exercises for a complete session.",
+  "homeReviewProfile": "Review your profile",
+  "onboardingProgress": "{step} of {total}",
+  "@onboardingProgress": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "assessmentProgress": "{count} of {total} movements ready",
+  "@assessmentProgress": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "assessmentSummaryItem": "{movement} · {choice}",
+  "@assessmentSummaryItem": {
+    "placeholders": {
+      "movement": {
+        "type": "String"
+      },
+      "choice": {
+        "type": "String"
+      }
+    }
+  },
+  "homeDurationTarget": "{minutes} min target",
+  "@homeDurationTarget": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "homePlanned": "~{minutes} min planned",
+  "@homePlanned": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "homeExercises": "{count, plural, =1{1 exercise} other{{count} exercises}}",
+  "@homeExercises": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "assessmentPushTitle": "Pushing strength",
+  "assessmentPushPrompt": "How comfortable are you with pushing exercises such as push-ups?",
+  "assessmentPushExamples": "Wall Push-Up · Knee Push-Up · Standard Push-Up",
+  "assessmentPullTitle": "Pulling strength",
+  "assessmentPullPrompt": "How comfortable are you with pulling and upper-back exercises?",
+  "assessmentPullExamples": "Towel Row · Doorway Row · Reverse Snow Angel",
+  "assessmentSquatTitle": "Squat strength",
+  "assessmentSquatPrompt": "How comfortable are you with squat-based lower-body exercises?",
+  "assessmentSquatExamples": "Chair Sit-to-Stand · Bodyweight Squat · Tempo Squat",
+  "assessmentLungeTitle": "Lunge strength",
+  "assessmentLungePrompt": "How comfortable are you with split-stance and lunge movements?",
+  "assessmentLungeExamples": "Static Split Squat · Reverse Lunge · Bulgarian Split Squat",
+  "assessmentHingeTitle": "Hinge strength",
+  "assessmentHingePrompt": "How comfortable are you with hip-hinge movements?",
+  "assessmentHingeExamples": "Hip Hinge · Good Morning · Single-Leg Hip Hinge",
+  "assessmentCoreTitle": "Core stability",
+  "assessmentCorePrompt": "How comfortable are you with core stability exercises?",
+  "assessmentCoreExamples": "Dead Bug · Knee Plank · Forearm Plank",
+  "assessmentGluteTitle": "Glute strength",
+  "assessmentGlutePrompt": "How comfortable are you with glute-focused movements?",
+  "assessmentGluteExamples": "Glute Bridge · Glute Bridge March · Single-Leg Glute Bridge",
+  "assessmentCardioTitle": "Cardio endurance",
+  "assessmentCardioPrompt": "How comfortable are you with sustained home cardio movements?",
+  "assessmentCardioExamples": "March in Place · Step Jack · High Knees",
+  "assessmentMobilityTitle": "Mobility",
+  "assessmentMobilityPrompt": "How comfortable are you moving through controlled mobility exercises?",
+  "assessmentMobilityExamples": "Cat-Cow · Hip Flexor Stretch · World's Greatest Stretch",
+  "assessmentBalanceTitle": "Balance",
+  "assessmentBalancePrompt": "How comfortable are you maintaining control in balance-focused movements?",
+  "assessmentBalanceExamples": "Single-Leg Stand · Standing Knee Raise · Single-Leg Hip Hinge",
+  "assessmentChoice1": "Just starting",
+  "assessmentChoice1Body": "Little or no experience with this movement, or only comfortable with very easy versions.",
+  "assessmentChoice2": "Basic",
+  "assessmentChoice2Body": "Comfortable with easier versions and learning consistent form.",
+  "assessmentChoice3": "Solid",
+  "assessmentChoice3Body": "Comfortable with standard versions of the movement with reasonable control.",
+  "assessmentChoice4": "Strong",
+  "assessmentChoice4Body": "Comfortable with challenging variations and higher training demand.",
+  "assessmentChoice5": "Advanced",
+  "assessmentChoice5Body": "Comfortable with advanced variations and strong movement control."
 }

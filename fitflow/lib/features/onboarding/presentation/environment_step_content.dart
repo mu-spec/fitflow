@@ -1,7 +1,7 @@
 import 'package:fitflow/features/onboarding/data/training_environment.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
-import 'package:fitflow/features/onboarding/presentation/widgets/onboarding_option_card.dart';
+import 'package:fitflow/features/onboarding/presentation/widgets/onboarding_choice.dart';
 import 'package:fitflow/features/onboarding/state/onboarding_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,7 +18,7 @@ class EnvironmentStepContent extends ConsumerWidget {
     return Column(
       children: [
         for (final environment in TrainingEnvironment.values)
-          OnboardingOptionCard(
+          OnboardingChoice(
             label: environmentLabel(context.l10n, environment),
             selected: state.environment == environment,
             onSelected: () => controller.selectEnvironment(environment),

@@ -37,27 +37,25 @@ class FitFlowNavigationShell extends StatelessWidget {
     return LayoutBuilder(builder: (context, constraints) {
       final expanded = FitFlowLayout.fromWidth(constraints.maxWidth) ==
           FitFlowWindowSize.expanded;
-      if (expanded) {
-        return Scaffold(
-          body: Row(
-            children: [
-              _FitFlowNavigationRail(
+      // Keep the body in the same element position across bar/rail reflow.
+      // This preserves branch-local widget state when the window is resized.
+      return Scaffold(
+        body: Row(children: [
+          if (expanded)
+            _FitFlowNavigationRail(
+              destinations: destinations,
+              selectedIndex: selectedIndex,
+              onSelected: onSelected,
+            ),
+          Expanded(child: body),
+        ]),
+        bottomNavigationBar: expanded
+            ? null
+            : _FitFlowBottomBar(
                 destinations: destinations,
                 selectedIndex: selectedIndex,
                 onSelected: onSelected,
               ),
-              Expanded(child: body),
-            ],
-          ),
-        );
-      }
-      return Scaffold(
-        body: body,
-        bottomNavigationBar: _FitFlowBottomBar(
-          destinations: destinations,
-          selectedIndex: selectedIndex,
-          onSelected: onSelected,
-        ),
       );
     });
   }
@@ -83,6 +81,7 @@ class _FitFlowBottomBar extends StatelessWidget {
       ),
       child: NavigationBar(
         animationDuration: SystemMotion.standard(context),
+        height: MediaQuery.textScalerOf(context).scale(12) > 18 ? 96 : null,
         selectedIndex: selectedIndex,
         onDestinationSelected: onSelected,
         destinations: [
@@ -134,7 +133,7 @@ class _FitFlowNavigationRail extends StatelessWidget {
                     selectedIcon: Icon(destination.selectedIcon),
                     label: Text(
                       destination.label,
-                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
                     ),
                   ),
               ],

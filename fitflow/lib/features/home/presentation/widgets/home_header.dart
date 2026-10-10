@@ -1,42 +1,22 @@
+import 'package:fitflow/core/design/fitflow_spacing.dart';
+import 'package:fitflow/core/design/fitflow_theme_extension.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:flutter/material.dart';
 
-/// Premium header for Home dashboard.
 class HomeHeader extends StatelessWidget {
   const HomeHeader({super.key});
-
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'FITFLOW',
-          style: theme.textTheme.labelSmall?.copyWith(
-            letterSpacing: 1.2,
-            fontWeight: FontWeight.w600,
-            color: colorScheme.primary,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Your adaptive workout',
-          style: theme.textTheme.headlineMedium?.copyWith(
-            fontWeight: FontWeight.w700,
-            letterSpacing: -0.5,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Built around your goal, space, equipment, and current ability.',
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-            height: 1.4,
-          ),
-        ),
-      ],
-    );
-  }
+  Widget build(BuildContext context) => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(context.l10n.homeBrand,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                  color: FitFlowTheme.of(context).brand, letterSpacing: 1.2)),
+          const SizedBox(height: FitFlowSpace.xs),
+          Semantics(
+              header: true,
+              child: Text(context.l10n.homeTitle,
+                  style: Theme.of(context).textTheme.headlineMedium)),
+        ],
+      );
 }
