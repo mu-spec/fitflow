@@ -1,3 +1,4 @@
+import 'package:fitflow/features/settings/data/appearance_mode.dart';
 import 'dart:ui' show CheckedState, Tristate;
 
 import 'package:fitflow/app/config/app_theme.dart';
@@ -293,16 +294,21 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
 
+    await tester.tap(find.text('Appearance'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Light'));
     await tester.tap(find.text('Light'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 200));
 
-    final node = tester.getSemantics(find.bySemanticsLabel(RegExp(r'^Light, selected$')));
+    final node = tester.getSemantics(find.widgetWithText(RadioListTile<AppearanceMode>, 'Light'));
     expect(node.label, contains('Light'));
     expect(_selected(node), isTrue);
-    expect(_exclusive(node), isTrue);
-    expect(_button(node), isTrue);
-    expect(_exclusive(node), isTrue);
+    expect(node.getSemanticsData().flagsCollection.isInMutuallyExclusiveGroup, isTrue);
+    expect(node.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
+    expect(node.getSemanticsData().flagsCollection.isChecked, CheckedState.isTrue);
+    expect(node.label, isNot(contains(', selected')));
+    expect(node.getSemanticsData().flagsCollection.isInMutuallyExclusiveGroup, isTrue);
     expect(tester.takeException(), isNull);
     } finally {
       handle.dispose();

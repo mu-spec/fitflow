@@ -15,9 +15,9 @@ class BackupCopy {
   static const storageNote =
       'Your backup is stored wherever you choose. FitFlow does not upload it '
       'to a FitFlow server.';
-  static const createTitle = 'Create backup';
+  static const createTitle = 'Save a copy';
   static const createDescription =
-      'Includes your profile, movement levels, saved workout history, custom '
+      'Includes your profile, movement levels and progress, saved workout history, custom '
       'workouts, program progress, reminder preferences, and appearance.';
   static const createButton = 'Create backup';
   static const restoreTitle = 'Restore from backup';
@@ -49,7 +49,7 @@ class BackupCopy {
   static const previewCreated = 'Created';
   static const previewProfile = 'Profile';
   static const previewCapability = 'Movement levels';
-  static const previewEvidence = 'Progression evidence';
+  static const previewEvidence = 'Movement progress';
   static const previewHistory = 'Saved workouts';
   static const previewCustom = 'Custom workouts';
   static const previewProgramsStarted = 'Programs started';
@@ -61,7 +61,7 @@ class BackupCopy {
   static const on = 'On';
   static const off = 'Off';
   static const restoreButton = 'Restore this backup';
-  static const chooseDifferentFile = 'Choose a different file';
+  static const chooseDifferentFile = 'Cancel preview';
 
   // Confirmation dialog
   static const confirmTitle = 'Restore FitFlow backup?';

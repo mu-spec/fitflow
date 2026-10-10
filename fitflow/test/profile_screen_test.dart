@@ -64,7 +64,8 @@ void main() {
 
       expect(find.text('Fitness Profile'), findsOneWidget);
       expect(
-        find.text('General fitness • Some experience\n20 minutes • Normal home'),
+        find.text(
+            'General fitness • Some experience\n20 minutes • Normal home'),
         findsOneWidget,
       );
     });
@@ -73,13 +74,16 @@ void main() {
       await pumpProfileApp(tester);
 
       // Four real items in enum declaration order: first two labels + "+2".
-      expect(find.text('Exercise mat, Chair +2'), findsOneWidget);
+      expect(
+          find.text('Exercise mat, Chair, Dumbbells, Towel'), findsOneWidget);
     });
 
-    testWidgets('Preferences row shows a deterministic summary', (tester) async {
+    testWidgets('Preferences row shows a deterministic summary',
+        (tester) async {
       await pumpProfileApp(tester);
 
-      expect(find.text('No jumping, Low impact +1'), findsOneWidget);
+      expect(
+          find.text('No jumping, Low impact, Standing only'), findsOneWidget);
     });
 
     testWidgets('Equipment row shows None when only None is selected', (
@@ -110,7 +114,7 @@ void main() {
       await pumpProfileApp(tester);
 
       expect(find.text('Settings'), findsOneWidget);
-      expect(find.text('Manage your app.'), findsOneWidget);
+      expect(find.text('Appearance, reminders, and backups.'), findsOneWidget);
 
       await tester.tap(find.text('Settings'));
       await settleProfileFrames(tester);
@@ -224,7 +228,8 @@ void main() {
 
       expect(find.text('Your profile'), findsOneWidget);
       expect(find.text('Fitness Profile'), findsOneWidget);
-      expect(find.text('Exercise mat, Chair +2'), findsOneWidget);
+      expect(
+          find.text('Exercise mat, Chair, Dumbbells, Towel'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 

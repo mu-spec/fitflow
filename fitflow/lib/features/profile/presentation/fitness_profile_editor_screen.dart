@@ -1,10 +1,14 @@
+import 'package:fitflow/features/settings/presentation/widgets/utility_presentation.dart';
 import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/features/onboarding/data/experience_level.dart';
 import 'package:fitflow/features/onboarding/data/fitness_goal.dart';
 import 'package:fitflow/features/onboarding/data/training_environment.dart';
 import 'package:fitflow/features/onboarding/data/user_fitness_profile.dart';
 import 'package:fitflow/features/onboarding/data/workout_duration.dart';
-import 'package:fitflow/features/onboarding/presentation/widgets/onboarding_option_card.dart';
+import 'package:fitflow/core/design/fitflow_layout.dart';
+import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
+import 'package:fitflow/l10n/enum_labels.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/features/onboarding/state/user_fitness_profile_controller.dart';
 import 'package:fitflow/features/profile/presentation/widgets/profile_editor_widgets.dart';
 import 'package:flutter/material.dart';
@@ -54,9 +58,8 @@ class _FitnessProfileEditorScreenState
     if (draft == null || !_hasUnsavedChanges) return;
 
     setState(() => _saving = true);
-    final saved = await ref
-        .read(userFitnessProfileProvider.notifier)
-        .saveProfile(draft);
+    final saved =
+        await ref.read(userFitnessProfileProvider.notifier).saveProfile(draft);
     if (!mounted) return;
 
     ScaffoldMessenger.of(context)
@@ -94,9 +97,9 @@ class _FitnessProfileEditorScreenState
     final profileAsync = ref.watch(userFitnessProfileProvider);
 
     return PopScope(
-      canPop: !_hasUnsavedChanges,
+      canPop: !_hasUnsavedChanges && !_saving,
       onPopInvokedWithResult: (didPop, result) {
-        if (didPop) return;
+        if (didPop || _saving) return;
         // No dialog when nothing changed: canPop is true in that case, so the
         // route already popped on its own.
         confirmDiscardEditorChanges(context);
@@ -105,15 +108,19 @@ class _FitnessProfileEditorScreenState
         appBar: AppBar(title: const Text('Fitness profile')),
         body: SafeArea(
           child: profileAsync.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, stackTrace) => const Center(
-              child: Text("Your fitness profile couldn't be loaded."),
-            ),
+            loading: () =>
+                FitFlowLoading(label: context.l10n.assessmentLoading),
+            error: (error, stackTrace) => SingleChildScrollView(
+                child: FitFlowErrorState(
+                    title: context.l10n.utilityProfileError,
+                    message: context.l10n.utilityRetryBody,
+                    action: TextButton(
+                        onPressed: () =>
+                            ref.invalidate(userFitnessProfileProvider),
+                        child: Text(context.l10n.retry)))),
             data: (profile) {
               if (profile == null) {
-                return const Center(
-                  child: Text('Fitness profile not set up'),
-                );
+                return const ProfileEditorMissingState();
               }
               _baseline ??= profile;
               _draft ??= profile;
@@ -123,7 +130,8 @@ class _FitnessProfileEditorScreenState
                 padding: const EdgeInsets.all(AppDimens.screenPadding),
                 child: Center(
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 720),
+                    constraints: const BoxConstraints(
+                        maxWidth: FitFlowLayout.maxReadableWidth),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -133,44 +141,77 @@ class _FitnessProfileEditorScreenState
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
+                        const SizedBox(height: 8),
+                        Text(context.l10n.utilityEditorDraft,
+                            style: theme.textTheme.bodySmall),
                         const SizedBox(height: 20),
-                        _sectionTitle(theme, 'Goal'),
-                        for (final goal in FitnessGoal.values)
-                          OnboardingOptionCard(
-                            label: goal.label,
-                            selected: draft.goal == goal,
-                            onSelected: () =>
-                                _update((p) => p.copyWith(goal: goal)),
-                          ),
+                        UtilityDisclosure(
+                            title: context.l10n.utilityGoal,
+                            summary: context.l10n.utilitySelectedValue(
+                                fitnessGoalLabel(context.l10n, draft.goal)),
+                            children: [
+                              for (final goal in FitnessGoal.values)
+                                ProfileOptionTile(
+                                  enabled: !_saving,
+                                  label: fitnessGoalLabel(context.l10n, goal),
+                                  selected: draft.goal == goal,
+                                  onSelected: () =>
+                                      _update((p) => p.copyWith(goal: goal)),
+                                ),
+                            ]),
                         const SizedBox(height: 12),
-                        _sectionTitle(theme, 'Training experience'),
-                        for (final level in ExperienceLevel.values)
-                          OnboardingOptionCard(
-                            label: level.label,
-                            helperText: level.helperText,
-                            selected: draft.experience == level,
-                            onSelected: () =>
-                                _update((p) => p.copyWith(experience: level)),
-                          ),
+                        UtilityDisclosure(
+                            title: context.l10n.utilityExperience,
+                            summary: context.l10n.utilitySelectedValue(
+                                experienceLabel(
+                                    context.l10n, draft.experience)),
+                            children: [
+                              for (final level in ExperienceLevel.values)
+                                ProfileOptionTile(
+                                  enabled: !_saving,
+                                  label: experienceLabel(context.l10n, level),
+                                  helperText:
+                                      experienceHelp(context.l10n, level),
+                                  selected: draft.experience == level,
+                                  onSelected: () => _update(
+                                      (p) => p.copyWith(experience: level)),
+                                ),
+                            ]),
                         const SizedBox(height: 12),
-                        _sectionTitle(theme, 'Typical workout time'),
-                        for (final duration in WorkoutDuration.values)
-                          OnboardingOptionCard(
-                            label: duration.label,
-                            selected: draft.workoutDuration == duration,
-                            onSelected: () => _update(
-                              (p) => p.copyWith(workoutDuration: duration),
-                            ),
-                          ),
+                        UtilityDisclosure(
+                            title: context.l10n.utilityDuration,
+                            summary: context.l10n.utilitySelectedValue(
+                                workoutDurationLabel(
+                                    context.l10n, draft.workoutDuration)),
+                            children: [
+                              for (final duration in WorkoutDuration.values)
+                                ProfileOptionTile(
+                                  enabled: !_saving,
+                                  label: workoutDurationLabel(
+                                      context.l10n, duration),
+                                  selected: draft.workoutDuration == duration,
+                                  onSelected: () => _update(
+                                    (p) =>
+                                        p.copyWith(workoutDuration: duration),
+                                  ),
+                                ),
+                            ]),
                         const SizedBox(height: 12),
-                        _sectionTitle(theme, 'Training environment'),
-                        for (final env in TrainingEnvironment.values)
-                          OnboardingOptionCard(
-                            label: env.label,
-                            selected: draft.environment == env,
-                            onSelected: () =>
-                                _update((p) => p.copyWith(environment: env)),
-                          ),
+                        UtilityDisclosure(
+                            title: context.l10n.utilityEnvironment,
+                            summary: context.l10n.utilitySelectedValue(
+                                environmentLabel(
+                                    context.l10n, draft.environment)),
+                            children: [
+                              for (final env in TrainingEnvironment.values)
+                                ProfileOptionTile(
+                                  enabled: !_saving,
+                                  label: environmentLabel(context.l10n, env),
+                                  selected: draft.environment == env,
+                                  onSelected: () => _update(
+                                      (p) => p.copyWith(environment: env)),
+                                ),
+                            ]),
                       ],
                     ),
                   ),
@@ -186,17 +227,6 @@ class _FitnessProfileEditorScreenState
                 saving: _saving,
                 onSave: _save,
               ),
-      ),
-    );
-  }
-
-  Widget _sectionTitle(ThemeData theme, String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Text(
-        title,
-        style: theme.textTheme.titleSmall
-            ?.copyWith(fontWeight: FontWeight.w600),
       ),
     );
   }

@@ -37,7 +37,8 @@ void main() {
       child: MaterialApp(
         theme: ThemeData(brightness: brightness, useMaterial3: true),
         builder: (context, widget) => MediaQuery(
-          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(textScale)),
+          data: MediaQuery.of(context)
+              .copyWith(textScaler: TextScaler.linear(textScale)),
           child: widget!,
         ),
         home: child ??
@@ -51,17 +52,27 @@ void main() {
     ));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
+    if (child is SettingsScreen) {
+      await tester.tap(find.text('Appearance'));
+      await tester.pumpAndSettle();
+    }
+    await tester.ensureVisible(find.text('Workout reminders').first);
+    await tester.tap(find.text('Workout reminders').first);
+    await tester.pumpAndSettle();
   }
 
-  Finder chip(int weekday) => find.byKey(ValueKey<String>('reminder_weekday_$weekday'));
+  Finder chip(int weekday) =>
+      find.byKey(ValueKey<String>('reminder_weekday_$weekday'));
   final toggle = find.byType(SwitchListTile);
   Future<void> flipToggle(WidgetTester tester) async {
+    await tester.ensureVisible(toggle);
     await tester.tap(toggle);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
   }
 
-  testWidgets('renders inside the real Settings screen with Appearance intact', (tester) async {
+  testWidgets('renders inside the real Settings screen with Appearance intact',
+      (tester) async {
     await pumpSection(tester, child: const SettingsScreen());
     expect(find.text('Appearance'), findsOneWidget);
     expect(find.text('System default'), findsOneWidget);
@@ -72,12 +83,15 @@ void main() {
     );
     expect(find.text('Workout reminders'), findsWidgets);
     expect(find.text('Reminders are off.'), findsOneWidget);
-    expect(find.text('Android may deliver reminders slightly later to reduce battery use.'),
+    expect(
+        find.text(
+            'Android may deliver reminders slightly later to reduce battery use.'),
         findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('default state: off, Mon/Wed/Fri 7:00 PM, nothing scheduled or requested',
+  testWidgets(
+      'default state: off, Mon/Wed/Fri 7:00 PM, nothing scheduled or requested',
       (tester) async {
     await pumpSection(tester);
     expect(tester.widget<SwitchListTile>(toggle).value, isFalse);
@@ -95,17 +109,27 @@ void main() {
     expect(await storedReminderJson(), isNull);
   });
 
-  testWidgets('weekday chips expose full-day-name semantics and letters M T W T F S S',
+  testWidgets(
+      'weekday chips expose full-day-name semantics and letters M T W T F S S',
       (tester) async {
     await pumpSection(tester);
     final handle = tester.ensureSemantics();
     for (final entry in {
-      1: 'Monday', 2: 'Tuesday', 3: 'Wednesday', 4: 'Thursday',
-      5: 'Friday', 6: 'Saturday', 7: 'Sunday',
+      1: 'Monday',
+      2: 'Tuesday',
+      3: 'Wednesday',
+      4: 'Thursday',
+      5: 'Friday',
+      6: 'Saturday',
+      7: 'Sunday',
     }.entries) {
-      expect(find.bySemanticsLabel(entry.value), findsOneWidget, reason: entry.value);
+      expect(find.bySemanticsLabel(entry.value), findsOneWidget,
+          reason: entry.value);
     }
-    final letters = [for (final d in WorkoutReminderWeekday.all) WorkoutReminderWeekday.letter(d)];
+    final letters = [
+      for (final d in WorkoutReminderWeekday.all)
+        WorkoutReminderWeekday.letter(d)
+    ];
     expect(letters, ['M', 'T', 'W', 'T', 'F', 'S', 'S']);
     for (final l in ['M', 'W', 'F']) {
       expect(find.text(l), findsWidgets);
@@ -113,23 +137,29 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('enable requests permission once, schedules 3 reminders, persists, status scheduled',
+  testWidgets(
+      'enable requests permission once, schedules 3 reminders, persists, status scheduled',
       (tester) async {
     service.permission = WorkoutReminderPermissionStatus.denied;
     service.requestResult = WorkoutReminderPermissionStatus.granted;
     await pumpSection(tester);
     await flipToggle(tester);
     expect(service.permissionRequests, 1);
-    expect(service.scheduled.keys.toSet(),
-        {WorkoutReminderIds.forWeekday(1), WorkoutReminderIds.forWeekday(3), WorkoutReminderIds.forWeekday(5)});
+    expect(service.scheduled.keys.toSet(), {
+      WorkoutReminderIds.forWeekday(1),
+      WorkoutReminderIds.forWeekday(3),
+      WorkoutReminderIds.forWeekday(5)
+    });
     expect(tester.widget<SwitchListTile>(toggle).value, isTrue);
     expect(find.text('Workout reminders are scheduled.'), findsOneWidget);
-    final stored = jsonDecode((await storedReminderJson())!) as Map<String, dynamic>;
+    final stored =
+        jsonDecode((await storedReminderJson())!) as Map<String, dynamic>;
     expect(stored['enabled'], isTrue);
     expect(stored['timezoneId'], 'Asia/Karachi');
   });
 
-  testWidgets('permission denied on enable: truthful failure, days/time kept, settings action',
+  testWidgets(
+      'permission denied on enable: truthful failure, days/time kept, settings action',
       (tester) async {
     service.permission = WorkoutReminderPermissionStatus.denied;
     service.requestResult = WorkoutReminderPermissionStatus.denied;
@@ -138,22 +168,31 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
     expect(service.scheduled, isEmpty);
     expect(tester.widget<SwitchListTile>(toggle).value, isFalse);
-    expect(find.text('Notification permission is needed to send workout reminders.'),
+    expect(
+        find.text(
+            'Notification permission is needed to send workout reminders.'),
         findsOneWidget);
     expect(find.text('Open notification settings'), findsWidgets);
     expect(find.text('Mon, Wed, Fri • 7:00 PM'), findsOneWidget);
     expect(find.text('Workout reminders are scheduled.'), findsNothing);
-    await tester.tap(find.widgetWithText(OutlinedButton, 'Open notification settings'));
+    await tester
+        .tap(find.widgetWithText(OutlinedButton, 'Open notification settings'));
     await tester.pump();
     expect(service.openSettingsCalls, 1);
     await tester.pump(const Duration(seconds: 5));
   });
 
-  testWidgets('enabled but blocked later shows blocked status and keeps schedule', (tester) async {
+  testWidgets(
+      'enabled but blocked later shows blocked status and keeps schedule',
+      (tester) async {
     SharedPreferences.setMockInitialValues({
       'workout_reminders_v1': jsonEncode({
-        'version': 1, 'enabled': true, 'weekdays': [1, 3, 5],
-        'hour': 19, 'minute': 0, 'timezoneId': 'Asia/Karachi',
+        'version': 1,
+        'enabled': true,
+        'weekdays': [1, 3, 5],
+        'hour': 19,
+        'minute': 0,
+        'timezoneId': 'Asia/Karachi',
       }),
     });
     service.permission = WorkoutReminderPermissionStatus.denied;
@@ -162,17 +201,20 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
     expect(tester.widget<SwitchListTile>(toggle).value, isTrue);
     expect(
-        find.text('Reminders are enabled in FitFlow, but notifications are blocked by Android.'),
+        find.text(
+            'Reminders are enabled in FitFlow, but notifications are blocked by Android.'),
         findsOneWidget);
     expect(find.text('Open notification settings'), findsOneWidget);
     expect(service.cancelled, isEmpty);
     expect(service.permissionRequests, 0, reason: 'refresh never prompts');
     // Test button unavailable while blocked.
-    final button = tester.widget<FilledButton>(find.widgetWithText(FilledButton, 'Send test notification'));
+    final button = tester.widget<FilledButton>(
+        find.widgetWithText(FilledButton, 'Send test notification'));
     expect(button.onPressed, isNull);
   });
 
-  testWidgets('disable cancels only the 7 FitFlow IDs and persists off', (tester) async {
+  testWidgets('disable cancels only the 7 FitFlow IDs and persists off',
+      (tester) async {
     await pumpSection(tester);
     await flipToggle(tester);
     expect(service.scheduled.length, 3);
@@ -181,12 +223,14 @@ void main() {
     expect(find.text('Reminders are off.'), findsOneWidget);
     expect(service.scheduled, isEmpty);
     expect(service.cancelled.toSet(), WorkoutReminderIds.allWeekly.toSet());
-    final stored = jsonDecode((await storedReminderJson())!) as Map<String, dynamic>;
+    final stored =
+        jsonDecode((await storedReminderJson())!) as Map<String, dynamic>;
     expect(stored['enabled'], isFalse);
     expect(stored['weekdays'], [1, 3, 5]);
   });
 
-  testWidgets('toggling weekdays while enabled reschedules and updates summary', (tester) async {
+  testWidgets('toggling weekdays while enabled reschedules and updates summary',
+      (tester) async {
     await pumpSection(tester);
     await flipToggle(tester);
     await tester.tap(chip(2));
@@ -198,12 +242,14 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
     expect(find.text('Tue, Wed, Fri • 7:00 PM'), findsOneWidget);
-    expect(service.scheduled.keys, isNot(contains(WorkoutReminderIds.forWeekday(1))));
+    expect(service.scheduled.keys,
+        isNot(contains(WorkoutReminderIds.forWeekday(1))));
     expect(service.cancelled, contains(WorkoutReminderIds.forWeekday(1)));
     expect(service.scheduled.length, 3);
   });
 
-  testWidgets('deselecting the last day while enabled is refused with a calm message',
+  testWidgets(
+      'deselecting the last day while enabled is refused with a calm message',
       (tester) async {
     await pumpSection(tester);
     await flipToggle(tester);
@@ -218,12 +264,15 @@ void main() {
     await tester.pump(const Duration(milliseconds: 50));
     expect(find.text('Select at least one day.'), findsWidgets);
     expect(tester.widget<FilterChip>(chip(5)).selected, isTrue);
-    expect(service.scheduled.length, 1, reason: 'never zero reminders while enabled');
+    expect(service.scheduled.length, 1,
+        reason: 'never zero reminders while enabled');
     expect(tester.widget<SwitchListTile>(toggle).value, isTrue);
     await tester.pump(const Duration(seconds: 5));
   });
 
-  testWidgets('every day summary and weekend edits while disabled do not schedule', (tester) async {
+  testWidgets(
+      'every day summary and weekend edits while disabled do not schedule',
+      (tester) async {
     await pumpSection(tester);
     for (final d in [2, 4, 6, 7]) {
       await tester.tap(chip(d));
@@ -233,12 +282,14 @@ void main() {
     expect(find.text('Every day • 7:00 PM'), findsOneWidget);
     expect(service.scheduled, isEmpty);
     expect(service.permissionRequests, 0);
-    final stored = jsonDecode((await storedReminderJson())!) as Map<String, dynamic>;
+    final stored =
+        jsonDecode((await storedReminderJson())!) as Map<String, dynamic>;
     expect(stored['weekdays'], [1, 2, 3, 4, 5, 6, 7]);
     expect(stored['enabled'], isFalse);
   });
 
-  testWidgets('time picker stores hour/minute and displays locale time', (tester) async {
+  testWidgets('time picker stores hour/minute and displays locale time',
+      (tester) async {
     await pumpSection(tester);
     await tester.tap(find.text('Reminder time'));
     await tester.pumpAndSettle();
@@ -257,13 +308,15 @@ void main() {
     await tester.tap(find.text('OK'));
     await tester.pumpAndSettle();
     expect(find.text('Mon, Wed, Fri • 8:30 AM'), findsOneWidget);
-    final stored = jsonDecode((await storedReminderJson())!) as Map<String, dynamic>;
+    final stored =
+        jsonDecode((await storedReminderJson())!) as Map<String, dynamic>;
     expect(stored['hour'], 8);
     expect(stored['minute'], 30);
     expect(service.scheduled, isEmpty, reason: 'still disabled');
   });
 
-  testWidgets('send test notification uses ID 17999 and does not touch preferences',
+  testWidgets(
+      'send test notification uses ID 17999 and does not touch preferences',
       (tester) async {
     await pumpSection(tester);
     await tester.tap(find.text('Send test notification'));
@@ -278,7 +331,8 @@ void main() {
     await tester.pump(const Duration(seconds: 5));
   });
 
-  testWidgets('schedule failure on enable is reported truthfully', (tester) async {
+  testWidgets('schedule failure on enable is reported truthfully',
+      (tester) async {
     service.scheduleSucceeds = false;
     await pumpSection(tester);
     await flipToggle(tester);
@@ -290,7 +344,9 @@ void main() {
     await tester.pump(const Duration(seconds: 5));
   });
 
-  testWidgets('timezone resolution failure blocks enabling without UTC fallback', (tester) async {
+  testWidgets(
+      'timezone resolution failure blocks enabling without UTC fallback',
+      (tester) async {
     service.timezoneId = null;
     await pumpSection(tester);
     await flipToggle(tester);
@@ -301,15 +357,18 @@ void main() {
     await tester.pump(const Duration(seconds: 5));
   });
 
-  testWidgets('persistence failure on enable rolls back the new schedule', (tester) async {
+  testWidgets('persistence failure on enable rolls back the new schedule',
+      (tester) async {
     final storage = ToggleReminderStorage()..allowWrites = false;
     await pumpSection(tester,
-        overrides: reminderOverrides(service: service, storage: storage.storage));
+        overrides:
+            reminderOverrides(service: service, storage: storage.storage));
     await flipToggle(tester);
     await tester.pump(const Duration(milliseconds: 300));
     expect(tester.widget<SwitchListTile>(toggle).value, isFalse);
     expect(service.scheduled, isEmpty);
-    expect(find.text("Couldn't save reminder settings. Try again."), findsWidgets);
+    expect(
+        find.text("Couldn't save reminder settings. Try again."), findsWidgets);
     await tester.pump(const Duration(seconds: 5));
   });
 
@@ -342,17 +401,26 @@ void main() {
   });
 
   testWidgets('layout: tablet, dark theme', (tester) async {
-    await pumpSection(tester, size: const Size(1024, 1366), brightness: Brightness.dark);
-    expect(Theme.of(tester.element(find.byType(Card))).brightness, Brightness.dark);
+    await pumpSection(tester,
+        size: const Size(1024, 1366), brightness: Brightness.dark);
+    expect(
+        Theme.of(tester.element(find.byType(WorkoutRemindersSection)))
+            .brightness,
+        Brightness.dark);
     expect(find.text('Mon, Wed, Fri • 7:00 PM'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('layout: 320px light with permission-denied banner', (tester) async {
+  testWidgets('layout: 320px light with permission-denied banner',
+      (tester) async {
     SharedPreferences.setMockInitialValues({
       'workout_reminders_v1': jsonEncode({
-        'version': 1, 'enabled': true, 'weekdays': [1, 2, 3, 4, 5, 6, 7],
-        'hour': 6, 'minute': 5, 'timezoneId': 'Asia/Karachi',
+        'version': 1,
+        'enabled': true,
+        'weekdays': [1, 2, 3, 4, 5, 6, 7],
+        'hour': 6,
+        'minute': 5,
+        'timezoneId': 'Asia/Karachi',
       }),
     });
     service.permission = WorkoutReminderPermissionStatus.denied;

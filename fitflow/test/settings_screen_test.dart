@@ -47,6 +47,8 @@ void main() {
       ),
     );
     await settleProfileFrames(tester);
+    await tester.tap(find.text('Appearance'));
+    await settleProfileFrames(tester);
     return router;
   }
 
@@ -122,14 +124,19 @@ void main() {
       await tester.tap(tile);
       await settleProfileFrames(tester);
 
-      expect(find.byKey(BackupRestoreScreen.chooseFileButtonKey), findsOneWidget);
+      expect(
+          find.byKey(BackupRestoreScreen.chooseFileButtonKey), findsOneWidget);
       expect(AppRoutes.backupRestore, '/profile/settings/backup-restore');
     });
 
     testWidgets('reminders section remains interactive', (tester) async {
       await pumpSettings(tester);
 
+      await tester.ensureVisible(find.text('Workout reminders').first);
+      await tester.tap(find.text('Workout reminders').first);
+      await settleProfileFrames(tester);
       expect(find.text('Reminders are off.'), findsOneWidget);
+      await tester.ensureVisible(find.byType(SwitchListTile));
 
       await tester.tap(find.byType(SwitchListTile));
       await settleProfileFrames(tester);
@@ -165,7 +172,8 @@ void main() {
       await pumpSettings(
         tester,
         overrides: [
-          appearanceStorageFactoryProvider.overrideWithValue((prefs) => failing),
+          appearanceStorageFactoryProvider
+              .overrideWithValue((prefs) => failing),
         ],
       );
 
@@ -334,8 +342,8 @@ class _AppearanceDrivenApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mode = ref.watch(appearanceControllerProvider).value ??
-        AppearanceMode.system;
+    final mode =
+        ref.watch(appearanceControllerProvider).value ?? AppearanceMode.system;
     return MaterialApp.router(
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,

@@ -217,15 +217,15 @@ void main() {
       await tester.tap(find.text('Save changes'));
       await settleProfileFrames(tester, 3);
 
-      // Save is in flight: busy indicator shown, button disabled.
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      // Save is in flight: explicit busy text shown, button disabled.
+      expect(find.text('Saving…'), findsOneWidget);
       final button = tester.widget<FilledButton>(
-        find.widgetWithText(FilledButton, 'Save changes'),
+        find.widgetWithText(FilledButton, 'Saving…'),
       );
       expect(button.onPressed, isNull);
 
       // A second press while in flight must not start another write.
-      await tester.tap(find.text('Save changes'), warnIfMissed: false);
+      await tester.tap(find.text('Saving…'));
       await settleProfileFrames(tester, 3);
       expect(gated.saveCalls, 1);
 

@@ -140,7 +140,8 @@ void main() {
       );
       expect(BackupFormat.schemaVersion, 1);
       expect(
-        BackupFormat.sections.any((section) => section.toLowerCase().contains('locale')),
+        BackupFormat.sections
+            .any((section) => section.toLowerCase().contains('locale')),
         isFalse,
       );
     });
@@ -160,7 +161,8 @@ void main() {
       expect(lookupAppLocalizations(const Locale('en')).appTitle, 'FitFlow');
     });
 
-    testWidgets('unsupported system locales fall back to English', (tester) async {
+    testWidgets('unsupported system locales fall back to English',
+        (tester) async {
       for (final locale in const [
         Locale('ur', 'PK'),
         Locale('ar', 'SA'),
@@ -182,7 +184,8 @@ void main() {
   });
 
   group('dates, weekdays, and time', () {
-    test('display order follows first-day-of-week without renumbering ISO days', () {
+    test('display order follows first-day-of-week without renumbering ISO days',
+        () {
       expect(
         FitFlowLocaleFormat.weekdayDisplayOrder(0),
         [DateTime.sunday, 1, 2, 3, 4, 5, 6],
@@ -193,7 +196,8 @@ void main() {
       );
     });
 
-    testWidgets('English reminder chips are Sunday-first and stored days stay ISO',
+    testWidgets(
+        'English reminder chips are Sunday-first and stored days stay ISO',
         (tester) async {
       final service = FakeWorkoutReminderNotificationService();
       final stored = WorkoutReminderPreferences(
@@ -211,7 +215,8 @@ void main() {
               builder: (context) {
                 return Column(
                   children: [
-                    Text(WorkoutRemindersSection.scheduleSummary(context, stored)),
+                    Text(WorkoutRemindersSection.scheduleSummary(
+                        context, stored)),
                     const WorkoutRemindersSection(),
                   ],
                 );
@@ -221,9 +226,12 @@ void main() {
         ),
       );
 
+      await tester.tap(find.text('Workout reminders').first);
+      await tester.pumpAndSettle();
       expect(find.text('Mon, Wed, Fri • 7:00 PM'), findsWidgets);
       expect(stored.weekdays, {1, 3, 5});
-      final chips = tester.widgetList<FilterChip>(find.byType(FilterChip)).toList();
+      final chips =
+          tester.widgetList<FilterChip>(find.byType(FilterChip)).toList();
       expect(
         chips.map((chip) => (chip.key! as ValueKey<String>).value).toList(),
         [
@@ -236,11 +244,22 @@ void main() {
           'reminder_weekday_6',
         ],
       );
-      expect(tester.widget<FilterChip>(find.byKey(const ValueKey('reminder_weekday_1'))).selected, isTrue);
-      expect(tester.widget<FilterChip>(find.byKey(const ValueKey('reminder_weekday_7'))).selected, isFalse);
+      expect(
+          tester
+              .widget<FilterChip>(
+                  find.byKey(const ValueKey('reminder_weekday_1')))
+              .selected,
+          isTrue);
+      expect(
+          tester
+              .widget<FilterChip>(
+                  find.byKey(const ValueKey('reminder_weekday_7')))
+              .selected,
+          isFalse);
     });
 
-    testWidgets('12-hour and 24-hour clocks format the same stored time', (tester) async {
+    testWidgets('12-hour and 24-hour clocks format the same stored time',
+        (tester) async {
       Future<void> expectTime(bool use24h, String expected) async {
         await _pumpLocalized(
           tester,
@@ -258,9 +277,12 @@ void main() {
       await expectTime(true, '19:00');
     });
 
-    test('enum adapters match current English labels and do not live on the enum', () {
+    test(
+        'enum adapters match current English labels and do not live on the enum',
+        () {
       final l10n = englishAppLocalizations();
-      expect(fitnessGoalLabel(l10n, FitnessGoal.generalFitness), 'General fitness');
+      expect(fitnessGoalLabel(l10n, FitnessGoal.generalFitness),
+          'General fitness');
       expect(difficultyLabel(l10n, ExerciseDifficulty.level3), 'Level 3');
       expect(l10n.minutes(1), '1 minute');
       expect(l10n.minutes(10), '10 minutes');
@@ -282,10 +304,12 @@ void main() {
           ...original.customWorkouts.skip(1),
         ],
       );
-      final decoded = BackupCodec.decode(BackupCodec.encode(envelopeOf(unicode)));
+      final decoded =
+          BackupCodec.decode(BackupCodec.encode(envelopeOf(unicode)));
       expect(decoded.isSuccess, isTrue, reason: decoded.detail);
       expect(decoded.envelope!.data.customWorkouts.first.name, name);
-      expect(decoded.envelope!.data.customWorkouts.first.id, original.customWorkouts.first.id);
+      expect(decoded.envelope!.data.customWorkouts.first.id,
+          original.customWorkouts.first.id);
     });
 
     test('unicode and pattern-like search queries do not throw', () {
@@ -361,7 +385,8 @@ void main() {
       }
     });
 
-    testWidgets('localized English stays readable at text scale 2', (tester) async {
+    testWidgets('localized English stays readable at text scale 2',
+        (tester) async {
       await _pumpLocalized(
         tester,
         textScale: 2,

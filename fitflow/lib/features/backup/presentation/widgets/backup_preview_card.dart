@@ -45,7 +45,7 @@ class BackupPreviewCard extends StatelessWidget {
       (
         BackupCopy.previewEvidence,
         '${preview.evidencePatternCount} '
-            '${preview.evidencePatternCount == 1 ? 'pattern' : 'patterns'}'
+            '${preview.evidencePatternCount == 1 ? 'movement' : 'movements'}'
       ),
       (BackupCopy.previewHistory, '${preview.historyCount}'),
       (BackupCopy.previewCustom, '${preview.customWorkoutCount}'),
@@ -71,11 +71,13 @@ class BackupPreviewCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              BackupCopy.previewTitle,
-              style: theme.textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w600),
-            ),
+            Semantics(
+                header: true,
+                child: Text(
+                  BackupCopy.previewTitle,
+                  style: theme.textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.w600),
+                )),
             const SizedBox(height: AppDimens.itemGap),
             for (final (label, value) in rows)
               Padding(
@@ -95,6 +97,10 @@ class BackupPreviewCard extends StatelessWidget {
                 ),
               ),
             const SizedBox(height: AppDimens.itemGap),
+            const Text(BackupCopy.confirmBody),
+            const SizedBox(height: 8),
+            const Text(BackupCopy.confirmNoMerge),
+            const SizedBox(height: 16),
             FilledButton(
               key: restoreButtonKey,
               onPressed: isBusy ? null : onRestore,

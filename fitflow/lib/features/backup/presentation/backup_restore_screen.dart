@@ -1,3 +1,4 @@
+import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
 import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/app/router/app_routes.dart';
@@ -26,30 +27,13 @@ class BackupRestoreScreen extends ConsumerStatefulWidget {
 
 class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
   Future<void> _confirmRestore() async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text(BackupCopy.confirmTitle),
-        content: const Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(BackupCopy.confirmBody),
-            SizedBox(height: 12),
-            Text(BackupCopy.confirmNoMerge),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: const Text(BackupCopy.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            child: const Text(BackupCopy.restore),
-          ),
-        ],
-      ),
+    final confirmed = await FitFlowConfirmDialog.show(
+      context,
+      title: BackupCopy.confirmTitle,
+      message: '${BackupCopy.confirmBody}\n\n${BackupCopy.confirmNoMerge}',
+      confirmLabel: BackupCopy.restore,
+      cancelLabel: BackupCopy.cancel,
+      destructive: true,
     );
     if (confirmed != true || !mounted) return;
     await ref.read(backupRestoreControllerProvider.notifier).confirmRestore();
@@ -87,7 +71,8 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.backupScreenTitle)),
       body: SafeArea(
-        child: Center(
+        child: Align(
+          alignment: Alignment.topCenter,
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 640),
             child: SingleChildScrollView(
@@ -102,24 +87,18 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                     icon: Icons.save_alt_rounded,
                     title: BackupCopy.createTitle,
                     description: BackupCopy.createDescription,
-                    action: Semantics(
-                      button: true,
-                      enabled: !state.isBusy,
-                      label: state.phase == BackupRestorePhase.creating
-                          ? 'Creating backup'
-                          : BackupCopy.createButton,
-                      hint: BackupCopy.createDescription,
-                      child: FilledButton.icon(
+                    action: FilledButton.icon(
                       key: BackupRestoreScreen.createButtonKey,
                       onPressed: state.isBusy ? null : controller.createBackup,
                       icon: state.phase == BackupRestorePhase.creating
                           ? const SizedBox.square(
                               dimension: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2),
+                              child: Icon(Icons.hourglass_top, size: 18),
                             )
                           : const Icon(Icons.download_rounded),
-                      label: Text(context.l10n.backupCreate),
-                    ),
+                      label: Text(state.phase == BackupRestorePhase.creating
+                          ? context.l10n.utilitySaving
+                          : context.l10n.backupCreate),
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -127,18 +106,14 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                     icon: Icons.restore_rounded,
                     title: BackupCopy.restoreTitle,
                     description: BackupCopy.restoreDescription,
-                    action: Semantics(
-                      button: true,
-                      enabled: !state.isBusy,
-                      label: BackupCopy.chooseFileButton,
-                      hint: BackupCopy.restoreDescription,
-                      child: OutlinedButton.icon(
+                    action: OutlinedButton.icon(
                       key: BackupRestoreScreen.chooseFileButtonKey,
                       onPressed:
                           state.isBusy ? null : controller.pickAndValidate,
                       icon: const Icon(Icons.folder_open_rounded),
-                      label: Text(context.l10n.backupChooseFile),
-                    ),
+                      label: Text(state.phase == BackupRestorePhase.picking
+                          ? context.l10n.utilityUpdating
+                          : context.l10n.backupChooseFile),
                     ),
                   ),
                   if (state.preview != null) ...[
@@ -154,7 +129,7 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.lock_outline_rounded,
+                      Icon(Icons.description_outlined,
                           size: 18, color: theme.colorScheme.onSurfaceVariant),
                       const SizedBox(width: 8),
                       Expanded(
@@ -192,35 +167,31 @@ class _SectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Card(
-      margin: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppDimens.cardRadius),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppDimens.screenPadding),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              children: [
-                Icon(icon, color: theme.colorScheme.primary),
-                const SizedBox(width: AppDimens.itemGap),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: theme.textTheme.titleMedium
-                        ?.copyWith(fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(description, style: theme.textTheme.bodyMedium),
-            const SizedBox(height: AppDimens.itemGap),
-            action,
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: theme.colorScheme.primary),
+              const SizedBox(width: AppDimens.itemGap),
+              Expanded(
+                child: Semantics(
+                    header: true,
+                    child: Text(
+                      title,
+                      style: theme.textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.w600),
+                    )),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(description, style: theme.textTheme.bodyMedium),
+          const SizedBox(height: AppDimens.itemGap),
+          action,
+        ],
       ),
     );
   }

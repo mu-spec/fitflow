@@ -1,7 +1,10 @@
 import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/features/onboarding/data/user_fitness_profile.dart';
 import 'package:fitflow/features/onboarding/data/workout_preference.dart';
-import 'package:fitflow/features/onboarding/presentation/widgets/onboarding_option_card.dart';
+import 'package:fitflow/core/design/fitflow_layout.dart';
+import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
+import 'package:fitflow/l10n/enum_labels.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/features/onboarding/state/user_fitness_profile_controller.dart';
 import 'package:fitflow/features/profile/presentation/widgets/profile_editor_widgets.dart';
 import 'package:flutter/material.dart';
@@ -52,9 +55,8 @@ class _WorkoutPreferencesEditorScreenState
     if (draft == null || !_hasUnsavedChanges) return;
 
     setState(() => _saving = true);
-    final saved = await ref
-        .read(userFitnessProfileProvider.notifier)
-        .saveProfile(draft);
+    final saved =
+        await ref.read(userFitnessProfileProvider.notifier).saveProfile(draft);
     if (!mounted) return;
 
     ScaffoldMessenger.of(context)
@@ -90,24 +92,28 @@ class _WorkoutPreferencesEditorScreenState
     final profileAsync = ref.watch(userFitnessProfileProvider);
 
     return PopScope(
-      canPop: !_hasUnsavedChanges,
+      canPop: !_hasUnsavedChanges && !_saving,
       onPopInvokedWithResult: (didPop, result) {
-        if (didPop) return;
+        if (didPop || _saving) return;
         confirmDiscardEditorChanges(context);
       },
       child: Scaffold(
         appBar: AppBar(title: const Text('Workout preferences')),
         body: SafeArea(
           child: profileAsync.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, stackTrace) => const Center(
-              child: Text("Your workout preferences couldn't be loaded."),
-            ),
+            loading: () =>
+                FitFlowLoading(label: context.l10n.assessmentLoading),
+            error: (error, stackTrace) => SingleChildScrollView(
+                child: FitFlowErrorState(
+                    title: context.l10n.utilityProfileError,
+                    message: context.l10n.utilityRetryBody,
+                    action: TextButton(
+                        onPressed: () =>
+                            ref.invalidate(userFitnessProfileProvider),
+                        child: Text(context.l10n.retry)))),
             data: (profile) {
               if (profile == null) {
-                return const Center(
-                  child: Text('Fitness profile not set up'),
-                );
+                return const ProfileEditorMissingState();
               }
               _baseline ??= profile;
               _draft ??= profile;
@@ -117,7 +123,8 @@ class _WorkoutPreferencesEditorScreenState
                 padding: const EdgeInsets.all(AppDimens.screenPadding),
                 child: Center(
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 720),
+                    constraints: const BoxConstraints(
+                        maxWidth: FitFlowLayout.maxReadableWidth),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -127,11 +134,14 @@ class _WorkoutPreferencesEditorScreenState
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
+                        const SizedBox(height: 8),
+                        Text(context.l10n.utilityEditorDraft,
+                            style: theme.textTheme.bodySmall),
                         const SizedBox(height: 20),
                         for (final preference in WorkoutPreference.values)
-                          OnboardingOptionCard(
-                            label: preference.label,
-                            multiSelect: true,
+                          ProfileOptionTile(
+                            enabled: !_saving,
+                            label: preferenceLabel(context.l10n, preference),
                             selected: draft.preferences.contains(preference),
                             onSelected: () => _togglePreference(preference),
                           ),

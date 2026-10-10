@@ -169,7 +169,7 @@
     }
   },
   "reminderSectionTitle": "Workout reminders",
-  "reminderToggleTitle": "Workout reminders",
+  "reminderToggleTitle": "Enable reminders",
   "reminderToggleSubtitle": "Weekly local reminders on the days and time you choose.",
   "reminderDaysLabel": "Reminder days",
   "reminderTimeLabel": "Reminder time",
@@ -1154,5 +1154,63 @@
   "trainingMissingExercise": "Exercise unavailable",
   "trainingCustomStart": "Start",
   "trainingCustomLoading": "Loading custom workouts…",
-  "trainingCustomFix": "Fix the issues above to start this workout."
+  "trainingCustomFix": "Fix the issues above to start this workout.",
+  "utilityPreferences": "Preferences",
+  "utilityData": "Data",
+  "utilityAbout": "About",
+  "utilityAppearance": "Appearance",
+  "utilitySystemDefault": "System default",
+  "utilitySystemHelp": "Follow your device setting.",
+  "utilityLightHelp": "Always use the light theme.",
+  "utilityDarkHelp": "Always use the dark theme.",
+  "utilitySaving": "Saving…",
+  "utilityUpdating": "Updating…",
+  "utilityMovementTitle": "Movement levels",
+  "utilityMovementSummary": "How exercise variations are chosen",
+  "utilityMovementBody": "FitFlow uses a separate level for each movement to choose exercise variations. These are your current saved levels, not a health score.",
+  "utilityMovementMissing": "No movement levels saved yet.",
+  "utilityMovementError": "Your movement levels couldn’t be loaded.",
+  "utilityRetryBody": "Try loading again.",
+  "utilityNoPreferences": "No special workout preferences",
+  "utilityEditorDraft": "Changes stay here until you save.",
+  "utilityCancel": "Cancel",
+  "utilitySave": "Save changes",
+  "utilityDiscardTitle": "Discard changes?",
+  "utilityDiscardBody": "Your unsaved changes will be lost.",
+  "utilityKeepEditing": "Keep editing",
+  "utilityDiscard": "Discard",
+  "utilityGoal": "Goal",
+  "utilityExperience": "Training experience",
+  "utilityDuration": "Typical workout time",
+  "utilityEnvironment": "Training environment",
+  "utilityLoadingReminders": "Loading reminders…",
+  "utilitySavedSchedule": "Choose days and a time. Changes save as you make them.",
+  "utilityProfileError": "Your profile couldn't be loaded.",
+  "utilityProfileMissing": "Fitness profile not set up",
+  "utilityProfileSetupBody": "Answer a few quick questions so FitFlow can tailor your workouts.",
+  "utilityCurrentValue": "Current: {value}",
+  "@utilityCurrentValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "utilitySelectedValue": "Selected: {value}",
+  "@utilitySelectedValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "utilitySettingsSummary": "Appearance, reminders, and backups.",
+  "utilityEditSection": "Edit {section}",
+  "@utilityEditSection": {
+    "placeholders": {
+      "section": {
+        "type": "String"
+      }
+    }
+  }
 }

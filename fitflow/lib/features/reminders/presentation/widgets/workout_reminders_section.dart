@@ -1,4 +1,5 @@
-import 'package:fitflow/app/config/app_dimensions.dart';
+import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
+import 'package:fitflow/features/settings/presentation/widgets/utility_presentation.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/l10n/locale_format.dart';
 import 'package:fitflow/features/reminders/application/workout_reminders_controller.dart';
@@ -32,6 +33,24 @@ class WorkoutRemindersSection extends ConsumerStatefulWidget {
 class _WorkoutRemindersSectionState
     extends ConsumerState<WorkoutRemindersSection> {
   late final AppLifecycleListener _lifecycle;
+  bool _acting = false;
+
+  // Some disabled-preference writes and test notifications do not publish a
+  // controller busy state. Serialize this screen's actions, never its scheduler.
+  Future<void> _run(Future<dynamic> Function() action,
+      {WorkoutReminderMessage failure =
+          WorkoutReminderMessage.saveFailed}) async {
+    final state = ref.read(workoutRemindersControllerProvider);
+    if (_acting || state.isBusy || !state.isLoaded) return;
+    setState(() => _acting = true);
+    try {
+      await action();
+    } catch (_) {
+      if (mounted) _showMessage(failure);
+    } finally {
+      if (mounted) setState(() => _acting = false);
+    }
+  }
 
   @override
   void initState() {
@@ -90,7 +109,8 @@ class _WorkoutRemindersSectionState
     ref.listen<WorkoutRemindersState>(workoutRemindersControllerProvider,
         (previous, next) {
       if (next.message != null &&
-          (previous?.messageId != next.messageId || previous?.message == null)) {
+          (previous?.messageId != next.messageId ||
+              previous?.message == null)) {
         _showMessage(next.message!);
       }
     });
@@ -101,109 +121,119 @@ class _WorkoutRemindersSectionState
     final controller = ref.read(workoutRemindersControllerProvider.notifier);
     final prefs = state.preferences;
     final status = state.status;
+    final busy = _acting || state.isBusy || !state.isLoaded;
+    final l = context.l10n;
+    if (!state.isLoaded) {
+      return UtilityDisclosure(
+          title: l.reminderSectionTitle,
+          summary: l.utilityLoadingReminders,
+          children: [FitFlowLoading(label: l.utilityLoadingReminders)]);
+    }
+    final statusText = switch (status) {
+      WorkoutReminderScheduleStatus.off => l.reminderStatusOff,
+      WorkoutReminderScheduleStatus.scheduled => l.reminderStatusScheduled,
+      WorkoutReminderScheduleStatus.permissionBlocked =>
+        l.reminderStatusBlocked,
+      WorkoutReminderScheduleStatus.scheduleError => l.reminderStatusError,
+    };
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return UtilityDisclosure(
+      title: l.reminderSectionTitle,
+      summary: busy
+          ? l.utilityUpdating
+          : '$statusText\n${scheduleSummary(context, prefs)}',
       children: [
-        Text(
-          context.l10n.reminderSectionTitle,
-          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+        if (busy) Text(l.utilityUpdating),
+        SwitchListTile.adaptive(
+          contentPadding: EdgeInsets.zero,
+          title: Text(context.l10n.reminderToggleTitle),
+          subtitle: Text(context.l10n.reminderToggleSubtitle),
+          value: prefs.enabled,
+          onChanged: busy
+              ? null
+              : (value) {
+                  // ignore: discarded_futures
+                  _run(() => controller.setEnabled(value));
+                },
         ),
-        const SizedBox(height: AppDimens.itemGap),
-        Card(
-          margin: EdgeInsets.zero,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SwitchListTile.adaptive(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(context.l10n.reminderToggleTitle),
-                  subtitle: Text(context.l10n.reminderToggleSubtitle),
-                  value: prefs.enabled,
-                  onChanged: state.isBusy
-                      ? null
-                      : (value) {
-                          // ignore: discarded_futures
-                          controller.setEnabled(value);
-                        },
-                ),
-                const SizedBox(height: 4),
-                _StatusLine(status: status),
-                if (status == WorkoutReminderScheduleStatus.permissionBlocked ||
-                    state.permission == WorkoutReminderPermissionStatus.denied) ...[
-                  const SizedBox(height: 8),
-                  Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        // ignore: discarded_futures
-                        controller.openNotificationSettings();
-                      },
-                      icon: const Icon(Icons.settings_outlined),
-                      label: Text(context.l10n.reminderOpenSettings),
-                    ),
-                  ),
-                ],
-                const Divider(height: 24),
-                Text(context.l10n.reminderDaysLabel,
-                    style: theme.textTheme.labelLarge),
-                const SizedBox(height: 8),
-                _WeekdayPicker(
-                  selected: prefs.weekdays,
-                  enabled: !state.isBusy,
-                  onToggle: (weekday) {
-                    // ignore: discarded_futures
-                    controller.toggleWeekday(weekday);
-                  },
-                ),
-                if (prefs.weekdays.isEmpty) ...[
-                  const SizedBox(height: 6),
-                  Text(
-                    context.l10n.reminderSelectDay,
-                    style: theme.textTheme.bodySmall?.copyWith(color: colors.error),
-                  ),
-                ],
-                const SizedBox(height: 4),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.schedule_outlined),
-                  title: Text(context.l10n.reminderTimeLabel),
-                  subtitle: Text(_formatTime(context, prefs.time)),
-                  trailing: const Icon(Icons.edit_outlined),
-                  enabled: !state.isBusy,
-                  onTap: () {
-                    // ignore: discarded_futures
-                    _pickTime(prefs.time);
-                  },
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  scheduleSummary(context, prefs),
-                  style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  context.l10n.reminderInexactNote,
-                  style: theme.textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
-                ),
-                const SizedBox(height: 12),
-                Align(
-                  alignment: AlignmentDirectional.centerStart,
-                  child: FilledButton.tonalIcon(
-                    onPressed: state.canSendTest
-                        ? () {
-                            // ignore: discarded_futures
-                            controller.sendTestNotification();
-                          }
-                        : null,
-                    icon: const Icon(Icons.notifications_active_outlined),
-                    label: Text(context.l10n.reminderSendTest),
-                  ),
-                ),
-              ],
+        const SizedBox(height: 4),
+        _StatusLine(status: status),
+        if (status == WorkoutReminderScheduleStatus.permissionBlocked ||
+            state.permission == WorkoutReminderPermissionStatus.denied) ...[
+          const SizedBox(height: 8),
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: OutlinedButton.icon(
+              onPressed: busy
+                  ? null
+                  : () {
+                      // ignore: discarded_futures
+                      _run(controller.openNotificationSettings,
+                          failure: WorkoutReminderMessage.settingsUnavailable);
+                    },
+              icon: const Icon(Icons.settings_outlined),
+              label: Text(context.l10n.reminderOpenSettings),
             ),
+          ),
+        ],
+        const Divider(height: 24),
+        Text(l.utilitySavedSchedule),
+        const SizedBox(height: 12),
+        Text(context.l10n.reminderDaysLabel, style: theme.textTheme.labelLarge),
+        const SizedBox(height: 8),
+        _WeekdayPicker(
+          selected: prefs.weekdays,
+          enabled: !busy,
+          onToggle: (weekday) {
+            // ignore: discarded_futures
+            _run(() => controller.toggleWeekday(weekday));
+          },
+        ),
+        if (prefs.weekdays.isEmpty) ...[
+          const SizedBox(height: 6),
+          Text(
+            context.l10n.reminderSelectDay,
+            style: theme.textTheme.bodySmall?.copyWith(color: colors.error),
+          ),
+        ],
+        const SizedBox(height: 4),
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: const Icon(Icons.schedule_outlined),
+          title: Text(context.l10n.reminderTimeLabel),
+          subtitle: Text(_formatTime(context, prefs.time)),
+          trailing: const Icon(Icons.edit_outlined),
+          enabled: !busy,
+          onTap: () {
+            // ignore: discarded_futures
+            _run(() => _pickTime(prefs.time));
+          },
+        ),
+        const SizedBox(height: 4),
+        Text(
+          scheduleSummary(context, prefs),
+          style:
+              theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          context.l10n.reminderInexactNote,
+          style: theme.textTheme.bodySmall
+              ?.copyWith(color: colors.onSurfaceVariant),
+        ),
+        const SizedBox(height: 12),
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: FilledButton.tonalIcon(
+            onPressed: state.canSendTest && !busy
+                ? () {
+                    // ignore: discarded_futures
+                    _run(controller.sendTestNotification,
+                        failure: WorkoutReminderMessage.testFailed);
+                  }
+                : null,
+            icon: const Icon(Icons.notifications_active_outlined),
+            label: Text(context.l10n.reminderSendTest),
           ),
         ),
       ],
@@ -269,7 +299,8 @@ class _StatusLine extends StatelessWidget {
         Icon(icon, size: 18, color: color),
         const SizedBox(width: 8),
         Expanded(
-          child: Text(text, style: theme.textTheme.bodyMedium?.copyWith(color: color)),
+          child: Text(text,
+              style: theme.textTheme.bodyMedium?.copyWith(color: color)),
         ),
       ],
     );
@@ -298,24 +329,19 @@ class _WeekdayPicker extends StatelessWidget {
       runSpacing: 6,
       children: [
         for (final weekday in order)
-          Semantics(
-            label: FitFlowLocaleFormat.fullWeekday(material, weekday),
-            button: true,
-            selected: selected.contains(weekday),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
-              child: ExcludeSemantics(
-                child: FilterChip(
-                  key: ValueKey<String>('reminder_weekday_$weekday'),
-                  label: Text(
-                    FitFlowLocaleFormat.narrowWeekday(material, weekday),
-                  ),
-                  showCheckmark: true,
-                  selected: selected.contains(weekday),
-                  onSelected: enabled ? (_) => onToggle(weekday) : null,
-                  materialTapTargetSize: MaterialTapTargetSize.padded,
-                ),
-              ),
+          ConstrainedBox(
+            constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+            child: FilterChip(
+              key: ValueKey<String>('reminder_weekday_$weekday'),
+              label: Semantics(
+                  label: FitFlowLocaleFormat.fullWeekday(material, weekday),
+                  excludeSemantics: true,
+                  child: Text(
+                      FitFlowLocaleFormat.narrowWeekday(material, weekday))),
+              showCheckmark: true,
+              selected: selected.contains(weekday),
+              onSelected: enabled ? (_) => onToggle(weekday) : null,
+              materialTapTargetSize: MaterialTapTargetSize.padded,
             ),
           ),
       ],

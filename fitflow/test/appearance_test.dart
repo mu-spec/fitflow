@@ -16,8 +16,7 @@ void main() {
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
-      final initial =
-          await container.read(appearanceControllerProvider.future);
+      final initial = await container.read(appearanceControllerProvider.future);
       expect(initial, AppearanceMode.system);
 
       await container
@@ -37,8 +36,7 @@ void main() {
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
-      final initial =
-          await container.read(appearanceControllerProvider.future);
+      final initial = await container.read(appearanceControllerProvider.future);
       expect(initial, AppearanceMode.light);
     });
 
@@ -70,7 +68,10 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       await launchOnProfileTab(tester);
 
+      await tester.ensureVisible(find.text('Settings'));
       await tester.tap(find.text('Settings'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Appearance'));
       await tester.pumpAndSettle();
 
       expect(find.text('Appearance'), findsOneWidget);
@@ -84,7 +85,10 @@ void main() {
     ) async {
       SharedPreferences.setMockInitialValues({});
       await launchOnProfileTab(tester);
+      await tester.ensureVisible(find.text('Settings'));
       await tester.tap(find.text('Settings'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Appearance'));
       await tester.pumpAndSettle();
 
       await tester.tap(find.text('Dark'));

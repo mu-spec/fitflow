@@ -1,3 +1,7 @@
+import 'package:fitflow/core/design/fitflow_layout.dart';
+import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
+import 'package:fitflow/features/settings/presentation/widgets/utility_presentation.dart';
+import 'package:fitflow/l10n/enum_labels.dart';
 import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
@@ -41,9 +45,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       return;
     }
     setState(() => _savingAppearance = true);
-    final saved = await ref
-        .read(appearanceControllerProvider.notifier)
-        .setMode(mode);
+    final saved =
+        await ref.read(appearanceControllerProvider.notifier).setMode(mode);
     if (!mounted) {
       return;
     }
@@ -63,69 +66,84 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final mode = ref.watch(appearanceControllerProvider).value ??
-        AppearanceMode.system;
+    final appearance = ref.watch(appearanceControllerProvider);
+    final mode = appearance.valueOrNull ?? AppearanceMode.system;
+    final l = context.l10n;
 
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.settingsTitle)),
       body: SafeArea(
-        child: Center(
+        child: Align(
+          alignment: Alignment.topCenter,
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 720),
+            constraints:
+                const BoxConstraints(maxWidth: FitFlowLayout.maxReadableWidth),
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(AppDimens.screenPadding),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _sectionTitle(theme, 'Appearance'),
-                  const SizedBox(height: AppDimens.itemGap),
-                  RadioGroup<AppearanceMode>(
-                    groupValue: mode,
-                    onChanged: (value) {
-                      // Duplicate in-flight writes are blocked here and in
-                      // the controller; the tiles are also disabled below.
-                      if (value == null || _savingAppearance) {
-                        return;
-                      }
-                      // ignore: discarded_futures
-                      _selectAppearance(value);
-                    },
-                    child: Card(
-                      margin: EdgeInsets.zero,
-                      child: Column(
-                        children: [
-                          _AppearanceOption(
-                            title: 'System default',
-                            subtitle: 'Follow your device setting.',
-                            value: AppearanceMode.system,
-                            selected: mode == AppearanceMode.system,
-                            enabled: !_savingAppearance,
-                          ),
-                          _AppearanceOption(
-                            title: 'Light',
-                            subtitle: 'Always use the light theme.',
-                            value: AppearanceMode.light,
-                            selected: mode == AppearanceMode.light,
-                            enabled: !_savingAppearance,
-                          ),
-                          _AppearanceOption(
-                            title: 'Dark',
-                            subtitle: 'Always use the dark theme.',
-                            value: AppearanceMode.dark,
-                            selected: mode == AppearanceMode.dark,
-                            enabled: !_savingAppearance,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  UtilityHeading(l.utilityPreferences),
+                  UtilityDisclosure(
+                      title: l.utilityAppearance,
+                      summary: _savingAppearance
+                          ? l.utilitySaving
+                          : appearance.isLoading
+                              ? l.utilityUpdating
+                              : appearance.hasError
+                                  ? l.utilityRetryBody
+                                  : l.utilityCurrentValue(
+                                      mode == AppearanceMode.system
+                                          ? l.utilitySystemDefault
+                                          : appearanceModeLabel(l, mode)),
+                      children: [
+                        if (appearance.isLoading)
+                          FitFlowLoading(label: l.utilityUpdating)
+                        else if (appearance.hasError)
+                          FitFlowErrorState(
+                              title: l.utilityAppearance,
+                              message: l.utilityRetryBody,
+                              action: TextButton(
+                                  onPressed: () => ref
+                                      .invalidate(appearanceControllerProvider),
+                                  child: Text(l.retry)))
+                        else
+                          RadioGroup<AppearanceMode>(
+                              groupValue: mode,
+                              onChanged: (value) {
+                                if (value == null || _savingAppearance) return;
+                                // ignore: discarded_futures
+                                _selectAppearance(value);
+                              },
+                              child: Column(children: [
+                                _AppearanceOption(
+                                    title: l.utilitySystemDefault,
+                                    subtitle: l.utilitySystemHelp,
+                                    value: AppearanceMode.system,
+                                    selected: mode == AppearanceMode.system,
+                                    enabled: !_savingAppearance),
+                                _AppearanceOption(
+                                    title: l.appearanceLight,
+                                    subtitle: l.utilityLightHelp,
+                                    value: AppearanceMode.light,
+                                    selected: mode == AppearanceMode.light,
+                                    enabled: !_savingAppearance),
+                                _AppearanceOption(
+                                    title: l.appearanceDark,
+                                    subtitle: l.utilityDarkHelp,
+                                    value: AppearanceMode.dark,
+                                    selected: mode == AppearanceMode.dark,
+                                    enabled: !_savingAppearance),
+                              ])),
+                      ]),
                   const SizedBox(height: 24),
                   const WorkoutRemindersSection(),
                   const SizedBox(height: 24),
-                  _sectionTitle(theme, 'Data'),
+                  UtilityHeading(l.utilityData),
                   const SizedBox(height: AppDimens.itemGap),
                   const BackupRestoreSettingsEntry(),
                   const SizedBox(height: AppDimens.itemGap),
+                  UtilityHeading(l.utilityAbout),
                   const _PrivacyPolicyEntry(),
                   const SizedBox(height: 24),
                   Text(
@@ -142,14 +160,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       ),
     );
   }
-
-  Widget _sectionTitle(ThemeData theme, String title) {
-    return Text(
-      title,
-      style: theme.textTheme.titleMedium
-          ?.copyWith(fontWeight: FontWeight.w600),
-    );
-  }
 }
 
 class _PrivacyPolicyEntry extends StatelessWidget {
@@ -159,9 +169,8 @@ class _PrivacyPolicyEntry extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.zero,
-      clipBehavior: Clip.antiAlias,
+    return Material(
+      type: MaterialType.transparency,
       child: ListTile(
         key: tileKey,
         leading: const Icon(Icons.privacy_tip_outlined),
@@ -193,21 +202,12 @@ class _AppearanceOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      enabled: enabled,
-      selected: selected,
-      inMutuallyExclusiveGroup: true,
-      label: selected ? '$title, selected' : title,
-      hint: subtitle,
-      child: ExcludeSemantics(
-        child: RadioListTile<AppearanceMode>(
-          title: Text(title),
-          subtitle: Text(subtitle),
-          value: value,
-          enabled: enabled,
-        ),
-      ),
-    );
+    return RadioListTile<AppearanceMode>(
+        contentPadding: EdgeInsets.zero,
+        title: Text(title),
+        subtitle: Text(subtitle),
+        value: value,
+        selected: selected,
+        enabled: enabled);
   }
 }

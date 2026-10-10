@@ -98,6 +98,7 @@ Future<GoRouter> pumpProfileApp(
   List<Override> overrides = const [],
   Size size = const Size(390, 844),
   double textScale = 1.0,
+  bool expandFitness = true,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1.0;
@@ -119,6 +120,21 @@ Future<GoRouter> pumpProfileApp(
     ),
   );
   await settleProfileFrames(tester);
+  // Functional editor tests exercise all choices after actual disclosure taps.
+  if (expandFitness &&
+      initialLocation == AppRoutes.fitnessProfile &&
+      find.text('Goal').evaluate().isNotEmpty) {
+    for (final title in [
+      'Goal',
+      'Training experience',
+      'Typical workout time',
+      'Training environment'
+    ]) {
+      await tester.ensureVisible(find.text(title));
+      await tester.tap(find.text(title));
+      await settleProfileFrames(tester);
+    }
+  }
   return router;
 }
 
@@ -134,6 +150,25 @@ Future<void> settleProfileFrames(WidgetTester tester, [int frames = 8]) async {
 /// view first when the editor content is longer than the viewport.
 Future<void> tapOption(WidgetTester tester, String label) async {
   final finder = find.text(label);
+  if (finder.evaluate().isEmpty) {
+    final groups = <String, List<String>>{
+      'Goal': FitnessGoal.values.map((v) => v.label).toList(),
+      'Training experience':
+          ExperienceLevel.values.map((v) => v.label).toList(),
+      'Typical workout time':
+          WorkoutDuration.values.map((v) => v.label).toList(),
+      'Training environment':
+          TrainingEnvironment.values.map((v) => v.label).toList(),
+    };
+    for (final entry in groups.entries) {
+      if (entry.value.contains(label)) {
+        await tester.ensureVisible(find.text(entry.key));
+        await tester.tap(find.text(entry.key));
+        await settleProfileFrames(tester);
+        break;
+      }
+    }
+  }
   await tester.ensureVisible(finder);
   await tester.pump(const Duration(milliseconds: 100));
   await tester.tap(finder);
@@ -142,9 +177,8 @@ Future<void> tapOption(WidgetTester tester, String label) async {
 
 /// Whether the onboarding-style option card with [label] is selected.
 bool optionCardSelected(WidgetTester tester, String label) {
-  final card = find
-      .ancestor(of: find.text(label), matching: find.byType(InkWell))
-      .first;
+  final card =
+      find.ancestor(of: find.text(label), matching: find.byType(InkWell)).first;
   final icon = find.descendant(of: card, matching: find.byType(Icon));
   final iconWidget = tester.widget<Icon>(icon);
   return iconWidget.icon == Icons.check_circle ||

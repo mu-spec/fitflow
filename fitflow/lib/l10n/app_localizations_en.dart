@@ -416,7 +416,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reminderSectionTitle => 'Workout reminders';
 
   @override
-  String get reminderToggleTitle => 'Workout reminders';
+  String get reminderToggleTitle => 'Enable reminders';
 
   @override
   String get reminderToggleSubtitle =>
@@ -2104,4 +2104,124 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get trainingCustomFix => 'Fix the issues above to start this workout.';
+
+  @override
+  String get utilityPreferences => 'Preferences';
+
+  @override
+  String get utilityData => 'Data';
+
+  @override
+  String get utilityAbout => 'About';
+
+  @override
+  String get utilityAppearance => 'Appearance';
+
+  @override
+  String get utilitySystemDefault => 'System default';
+
+  @override
+  String get utilitySystemHelp => 'Follow your device setting.';
+
+  @override
+  String get utilityLightHelp => 'Always use the light theme.';
+
+  @override
+  String get utilityDarkHelp => 'Always use the dark theme.';
+
+  @override
+  String get utilitySaving => 'Saving…';
+
+  @override
+  String get utilityUpdating => 'Updating…';
+
+  @override
+  String get utilityMovementTitle => 'Movement levels';
+
+  @override
+  String get utilityMovementSummary => 'How exercise variations are chosen';
+
+  @override
+  String get utilityMovementBody =>
+      'FitFlow uses a separate level for each movement to choose exercise variations. These are your current saved levels, not a health score.';
+
+  @override
+  String get utilityMovementMissing => 'No movement levels saved yet.';
+
+  @override
+  String get utilityMovementError => 'Your movement levels couldn’t be loaded.';
+
+  @override
+  String get utilityRetryBody => 'Try loading again.';
+
+  @override
+  String get utilityNoPreferences => 'No special workout preferences';
+
+  @override
+  String get utilityEditorDraft => 'Changes stay here until you save.';
+
+  @override
+  String get utilityCancel => 'Cancel';
+
+  @override
+  String get utilitySave => 'Save changes';
+
+  @override
+  String get utilityDiscardTitle => 'Discard changes?';
+
+  @override
+  String get utilityDiscardBody => 'Your unsaved changes will be lost.';
+
+  @override
+  String get utilityKeepEditing => 'Keep editing';
+
+  @override
+  String get utilityDiscard => 'Discard';
+
+  @override
+  String get utilityGoal => 'Goal';
+
+  @override
+  String get utilityExperience => 'Training experience';
+
+  @override
+  String get utilityDuration => 'Typical workout time';
+
+  @override
+  String get utilityEnvironment => 'Training environment';
+
+  @override
+  String get utilityLoadingReminders => 'Loading reminders…';
+
+  @override
+  String get utilitySavedSchedule =>
+      'Choose days and a time. Changes save as you make them.';
+
+  @override
+  String get utilityProfileError => 'Your profile couldn\'t be loaded.';
+
+  @override
+  String get utilityProfileMissing => 'Fitness profile not set up';
+
+  @override
+  String get utilityProfileSetupBody =>
+      'Answer a few quick questions so FitFlow can tailor your workouts.';
+
+  @override
+  String utilityCurrentValue(String value) {
+    return 'Current: $value';
+  }
+
+  @override
+  String utilitySelectedValue(String value) {
+    return 'Selected: $value';
+  }
+
+  @override
+  String get utilitySettingsSummary => 'Appearance, reminders, and backups.';
+
+  @override
+  String utilityEditSection(String section) {
+    return 'Edit $section';
+  }
 }

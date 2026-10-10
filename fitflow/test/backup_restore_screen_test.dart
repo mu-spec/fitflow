@@ -238,7 +238,7 @@ void main() {
       expect(find.text('Dark'), findsOneWidget);
       expect(find.text(BackupCopy.included), findsNWidgets(2));
       expect(find.text('3'), findsOneWidget); // saved workouts
-      expect(find.text('2 patterns'), findsOneWidget);
+      expect(find.text('2 movements'), findsOneWidget);
       // Not labelled as a lifetime total.
       final allText = tester
           .widgetList<Text>(find.byType(Text))
@@ -264,18 +264,24 @@ void main() {
       await tester
           .ensureVisible(find.byKey(BackupPreviewCard.restoreButtonKey));
       await tester.tap(find.byKey(BackupPreviewCard.restoreButtonKey));
-      await settle(tester);
+      await tester.pumpAndSettle();
       expect(find.text(BackupCopy.confirmTitle), findsOneWidget);
       expect(find.text('Restore FitFlow backup?'), findsOneWidget);
+      expect(
+          find.descendant(
+              of: find.byType(AlertDialog),
+              matching: find.text(
+                  '${BackupCopy.confirmBody}\n\n${BackupCopy.confirmNoMerge}')),
+          findsOneWidget);
       expect(find.text(BackupCopy.confirmBody), findsOneWidget);
       expect(find.text(BackupCopy.confirmNoMerge), findsOneWidget);
       expect(
           find.widgetWithText(TextButton, BackupCopy.cancel), findsOneWidget);
-      expect(find.widgetWithText(FilledButton, BackupCopy.restore),
-          findsOneWidget);
+      expect(
+          find.widgetWithText(TextButton, BackupCopy.restore), findsOneWidget);
 
       await tester.tap(find.widgetWithText(TextButton, BackupCopy.cancel));
-      await settle(tester);
+      await tester.pumpAndSettle();
       expect(find.text(BackupCopy.confirmTitle), findsNothing);
       expect(find.byType(BackupPreviewCard), findsOneWidget,
           reason: 'preview kept');
@@ -294,7 +300,7 @@ void main() {
           .ensureVisible(find.byKey(BackupPreviewCard.restoreButtonKey));
       await tester.tap(find.byKey(BackupPreviewCard.restoreButtonKey));
       await settle(tester);
-      await tester.tap(find.widgetWithText(FilledButton, BackupCopy.restore));
+      await tester.tap(find.widgetWithText(TextButton, BackupCopy.restore));
       await settle(tester);
 
       expect(prefs.getString(AppearanceStorage.appearanceKey), 'dark');
@@ -330,7 +336,7 @@ void main() {
           .ensureVisible(find.byKey(BackupPreviewCard.restoreButtonKey));
       await tester.tap(find.byKey(BackupPreviewCard.restoreButtonKey));
       await settle(tester);
-      await tester.tap(find.widgetWithText(FilledButton, BackupCopy.restore));
+      await tester.tap(find.widgetWithText(TextButton, BackupCopy.restore));
       await settle(tester);
       await tester.pump(AppConstants.splashDelay);
       await settle(tester, 8);
@@ -360,7 +366,7 @@ void main() {
           .ensureVisible(find.byKey(BackupPreviewCard.restoreButtonKey));
       await tester.tap(find.byKey(BackupPreviewCard.restoreButtonKey));
       await settle(tester);
-      await tester.tap(find.widgetWithText(FilledButton, BackupCopy.restore));
+      await tester.tap(find.widgetWithText(TextButton, BackupCopy.restore));
       await settle(tester);
       expect(find.text(BackupCopy.restoreFailedRolledBack), findsOneWidget);
       expect(router.state.uri.path, AppRoutes.backupRestore);

@@ -217,6 +217,10 @@ void main() {
       home: const SettingsScreen(),
     );
     expect(find.text('Appearance'), findsOneWidget);
+    await tester.ensureVisible(find.text('Appearance'));
+    await tester.tap(find.text('Appearance'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Light'));
     expect(find.text('Light'), findsOneWidget);
     expect(find.text('Backup & restore'), findsWidgets);
 

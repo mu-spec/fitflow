@@ -877,7 +877,7 @@ abstract class AppLocalizations {
   /// No description provided for @reminderToggleTitle.
   ///
   /// In en, this message translates to:
-  /// **'Workout reminders'**
+  /// **'Enable reminders'**
   String get reminderToggleTitle;
 
   /// No description provided for @reminderToggleSubtitle.
@@ -3556,6 +3556,228 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Fix the issues above to start this workout.'**
   String get trainingCustomFix;
+
+  /// No description provided for @utilityPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences'**
+  String get utilityPreferences;
+
+  /// No description provided for @utilityData.
+  ///
+  /// In en, this message translates to:
+  /// **'Data'**
+  String get utilityData;
+
+  /// No description provided for @utilityAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get utilityAbout;
+
+  /// No description provided for @utilityAppearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get utilityAppearance;
+
+  /// No description provided for @utilitySystemDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'System default'**
+  String get utilitySystemDefault;
+
+  /// No description provided for @utilitySystemHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow your device setting.'**
+  String get utilitySystemHelp;
+
+  /// No description provided for @utilityLightHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Always use the light theme.'**
+  String get utilityLightHelp;
+
+  /// No description provided for @utilityDarkHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Always use the dark theme.'**
+  String get utilityDarkHelp;
+
+  /// No description provided for @utilitySaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving…'**
+  String get utilitySaving;
+
+  /// No description provided for @utilityUpdating.
+  ///
+  /// In en, this message translates to:
+  /// **'Updating…'**
+  String get utilityUpdating;
+
+  /// No description provided for @utilityMovementTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Movement levels'**
+  String get utilityMovementTitle;
+
+  /// No description provided for @utilityMovementSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'How exercise variations are chosen'**
+  String get utilityMovementSummary;
+
+  /// No description provided for @utilityMovementBody.
+  ///
+  /// In en, this message translates to:
+  /// **'FitFlow uses a separate level for each movement to choose exercise variations. These are your current saved levels, not a health score.'**
+  String get utilityMovementBody;
+
+  /// No description provided for @utilityMovementMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'No movement levels saved yet.'**
+  String get utilityMovementMissing;
+
+  /// No description provided for @utilityMovementError.
+  ///
+  /// In en, this message translates to:
+  /// **'Your movement levels couldn’t be loaded.'**
+  String get utilityMovementError;
+
+  /// No description provided for @utilityRetryBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Try loading again.'**
+  String get utilityRetryBody;
+
+  /// No description provided for @utilityNoPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'No special workout preferences'**
+  String get utilityNoPreferences;
+
+  /// No description provided for @utilityEditorDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes stay here until you save.'**
+  String get utilityEditorDraft;
+
+  /// No description provided for @utilityCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get utilityCancel;
+
+  /// No description provided for @utilitySave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get utilitySave;
+
+  /// No description provided for @utilityDiscardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard changes?'**
+  String get utilityDiscardTitle;
+
+  /// No description provided for @utilityDiscardBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your unsaved changes will be lost.'**
+  String get utilityDiscardBody;
+
+  /// No description provided for @utilityKeepEditing.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get utilityKeepEditing;
+
+  /// No description provided for @utilityDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get utilityDiscard;
+
+  /// No description provided for @utilityGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal'**
+  String get utilityGoal;
+
+  /// No description provided for @utilityExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Training experience'**
+  String get utilityExperience;
+
+  /// No description provided for @utilityDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Typical workout time'**
+  String get utilityDuration;
+
+  /// No description provided for @utilityEnvironment.
+  ///
+  /// In en, this message translates to:
+  /// **'Training environment'**
+  String get utilityEnvironment;
+
+  /// No description provided for @utilityLoadingReminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading reminders…'**
+  String get utilityLoadingReminders;
+
+  /// No description provided for @utilitySavedSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose days and a time. Changes save as you make them.'**
+  String get utilitySavedSchedule;
+
+  /// No description provided for @utilityProfileError.
+  ///
+  /// In en, this message translates to:
+  /// **'Your profile couldn\'t be loaded.'**
+  String get utilityProfileError;
+
+  /// No description provided for @utilityProfileMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Fitness profile not set up'**
+  String get utilityProfileMissing;
+
+  /// No description provided for @utilityProfileSetupBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer a few quick questions so FitFlow can tailor your workouts.'**
+  String get utilityProfileSetupBody;
+
+  /// No description provided for @utilityCurrentValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Current: {value}'**
+  String utilityCurrentValue(String value);
+
+  /// No description provided for @utilitySelectedValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected: {value}'**
+  String utilitySelectedValue(String value);
+
+  /// No description provided for @utilitySettingsSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance, reminders, and backups.'**
+  String get utilitySettingsSummary;
+
+  /// No description provided for @utilityEditSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit {section}'**
+  String utilityEditSection(String section);
 }
 
 class _AppLocalizationsDelegate
