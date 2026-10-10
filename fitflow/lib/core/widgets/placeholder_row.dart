@@ -1,4 +1,5 @@
 import 'package:fitflow/app/config/app_dimensions.dart';
+import 'package:fitflow/core/design/widgets/fitflow_surfaces.dart';
 import 'package:flutter/material.dart';
 
 /// A list-style row used as a placeholder item on feature screens.
@@ -18,27 +19,12 @@ class PlaceholderRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Card(
+    return FitFlowListRow(
+      icon: icon,
+      title: title,
+      subtitle: subtitle,
+      onTap: onTap,
       margin: const EdgeInsets.only(bottom: AppDimens.itemGap),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: ListTile(
-          onTap: onTap,
-          leading: Icon(icon),
-          title: Text(title),
-          subtitle: Text(
-            subtitle,
-            style: theme.textTheme.bodyMedium
-                ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-          ),
-          trailing: Icon(
-            Icons.chevron_right,
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
-      ),
     );
   }
 }

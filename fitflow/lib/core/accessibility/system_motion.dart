@@ -1,3 +1,4 @@
+import 'package:fitflow/core/design/fitflow_motion.dart';
 import 'package:flutter/material.dart';
 
 /// System reduced-motion helpers. FitFlow does not store its own motion
@@ -13,6 +14,15 @@ class SystemMotion {
   /// Decorative motion duration. Functional state changes still complete.
   static Duration duration(BuildContext context, Duration normal) =>
       reduced(context) ? Duration.zero : normal;
+
+  static Duration micro(BuildContext context) =>
+      duration(context, FitFlowMotion.micro);
+
+  static Duration standard(BuildContext context) =>
+      duration(context, FitFlowMotion.standard);
+
+  static Duration emphasized(BuildContext context) =>
+      duration(context, FitFlowMotion.emphasized);
 }
 
 /// Page transition that keeps the normal Material zoom for everyone else and
@@ -26,7 +36,11 @@ class FitFlowPageTransitionsBuilder extends PageTransitionsBuilder {
 
   @override
   Duration get transitionDuration =>
-      reducedMotion ? Duration.zero : _zoom.transitionDuration;
+      reducedMotion ? Duration.zero : FitFlowMotion.emphasized;
+
+  @override
+  Duration get reverseTransitionDuration =>
+      reducedMotion ? Duration.zero : FitFlowMotion.standard;
 
   @override
   Widget buildTransitions<T>(

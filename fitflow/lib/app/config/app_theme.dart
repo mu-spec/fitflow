@@ -1,77 +1,16 @@
-import 'package:fitflow/app/config/app_dimensions.dart';
-import 'package:fitflow/core/accessibility/system_motion.dart';
+import 'package:fitflow/core/design/fitflow_colors.dart';
+import 'package:fitflow/core/design/fitflow_theme_data.dart';
 import 'package:flutter/material.dart';
 
-/// Centralized FitFlow Material 3 themes.
+/// Public theme entry. Tokens live in `core/design`; this keeps the existing
+/// `AppTheme.light` / `AppTheme.dark` call sites stable.
 class AppTheme {
-  AppTheme._();
+  const AppTheme._();
 
-  static const Color seedColor = Color(0xFF167A66);
+  /// Provisional brand color. Not a locked logo color.
+  static const Color seedColor = FitFlowColors.brandPrimary;
 
-  static ThemeData get light => _build(Brightness.light);
+  static ThemeData get light => FitFlowThemeData.light;
 
-  static ThemeData get dark => _build(Brightness.dark);
-
-  static ThemeData _build(Brightness brightness) {
-    final colorScheme = ColorScheme.fromSeed(
-      seedColor: seedColor,
-      brightness: brightness,
-    );
-    final isDark = brightness == Brightness.dark;
-
-    return ThemeData(
-      useMaterial3: true,
-      brightness: brightness,
-      colorScheme: colorScheme,
-      scaffoldBackgroundColor: isDark
-          ? const Color(0xFF0E1412)
-          : const Color(0xFFF7F9F7),
-      textTheme: const TextTheme(
-        displaySmall: TextStyle(
-          fontSize: 42,
-          fontWeight: FontWeight.w700,
-          letterSpacing: -1.2,
-        ),
-        bodyLarge: TextStyle(fontSize: 16, height: 1.45),
-      ),
-      cardTheme: CardThemeData(
-        elevation: 0,
-        clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppDimens.cardRadius),
-          side: BorderSide(color: colorScheme.outlineVariant),
-        ),
-      ),
-      navigationBarTheme: NavigationBarThemeData(
-        elevation: 0,
-        backgroundColor: isDark ? const Color(0xFF131A17) : Colors.white,
-        indicatorColor: colorScheme.secondaryContainer,
-      ),
-      pageTransitionsTheme: SystemMotionTheme.transitions(reducedMotion: false),
-      iconButtonTheme: IconButtonThemeData(
-        style: IconButton.styleFrom(
-          minimumSize: const Size(
-            SystemMotion.minTouchTarget,
-            SystemMotion.minTouchTarget,
-          ),
-          tapTargetSize: MaterialTapTargetSize.padded,
-        ),
-      ),
-      filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(
-          minimumSize: const Size(64, SystemMotion.minTouchTarget),
-        ),
-      ),
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          minimumSize: const Size(64, SystemMotion.minTouchTarget),
-        ),
-      ),
-      textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(
-          minimumSize: const Size(48, SystemMotion.minTouchTarget),
-        ),
-      ),
-    );
-  }
+  static ThemeData get dark => FitFlowThemeData.dark;
 }

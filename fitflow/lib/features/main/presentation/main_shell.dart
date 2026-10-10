@@ -1,8 +1,12 @@
+import 'package:fitflow/core/design/widgets/fitflow_navigation.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// App shell shown after the splash: content area plus bottom navigation.
+/// App shell shown after the splash: content area plus adaptive navigation.
+///
+/// Destinations and routes are unchanged. Compact widths use a bottom bar;
+/// expanded widths use a rail.
 class MainShell extends StatelessWidget {
   const MainShell({super.key, required this.navigationShell});
 
@@ -10,39 +14,38 @@ class MainShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    final l10n = context.l10n;
+    return FitFlowNavigationShell(
+      selectedIndex: navigationShell.currentIndex,
+      onSelected: (index) {
+        navigationShell.goBranch(
+          index,
+          initialLocation: index == navigationShell.currentIndex,
+        );
+      },
+      destinations: [
+        FitFlowNavDestination(
+          icon: Icons.home_outlined,
+          selectedIcon: Icons.home,
+          label: l10n.navHome,
+        ),
+        FitFlowNavDestination(
+          icon: Icons.fitness_center_outlined,
+          selectedIcon: Icons.fitness_center,
+          label: l10n.navWorkouts,
+        ),
+        FitFlowNavDestination(
+          icon: Icons.insights_outlined,
+          selectedIcon: Icons.insights,
+          label: l10n.navProgress,
+        ),
+        FitFlowNavDestination(
+          icon: Icons.person_outline,
+          selectedIcon: Icons.person,
+          label: l10n.navProfile,
+        ),
+      ],
       body: navigationShell,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: navigationShell.currentIndex,
-        onDestinationSelected: (index) {
-          navigationShell.goBranch(
-            index,
-            initialLocation: index == navigationShell.currentIndex,
-          );
-        },
-        destinations: [
-          NavigationDestination(
-            icon: const Icon(Icons.home_outlined),
-            selectedIcon: const Icon(Icons.home),
-            label: context.l10n.navHome,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.fitness_center_outlined),
-            selectedIcon: const Icon(Icons.fitness_center),
-            label: context.l10n.navWorkouts,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.insights_outlined),
-            selectedIcon: const Icon(Icons.insights),
-            label: context.l10n.navProgress,
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.person_outline),
-            selectedIcon: const Icon(Icons.person),
-            label: context.l10n.navProfile,
-          ),
-        ],
-      ),
     );
   }
 }
