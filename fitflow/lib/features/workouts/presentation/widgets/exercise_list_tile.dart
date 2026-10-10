@@ -1,114 +1,36 @@
 import 'package:fitflow/features/onboarding/data/workout_equipment.dart';
 import 'package:fitflow/features/workouts/domain/exercise.dart';
-import 'package:fitflow/features/workouts/domain/exercise_type.dart';
+import 'package:fitflow/l10n/enum_labels.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:flutter/material.dart';
 
-/// Compact, read-only row for an exercise in the library list.
-/// Now tappable with chevron affordance for detail navigation.
+/// Lazy library row: name, movement/focus, equipment. Defaults live in detail.
 class ExerciseListTile extends StatelessWidget {
-  const ExerciseListTile({
-    super.key,
-    required this.exercise,
-    this.onTap,
-  });
-
+  const ExerciseListTile({super.key, required this.exercise, this.onTap});
   final Exercise exercise;
   final VoidCallback? onTap;
 
-  String _primaryMusclesLabel() {
-    if (exercise.primaryMuscles.isEmpty) return '—';
-    return exercise.primaryMuscles.map((m) => m.label).join(' • ');
-  }
-
-  String _movementAndDifficultyLabel() {
-    final movement = exercise.movementPattern?.label ?? '—';
-    final levelNumber = exercise.difficulty.name.replaceFirst('level', '');
-    return '$movement • Level $levelNumber';
-  }
-
-  String _equipmentLabel() {
-    final equipment = exercise.requiredEquipment;
-    if (equipment.contains(WorkoutEquipment.none) ||
-        equipment.isEmpty) {
-      return 'No equipment';
-    }
-    return equipment.map((e) => e.label).join(' • ');
-  }
-
-  String _repsOrTimedLabel() {
-    if (exercise.exerciseType == ExerciseType.reps) {
-      final reps = exercise.defaultReps;
-      if (reps != null) return '$reps reps';
-      return 'Reps';
-    } else {
-      final duration = exercise.defaultDuration;
-      if (duration != null) {
-        final seconds = duration.inSeconds;
-        // Keep compact: e.g., \"30s\"
-        return '${seconds}s';
-      }
-      return 'Timed';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    final content = Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  exercise.name,
-                  style: theme.textTheme.titleMedium
-                      ?.copyWith(fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  _primaryMusclesLabel(),
-                  style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  _movementAndDifficultyLabel(),
-                  style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${_equipmentLabel()} • ${_repsOrTimedLabel()}',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 12),
-          Icon(
-            Icons.chevron_right,
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ],
-      ),
-    );
-
-    if (onTap == null) {
-      return content;
-    }
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        child: content,
-      ),
+    final l = context.l10n;
+    final equipment = exercise.requiredEquipment;
+    final equipmentText =
+        equipment.isEmpty || equipment.contains(WorkoutEquipment.none)
+            ? l.trainingNoEquipment
+            : equipment.map((e) => equipmentLabel(l, e)).join(' · ');
+    final focus = exercise.movementPattern == null
+        ? exercise.primaryMuscles.map((m) => m.label).join(' · ')
+        : movementPatternLabel(l, exercise.movementPattern!);
+    return ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      title:
+          Text(exercise.name, style: Theme.of(context).textTheme.titleMedium),
+      subtitle: Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child:
+              Text([if (focus.isNotEmpty) focus, equipmentText].join(' · '))),
+      trailing: onTap == null ? null : const Icon(Icons.chevron_right),
+      onTap: onTap,
     );
   }
 }

@@ -119,9 +119,9 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Push-Up'), findsOneWidget);
-      expect(find.text('Push'), findsWidgets);
-      expect(find.text('6 steps'), findsOneWidget);
-      expect(find.text('Wall Push-Up  →  Diamond Push-Up'), findsOneWidget);
+      expect(find.textContaining('Push'), findsWidgets);
+      expect(find.textContaining('6 steps'), findsOneWidget);
+      expect(find.text('Wall Push-Up → Diamond Push-Up'), findsOneWidget);
       expect(find.text('Squat'), findsWidgets);
       expect(find.text('Glute Bridge'), findsWidgets);
     });
@@ -134,7 +134,7 @@ void main() {
       await tester.pumpAndSettle();
 
       final pushCard = find.ancestor(
-        of: find.text('Your Push level: Level 2'),
+        of: find.text('Your Push level: Basic'),
         matching: find.byType(SkillTreeFamilyCard),
       );
       expect(pushCard, findsOneWidget);
@@ -172,7 +172,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(SkillTreeFamilyScreen), findsOneWidget);
-      expect(find.text('Your Push level: Level 2'), findsOneWidget);
+      expect(find.text('Your Push level: Basic'), findsOneWidget);
     });
 
     testWidgets('does not present mastery, completion, or unlock labels',
@@ -297,9 +297,9 @@ void main() {
       expect(find.text('Standard Push-Up'), findsOneWidget);
       expect(find.text('Decline Push-Up'), findsOneWidget);
       expect(find.text('Diamond Push-Up'), findsOneWidget);
-      expect(find.text('Level 1'), findsWidgets);
-      expect(find.text('Level 2'), findsWidgets);
-      expect(find.text('Your Push level: Level 2'), findsOneWidget);
+      expect(find.text('Just starting'), findsWidgets);
+      expect(find.text('Basic'), findsWidgets);
+      expect(find.text('Your Push level: Basic'), findsOneWidget);
       expect(
         find.text(
           'This pathway shows exercise difficulty and setup fit, not exercise mastery.',
@@ -320,7 +320,7 @@ void main() {
       expect(find.text('Fits your current level'), findsNWidgets(3));
       expect(find.text('Above your current level'), findsNWidgets(3));
       expect(find.text('Fits your setup'), findsNWidgets(6));
-      expect(find.text('Equipment: No equipment required'), findsWidgets);
+      expect(find.text('Equipment: No equipment'), findsWidgets);
       expect(find.text('Reps'), findsWidgets);
     });
 
@@ -358,7 +358,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Your Push level: Level 2'), findsNothing);
+      expect(find.text('Your Push level: Basic'), findsNothing);
       expect(find.text('Movement level unavailable'), findsNWidgets(7));
       expect(find.text('Fits your current level'), findsNothing);
       expect(find.text('Above your current level'), findsNothing);
@@ -444,7 +444,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(tester.takeException(), isNull);
-      expect(find.text('Your Push level: Level 2'), findsOneWidget);
+      expect(find.text('Your Push level: Basic'), findsOneWidget);
     });
 
     testWidgets('family nodes do not show locks, completion, or mastery labels',

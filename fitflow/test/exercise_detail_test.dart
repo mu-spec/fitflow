@@ -27,6 +27,8 @@ void main() {
       expect(find.text('Your workouts'), findsOneWidget);
 
       // Open Exercise Library
+      await tester.ensureVisible(find.text('Exercise Library').first);
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Exercise Library').first);
       await tester.pump(const Duration(milliseconds: 500));
       await tester.pump(const Duration(milliseconds: 500));
@@ -54,7 +56,7 @@ void main() {
       expect(find.text('How to Perform'), findsOneWidget);
       // Hero chips
       expect(find.text('Push'), findsOneWidget);
-      expect(find.text('Level 3'), findsOneWidget);
+      expect(find.text('Solid'), findsOneWidget);
       expect(find.text('Reps'), findsOneWidget);
       // Description may be off-screen, try scrolling
       await tester.dragUntilVisible(
@@ -63,8 +65,7 @@ void main() {
         const Offset(0, -100),
       );
       await tester.pump(const Duration(milliseconds: 300));
-      expect(
-          find.text('A full bodyweight press from a straight-arm plank.'),
+      expect(find.text('A full bodyweight press from a straight-arm plank.'),
           findsOneWidget);
     });
   });
@@ -86,16 +87,17 @@ void main() {
 
       // Movement, difficulty, type
       expect(find.text(expected.movementPattern!.label), findsOneWidget);
-      final levelNumber =
-          expected.difficulty.name.replaceFirst('level', '');
-      expect(find.text('Level $levelNumber'), findsOneWidget);
+      expect(find.text('Solid'), findsOneWidget);
       expect(find.text(expected.exerciseType.label), findsOneWidget);
 
+      await tester.ensureVisible(find.text('Default Prescription'));
+      await tester.tap(find.text('Default Prescription'));
+      await tester.pumpAndSettle();
       // Prescription - reps
       expect(find.text('${expected.defaultReps} reps'), findsOneWidget);
       // Rest - 60 seconds
       expect(find.textContaining('Rest:'), findsOneWidget);
-      expect(find.textContaining('60 seconds'), findsOneWidget);
+      expect(find.textContaining('1 minute'), findsOneWidget);
 
       // Equipment - No equipment
       expect(find.text('No equipment'), findsWidgets);
@@ -121,6 +123,9 @@ void main() {
       // Breathing
       expect(find.text(expected.breathingGuidance!), findsOneWidget);
 
+      await tester.ensureVisible(find.text('Exercise characteristics'));
+      await tester.tap(find.text('Exercise characteristics'));
+      await tester.pumpAndSettle();
       // Characteristics - body position, impact, noise, space, wrist, knee
       expect(find.text('Position'), findsOneWidget);
       expect(find.text(expected.bodyPosition!.label), findsWidgets);
@@ -137,7 +142,8 @@ void main() {
 
       // Ensure tags are not dumped prominently - we omit raw tags UI
       // Check that generic placeholder does not pretend to be form demo
-      expect(find.text('Illustration coming soon'), findsOneWidget);
+      expect(find.text('Illustration coming soon'), findsNothing);
+      expect(find.byIcon(Icons.fitness_center_outlined), findsOneWidget);
     });
   });
 
@@ -156,6 +162,9 @@ void main() {
       expect(find.text(expected.name), findsWidgets);
       expect(find.text(expected.shortDescription!), findsOneWidget);
 
+      await tester.ensureVisible(find.text('Default Prescription'));
+      await tester.tap(find.text('Default Prescription'));
+      await tester.pumpAndSettle();
       // Should show duration like "20 seconds"
       final durationText = '${expected.defaultDuration!.inSeconds} seconds';
       expect(find.text(durationText), findsOneWidget);
@@ -166,9 +175,7 @@ void main() {
 
       // Rest still shown
       expect(find.textContaining('Rest:'), findsOneWidget);
-      expect(
-          find.textContaining(
-              '${expected.defaultRest!.inSeconds} seconds'),
+      expect(find.textContaining('${expected.defaultRest!.inSeconds} seconds'),
           findsOneWidget);
     });
   });
@@ -221,6 +228,10 @@ void main() {
       await tester.tap(find.text('Workouts'));
       await tester.pump(const Duration(milliseconds: 500));
       await tester.pump(const Duration(milliseconds: 500));
+
+      await tester.ensureVisible(find.text('Exercise Library').first);
+
+      await tester.pumpAndSettle();
 
       await tester.tap(find.text('Exercise Library').first);
       await tester.pump(const Duration(milliseconds: 500));

@@ -419,7 +419,7 @@ void main() {
           AppRoutes.programDetail(_program));
       expect(find.byType(ProgramDetailScreen), findsOneWidget);
       // Truthful: nothing was persisted, so no session is marked Completed.
-      expect(find.text('1 of 12 workouts completed'), findsNothing);
+      expect(find.text('1 of 12 sessions'), findsNothing);
       expect(find.text('Completed'), findsNothing);
       expect(
           find.descendant(
@@ -486,7 +486,7 @@ void main() {
       final detail =
           tester.widget<ProgramDetailScreen>(find.byType(ProgramDetailScreen));
       expect(detail.programId, _program);
-      expect(find.text('1 of 12 workouts completed'), findsOneWidget);
+      expect(find.text('1 of 12 sessions'), findsOneWidget);
       Finder rowOf(String label) => find.ancestor(
             of: find.text(label).first,
             matching: find.byType(ProgramSessionRow),
@@ -495,6 +495,7 @@ void main() {
           find.descendant(
               of: rowOf('Session 1'), matching: find.text('Completed')),
           findsOneWidget);
+      await programScrollTo(tester, find.text('Session 2'));
       expect(
           find.descendant(of: rowOf('Session 2'), matching: find.text('Next')),
           findsOneWidget);
@@ -618,7 +619,7 @@ void main() {
 
       await tester.tap(find.text('Start program'));
       await tester.pumpAndSettle();
-      expect(find.text('0 of 12 workouts completed'), findsOneWidget);
+      expect(find.text('0 of 12 sessions'), findsOneWidget);
       await tester.tap(find.text('View workout').first);
       await tester.pumpAndSettle();
       expect(find.byType(ProgramSessionPreviewScreen), findsOneWidget);
@@ -643,7 +644,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(router.routerDelegate.currentConfiguration.uri.toString(),
           AppRoutes.programDetail(_program));
-      expect(find.text('1 of 12 workouts completed'), findsOneWidget);
+      expect(find.text('1 of 12 sessions'), findsOneWidget);
       Finder rowOf(String label) => find.ancestor(
             of: find.text(label).first,
             matching: find.byType(ProgramSessionRow),
@@ -652,6 +653,7 @@ void main() {
           find.descendant(
               of: rowOf('Session 1'), matching: find.text('Completed')),
           findsOneWidget);
+      await programScrollTo(tester, find.text('Session 2'));
       expect(
           find.descendant(of: rowOf('Session 2'), matching: find.text('Next')),
           findsOneWidget);

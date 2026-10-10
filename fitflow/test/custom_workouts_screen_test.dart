@@ -11,7 +11,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'helpers/test_helpers.dart';
 
 void main() {
-  testWidgets('Workouts screen Exercise Library visible and Create visible', (tester) async {
+  testWidgets('Workouts screen Exercise Library visible and Create visible',
+      (tester) async {
     SharedPreferences.setMockInitialValues({});
     await tester.pumpWidget(const ProviderScope(child: FitFlowApp()));
     await completeOnboardingToHome(tester);
@@ -21,7 +22,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
 
     expect(find.text('Exercise Library'), findsOneWidget);
-    expect(find.text('Create custom workout'), findsOneWidget);
+    expect(find.text('Create workout'), findsOneWidget);
     expect(find.text('Custom workouts'), findsOneWidget);
   });
 
@@ -35,11 +36,14 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
 
     expect(find.text('No custom workouts yet'), findsOneWidget);
-    expect(find.text('Build your own workout with exercises from your library.'), findsWidgets);
+    expect(
+        find.text('Build your own workout with exercises from your library.'),
+        findsWidgets);
     expect(find.text('Create workout'), findsOneWidget);
   });
 
-  testWidgets('Workouts screen saved visible and newest ordering', (tester) async {
+  testWidgets('Workouts screen saved visible and newest ordering',
+      (tester) async {
     final now = DateTime.now().toUtc();
     final t1 = CustomWorkoutTemplate(
       id: 'custom_1_0',
@@ -48,13 +52,25 @@ void main() {
       createdAt: now.subtract(const Duration(days: 1)),
       updatedAt: now.subtract(const Duration(days: 1)),
       warmup: [
-        CustomWorkoutExerciseEntry(exerciseId: 'march_in_place', sets: 1, workDuration: const Duration(seconds: 20), restBetweenSets: Duration.zero)
+        CustomWorkoutExerciseEntry(
+            exerciseId: 'march_in_place',
+            sets: 1,
+            workDuration: const Duration(seconds: 20),
+            restBetweenSets: Duration.zero)
       ],
       main: [
-        CustomWorkoutExerciseEntry(exerciseId: 'squat_bodyweight', sets: 1, repsPerSet: 10, restBetweenSets: const Duration(seconds: 30))
+        CustomWorkoutExerciseEntry(
+            exerciseId: 'squat_bodyweight',
+            sets: 1,
+            repsPerSet: 10,
+            restBetweenSets: const Duration(seconds: 30))
       ],
       cooldown: [
-        CustomWorkoutExerciseEntry(exerciseId: 'cobra_stretch', sets: 1, workDuration: const Duration(seconds: 20), restBetweenSets: Duration.zero)
+        CustomWorkoutExerciseEntry(
+            exerciseId: 'cobra_stretch',
+            sets: 1,
+            workDuration: const Duration(seconds: 20),
+            restBetweenSets: Duration.zero)
       ],
     );
     final t2 = CustomWorkoutTemplate(
@@ -64,13 +80,25 @@ void main() {
       createdAt: now,
       updatedAt: now,
       warmup: [
-        CustomWorkoutExerciseEntry(exerciseId: 'march_in_place', sets: 1, workDuration: const Duration(seconds: 20), restBetweenSets: Duration.zero)
+        CustomWorkoutExerciseEntry(
+            exerciseId: 'march_in_place',
+            sets: 1,
+            workDuration: const Duration(seconds: 20),
+            restBetweenSets: Duration.zero)
       ],
       main: [
-        CustomWorkoutExerciseEntry(exerciseId: 'squat_bodyweight', sets: 1, repsPerSet: 10, restBetweenSets: const Duration(seconds: 30))
+        CustomWorkoutExerciseEntry(
+            exerciseId: 'squat_bodyweight',
+            sets: 1,
+            repsPerSet: 10,
+            restBetweenSets: const Duration(seconds: 30))
       ],
       cooldown: [
-        CustomWorkoutExerciseEntry(exerciseId: 'cobra_stretch', sets: 1, workDuration: const Duration(seconds: 20), restBetweenSets: Duration.zero)
+        CustomWorkoutExerciseEntry(
+            exerciseId: 'cobra_stretch',
+            sets: 1,
+            workDuration: const Duration(seconds: 20),
+            restBetweenSets: Duration.zero)
       ],
     );
 
@@ -80,7 +108,8 @@ void main() {
     final storage = container.read(customWorkoutStorageProvider);
     await storage.saveAll([t1, t2]);
 
-    await tester.pumpWidget(const ProviderScope(overrides: [], child: FitFlowApp()));
+    await tester
+        .pumpWidget(const ProviderScope(overrides: [], child: FitFlowApp()));
     await completeOnboardingToHome(tester);
 
     await tester.tap(find.text('Workouts'));
@@ -105,13 +134,25 @@ void main() {
       createdAt: now,
       updatedAt: now,
       warmup: [
-        CustomWorkoutExerciseEntry(exerciseId: 'march_in_place', sets: 1, workDuration: const Duration(seconds: 20), restBetweenSets: Duration.zero)
+        CustomWorkoutExerciseEntry(
+            exerciseId: 'march_in_place',
+            sets: 1,
+            workDuration: const Duration(seconds: 20),
+            restBetweenSets: Duration.zero)
       ],
       main: [
-        CustomWorkoutExerciseEntry(exerciseId: 'squat_bodyweight', sets: 1, repsPerSet: 10, restBetweenSets: const Duration(seconds: 30))
+        CustomWorkoutExerciseEntry(
+            exerciseId: 'squat_bodyweight',
+            sets: 1,
+            repsPerSet: 10,
+            restBetweenSets: const Duration(seconds: 30))
       ],
       cooldown: [
-        CustomWorkoutExerciseEntry(exerciseId: 'cobra_stretch', sets: 1, workDuration: const Duration(seconds: 20), restBetweenSets: Duration.zero)
+        CustomWorkoutExerciseEntry(
+            exerciseId: 'cobra_stretch',
+            sets: 1,
+            workDuration: const Duration(seconds: 20),
+            restBetweenSets: Duration.zero)
       ],
     );
 
@@ -130,7 +171,9 @@ void main() {
     expect(find.textContaining('15 minutes'), findsWidgets);
   });
 
-  testWidgets('Workouts screen keeps Recommended placeholder and real Programs entry', (tester) async {
+  testWidgets(
+      'Workouts screen prioritizes Programs and removes Recommended placeholder',
+      (tester) async {
     SharedPreferences.setMockInitialValues({});
     await tester.pumpWidget(const ProviderScope(child: FitFlowApp()));
     await completeOnboardingToHome(tester);
@@ -139,13 +182,12 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump(const Duration(milliseconds: 500));
 
-    expect(find.text('Recommended'), findsOneWidget);
+    expect(find.text('Recommended'), findsNothing);
+    expect(find.text('Explore'), findsOneWidget);
     expect(find.text('Programs'), findsOneWidget);
     // M16 Part 1: the Programs placeholder was replaced by a real entry.
     expect(find.text('Structured multi-week training plans.'), findsNothing);
-    expect(
-        find.text(
-            'Adaptive multi-week workouts built around your current level and setup.'),
+    expect(find.text('Structured plans that adapt to your level and setup.'),
         findsOneWidget);
   });
 

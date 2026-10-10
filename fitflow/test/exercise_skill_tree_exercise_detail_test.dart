@@ -97,6 +97,6 @@ void main() {
 
     expect(AppRoutes.skillTreeFamily('pushup'), '/workouts/skill-trees/pushup');
     expect(find.byType(SkillTreeFamilyScreen), findsOneWidget);
-    expect(find.text('Your Push level: Level 3'), findsOneWidget);
+    expect(find.text('Your Push level: Solid'), findsOneWidget);
   });
 }

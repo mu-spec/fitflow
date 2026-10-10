@@ -37,22 +37,22 @@ void main() {
       await pumpWorkouts(tester, overrides: programOverrides());
 
       expect(find.text('Programs'), findsOneWidget);
-      expect(
-          find.text(
-              'Adaptive multi-week workouts built around your current level and setup.'),
+      expect(find.text('Structured plans that adapt to your level and setup.'),
           findsOneWidget);
       expect(find.text('Structured multi-week training plans.'), findsNothing);
-      expect(find.byType(ProgramsEntryRow), findsOneWidget);
+      expect(find.widgetWithText(ListTile, 'Programs'), findsOneWidget);
     });
 
-    testWidgets('Library, Custom and Skill Trees entries remain', (tester) async {
+    testWidgets('Library, Custom and Skill Trees entries remain',
+        (tester) async {
       SharedPreferences.setMockInitialValues({});
       await pumpWorkouts(tester, overrides: programOverrides());
       expect(find.text('Exercise Library'), findsOneWidget);
       expect(find.text('Exercise skill trees'), findsOneWidget);
-      expect(find.text('Create custom workout'), findsOneWidget);
+      expect(find.text('Create workout'), findsOneWidget);
       expect(find.text('Custom workouts'), findsOneWidget);
-      expect(find.text('Recommended'), findsOneWidget);
+      expect(find.text('Recommended'), findsNothing);
+      expect(find.text('Explore'), findsOneWidget);
     });
 
     testWidgets('recommended card uses exact goal mapping', (tester) async {
@@ -72,11 +72,19 @@ void main() {
         await pumpWorkouts(tester,
             overrides:
                 programOverrides(profile: programTestProfile(goal: entry.key)));
-        expect(find.text('Recommended program'), findsOneWidget,
-            reason: entry.key.name);
+        expect(find.text('Recommended program'), findsNothing);
+        await tester.tap(find.text('Programs'));
+        await tester.pumpAndSettle();
+        await programScrollTo(tester, find.text(entry.value));
         expect(find.text(entry.value), findsOneWidget, reason: entry.key.name);
         expect(find.text('Matches your selected goal'), findsOneWidget);
-        expect(find.text('View program'), findsOneWidget);
+        final matchedCard = find.ancestor(
+            of: find.text(entry.value), matching: find.byType(Card));
+        expect(
+            find.descendant(
+                of: matchedCard,
+                matching: find.text('Matches your selected goal')),
+            findsOneWidget);
         // Weeks / sessions per week shown.
         expect(find.textContaining('sessions/week'), findsWidgets);
         // No superlative claims.
@@ -91,19 +99,29 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       await pumpWorkouts(tester,
           overrides: programOverrides(includeProfile: false));
-      expect(
-          find.text(
-              'Complete your profile to see a program matched to your selected goal.'),
-          findsOneWidget);
+      await tester.tap(find.text('Programs'));
+      await tester.pumpAndSettle();
+      expect(find.byType(ProgramsOverviewScreen), findsOneWidget);
+      expect(find.text('Balanced Foundations'), findsOneWidget);
       expect(find.text('Matches your selected goal'), findsNothing);
     });
 
-    testWidgets('View program navigates to the recommended detail', (tester) async {
+    testWidgets('View program navigates to the recommended detail',
+        (tester) async {
       SharedPreferences.setMockInitialValues({});
       await pumpWorkouts(tester,
           overrides: programOverrides(
               profile: programTestProfile(goal: FitnessGoal.improveMobility)));
-      await tester.tap(find.text('View program'));
+      await tester.tap(find.text('Programs'));
+      await tester.pumpAndSettle();
+      await programScrollTo(tester, find.text('Mobility & Movement'));
+      final matched = find.ancestor(
+          of: find.text('Mobility & Movement'), matching: find.byType(Card));
+      expect(
+          find.descendant(
+              of: matched, matching: find.text('Matches your selected goal')),
+          findsOneWidget);
+      await tester.tap(find.text('Mobility & Movement'));
       await tester.pumpAndSettle();
       expect(find.byType(ProgramDetailScreen), findsOneWidget);
       expect(find.text('Mobility & Movement'), findsWidgets);
@@ -157,8 +175,8 @@ void main() {
 
       expect(find.text('Active program'), findsOneWidget);
       expect(find.text('Balanced Foundations'), findsWidgets);
-      expect(find.text('4 of 12 completed'), findsOneWidget);
-      expect(find.textContaining('Week 2 • Next: Week 2 • Session 2'),
+      expect(find.text('4 of 12 sessions'), findsOneWidget);
+      expect(find.textContaining('Week 2 • Next: Session 2'),
           findsOneWidget);
       expect(find.text('Continue'), findsOneWidget);
 
@@ -195,14 +213,15 @@ void main() {
       SharedPreferences.setMockInitialValues(
           {AdaptiveProgramsStorage.key: AdaptiveProgramsStorage.encode(state)});
       await pumpWorkouts(tester, overrides: programOverrides());
-      expect(find.text('12 of 12 completed'), findsOneWidget);
+      expect(find.text('12 of 12 sessions'), findsOneWidget);
       expect(find.text('Program complete'), findsOneWidget);
-      await tester.tap(find.text('Continue'));
+      await tester.tap(find.text('View program'));
       await tester.pumpAndSettle();
       expect(find.byType(ProgramDetailScreen), findsOneWidget);
     });
 
-    testWidgets('active card reflects controller state changes', (tester) async {
+    testWidgets('active card reflects controller state changes',
+        (tester) async {
       SharedPreferences.setMockInitialValues({});
       final router = programTestRouter();
       addTearDown(router.dispose);
@@ -220,7 +239,7 @@ void main() {
           .startOrResumeProgram('endurance_builder');
       await tester.pumpAndSettle();
       expect(find.text('Active program'), findsOneWidget);
-      expect(find.text('0 of 16 completed'), findsOneWidget);
+      expect(find.text('0 of 16 sessions'), findsOneWidget);
     });
 
     testWidgets('renders at 320px and text scale 1.5 without overflow',

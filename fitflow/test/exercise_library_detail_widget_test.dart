@@ -164,6 +164,9 @@ void main() {
         (tester) async {
       await pumpDetail(tester, 'dip_chair');
       expect(find.text('Triceps Dip on Chair'), findsWidgets);
+      await tester.ensureVisible(find.text('Exercise characteristics'));
+      await tester.tap(find.text('Exercise characteristics'));
+      await tester.pumpAndSettle();
       await tester.dragUntilVisible(
         find.text('Seated'),
         find.byType(SingleChildScrollView),

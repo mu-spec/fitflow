@@ -773,5 +773,386 @@
   "flowDecisionFirst": "One more Easy session at your current level may progress this movement.",
   "flowDecisionNotQualified": "This session did not include qualifying work at your current level; no level change.",
   "flowDecisionMaximum": "Already at the highest available level; no level change.",
-  "flowDecisionMinimum": "Already at the starting level; no level change."
+  "flowDecisionMinimum": "Already at the starting level; no level change.",
+  "trainingWorkoutsTitle": "Your workouts",
+  "trainingWorkoutsIntro": "Follow a program or build a workout of your own.",
+  "trainingAdaptiveHome": "Looking for today’s adaptive workout?",
+  "trainingAdaptiveAction": "Go to Home",
+  "trainingPrograms": "Programs",
+  "trainingProgramsHelp": "Structured plans that adapt to your level and setup.",
+  "trainingCustom": "Custom workouts",
+  "trainingCreate": "Create workout",
+  "trainingCreateCustom": "Create custom workout",
+  "trainingCustomHelp": "Build your own workout with exercises from your library.",
+  "trainingCustomEmpty": "No custom workouts yet",
+  "trainingCustomError": "Could not load custom workouts.",
+  "trainingDeleteTitle": "Delete custom workout?",
+  "trainingDeleteBody": "This removes the saved workout. Completed workout history is not deleted.",
+  "trainingDeleteError": "Couldn't delete this workout. Try again.",
+  "trainingExplore": "Explore",
+  "trainingLibrary": "Exercise Library",
+  "trainingSkills": "Exercise skill trees",
+  "trainingSkillsHelp": "Explore exercise progressions from easier to harder variations.",
+  "trainingView": "View",
+  "trainingEdit": "Edit",
+  "trainingDelete": "Delete",
+  "trainingCancel": "Cancel",
+  "trainingRetry": "Retry",
+  "trainingClose": "Close",
+  "trainingDone": "Done",
+  "trainingMoreActions": "Workout actions",
+  "trainingNotStarted": "Not started",
+  "trainingInProgress": "In progress",
+  "trainingCompleted": "Completed",
+  "trainingUpcoming": "Upcoming",
+  "trainingNext": "Next",
+  "trainingProgramsError": "Could not load program progress.",
+  "trainingProgramsLoading": "Loading program progress…",
+  "trainingHistoryError": "Could not load workout history.",
+  "trainingHistoryLoading": "Loading workout history…",
+  "trainingTrends": "Training trends",
+  "trainingTrendsHelp": "Activity, consistency and movement details",
+  "trainingMovementSnapshot": "Current movement levels",
+  "trainingRecoveryDetails": "Training recovery",
+  "trainingHistoryMore": "Show more workouts",
+  "trainingHistoryCompleted": "Completed workout",
+  "trainingHistoryMissing": "Workout not found",
+  "trainingHistoryMissingHelp": "This workout may have been cleared.",
+  "trainingPlannedDuration": "Planned duration",
+  "trainingEstimatedDuration": "Estimated duration",
+  "trainingTotalExercises": "Total exercises",
+  "trainingTotalSets": "Total sets",
+  "trainingNoExercises": "No exercises",
+  "trainingUnclassified": "Unclassified movement",
+  "trainingSavedWorkouts": "Saved workouts",
+  "trainingLast7": "Workouts — last 7 days",
+  "trainingPlanned7": "Planned time — last 7 days",
+  "trainingPlannedNote": "Planned time is not elapsed workout time.",
+  "trainingActivity": "8-week activity",
+  "trainingActivityHelp": "Completed workouts over eight rolling 7-day periods. Oldest first, current last.",
+  "trainingWorkouts": "Workouts",
+  "trainingSets": "Sets",
+  "trainingCurrentPeriod": "Current 7 days",
+  "trainingNoActivity": "No workouts in last 8 weeks.",
+  "trainingMovementHelp": "Your current movement-specific levels used by adaptive workouts.",
+  "trainingMovementLoading": "Loading movement levels…",
+  "trainingMovementUnavailable": "Movement levels unavailable.",
+  "trainingMovementMissing": "Complete your movement assessment to see your starting points.",
+  "trainingUnknown": "Unavailable",
+  "trainingStanding": "Standing only",
+  "trainingLowImpact": "Low impact",
+  "trainingClearFilters": "Clear filters",
+  "trainingClearAll": "Clear all",
+  "trainingMovement": "Movement Pattern",
+  "trainingDifficulty": "Difficulty",
+  "trainingEquipment": "Equipment",
+  "trainingPosition": "Body Position",
+  "trainingCatalogEmpty": "No exercises available",
+  "trainingCatalogEmptyHelp": "There are no exercises in this catalog.",
+  "trainingNoResults": "No exercises found",
+  "trainingNoResultsHelp": "Try a different search or adjust your filters.",
+  "trainingDetails": "Exercise details",
+  "trainingNotFound": "Exercise not found",
+  "trainingNotFoundHelp": "This exercise is no longer available.",
+  "trainingBack": "Back",
+  "trainingDefaults": "Default Prescription",
+  "trainingMuscles": "Muscles Worked",
+  "trainingPrimary": "Primary",
+  "trainingSecondary": "Secondary",
+  "trainingHowTo": "How to Perform",
+  "trainingMistakes": "Common Mistakes",
+  "trainingBreathing": "Breathing",
+  "trainingProgression": "Progression",
+  "trainingEasier": "Easier variation",
+  "trainingCurrent": "Current exercise",
+  "trainingHarder": "Harder variation",
+  "trainingViewExercise": "View exercise",
+  "trainingViewTree": "View full skill tree",
+  "trainingCatalogDetails": "Exercise characteristics",
+  "trainingNoEquipment": "No equipment",
+  "trainingLevelUnavailable": "Movement level unavailable",
+  "trainingSkillIntro": "See how exercise variations progress from easier to harder.",
+  "trainingSkillTruth": "Your movement level helps show which exercises fit your current level. It does not mean every easier exercise is mastered.",
+  "trainingSkillEmpty": "No exercise skill trees available yet",
+  "trainingSkillEmptyHelp": "Exercise progressions will appear here when they are available in the catalog.",
+  "trainingSkillFitHelp": "Exercises at or below this difficulty fit your current movement level.",
+  "trainingSkillPathTruth": "This pathway shows exercise difficulty and setup fit, not exercise mastery.",
+  "trainingFitsLevel": "Fits your current level",
+  "trainingAboveLevel": "Above your current level",
+  "trainingFitsSetup": "Fits your setup",
+  "trainingNeedsSetup": "Needs setup change",
+  "trainingSetupUnavailable": "Setup details unavailable",
+  "trainingSkillTree": "Skill tree",
+  "trainingSkillMissing": "Skill tree not found",
+  "trainingSkillMissingHelp": "This progression is not available in the current exercise catalog.",
+  "trainingBackSkills": "Back to Skill Trees",
+  "trainingBrowse": "Browse {count} exercises",
+  "@trainingBrowse": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingExerciseCount": "{count, plural, =1{1 exercise} other{{count} exercises}}",
+  "@trainingExerciseCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingCustomSummary": "Target: {duration} • {count, plural, =1{1 exercise} other{{count} exercises}}",
+  "@trainingCustomSummary": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingEstimated": "Estimated: {duration}",
+  "@trainingEstimated": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingSessions": "{done} of {total} sessions",
+  "@trainingSessions": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingSession": "Session {number}",
+  "@trainingSession": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingNextSession": "Week {week} • Next: {title}",
+  "@trainingNextSession": {
+    "placeholders": {
+      "week": {
+        "type": "int"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingHistoryCounts": "{exercises, plural, =1{1 exercise} other{{exercises} exercises}} • {sets, plural, =1{1 set} other{{sets} sets}}",
+  "@trainingHistoryCounts": {
+    "placeholders": {
+      "exercises": {
+        "type": "int"
+      },
+      "sets": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingWeeksAgo": "{count, plural, =1{Previous 7 days} other{{count} periods ago}}",
+  "@trainingWeeksAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingActivityCount": "{count, plural, =1{1 workout} other{{count} workouts}}",
+  "@trainingActivityCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingActivitySets": "{count} main sets",
+  "@trainingActivitySets": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingStep": "Step {step} of {total}",
+  "@trainingStep": {
+    "placeholders": {
+      "step": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingSteps": "{count, plural, =1{1 step} other{{count} steps}}",
+  "@trainingSteps": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingMovementLevel": "Your {movement} level: {level}",
+  "@trainingMovementLevel": {
+    "placeholders": {
+      "movement": {
+        "type": "String"
+      },
+      "level": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingFitCount": "{count} fit your current level",
+  "@trainingFitCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingAboveCount": "{count} above your current level",
+  "@trainingAboveCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingSetupCount": "{count} fit your current setup",
+  "@trainingSetupCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingEquipmentFor": "Equipment: {equipment}",
+  "@trainingEquipmentFor": {
+    "placeholders": {
+      "equipment": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingRest": "Rest: {duration}",
+  "@trainingRest": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingWorkloadReps": "{sets} × {reps} reps",
+  "@trainingWorkloadReps": {
+    "placeholders": {
+      "sets": {
+        "type": "int"
+      },
+      "reps": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingWorkloadTimed": "{sets} × {duration}",
+  "@trainingWorkloadTimed": {
+    "placeholders": {
+      "sets": {
+        "type": "int"
+      },
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "trainingProgramEntryTitle": "Programs",
+  "trainingProgramEntrySubtitle": "Adaptive multi-week workouts built around your current level and setup.",
+  "trainingProgramRecommendedTitle": "Recommended program",
+  "trainingProgramRecommendedMatch": "Matches your selected goal",
+  "trainingProgramRecommendedMissingProfile": "Complete your profile to see a program matched to your selected goal.",
+  "trainingProgramViewProgram": "View program",
+  "trainingProgramActiveTitle": "Active program",
+  "trainingProgramContinueLabel": "Continue",
+  "trainingProgramOverviewTitle": "Adaptive programs",
+  "trainingProgramOverviewIntro": "Structured multi-week plans whose workouts adapt to your current movement levels and setup.",
+  "trainingProgramStartProgram": "Start program",
+  "trainingProgramResumeProgram": "Resume program",
+  "trainingProgramSwitchProgram": "Switch to this program",
+  "trainingProgramRestartProgram": "Restart program",
+  "trainingProgramProgramComplete": "Program complete",
+  "trainingProgramViewWorkout": "View workout",
+  "trainingProgramSwitchDialogTitle": "Switch active program?",
+  "trainingProgramSwitchDialogBody": "Your progress in the current program will be kept.",
+  "trainingProgramSwitchDialogConfirm": "Switch",
+  "trainingProgramRestartDialogTitle": "Restart this program?",
+  "trainingProgramRestartDialogBody": "Its saved program progress will be cleared. Completed workout history will stay unchanged.",
+  "trainingProgramRestartDialogConfirm": "Restart",
+  "trainingProgramCancel": "Cancel",
+  "trainingProgramActionFailed": "Couldn't save program changes. Try again.",
+  "trainingProgramPreviewTitle": "Program workout",
+  "trainingProgramAdaptationNote": "Generated from your current movement levels, equipment, environment, and preferences.",
+  "trainingProgramGoalUnchangedNote": "Your saved profile goal is not changed by this program session.",
+  "trainingProgramGenerationFailed": "This program workout can't be generated with your current setup.",
+  "trainingProgramStartWorkout": "Start workout",
+  "trainingProgramPlayerTitle": "Program workout",
+  "trainingProgramPlayerWorkoutNotFound": "Program workout not found",
+  "trainingProgramPlayerWorkoutNotFoundBody": "This workout isn't part of the program. Go back and choose one from the program.",
+  "trainingProgramBackToPrograms": "Back to programs",
+  "trainingProgramBackToProgram": "Back to program",
+  "trainingProgramProgramWorkoutCompleted": "Program workout completed.",
+  "trainingProgramProgramNotFound": "Program not found",
+  "trainingProgramProgramNotFoundBody": "This program isn't available. Go back and choose one from the list.",
+  "trainingProgramSessionNotFound": "Session not found",
+  "trainingProgramSessionNotFoundBody": "This session isn't part of the program. Go back and choose one from the program.",
+  "trainingProgramWeeks": "{count, plural, =1{1 week} other{{count} weeks}}",
+  "@trainingProgramWeeks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingProgramPerWeek": "{count, plural, =1{1 session/week} other{{count} sessions/week}}",
+  "@trainingProgramPerWeek": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingProgramTotal": "{count, plural, =1{1 workout} other{{count} workouts}}",
+  "@trainingProgramTotal": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingProgramWeek": "Week {count}",
+  "@trainingProgramWeek": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trainingCustomNeedsUpdate": "This workout needs updates for your current setup.",
+  "trainingCustomReview": "Edit this workout to review its exercises and setup.",
+  "trainingMissingExercise": "Exercise unavailable",
+  "trainingCustomStart": "Start",
+  "trainingCustomLoading": "Loading custom workouts…",
+  "trainingCustomFix": "Fix the issues above to start this workout."
 }

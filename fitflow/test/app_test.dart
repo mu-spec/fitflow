@@ -38,7 +38,8 @@ void main() {
 
     await tester.tap(find.text('Workouts'));
     await tester.pumpAndSettle();
-    expect(find.text('Recommended'), findsOneWidget);
+    expect(find.text('Recommended'), findsNothing);
+    expect(find.text('Explore'), findsOneWidget);
 
     await tester.tap(find.text('Progress'));
     await tester.pumpAndSettle();

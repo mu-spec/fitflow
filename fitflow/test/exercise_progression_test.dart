@@ -81,7 +81,8 @@ void main() {
   });
 
   group('Progression UI - Detail Screen', () {
-    testWidgets('middle of progression pushup_standard shows Step 4 of 6 and variations',
+    testWidgets(
+        'middle of progression pushup_standard shows Step 4 of 6 and variations',
         (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
@@ -92,17 +93,20 @@ void main() {
 
       expect(find.text('Progression'), findsOneWidget);
       expect(find.text('Step 4 of 6'), findsOneWidget);
-      expect(find.text('4 / 6'), findsOneWidget);
+      expect(find.text('Step 4 of 6'), findsOneWidget);
+      expect(
+          find.text('4 / 6'), findsNothing); // No redundant numeric decoration.
       // Easier and harder cards
       expect(find.text('Knee Push-Up'), findsOneWidget);
       expect(find.text('Decline Push-Up'), findsOneWidget);
       expect(find.text('Standard Push-Up'), findsWidgets);
       expect(find.text('Easier variation'), findsOneWidget);
       expect(find.text('Harder variation'), findsOneWidget);
-      expect(find.text('Current'), findsOneWidget);
+      expect(find.text('Current exercise'), findsOneWidget);
     });
 
-    testWidgets('end of progression pushup_diamond shows Step 6 of 6 and only easier',
+    testWidgets(
+        'end of progression pushup_diamond shows Step 6 of 6 and only easier',
         (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
@@ -119,7 +123,8 @@ void main() {
       expect(find.text('Harder variation'), findsNothing);
     });
 
-    testWidgets('three-step family bridge_march shows Step 2 of 3 and correct chain',
+    testWidgets(
+        'three-step family bridge_march shows Step 2 of 3 and correct chain',
         (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
@@ -162,6 +167,8 @@ void main() {
       await tester.pump(const Duration(milliseconds: 500));
       await tester.pump(const Duration(milliseconds: 500));
 
+      await tester.ensureVisible(find.text('Exercise Library').first);
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Exercise Library').first);
       await tester.pump(const Duration(milliseconds: 500));
       await tester.pump(const Duration(milliseconds: 500));
@@ -187,8 +194,9 @@ void main() {
       // Now tap harder variation Decline Push-Up - need to scroll to it
       final declineFinder = find.text('Decline Push-Up');
       // There might be multiple scrollables, find the SingleChildScrollView of detail screen
-      final detailScrollable = find.byWidgetPredicate((w) =>
-          w is Scrollable && w.axis == Axis.vertical).last;
+      final detailScrollable = find
+          .byWidgetPredicate((w) => w is Scrollable && w.axis == Axis.vertical)
+          .last;
       await tester.scrollUntilVisible(
         declineFinder,
         200,
@@ -220,6 +228,9 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Exercise characteristics'));
+      await tester.tap(find.text('Exercise characteristics'));
+      await tester.pumpAndSettle();
 
       // Summary chips
       expect(find.text('Quiet'), findsWidgets);
@@ -234,13 +245,17 @@ void main() {
       expect(find.text('Standing'), findsWidgets);
     });
 
-    testWidgets('Standard Push-Up shows Floor and wrist load High', (tester) async {
+    testWidgets('Standard Push-Up shows Floor and wrist load High',
+        (tester) async {
       final exercise = ExerciseCatalog.byId('pushup_standard')!;
       await tester.pumpWidget(
         MaterialApp(
           home: ExerciseDetailScreen(exerciseId: exercise.id),
         ),
       );
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Exercise characteristics'));
+      await tester.tap(find.text('Exercise characteristics'));
       await tester.pumpAndSettle();
 
       expect(find.text('Position'), findsOneWidget);
@@ -259,6 +274,9 @@ void main() {
           home: ExerciseDetailScreen(exerciseId: exercise.id),
         ),
       );
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Exercise characteristics'));
+      await tester.tap(find.text('Exercise characteristics'));
       await tester.pumpAndSettle();
 
       expect(find.text('Knee load'), findsOneWidget);

@@ -1,7 +1,8 @@
+import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/features/programs/domain/adaptive_program_definition.dart';
 import 'package:fitflow/features/programs/domain/adaptive_program_status.dart';
-import 'package:fitflow/features/programs/presentation/program_copy.dart';
 import 'package:flutter/material.dart';
 
 /// Small tonal tag, e.g. "Matches your selected goal" or "Active program".
@@ -92,7 +93,13 @@ class ProgramSessionStatusChip extends StatelessWidget {
           const SizedBox(width: 4),
           Flexible(
             child: Text(
-              status.label,
+              switch (status) {
+                AdaptiveProgramSessionStatus.completed =>
+                  context.l10n.trainingCompleted,
+                AdaptiveProgramSessionStatus.next => context.l10n.trainingNext,
+                AdaptiveProgramSessionStatus.planned =>
+                  context.l10n.trainingUpcoming,
+              },
               style: theme.textTheme.labelSmall?.copyWith(
                 color: fg,
                 fontWeight: FontWeight.w600,
@@ -118,7 +125,8 @@ class ProgramCompletionBar extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          status.completionLabel,
+          context.l10n
+              .trainingSessions(status.completedCount, status.totalCount),
           style: theme.textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w600,
           ),
@@ -129,7 +137,8 @@ class ProgramCompletionBar extends StatelessWidget {
           child: LinearProgressIndicator(
             value: status.completionFraction,
             minHeight: 8,
-            semanticsLabel: status.completionLabel,
+            semanticsLabel: context.l10n
+                .trainingSessions(status.completedCount, status.totalCount),
           ),
         ),
       ],
@@ -147,9 +156,9 @@ class ProgramStructureLine extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Text(
-      '${ProgramCopy.weeksLabel(definition.weekCount)} • '
-      '${ProgramCopy.perWeekLabel(definition.sessionsPerWeek)} • '
-      '${ProgramCopy.totalLabel(definition.totalSessionCount)}',
+      '${context.l10n.trainingProgramWeeks(definition.weekCount)} • '
+      '${context.l10n.trainingProgramPerWeek(definition.sessionsPerWeek)} • '
+      '${context.l10n.trainingProgramTotal(definition.totalSessionCount)}',
       style: theme.textTheme.bodySmall?.copyWith(
         color: theme.colorScheme.onSurfaceVariant,
       ),
@@ -181,49 +190,44 @@ class ProgramSessionRow extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
         side: BorderSide(color: colors.outlineVariant),
       ),
-      child: InkWell(
-        onTap: onView,
-        borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Wrap(
-                spacing: 8,
-                runSpacing: 6,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  Text(
-                    'Session ${session.session}',
-                    style: theme.textTheme.titleSmall
-                        ?.copyWith(fontWeight: FontWeight.w600),
-                  ),
-                  ProgramSessionStatusChip(status: status),
-                ],
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Wrap(
+              spacing: 8,
+              runSpacing: 6,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                Text(
+                  context.l10n.trainingSession(session.session),
+                  style: theme.textTheme.titleSmall
+                      ?.copyWith(fontWeight: FontWeight.w600),
+                ),
+                ProgramSessionStatusChip(status: status),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '${session.focus} • Goal: ${session.generationGoal.label}',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colors.onSurfaceVariant,
               ),
-              const SizedBox(height: 4),
-              Text(
-                '${session.focus} • Goal: ${session.generationGoal.label}',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colors.onSurfaceVariant,
+            ),
+            const SizedBox(height: 6),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: onView,
+                icon: const Icon(Icons.visibility_outlined, size: 18),
+                label: Text(context.l10n.trainingProgramViewWorkout),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                 ),
               ),
-              const SizedBox(height: 6),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton.icon(
-                  onPressed: onView,
-                  icon: const Icon(Icons.visibility_outlined, size: 18),
-                  label: const Text(ProgramCopy.viewWorkout),
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    visualDensity: VisualDensity.compact,
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -244,7 +248,7 @@ class ProgramNotFoundBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Center(
+    return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(AppDimens.screenPadding),
         child: Column(
@@ -277,16 +281,16 @@ class ProgramDialogs {
     final result = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text(ProgramCopy.switchDialogTitle),
-        content: const Text(ProgramCopy.switchDialogBody),
+        title: Text(context.l10n.trainingProgramSwitchDialogTitle),
+        content: Text(context.l10n.trainingProgramSwitchDialogBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text(ProgramCopy.cancel),
+            child: Text(context.l10n.trainingProgramCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text(ProgramCopy.switchDialogConfirm),
+            child: Text(context.l10n.trainingProgramSwitchDialogConfirm),
           ),
         ],
       ),
@@ -298,20 +302,48 @@ class ProgramDialogs {
     final result = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text(ProgramCopy.restartDialogTitle),
-        content: const Text(ProgramCopy.restartDialogBody),
+        title: Text(context.l10n.trainingProgramRestartDialogTitle),
+        content: Text(context.l10n.trainingProgramRestartDialogBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text(ProgramCopy.cancel),
+            child: Text(context.l10n.trainingProgramCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text(ProgramCopy.restartDialogConfirm),
+            child: Text(context.l10n.trainingProgramRestartDialogConfirm),
           ),
         ],
       ),
     );
     return result == true;
   }
+}
+
+String programStatusLabel(BuildContext context, AdaptiveProgramStatus status) =>
+    status.isComplete
+        ? context.l10n.trainingCompleted
+        : status.hasProgress
+            ? context.l10n.trainingInProgress
+            : context.l10n.trainingNotStarted;
+
+class ProgramProgressState extends StatelessWidget {
+  const ProgramProgressState(
+      {super.key, required this.loading, required this.onRetry});
+  final bool loading;
+  final VoidCallback onRetry;
+  @override
+  Widget build(BuildContext context) => Center(
+          child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          if (loading)
+            FitFlowLoading(label: context.l10n.trainingProgramsLoading),
+          const SizedBox(height: 16),
+          if (!loading) Text(context.l10n.trainingProgramsError),
+          if (!loading)
+            TextButton(
+                onPressed: onRetry, child: Text(context.l10n.trainingRetry)),
+        ]),
+      ));
 }

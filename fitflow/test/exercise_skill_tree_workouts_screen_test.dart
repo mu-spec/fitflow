@@ -54,10 +54,13 @@ void main() {
 
     expect(find.text('Exercise Library'), findsOneWidget);
     expect(find.text('Exercise skill trees'), findsOneWidget);
-    expect(find.text('Recommended'), findsOneWidget);
+    expect(find.text('Recommended'), findsNothing);
+    expect(find.text('Explore'), findsOneWidget);
     expect(find.text('Programs'), findsOneWidget);
     expect(find.text('Custom workouts'), findsOneWidget);
 
+    await tester.ensureVisible(find.text('Exercise skill trees'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Exercise skill trees'));
     await tester.pumpAndSettle();
     expect(find.byType(SkillTreesScreen), findsOneWidget);

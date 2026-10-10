@@ -1415,4 +1415,693 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get flowDecisionMinimum =>
       'Already at the starting level; no level change.';
+
+  @override
+  String get trainingWorkoutsTitle => 'Your workouts';
+
+  @override
+  String get trainingWorkoutsIntro =>
+      'Follow a program or build a workout of your own.';
+
+  @override
+  String get trainingAdaptiveHome => 'Looking for today’s adaptive workout?';
+
+  @override
+  String get trainingAdaptiveAction => 'Go to Home';
+
+  @override
+  String get trainingPrograms => 'Programs';
+
+  @override
+  String get trainingProgramsHelp =>
+      'Structured plans that adapt to your level and setup.';
+
+  @override
+  String get trainingCustom => 'Custom workouts';
+
+  @override
+  String get trainingCreate => 'Create workout';
+
+  @override
+  String get trainingCreateCustom => 'Create custom workout';
+
+  @override
+  String get trainingCustomHelp =>
+      'Build your own workout with exercises from your library.';
+
+  @override
+  String get trainingCustomEmpty => 'No custom workouts yet';
+
+  @override
+  String get trainingCustomError => 'Could not load custom workouts.';
+
+  @override
+  String get trainingDeleteTitle => 'Delete custom workout?';
+
+  @override
+  String get trainingDeleteBody =>
+      'This removes the saved workout. Completed workout history is not deleted.';
+
+  @override
+  String get trainingDeleteError => 'Couldn\'t delete this workout. Try again.';
+
+  @override
+  String get trainingExplore => 'Explore';
+
+  @override
+  String get trainingLibrary => 'Exercise Library';
+
+  @override
+  String get trainingSkills => 'Exercise skill trees';
+
+  @override
+  String get trainingSkillsHelp =>
+      'Explore exercise progressions from easier to harder variations.';
+
+  @override
+  String get trainingView => 'View';
+
+  @override
+  String get trainingEdit => 'Edit';
+
+  @override
+  String get trainingDelete => 'Delete';
+
+  @override
+  String get trainingCancel => 'Cancel';
+
+  @override
+  String get trainingRetry => 'Retry';
+
+  @override
+  String get trainingClose => 'Close';
+
+  @override
+  String get trainingDone => 'Done';
+
+  @override
+  String get trainingMoreActions => 'Workout actions';
+
+  @override
+  String get trainingNotStarted => 'Not started';
+
+  @override
+  String get trainingInProgress => 'In progress';
+
+  @override
+  String get trainingCompleted => 'Completed';
+
+  @override
+  String get trainingUpcoming => 'Upcoming';
+
+  @override
+  String get trainingNext => 'Next';
+
+  @override
+  String get trainingProgramsError => 'Could not load program progress.';
+
+  @override
+  String get trainingProgramsLoading => 'Loading program progress…';
+
+  @override
+  String get trainingHistoryError => 'Could not load workout history.';
+
+  @override
+  String get trainingHistoryLoading => 'Loading workout history…';
+
+  @override
+  String get trainingTrends => 'Training trends';
+
+  @override
+  String get trainingTrendsHelp => 'Activity, consistency and movement details';
+
+  @override
+  String get trainingMovementSnapshot => 'Current movement levels';
+
+  @override
+  String get trainingRecoveryDetails => 'Training recovery';
+
+  @override
+  String get trainingHistoryMore => 'Show more workouts';
+
+  @override
+  String get trainingHistoryCompleted => 'Completed workout';
+
+  @override
+  String get trainingHistoryMissing => 'Workout not found';
+
+  @override
+  String get trainingHistoryMissingHelp =>
+      'This workout may have been cleared.';
+
+  @override
+  String get trainingPlannedDuration => 'Planned duration';
+
+  @override
+  String get trainingEstimatedDuration => 'Estimated duration';
+
+  @override
+  String get trainingTotalExercises => 'Total exercises';
+
+  @override
+  String get trainingTotalSets => 'Total sets';
+
+  @override
+  String get trainingNoExercises => 'No exercises';
+
+  @override
+  String get trainingUnclassified => 'Unclassified movement';
+
+  @override
+  String get trainingSavedWorkouts => 'Saved workouts';
+
+  @override
+  String get trainingLast7 => 'Workouts — last 7 days';
+
+  @override
+  String get trainingPlanned7 => 'Planned time — last 7 days';
+
+  @override
+  String get trainingPlannedNote => 'Planned time is not elapsed workout time.';
+
+  @override
+  String get trainingActivity => '8-week activity';
+
+  @override
+  String get trainingActivityHelp =>
+      'Completed workouts over eight rolling 7-day periods. Oldest first, current last.';
+
+  @override
+  String get trainingWorkouts => 'Workouts';
+
+  @override
+  String get trainingSets => 'Sets';
+
+  @override
+  String get trainingCurrentPeriod => 'Current 7 days';
+
+  @override
+  String get trainingNoActivity => 'No workouts in last 8 weeks.';
+
+  @override
+  String get trainingMovementHelp =>
+      'Your current movement-specific levels used by adaptive workouts.';
+
+  @override
+  String get trainingMovementLoading => 'Loading movement levels…';
+
+  @override
+  String get trainingMovementUnavailable => 'Movement levels unavailable.';
+
+  @override
+  String get trainingMovementMissing =>
+      'Complete your movement assessment to see your starting points.';
+
+  @override
+  String get trainingUnknown => 'Unavailable';
+
+  @override
+  String get trainingStanding => 'Standing only';
+
+  @override
+  String get trainingLowImpact => 'Low impact';
+
+  @override
+  String get trainingClearFilters => 'Clear filters';
+
+  @override
+  String get trainingClearAll => 'Clear all';
+
+  @override
+  String get trainingMovement => 'Movement Pattern';
+
+  @override
+  String get trainingDifficulty => 'Difficulty';
+
+  @override
+  String get trainingEquipment => 'Equipment';
+
+  @override
+  String get trainingPosition => 'Body Position';
+
+  @override
+  String get trainingCatalogEmpty => 'No exercises available';
+
+  @override
+  String get trainingCatalogEmptyHelp =>
+      'There are no exercises in this catalog.';
+
+  @override
+  String get trainingNoResults => 'No exercises found';
+
+  @override
+  String get trainingNoResultsHelp =>
+      'Try a different search or adjust your filters.';
+
+  @override
+  String get trainingDetails => 'Exercise details';
+
+  @override
+  String get trainingNotFound => 'Exercise not found';
+
+  @override
+  String get trainingNotFoundHelp => 'This exercise is no longer available.';
+
+  @override
+  String get trainingBack => 'Back';
+
+  @override
+  String get trainingDefaults => 'Default Prescription';
+
+  @override
+  String get trainingMuscles => 'Muscles Worked';
+
+  @override
+  String get trainingPrimary => 'Primary';
+
+  @override
+  String get trainingSecondary => 'Secondary';
+
+  @override
+  String get trainingHowTo => 'How to Perform';
+
+  @override
+  String get trainingMistakes => 'Common Mistakes';
+
+  @override
+  String get trainingBreathing => 'Breathing';
+
+  @override
+  String get trainingProgression => 'Progression';
+
+  @override
+  String get trainingEasier => 'Easier variation';
+
+  @override
+  String get trainingCurrent => 'Current exercise';
+
+  @override
+  String get trainingHarder => 'Harder variation';
+
+  @override
+  String get trainingViewExercise => 'View exercise';
+
+  @override
+  String get trainingViewTree => 'View full skill tree';
+
+  @override
+  String get trainingCatalogDetails => 'Exercise characteristics';
+
+  @override
+  String get trainingNoEquipment => 'No equipment';
+
+  @override
+  String get trainingLevelUnavailable => 'Movement level unavailable';
+
+  @override
+  String get trainingSkillIntro =>
+      'See how exercise variations progress from easier to harder.';
+
+  @override
+  String get trainingSkillTruth =>
+      'Your movement level helps show which exercises fit your current level. It does not mean every easier exercise is mastered.';
+
+  @override
+  String get trainingSkillEmpty => 'No exercise skill trees available yet';
+
+  @override
+  String get trainingSkillEmptyHelp =>
+      'Exercise progressions will appear here when they are available in the catalog.';
+
+  @override
+  String get trainingSkillFitHelp =>
+      'Exercises at or below this difficulty fit your current movement level.';
+
+  @override
+  String get trainingSkillPathTruth =>
+      'This pathway shows exercise difficulty and setup fit, not exercise mastery.';
+
+  @override
+  String get trainingFitsLevel => 'Fits your current level';
+
+  @override
+  String get trainingAboveLevel => 'Above your current level';
+
+  @override
+  String get trainingFitsSetup => 'Fits your setup';
+
+  @override
+  String get trainingNeedsSetup => 'Needs setup change';
+
+  @override
+  String get trainingSetupUnavailable => 'Setup details unavailable';
+
+  @override
+  String get trainingSkillTree => 'Skill tree';
+
+  @override
+  String get trainingSkillMissing => 'Skill tree not found';
+
+  @override
+  String get trainingSkillMissingHelp =>
+      'This progression is not available in the current exercise catalog.';
+
+  @override
+  String get trainingBackSkills => 'Back to Skill Trees';
+
+  @override
+  String trainingBrowse(int count) {
+    return 'Browse $count exercises';
+  }
+
+  @override
+  String trainingExerciseCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count exercises',
+      one: '1 exercise',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String trainingCustomSummary(String duration, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count exercises',
+      one: '1 exercise',
+    );
+    return 'Target: $duration • $_temp0';
+  }
+
+  @override
+  String trainingEstimated(String duration) {
+    return 'Estimated: $duration';
+  }
+
+  @override
+  String trainingSessions(int done, int total) {
+    return '$done of $total sessions';
+  }
+
+  @override
+  String trainingSession(int number) {
+    return 'Session $number';
+  }
+
+  @override
+  String trainingNextSession(int week, String title) {
+    return 'Week $week • Next: $title';
+  }
+
+  @override
+  String trainingHistoryCounts(int exercises, int sets) {
+    String _temp0 = intl.Intl.pluralLogic(
+      exercises,
+      locale: localeName,
+      other: '$exercises exercises',
+      one: '1 exercise',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      sets,
+      locale: localeName,
+      other: '$sets sets',
+      one: '1 set',
+    );
+    return '$_temp0 • $_temp1';
+  }
+
+  @override
+  String trainingWeeksAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count periods ago',
+      one: 'Previous 7 days',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String trainingActivityCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count workouts',
+      one: '1 workout',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String trainingActivitySets(int count) {
+    return '$count main sets';
+  }
+
+  @override
+  String trainingStep(int step, int total) {
+    return 'Step $step of $total';
+  }
+
+  @override
+  String trainingSteps(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count steps',
+      one: '1 step',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String trainingMovementLevel(String movement, String level) {
+    return 'Your $movement level: $level';
+  }
+
+  @override
+  String trainingFitCount(int count) {
+    return '$count fit your current level';
+  }
+
+  @override
+  String trainingAboveCount(int count) {
+    return '$count above your current level';
+  }
+
+  @override
+  String trainingSetupCount(int count) {
+    return '$count fit your current setup';
+  }
+
+  @override
+  String trainingEquipmentFor(String equipment) {
+    return 'Equipment: $equipment';
+  }
+
+  @override
+  String trainingRest(String duration) {
+    return 'Rest: $duration';
+  }
+
+  @override
+  String trainingWorkloadReps(int sets, int reps) {
+    return '$sets × $reps reps';
+  }
+
+  @override
+  String trainingWorkloadTimed(int sets, String duration) {
+    return '$sets × $duration';
+  }
+
+  @override
+  String get trainingProgramEntryTitle => 'Programs';
+
+  @override
+  String get trainingProgramEntrySubtitle =>
+      'Adaptive multi-week workouts built around your current level and setup.';
+
+  @override
+  String get trainingProgramRecommendedTitle => 'Recommended program';
+
+  @override
+  String get trainingProgramRecommendedMatch => 'Matches your selected goal';
+
+  @override
+  String get trainingProgramRecommendedMissingProfile =>
+      'Complete your profile to see a program matched to your selected goal.';
+
+  @override
+  String get trainingProgramViewProgram => 'View program';
+
+  @override
+  String get trainingProgramActiveTitle => 'Active program';
+
+  @override
+  String get trainingProgramContinueLabel => 'Continue';
+
+  @override
+  String get trainingProgramOverviewTitle => 'Adaptive programs';
+
+  @override
+  String get trainingProgramOverviewIntro =>
+      'Structured multi-week plans whose workouts adapt to your current movement levels and setup.';
+
+  @override
+  String get trainingProgramStartProgram => 'Start program';
+
+  @override
+  String get trainingProgramResumeProgram => 'Resume program';
+
+  @override
+  String get trainingProgramSwitchProgram => 'Switch to this program';
+
+  @override
+  String get trainingProgramRestartProgram => 'Restart program';
+
+  @override
+  String get trainingProgramProgramComplete => 'Program complete';
+
+  @override
+  String get trainingProgramViewWorkout => 'View workout';
+
+  @override
+  String get trainingProgramSwitchDialogTitle => 'Switch active program?';
+
+  @override
+  String get trainingProgramSwitchDialogBody =>
+      'Your progress in the current program will be kept.';
+
+  @override
+  String get trainingProgramSwitchDialogConfirm => 'Switch';
+
+  @override
+  String get trainingProgramRestartDialogTitle => 'Restart this program?';
+
+  @override
+  String get trainingProgramRestartDialogBody =>
+      'Its saved program progress will be cleared. Completed workout history will stay unchanged.';
+
+  @override
+  String get trainingProgramRestartDialogConfirm => 'Restart';
+
+  @override
+  String get trainingProgramCancel => 'Cancel';
+
+  @override
+  String get trainingProgramActionFailed =>
+      'Couldn\'t save program changes. Try again.';
+
+  @override
+  String get trainingProgramPreviewTitle => 'Program workout';
+
+  @override
+  String get trainingProgramAdaptationNote =>
+      'Generated from your current movement levels, equipment, environment, and preferences.';
+
+  @override
+  String get trainingProgramGoalUnchangedNote =>
+      'Your saved profile goal is not changed by this program session.';
+
+  @override
+  String get trainingProgramGenerationFailed =>
+      'This program workout can\'t be generated with your current setup.';
+
+  @override
+  String get trainingProgramStartWorkout => 'Start workout';
+
+  @override
+  String get trainingProgramPlayerTitle => 'Program workout';
+
+  @override
+  String get trainingProgramPlayerWorkoutNotFound =>
+      'Program workout not found';
+
+  @override
+  String get trainingProgramPlayerWorkoutNotFoundBody =>
+      'This workout isn\'t part of the program. Go back and choose one from the program.';
+
+  @override
+  String get trainingProgramBackToPrograms => 'Back to programs';
+
+  @override
+  String get trainingProgramBackToProgram => 'Back to program';
+
+  @override
+  String get trainingProgramProgramWorkoutCompleted =>
+      'Program workout completed.';
+
+  @override
+  String get trainingProgramProgramNotFound => 'Program not found';
+
+  @override
+  String get trainingProgramProgramNotFoundBody =>
+      'This program isn\'t available. Go back and choose one from the list.';
+
+  @override
+  String get trainingProgramSessionNotFound => 'Session not found';
+
+  @override
+  String get trainingProgramSessionNotFoundBody =>
+      'This session isn\'t part of the program. Go back and choose one from the program.';
+
+  @override
+  String trainingProgramWeeks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count weeks',
+      one: '1 week',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String trainingProgramPerWeek(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sessions/week',
+      one: '1 session/week',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String trainingProgramTotal(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count workouts',
+      one: '1 workout',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String trainingProgramWeek(int count) {
+    return 'Week $count';
+  }
+
+  @override
+  String get trainingCustomNeedsUpdate =>
+      'This workout needs updates for your current setup.';
+
+  @override
+  String get trainingCustomReview =>
+      'Edit this workout to review its exercises and setup.';
+
+  @override
+  String get trainingMissingExercise => 'Exercise unavailable';
+
+  @override
+  String get trainingCustomStart => 'Start';
+
+  @override
+  String get trainingCustomLoading => 'Loading custom workouts…';
+
+  @override
+  String get trainingCustomFix => 'Fix the issues above to start this workout.';
 }

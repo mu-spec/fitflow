@@ -74,8 +74,10 @@ void main() {
   final now = DateTime.utc(2026, 9, 29, 12, 0, 0);
 
   group('Progress Analytics UI', () {
-    testWidgets('zero-history state shows No completed workouts yet', (tester) async {
-      final analytics = TrainingAnalyticsEngine.calculate(history: [], now: now);
+    testWidgets('zero-history state shows No completed workouts yet',
+        (tester) async {
+      final analytics =
+          TrainingAnalyticsEngine.calculate(history: [], now: now);
       expect(analytics.isEmpty, true);
 
       await tester.pumpWidget(
@@ -86,7 +88,8 @@ void main() {
                 child: Column(
                   children: [
                     Text('No completed workouts yet'),
-                    Text('Finish a workout and your progress will appear here.'),
+                    Text(
+                        'Finish a workout and your progress will appear here.'),
                   ],
                 ),
               ),
@@ -96,12 +99,14 @@ void main() {
       );
 
       expect(find.text('No completed workouts yet'), findsOneWidget);
-      expect(find.text('Finish a workout and your progress will appear here.'), findsOneWidget);
+      expect(find.text('Finish a workout and your progress will appear here.'),
+          findsOneWidget);
     });
 
     testWidgets('Saved workouts truthful label', (tester) async {
       final w = makeWorkout(completedAt: now.subtract(const Duration(days: 1)));
-      final analytics = TrainingAnalyticsEngine.calculate(history: [w], now: now);
+      final analytics =
+          TrainingAnalyticsEngine.calculate(history: [w], now: now);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -117,7 +122,8 @@ void main() {
 
     testWidgets('Last 7 days card', (tester) async {
       final w = makeWorkout(completedAt: now.subtract(const Duration(days: 1)));
-      final analytics = TrainingAnalyticsEngine.calculate(history: [w], now: now);
+      final analytics =
+          TrainingAnalyticsEngine.calculate(history: [w], now: now);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -127,27 +133,35 @@ void main() {
         ),
       );
 
-      expect(find.text('Last 7 days'), findsOneWidget);
+      expect(find.text('Workouts — last 7 days'), findsOneWidget);
     });
 
-    testWidgets('Main sets card', (tester) async {
+    testWidgets('Main sets stay available in training trends', (tester) async {
       final w = makeWorkout(completedAt: now.subtract(const Duration(days: 1)));
-      final analytics = TrainingAnalyticsEngine.calculate(history: [w], now: now);
+      final analytics =
+          TrainingAnalyticsEngine.calculate(history: [w], now: now);
 
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            home: Scaffold(body: ProgressSummaryCards(analytics: analytics)),
+            home: Scaffold(
+                body: SingleChildScrollView(
+                    child: ProgressActivityChart(analytics: analytics))),
           ),
         ),
       );
 
-      expect(find.text('Main sets — last 7 days'), findsOneWidget);
+      await tester.tap(find.text('Sets'));
+      await tester.pumpAndSettle();
+      expect(
+          find.textContaining('${analytics.currentPeriod.mainSets} main sets'),
+          findsWidgets);
     });
 
     testWidgets('Planned time card', (tester) async {
       final w = makeWorkout(completedAt: now.subtract(const Duration(days: 1)));
-      final analytics = TrainingAnalyticsEngine.calculate(history: [w], now: now);
+      final analytics =
+          TrainingAnalyticsEngine.calculate(history: [w], now: now);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -158,17 +172,20 @@ void main() {
       );
 
       expect(find.text('Planned time — last 7 days'), findsOneWidget);
-      expect(find.textContaining('Planned training time'), findsWidgets);
+      expect(
+          find.text('Planned time is not elapsed workout time.'), findsWidgets);
     });
 
     testWidgets('comparison section', (tester) async {
       final w = makeWorkout(completedAt: now.subtract(const Duration(days: 1)));
-      final analytics = TrainingAnalyticsEngine.calculate(history: [w], now: now);
+      final analytics =
+          TrainingAnalyticsEngine.calculate(history: [w], now: now);
 
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            home: Scaffold(body: ProgressPeriodComparison(analytics: analytics)),
+            home:
+                Scaffold(body: ProgressPeriodComparison(analytics: analytics)),
           ),
         ),
       );
@@ -178,12 +195,14 @@ void main() {
 
     testWidgets('positive delta', (tester) async {
       final w = makeWorkout(completedAt: now.subtract(const Duration(days: 1)));
-      final analytics = TrainingAnalyticsEngine.calculate(history: [w], now: now);
+      final analytics =
+          TrainingAnalyticsEngine.calculate(history: [w], now: now);
 
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            home: Scaffold(body: ProgressPeriodComparison(analytics: analytics)),
+            home:
+                Scaffold(body: ProgressPeriodComparison(analytics: analytics)),
           ),
         ),
       );
@@ -192,13 +211,16 @@ void main() {
     });
 
     testWidgets('negative delta', (tester) async {
-      final w = makeWorkout(completedAt: now.subtract(const Duration(days: 10)));
-      final analytics = TrainingAnalyticsEngine.calculate(history: [w], now: now);
+      final w =
+          makeWorkout(completedAt: now.subtract(const Duration(days: 10)));
+      final analytics =
+          TrainingAnalyticsEngine.calculate(history: [w], now: now);
 
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            home: Scaffold(body: ProgressPeriodComparison(analytics: analytics)),
+            home:
+                Scaffold(body: ProgressPeriodComparison(analytics: analytics)),
           ),
         ),
       );
@@ -208,14 +230,18 @@ void main() {
     });
 
     testWidgets('no-change state', (tester) async {
-      final w1 = makeWorkout(id: 'w1', completedAt: now.subtract(const Duration(days: 1)));
-      final w2 = makeWorkout(id: 'w2', completedAt: now.subtract(const Duration(days: 10)));
-      final analytics = TrainingAnalyticsEngine.calculate(history: [w1, w2], now: now);
+      final w1 = makeWorkout(
+          id: 'w1', completedAt: now.subtract(const Duration(days: 1)));
+      final w2 = makeWorkout(
+          id: 'w2', completedAt: now.subtract(const Duration(days: 10)));
+      final analytics =
+          TrainingAnalyticsEngine.calculate(history: [w1, w2], now: now);
 
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            home: Scaffold(body: ProgressPeriodComparison(analytics: analytics)),
+            home:
+                Scaffold(body: ProgressPeriodComparison(analytics: analytics)),
           ),
         ),
       );
@@ -225,12 +251,15 @@ void main() {
 
     testWidgets('8-week activity section', (tester) async {
       final w = makeWorkout(completedAt: now.subtract(const Duration(days: 1)));
-      final analytics = TrainingAnalyticsEngine.calculate(history: [w], now: now);
+      final analytics =
+          TrainingAnalyticsEngine.calculate(history: [w], now: now);
 
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            home: Scaffold(body: ProgressActivityChart(analytics: analytics)),
+            home: Scaffold(
+                body: SingleChildScrollView(
+                    child: ProgressActivityChart(analytics: analytics))),
           ),
         ),
       );
@@ -239,24 +268,28 @@ void main() {
     });
 
     testWidgets('all-zero chart safe', (tester) async {
-      final analytics = TrainingAnalyticsEngine.calculate(history: [], now: now);
+      final analytics =
+          TrainingAnalyticsEngine.calculate(history: [], now: now);
 
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            home: Scaffold(body: ProgressActivityChart(analytics: analytics)),
+            home: Scaffold(
+                body: SingleChildScrollView(
+                    child: ProgressActivityChart(analytics: analytics))),
           ),
         ),
       );
 
       expect(find.text('8-week activity'), findsOneWidget);
       // Should not crash, show 0 values
-      expect(find.text('0'), findsWidgets);
+      expect(find.textContaining('0 workouts'), findsNWidgets(8));
     });
 
     testWidgets('consistency X of 4', (tester) async {
       final w = makeWorkout(completedAt: now.subtract(const Duration(days: 1)));
-      final analytics = TrainingAnalyticsEngine.calculate(history: [w], now: now);
+      final analytics =
+          TrainingAnalyticsEngine.calculate(history: [w], now: now);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -267,23 +300,27 @@ void main() {
       );
 
       expect(find.textContaining('of 4 recent weeks'), findsOneWidget);
-      expect(find.text('Weeks with at least one completed workout.'), findsOneWidget);
+      expect(find.text('Weeks with at least one completed workout.'),
+          findsOneWidget);
     });
 
     testWidgets('movement-training section', (tester) async {
       final w = makeWorkout(completedAt: now.subtract(const Duration(days: 1)));
-      final analytics = TrainingAnalyticsEngine.calculate(history: [w], now: now);
+      final analytics =
+          TrainingAnalyticsEngine.calculate(history: [w], now: now);
 
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            home: Scaffold(body: ProgressMovementTraining(analytics: analytics)),
+            home:
+                Scaffold(body: ProgressMovementTraining(analytics: analytics)),
           ),
         ),
       );
 
       expect(find.text('Movement training'), findsOneWidget);
-      expect(find.text('Main-workout sets from your last 28 days.'), findsOneWidget);
+      expect(find.text('Main-workout sets from your last 28 days.'),
+          findsOneWidget);
     });
 
     testWidgets('movement order', (tester) async {
@@ -297,12 +334,14 @@ void main() {
         completedAt: now.subtract(const Duration(days: 1)),
         main: [makeEx(pattern: MovementPattern.squat, sets: 2)],
       );
-      final analytics = TrainingAnalyticsEngine.calculate(history: [wPush, wSquat], now: now);
+      final analytics =
+          TrainingAnalyticsEngine.calculate(history: [wPush, wSquat], now: now);
 
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            home: Scaffold(body: ProgressMovementTraining(analytics: analytics)),
+            home:
+                Scaffold(body: ProgressMovementTraining(analytics: analytics)),
           ),
         ),
       );
@@ -319,18 +358,21 @@ void main() {
         completedAt: now.subtract(const Duration(days: 1)),
         main: [makeEx(pattern: null)],
       );
-      final analytics = TrainingAnalyticsEngine.calculate(history: [w], now: now);
+      final analytics =
+          TrainingAnalyticsEngine.calculate(history: [w], now: now);
 
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            home: Scaffold(body: ProgressMovementTraining(analytics: analytics)),
+            home:
+                Scaffold(body: ProgressMovementTraining(analytics: analytics)),
           ),
         ),
       );
 
       // Should show no movement training message
-      expect(find.text('No Main movement training in last 28 days.'), findsOneWidget);
+      expect(find.text('No Main movement training in last 28 days.'),
+          findsOneWidget);
     });
 
     testWidgets('current capability levels 1-5', (tester) async {
@@ -339,17 +381,24 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            capabilityProfileProvider.overrideWith(() => _FakeCapabilityController(profile)),
+            capabilityProfileProvider
+                .overrideWith(() => _FakeCapabilityController(profile)),
           ],
           child: const MaterialApp(
-              home: Scaffold(body: SingleChildScrollView(child: ProgressCapabilitySnapshot()))),
+              home: Scaffold(
+                  body: SingleChildScrollView(
+                      child: ProgressCapabilitySnapshot()))),
         ),
       );
 
       await tester.pump();
       expect(find.text('Current movement levels'), findsOneWidget);
-      expect(find.text('Your current movement-specific levels used by adaptive workouts.'), findsOneWidget);
-      expect(find.textContaining('Level'), findsWidgets);
+      expect(
+          find.text(
+              'Your current movement-specific levels used by adaptive workouts.'),
+          findsOneWidget);
+      expect(find.text('Solid'),
+          findsNWidgets(CapabilityProfile.trainablePatterns.length));
     });
 
     testWidgets('training-recovery disclaimer remains', (tester) async {
@@ -359,7 +408,8 @@ void main() {
             home: Scaffold(
               body: Column(
                 children: [
-                  Text('Based on your recent FitFlow training history, not a medical recovery measure.'),
+                  Text(
+                      'Based on your recent FitFlow training history, not a medical recovery measure.'),
                 ],
               ),
             ),
@@ -367,13 +417,16 @@ void main() {
         ),
       );
 
-      expect(find.text('Based on your recent FitFlow training history, not a medical recovery measure.'),
+      expect(
+          find.text(
+              'Based on your recent FitFlow training history, not a medical recovery measure.'),
           findsOneWidget);
     });
 
     testWidgets('no calories', (tester) async {
       final w = makeWorkout(completedAt: now.subtract(const Duration(days: 1)));
-      final analytics = TrainingAnalyticsEngine.calculate(history: [w], now: now);
+      final analytics =
+          TrainingAnalyticsEngine.calculate(history: [w], now: now);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -399,7 +452,8 @@ void main() {
 
     testWidgets('no actual-time claim', (tester) async {
       final w = makeWorkout(completedAt: now.subtract(const Duration(days: 1)));
-      final analytics = TrainingAnalyticsEngine.calculate(history: [w], now: now);
+      final analytics =
+          TrainingAnalyticsEngine.calculate(history: [w], now: now);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -415,7 +469,8 @@ void main() {
 
     testWidgets('no fitness score', (tester) async {
       final w = makeWorkout(completedAt: now.subtract(const Duration(days: 1)));
-      final analytics = TrainingAnalyticsEngine.calculate(history: [w], now: now);
+      final analytics =
+          TrainingAnalyticsEngine.calculate(history: [w], now: now);
 
       await tester.pumpWidget(
         ProviderScope(
@@ -440,7 +495,8 @@ void main() {
 
     testWidgets('320px no overflow', (tester) async {
       final w = makeWorkout(completedAt: now.subtract(const Duration(days: 1)));
-      final analytics = TrainingAnalyticsEngine.calculate(history: [w], now: now);
+      final analytics =
+          TrainingAnalyticsEngine.calculate(history: [w], now: now);
 
       tester.view.physicalSize = const Size(320, 800);
       tester.view.devicePixelRatio = 1.0;
@@ -474,7 +530,8 @@ void main() {
 
     testWidgets('text scale ~1.5 safe', (tester) async {
       final w = makeWorkout(completedAt: now.subtract(const Duration(days: 1)));
-      final analytics = TrainingAnalyticsEngine.calculate(history: [w], now: now);
+      final analytics =
+          TrainingAnalyticsEngine.calculate(history: [w], now: now);
 
       await tester.pumpWidget(
         ProviderScope(

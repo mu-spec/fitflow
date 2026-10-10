@@ -1,3 +1,6 @@
+import 'package:fitflow/features/workouts/presentation/widgets/training_presentation.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
+import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/workouts/domain/exercise_skill_tree.dart';
@@ -30,7 +33,8 @@ class SkillTreeFamilyScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(tree.displayName)),
-      body: SingleChildScrollView(
+      body: FitFlowMaxWidth(
+          child: SingleChildScrollView(
         padding: const EdgeInsets.all(AppDimens.screenPadding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,7 +63,8 @@ class SkillTreeFamilyScreen extends ConsumerWidget {
                               MaterialTapTargetSize.shrinkWrap,
                         ),
                         Chip(
-                          label: Text('${tree.nodeCount} steps'),
+                          label:
+                              Text(context.l10n.trainingSteps(tree.nodeCount)),
                           visualDensity: VisualDensity.compact,
                           materialTapTargetSize:
                               MaterialTapTargetSize.shrinkWrap,
@@ -69,8 +74,10 @@ class SkillTreeFamilyScreen extends ConsumerWidget {
                     const SizedBox(height: 8),
                     Text(
                       level == null
-                          ? 'Movement level unavailable'
-                          : 'Your ${tree.movementName} level: ${level.label}',
+                          ? context.l10n.trainingLevelUnavailable
+                          : context.l10n.trainingMovementLevel(
+                              tree.movementName,
+                              trainingLevelLabel(context.l10n, level)),
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w700,
                       ),
@@ -78,7 +85,7 @@ class SkillTreeFamilyScreen extends ConsumerWidget {
                     if (level != null) ...[
                       const SizedBox(height: 8),
                       Text(
-                        'Exercises at or below this difficulty fit your current movement level.',
+                        context.l10n.trainingSkillFitHelp,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: colors.onSurfaceVariant,
                           height: 1.4,
@@ -87,7 +94,7 @@ class SkillTreeFamilyScreen extends ConsumerWidget {
                     ],
                     const SizedBox(height: 12),
                     Text(
-                      'This pathway shows exercise difficulty and setup fit, not exercise mastery.',
+                      context.l10n.trainingSkillPathTruth,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: colors.onSurfaceVariant,
                         height: 1.4,
@@ -124,7 +131,7 @@ class SkillTreeFamilyScreen extends ConsumerWidget {
             ],
           ],
         ),
-      ),
+      )),
     );
   }
 }
@@ -152,7 +159,7 @@ class _NodePathRow extends StatelessWidget {
             padding: const EdgeInsets.only(top: 18),
             child: Center(
               child: Semantics(
-                label: 'Progression step ${node.position} of $totalSteps',
+                label: context.l10n.trainingStep(node.position, totalSteps),
                 child: Container(
                   width: 12,
                   height: 12,
@@ -185,7 +192,7 @@ class _SkillTreeNotFoundScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('Skill tree')),
+      appBar: AppBar(title: Text(context.l10n.trainingSkillTree)),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -199,7 +206,7 @@ class _SkillTreeNotFoundScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                'Skill tree not found',
+                context.l10n.trainingSkillMissing,
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
@@ -207,7 +214,7 @@ class _SkillTreeNotFoundScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'This progression is not available in the current exercise catalog.',
+                context.l10n.trainingSkillMissingHelp,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: colors.onSurfaceVariant,
                 ),
@@ -217,7 +224,7 @@ class _SkillTreeNotFoundScreen extends StatelessWidget {
               FilledButton.icon(
                 onPressed: () => context.go(AppRoutes.skillTrees),
                 icon: const Icon(Icons.arrow_back),
-                label: const Text('Back to Skill Trees'),
+                label: Text(context.l10n.trainingBackSkills),
               ),
             ],
           ),

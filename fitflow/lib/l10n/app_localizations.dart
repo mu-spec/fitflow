@@ -2464,6 +2464,1098 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Already at the starting level; no level change.'**
   String get flowDecisionMinimum;
+
+  /// No description provided for @trainingWorkoutsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your workouts'**
+  String get trainingWorkoutsTitle;
+
+  /// No description provided for @trainingWorkoutsIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow a program or build a workout of your own.'**
+  String get trainingWorkoutsIntro;
+
+  /// No description provided for @trainingAdaptiveHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Looking for today’s adaptive workout?'**
+  String get trainingAdaptiveHome;
+
+  /// No description provided for @trainingAdaptiveAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to Home'**
+  String get trainingAdaptiveAction;
+
+  /// No description provided for @trainingPrograms.
+  ///
+  /// In en, this message translates to:
+  /// **'Programs'**
+  String get trainingPrograms;
+
+  /// No description provided for @trainingProgramsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Structured plans that adapt to your level and setup.'**
+  String get trainingProgramsHelp;
+
+  /// No description provided for @trainingCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom workouts'**
+  String get trainingCustom;
+
+  /// No description provided for @trainingCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Create workout'**
+  String get trainingCreate;
+
+  /// No description provided for @trainingCreateCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Create custom workout'**
+  String get trainingCreateCustom;
+
+  /// No description provided for @trainingCustomHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Build your own workout with exercises from your library.'**
+  String get trainingCustomHelp;
+
+  /// No description provided for @trainingCustomEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No custom workouts yet'**
+  String get trainingCustomEmpty;
+
+  /// No description provided for @trainingCustomError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load custom workouts.'**
+  String get trainingCustomError;
+
+  /// No description provided for @trainingDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete custom workout?'**
+  String get trainingDeleteTitle;
+
+  /// No description provided for @trainingDeleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This removes the saved workout. Completed workout history is not deleted.'**
+  String get trainingDeleteBody;
+
+  /// No description provided for @trainingDeleteError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t delete this workout. Try again.'**
+  String get trainingDeleteError;
+
+  /// No description provided for @trainingExplore.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore'**
+  String get trainingExplore;
+
+  /// No description provided for @trainingLibrary.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise Library'**
+  String get trainingLibrary;
+
+  /// No description provided for @trainingSkills.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise skill trees'**
+  String get trainingSkills;
+
+  /// No description provided for @trainingSkillsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore exercise progressions from easier to harder variations.'**
+  String get trainingSkillsHelp;
+
+  /// No description provided for @trainingView.
+  ///
+  /// In en, this message translates to:
+  /// **'View'**
+  String get trainingView;
+
+  /// No description provided for @trainingEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get trainingEdit;
+
+  /// No description provided for @trainingDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get trainingDelete;
+
+  /// No description provided for @trainingCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get trainingCancel;
+
+  /// No description provided for @trainingRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get trainingRetry;
+
+  /// No description provided for @trainingClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get trainingClose;
+
+  /// No description provided for @trainingDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get trainingDone;
+
+  /// No description provided for @trainingMoreActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout actions'**
+  String get trainingMoreActions;
+
+  /// No description provided for @trainingNotStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Not started'**
+  String get trainingNotStarted;
+
+  /// No description provided for @trainingInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get trainingInProgress;
+
+  /// No description provided for @trainingCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get trainingCompleted;
+
+  /// No description provided for @trainingUpcoming.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming'**
+  String get trainingUpcoming;
+
+  /// No description provided for @trainingNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get trainingNext;
+
+  /// No description provided for @trainingProgramsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load program progress.'**
+  String get trainingProgramsError;
+
+  /// No description provided for @trainingProgramsLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading program progress…'**
+  String get trainingProgramsLoading;
+
+  /// No description provided for @trainingHistoryError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load workout history.'**
+  String get trainingHistoryError;
+
+  /// No description provided for @trainingHistoryLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading workout history…'**
+  String get trainingHistoryLoading;
+
+  /// No description provided for @trainingTrends.
+  ///
+  /// In en, this message translates to:
+  /// **'Training trends'**
+  String get trainingTrends;
+
+  /// No description provided for @trainingTrendsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity, consistency and movement details'**
+  String get trainingTrendsHelp;
+
+  /// No description provided for @trainingMovementSnapshot.
+  ///
+  /// In en, this message translates to:
+  /// **'Current movement levels'**
+  String get trainingMovementSnapshot;
+
+  /// No description provided for @trainingRecoveryDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Training recovery'**
+  String get trainingRecoveryDetails;
+
+  /// No description provided for @trainingHistoryMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Show more workouts'**
+  String get trainingHistoryMore;
+
+  /// No description provided for @trainingHistoryCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed workout'**
+  String get trainingHistoryCompleted;
+
+  /// No description provided for @trainingHistoryMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout not found'**
+  String get trainingHistoryMissing;
+
+  /// No description provided for @trainingHistoryMissingHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'This workout may have been cleared.'**
+  String get trainingHistoryMissingHelp;
+
+  /// No description provided for @trainingPlannedDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned duration'**
+  String get trainingPlannedDuration;
+
+  /// No description provided for @trainingEstimatedDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated duration'**
+  String get trainingEstimatedDuration;
+
+  /// No description provided for @trainingTotalExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'Total exercises'**
+  String get trainingTotalExercises;
+
+  /// No description provided for @trainingTotalSets.
+  ///
+  /// In en, this message translates to:
+  /// **'Total sets'**
+  String get trainingTotalSets;
+
+  /// No description provided for @trainingNoExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'No exercises'**
+  String get trainingNoExercises;
+
+  /// No description provided for @trainingUnclassified.
+  ///
+  /// In en, this message translates to:
+  /// **'Unclassified movement'**
+  String get trainingUnclassified;
+
+  /// No description provided for @trainingSavedWorkouts.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved workouts'**
+  String get trainingSavedWorkouts;
+
+  /// No description provided for @trainingLast7.
+  ///
+  /// In en, this message translates to:
+  /// **'Workouts — last 7 days'**
+  String get trainingLast7;
+
+  /// No description provided for @trainingPlanned7.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned time — last 7 days'**
+  String get trainingPlanned7;
+
+  /// No description provided for @trainingPlannedNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned time is not elapsed workout time.'**
+  String get trainingPlannedNote;
+
+  /// No description provided for @trainingActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'8-week activity'**
+  String get trainingActivity;
+
+  /// No description provided for @trainingActivityHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed workouts over eight rolling 7-day periods. Oldest first, current last.'**
+  String get trainingActivityHelp;
+
+  /// No description provided for @trainingWorkouts.
+  ///
+  /// In en, this message translates to:
+  /// **'Workouts'**
+  String get trainingWorkouts;
+
+  /// No description provided for @trainingSets.
+  ///
+  /// In en, this message translates to:
+  /// **'Sets'**
+  String get trainingSets;
+
+  /// No description provided for @trainingCurrentPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Current 7 days'**
+  String get trainingCurrentPeriod;
+
+  /// No description provided for @trainingNoActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'No workouts in last 8 weeks.'**
+  String get trainingNoActivity;
+
+  /// No description provided for @trainingMovementHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Your current movement-specific levels used by adaptive workouts.'**
+  String get trainingMovementHelp;
+
+  /// No description provided for @trainingMovementLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading movement levels…'**
+  String get trainingMovementLoading;
+
+  /// No description provided for @trainingMovementUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Movement levels unavailable.'**
+  String get trainingMovementUnavailable;
+
+  /// No description provided for @trainingMovementMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete your movement assessment to see your starting points.'**
+  String get trainingMovementMissing;
+
+  /// No description provided for @trainingUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable'**
+  String get trainingUnknown;
+
+  /// No description provided for @trainingStanding.
+  ///
+  /// In en, this message translates to:
+  /// **'Standing only'**
+  String get trainingStanding;
+
+  /// No description provided for @trainingLowImpact.
+  ///
+  /// In en, this message translates to:
+  /// **'Low impact'**
+  String get trainingLowImpact;
+
+  /// No description provided for @trainingClearFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filters'**
+  String get trainingClearFilters;
+
+  /// No description provided for @trainingClearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all'**
+  String get trainingClearAll;
+
+  /// No description provided for @trainingMovement.
+  ///
+  /// In en, this message translates to:
+  /// **'Movement Pattern'**
+  String get trainingMovement;
+
+  /// No description provided for @trainingDifficulty.
+  ///
+  /// In en, this message translates to:
+  /// **'Difficulty'**
+  String get trainingDifficulty;
+
+  /// No description provided for @trainingEquipment.
+  ///
+  /// In en, this message translates to:
+  /// **'Equipment'**
+  String get trainingEquipment;
+
+  /// No description provided for @trainingPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Body Position'**
+  String get trainingPosition;
+
+  /// No description provided for @trainingCatalogEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No exercises available'**
+  String get trainingCatalogEmpty;
+
+  /// No description provided for @trainingCatalogEmptyHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'There are no exercises in this catalog.'**
+  String get trainingCatalogEmptyHelp;
+
+  /// No description provided for @trainingNoResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No exercises found'**
+  String get trainingNoResults;
+
+  /// No description provided for @trainingNoResultsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a different search or adjust your filters.'**
+  String get trainingNoResultsHelp;
+
+  /// No description provided for @trainingDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise details'**
+  String get trainingDetails;
+
+  /// No description provided for @trainingNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise not found'**
+  String get trainingNotFound;
+
+  /// No description provided for @trainingNotFoundHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'This exercise is no longer available.'**
+  String get trainingNotFoundHelp;
+
+  /// No description provided for @trainingBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get trainingBack;
+
+  /// No description provided for @trainingDefaults.
+  ///
+  /// In en, this message translates to:
+  /// **'Default Prescription'**
+  String get trainingDefaults;
+
+  /// No description provided for @trainingMuscles.
+  ///
+  /// In en, this message translates to:
+  /// **'Muscles Worked'**
+  String get trainingMuscles;
+
+  /// No description provided for @trainingPrimary.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary'**
+  String get trainingPrimary;
+
+  /// No description provided for @trainingSecondary.
+  ///
+  /// In en, this message translates to:
+  /// **'Secondary'**
+  String get trainingSecondary;
+
+  /// No description provided for @trainingHowTo.
+  ///
+  /// In en, this message translates to:
+  /// **'How to Perform'**
+  String get trainingHowTo;
+
+  /// No description provided for @trainingMistakes.
+  ///
+  /// In en, this message translates to:
+  /// **'Common Mistakes'**
+  String get trainingMistakes;
+
+  /// No description provided for @trainingBreathing.
+  ///
+  /// In en, this message translates to:
+  /// **'Breathing'**
+  String get trainingBreathing;
+
+  /// No description provided for @trainingProgression.
+  ///
+  /// In en, this message translates to:
+  /// **'Progression'**
+  String get trainingProgression;
+
+  /// No description provided for @trainingEasier.
+  ///
+  /// In en, this message translates to:
+  /// **'Easier variation'**
+  String get trainingEasier;
+
+  /// No description provided for @trainingCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Current exercise'**
+  String get trainingCurrent;
+
+  /// No description provided for @trainingHarder.
+  ///
+  /// In en, this message translates to:
+  /// **'Harder variation'**
+  String get trainingHarder;
+
+  /// No description provided for @trainingViewExercise.
+  ///
+  /// In en, this message translates to:
+  /// **'View exercise'**
+  String get trainingViewExercise;
+
+  /// No description provided for @trainingViewTree.
+  ///
+  /// In en, this message translates to:
+  /// **'View full skill tree'**
+  String get trainingViewTree;
+
+  /// No description provided for @trainingCatalogDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise characteristics'**
+  String get trainingCatalogDetails;
+
+  /// No description provided for @trainingNoEquipment.
+  ///
+  /// In en, this message translates to:
+  /// **'No equipment'**
+  String get trainingNoEquipment;
+
+  /// No description provided for @trainingLevelUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Movement level unavailable'**
+  String get trainingLevelUnavailable;
+
+  /// No description provided for @trainingSkillIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'See how exercise variations progress from easier to harder.'**
+  String get trainingSkillIntro;
+
+  /// No description provided for @trainingSkillTruth.
+  ///
+  /// In en, this message translates to:
+  /// **'Your movement level helps show which exercises fit your current level. It does not mean every easier exercise is mastered.'**
+  String get trainingSkillTruth;
+
+  /// No description provided for @trainingSkillEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No exercise skill trees available yet'**
+  String get trainingSkillEmpty;
+
+  /// No description provided for @trainingSkillEmptyHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise progressions will appear here when they are available in the catalog.'**
+  String get trainingSkillEmptyHelp;
+
+  /// No description provided for @trainingSkillFitHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercises at or below this difficulty fit your current movement level.'**
+  String get trainingSkillFitHelp;
+
+  /// No description provided for @trainingSkillPathTruth.
+  ///
+  /// In en, this message translates to:
+  /// **'This pathway shows exercise difficulty and setup fit, not exercise mastery.'**
+  String get trainingSkillPathTruth;
+
+  /// No description provided for @trainingFitsLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Fits your current level'**
+  String get trainingFitsLevel;
+
+  /// No description provided for @trainingAboveLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Above your current level'**
+  String get trainingAboveLevel;
+
+  /// No description provided for @trainingFitsSetup.
+  ///
+  /// In en, this message translates to:
+  /// **'Fits your setup'**
+  String get trainingFitsSetup;
+
+  /// No description provided for @trainingNeedsSetup.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs setup change'**
+  String get trainingNeedsSetup;
+
+  /// No description provided for @trainingSetupUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Setup details unavailable'**
+  String get trainingSetupUnavailable;
+
+  /// No description provided for @trainingSkillTree.
+  ///
+  /// In en, this message translates to:
+  /// **'Skill tree'**
+  String get trainingSkillTree;
+
+  /// No description provided for @trainingSkillMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Skill tree not found'**
+  String get trainingSkillMissing;
+
+  /// No description provided for @trainingSkillMissingHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'This progression is not available in the current exercise catalog.'**
+  String get trainingSkillMissingHelp;
+
+  /// No description provided for @trainingBackSkills.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Skill Trees'**
+  String get trainingBackSkills;
+
+  /// No description provided for @trainingBrowse.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse {count} exercises'**
+  String trainingBrowse(int count);
+
+  /// No description provided for @trainingExerciseCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 exercise} other{{count} exercises}}'**
+  String trainingExerciseCount(int count);
+
+  /// No description provided for @trainingCustomSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Target: {duration} • {count, plural, =1{1 exercise} other{{count} exercises}}'**
+  String trainingCustomSummary(String duration, int count);
+
+  /// No description provided for @trainingEstimated.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated: {duration}'**
+  String trainingEstimated(String duration);
+
+  /// No description provided for @trainingSessions.
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {total} sessions'**
+  String trainingSessions(int done, int total);
+
+  /// No description provided for @trainingSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Session {number}'**
+  String trainingSession(int number);
+
+  /// No description provided for @trainingNextSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Week {week} • Next: {title}'**
+  String trainingNextSession(int week, String title);
+
+  /// No description provided for @trainingHistoryCounts.
+  ///
+  /// In en, this message translates to:
+  /// **'{exercises, plural, =1{1 exercise} other{{exercises} exercises}} • {sets, plural, =1{1 set} other{{sets} sets}}'**
+  String trainingHistoryCounts(int exercises, int sets);
+
+  /// No description provided for @trainingWeeksAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Previous 7 days} other{{count} periods ago}}'**
+  String trainingWeeksAgo(int count);
+
+  /// No description provided for @trainingActivityCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 workout} other{{count} workouts}}'**
+  String trainingActivityCount(int count);
+
+  /// No description provided for @trainingActivitySets.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} main sets'**
+  String trainingActivitySets(int count);
+
+  /// No description provided for @trainingStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {step} of {total}'**
+  String trainingStep(int step, int total);
+
+  /// No description provided for @trainingSteps.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 step} other{{count} steps}}'**
+  String trainingSteps(int count);
+
+  /// No description provided for @trainingMovementLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Your {movement} level: {level}'**
+  String trainingMovementLevel(String movement, String level);
+
+  /// No description provided for @trainingFitCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} fit your current level'**
+  String trainingFitCount(int count);
+
+  /// No description provided for @trainingAboveCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} above your current level'**
+  String trainingAboveCount(int count);
+
+  /// No description provided for @trainingSetupCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} fit your current setup'**
+  String trainingSetupCount(int count);
+
+  /// No description provided for @trainingEquipmentFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Equipment: {equipment}'**
+  String trainingEquipmentFor(String equipment);
+
+  /// No description provided for @trainingRest.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest: {duration}'**
+  String trainingRest(String duration);
+
+  /// No description provided for @trainingWorkloadReps.
+  ///
+  /// In en, this message translates to:
+  /// **'{sets} × {reps} reps'**
+  String trainingWorkloadReps(int sets, int reps);
+
+  /// No description provided for @trainingWorkloadTimed.
+  ///
+  /// In en, this message translates to:
+  /// **'{sets} × {duration}'**
+  String trainingWorkloadTimed(int sets, String duration);
+
+  /// No description provided for @trainingProgramEntryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Programs'**
+  String get trainingProgramEntryTitle;
+
+  /// No description provided for @trainingProgramEntrySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Adaptive multi-week workouts built around your current level and setup.'**
+  String get trainingProgramEntrySubtitle;
+
+  /// No description provided for @trainingProgramRecommendedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended program'**
+  String get trainingProgramRecommendedTitle;
+
+  /// No description provided for @trainingProgramRecommendedMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Matches your selected goal'**
+  String get trainingProgramRecommendedMatch;
+
+  /// No description provided for @trainingProgramRecommendedMissingProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete your profile to see a program matched to your selected goal.'**
+  String get trainingProgramRecommendedMissingProfile;
+
+  /// No description provided for @trainingProgramViewProgram.
+  ///
+  /// In en, this message translates to:
+  /// **'View program'**
+  String get trainingProgramViewProgram;
+
+  /// No description provided for @trainingProgramActiveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Active program'**
+  String get trainingProgramActiveTitle;
+
+  /// No description provided for @trainingProgramContinueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get trainingProgramContinueLabel;
+
+  /// No description provided for @trainingProgramOverviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Adaptive programs'**
+  String get trainingProgramOverviewTitle;
+
+  /// No description provided for @trainingProgramOverviewIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Structured multi-week plans whose workouts adapt to your current movement levels and setup.'**
+  String get trainingProgramOverviewIntro;
+
+  /// No description provided for @trainingProgramStartProgram.
+  ///
+  /// In en, this message translates to:
+  /// **'Start program'**
+  String get trainingProgramStartProgram;
+
+  /// No description provided for @trainingProgramResumeProgram.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume program'**
+  String get trainingProgramResumeProgram;
+
+  /// No description provided for @trainingProgramSwitchProgram.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to this program'**
+  String get trainingProgramSwitchProgram;
+
+  /// No description provided for @trainingProgramRestartProgram.
+  ///
+  /// In en, this message translates to:
+  /// **'Restart program'**
+  String get trainingProgramRestartProgram;
+
+  /// No description provided for @trainingProgramProgramComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Program complete'**
+  String get trainingProgramProgramComplete;
+
+  /// No description provided for @trainingProgramViewWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'View workout'**
+  String get trainingProgramViewWorkout;
+
+  /// No description provided for @trainingProgramSwitchDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch active program?'**
+  String get trainingProgramSwitchDialogTitle;
+
+  /// No description provided for @trainingProgramSwitchDialogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your progress in the current program will be kept.'**
+  String get trainingProgramSwitchDialogBody;
+
+  /// No description provided for @trainingProgramSwitchDialogConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch'**
+  String get trainingProgramSwitchDialogConfirm;
+
+  /// No description provided for @trainingProgramRestartDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Restart this program?'**
+  String get trainingProgramRestartDialogTitle;
+
+  /// No description provided for @trainingProgramRestartDialogBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Its saved program progress will be cleared. Completed workout history will stay unchanged.'**
+  String get trainingProgramRestartDialogBody;
+
+  /// No description provided for @trainingProgramRestartDialogConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Restart'**
+  String get trainingProgramRestartDialogConfirm;
+
+  /// No description provided for @trainingProgramCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get trainingProgramCancel;
+
+  /// No description provided for @trainingProgramActionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save program changes. Try again.'**
+  String get trainingProgramActionFailed;
+
+  /// No description provided for @trainingProgramPreviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Program workout'**
+  String get trainingProgramPreviewTitle;
+
+  /// No description provided for @trainingProgramAdaptationNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Generated from your current movement levels, equipment, environment, and preferences.'**
+  String get trainingProgramAdaptationNote;
+
+  /// No description provided for @trainingProgramGoalUnchangedNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Your saved profile goal is not changed by this program session.'**
+  String get trainingProgramGoalUnchangedNote;
+
+  /// No description provided for @trainingProgramGenerationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'This program workout can\'t be generated with your current setup.'**
+  String get trainingProgramGenerationFailed;
+
+  /// No description provided for @trainingProgramStartWorkout.
+  ///
+  /// In en, this message translates to:
+  /// **'Start workout'**
+  String get trainingProgramStartWorkout;
+
+  /// No description provided for @trainingProgramPlayerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Program workout'**
+  String get trainingProgramPlayerTitle;
+
+  /// No description provided for @trainingProgramPlayerWorkoutNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Program workout not found'**
+  String get trainingProgramPlayerWorkoutNotFound;
+
+  /// No description provided for @trainingProgramPlayerWorkoutNotFoundBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This workout isn\'t part of the program. Go back and choose one from the program.'**
+  String get trainingProgramPlayerWorkoutNotFoundBody;
+
+  /// No description provided for @trainingProgramBackToPrograms.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to programs'**
+  String get trainingProgramBackToPrograms;
+
+  /// No description provided for @trainingProgramBackToProgram.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to program'**
+  String get trainingProgramBackToProgram;
+
+  /// No description provided for @trainingProgramProgramWorkoutCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Program workout completed.'**
+  String get trainingProgramProgramWorkoutCompleted;
+
+  /// No description provided for @trainingProgramProgramNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Program not found'**
+  String get trainingProgramProgramNotFound;
+
+  /// No description provided for @trainingProgramProgramNotFoundBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This program isn\'t available. Go back and choose one from the list.'**
+  String get trainingProgramProgramNotFoundBody;
+
+  /// No description provided for @trainingProgramSessionNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Session not found'**
+  String get trainingProgramSessionNotFound;
+
+  /// No description provided for @trainingProgramSessionNotFoundBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This session isn\'t part of the program. Go back and choose one from the program.'**
+  String get trainingProgramSessionNotFoundBody;
+
+  /// No description provided for @trainingProgramWeeks.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 week} other{{count} weeks}}'**
+  String trainingProgramWeeks(int count);
+
+  /// No description provided for @trainingProgramPerWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 session/week} other{{count} sessions/week}}'**
+  String trainingProgramPerWeek(int count);
+
+  /// No description provided for @trainingProgramTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 workout} other{{count} workouts}}'**
+  String trainingProgramTotal(int count);
+
+  /// No description provided for @trainingProgramWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Week {count}'**
+  String trainingProgramWeek(int count);
+
+  /// No description provided for @trainingCustomNeedsUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'This workout needs updates for your current setup.'**
+  String get trainingCustomNeedsUpdate;
+
+  /// No description provided for @trainingCustomReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit this workout to review its exercises and setup.'**
+  String get trainingCustomReview;
+
+  /// No description provided for @trainingMissingExercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise unavailable'**
+  String get trainingMissingExercise;
+
+  /// No description provided for @trainingCustomStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get trainingCustomStart;
+
+  /// No description provided for @trainingCustomLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading custom workouts…'**
+  String get trainingCustomLoading;
+
+  /// No description provided for @trainingCustomFix.
+  ///
+  /// In en, this message translates to:
+  /// **'Fix the issues above to start this workout.'**
+  String get trainingCustomFix;
 }
 
 class _AppLocalizationsDelegate

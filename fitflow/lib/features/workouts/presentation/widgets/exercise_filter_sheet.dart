@@ -1,3 +1,7 @@
+import 'package:fitflow/features/workouts/presentation/widgets/training_presentation.dart';
+import 'package:fitflow/l10n/enum_labels.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
+import 'package:fitflow/core/accessibility/system_motion.dart';
 import 'package:fitflow/features/onboarding/data/workout_equipment.dart';
 import 'package:fitflow/features/workouts/domain/exercise_difficulty.dart';
 import 'package:fitflow/features/workouts/domain/exercise_position.dart';
@@ -57,7 +61,6 @@ class ExerciseFilterSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
@@ -66,18 +69,18 @@ class ExerciseFilterSheet extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Row(
+              Wrap(
+                spacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  Expanded(
-                    child: Text('Filters', style: theme.textTheme.titleLarge),
-                  ),
+                  TrainingHeading(context.l10n.filters),
                   if (filter.hasActiveFilters)
                     TextButton(
                       onPressed: () => onChanged(filter.clearFilters()),
-                      child: const Text('Clear filters'),
+                      child: Text(context.l10n.trainingClearFilters),
                     ),
                   IconButton(
-                    tooltip: 'Close',
+                    tooltip: context.l10n.trainingClose,
                     icon: const Icon(Icons.close),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
@@ -87,14 +90,18 @@ class ExerciseFilterSheet extends StatelessWidget {
               const Divider(),
               const SizedBox(height: 16),
               _FilterSection(
-                title: 'Movement Pattern',
+                title: context.l10n.trainingMovement,
                 child: Wrap(
                   spacing: 8,
                   runSpacing: 4,
                   children: MovementPattern.values.map((pattern) {
                     final selected = filter.movementPatterns.contains(pattern);
                     return FilterChip(
-                      label: Text(pattern.label),
+                      chipAnimationStyle: ChipAnimationStyle(
+                          selectAnimation: AnimationStyle(
+                              duration: SystemMotion.micro(context),
+                              reverseDuration: SystemMotion.micro(context))),
+                      label: Text(movementPatternLabel(context.l10n, pattern)),
                       selected: selected,
                       onSelected: (_) => _toggleMovement(pattern),
                     );
@@ -102,14 +109,18 @@ class ExerciseFilterSheet extends StatelessWidget {
                 ),
               ),
               _FilterSection(
-                title: 'Difficulty',
+                title: context.l10n.trainingDifficulty,
                 child: Wrap(
                   spacing: 8,
                   runSpacing: 4,
                   children: ExerciseDifficulty.values.map((diff) {
                     final selected = filter.difficulties.contains(diff);
-                    final label = 'Level ${diff.name.replaceFirst('level', '')}';
+                    final label = trainingDifficultyLabel(context.l10n, diff);
                     return FilterChip(
+                      chipAnimationStyle: ChipAnimationStyle(
+                          selectAnimation: AnimationStyle(
+                              duration: SystemMotion.micro(context),
+                              reverseDuration: SystemMotion.micro(context))),
                       label: Text(label),
                       selected: selected,
                       onSelected: (_) => _toggleDifficulty(diff),
@@ -118,14 +129,18 @@ class ExerciseFilterSheet extends StatelessWidget {
                 ),
               ),
               _FilterSection(
-                title: 'Equipment',
+                title: context.l10n.trainingEquipment,
                 child: Wrap(
                   spacing: 8,
                   runSpacing: 4,
                   children: WorkoutEquipment.values.map((eq) {
                     final selected = filter.equipment.contains(eq);
                     return FilterChip(
-                      label: Text(eq.label),
+                      chipAnimationStyle: ChipAnimationStyle(
+                          selectAnimation: AnimationStyle(
+                              duration: SystemMotion.micro(context),
+                              reverseDuration: SystemMotion.micro(context))),
+                      label: Text(equipmentLabel(context.l10n, eq)),
                       selected: selected,
                       onSelected: (_) => _toggleEquipment(eq),
                     );
@@ -133,13 +148,17 @@ class ExerciseFilterSheet extends StatelessWidget {
                 ),
               ),
               _FilterSection(
-                title: 'Body Position',
+                title: context.l10n.trainingPosition,
                 child: Wrap(
                   spacing: 8,
                   runSpacing: 4,
                   children: ExercisePosition.values.map((pos) {
                     final selected = filter.positions.contains(pos);
                     return FilterChip(
+                      chipAnimationStyle: ChipAnimationStyle(
+                          selectAnimation: AnimationStyle(
+                              duration: SystemMotion.micro(context),
+                              reverseDuration: SystemMotion.micro(context))),
                       label: Text(pos.label),
                       selected: selected,
                       onSelected: (_) => _togglePosition(pos),
@@ -152,7 +171,7 @@ class ExerciseFilterSheet extends StatelessWidget {
                 width: double.infinity,
                 child: FilledButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Done'),
+                  child: Text(context.l10n.trainingDone),
                 ),
               ),
             ],
@@ -177,7 +196,9 @@ class _FilterSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+          Text(title,
+              style: theme.textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w600)),
           const SizedBox(height: 8),
           child,
         ],

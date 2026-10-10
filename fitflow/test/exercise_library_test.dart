@@ -1,5 +1,4 @@
 import 'package:fitflow/app/app.dart';
-import 'package:fitflow/core/widgets/placeholder_row.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,7 +7,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'helpers/test_helpers.dart';
 
 void main() {
-  testWidgets('Exercise Library opens from Workouts and displays count and search',
+  testWidgets(
+      'Exercise Library opens from Workouts and displays count and search',
       (tester) async {
     SharedPreferences.setMockInitialValues({});
     await tester.pumpWidget(
@@ -25,7 +25,9 @@ void main() {
     expect(find.text('Browse 88 exercises'), findsOneWidget);
 
     // Open Exercise Library via tapping the row - must succeed if route is registered
-    await tester.tap(find.byType(PlaceholderRow).first);
+    await tester.ensureVisible(find.text('Exercise Library').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Exercise Library').first);
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump(const Duration(milliseconds: 500));

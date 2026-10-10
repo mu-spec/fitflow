@@ -1,5 +1,7 @@
+import 'package:fitflow/features/workouts/presentation/widgets/training_presentation.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
+import 'package:fitflow/l10n/enum_labels.dart';
 import 'package:fitflow/features/onboarding/data/workout_equipment.dart';
-import 'package:fitflow/features/workouts/domain/capability_level.dart';
 import 'package:fitflow/features/workouts/domain/exercise_skill_tree.dart';
 import 'package:flutter/material.dart';
 
@@ -20,15 +22,15 @@ class SkillTreeNodeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final levelLabel =
-        CapabilityLevel.fromExerciseDifficulty(node.difficulty).label;
+    final levelLabel = trainingDifficultyLabel(context.l10n, node.difficulty);
     final equipment = node.exercise.requiredEquipment
         .where((item) => item != WorkoutEquipment.none)
-        .map((item) => item.label)
+        .map((item) => equipmentLabel(context.l10n, item))
         .toList()
       ..sort();
-    final equipmentLabel =
-        equipment.isEmpty ? 'No equipment required' : equipment.join(', ');
+    final equipmentText = equipment.isEmpty
+        ? context.l10n.trainingNoEquipment
+        : equipment.join(', ');
 
     return Card(
       margin: EdgeInsets.zero,
@@ -38,7 +40,7 @@ class SkillTreeNodeCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Step ${node.position} of $totalSteps',
+              context.l10n.trainingStep(node.position, totalSteps),
               style: theme.textTheme.labelLarge?.copyWith(
                 color: colors.primary,
                 fontWeight: FontWeight.w700,
@@ -64,7 +66,7 @@ class SkillTreeNodeCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Equipment: $equipmentLabel',
+              context.l10n.trainingEquipmentFor(equipmentText),
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: colors.onSurfaceVariant,
               ),
@@ -75,7 +77,7 @@ class SkillTreeNodeCard extends StatelessWidget {
               runSpacing: 8,
               children: [
                 _StatusChip(
-                  label: _levelStatusLabel,
+                  label: _levelStatusLabel(context),
                   background: node.fitsCurrentLevel == true
                       ? colors.primaryContainer
                       : colors.tertiaryContainer,
@@ -84,7 +86,7 @@ class SkillTreeNodeCard extends StatelessWidget {
                       : colors.onTertiaryContainer,
                 ),
                 _StatusChip(
-                  label: _setupStatusLabel,
+                  label: _setupStatusLabel(context),
                   background: node.fitsSetup == false
                       ? colors.errorContainer
                       : colors.secondaryContainer,
@@ -123,7 +125,7 @@ class SkillTreeNodeCard extends StatelessWidget {
             OutlinedButton.icon(
               onPressed: onViewExercise,
               icon: const Icon(Icons.open_in_new, size: 18),
-              label: const Text('View exercise'),
+              label: Text(context.l10n.trainingViewExercise),
             ),
           ],
         ),
@@ -131,25 +133,25 @@ class SkillTreeNodeCard extends StatelessWidget {
     );
   }
 
-  String get _levelStatusLabel {
+  String _levelStatusLabel(BuildContext context) {
     switch (node.status) {
       case ExerciseSkillTreeNodeStatus.fitsCurrentLevel:
-        return 'Fits your current level';
+        return context.l10n.trainingFitsLevel;
       case ExerciseSkillTreeNodeStatus.aboveCurrentLevel:
-        return 'Above your current level';
+        return context.l10n.trainingAboveLevel;
       case ExerciseSkillTreeNodeStatus.movementLevelUnavailable:
-        return 'Movement level unavailable';
+        return context.l10n.trainingLevelUnavailable;
     }
   }
 
-  String get _setupStatusLabel {
+  String _setupStatusLabel(BuildContext context) {
     switch (node.setupStatus) {
       case ExerciseSkillTreeSetupStatus.fitsSetup:
-        return 'Fits your setup';
+        return context.l10n.trainingFitsSetup;
       case ExerciseSkillTreeSetupStatus.needsSetupChange:
-        return 'Needs setup change';
+        return context.l10n.trainingNeedsSetup;
       case ExerciseSkillTreeSetupStatus.setupDetailsUnavailable:
-        return 'Setup details unavailable';
+        return context.l10n.trainingSetupUnavailable;
     }
   }
 }
@@ -161,11 +163,7 @@ class _DetailChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Chip(
-      label: Text(label),
-      visualDensity: VisualDensity.compact,
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-    );
+    return TrainingFact(label);
   }
 }
 
@@ -182,15 +180,6 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Chip(
-      label: Text(label),
-      backgroundColor: background,
-      labelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-            color: foreground,
-            fontWeight: FontWeight.w600,
-          ),
-      visualDensity: VisualDensity.compact,
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-    );
+    return TrainingFact(label, icon: Icons.info_outline);
   }
 }

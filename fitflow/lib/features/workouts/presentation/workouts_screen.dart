@@ -1,8 +1,11 @@
+import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
+import 'package:fitflow/core/design/fitflow_layout.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
+import 'package:fitflow/l10n/enum_labels.dart';
+import 'package:fitflow/l10n/locale_format.dart';
+import 'package:fitflow/features/workouts/presentation/widgets/training_presentation.dart';
 import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/app/router/app_routes.dart';
-import 'package:fitflow/core/widgets/placeholder_row.dart';
-import 'package:fitflow/core/widgets/placeholder_section.dart';
-import 'package:fitflow/features/onboarding/data/workout_duration.dart';
 import 'package:fitflow/features/onboarding/state/user_fitness_profile_controller.dart';
 import 'package:fitflow/features/programs/presentation/widgets/workouts_program_cards.dart';
 import 'package:fitflow/features/workouts/data/exercise_catalog.dart';
@@ -24,100 +27,90 @@ class WorkoutsScreen extends ConsumerWidget {
     final exerciseCount = ExerciseCatalog.all.where((e) => e.active).length;
     final customAsync = ref.watch(customWorkoutControllerProvider);
 
-    return SafeArea(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(AppDimens.screenPadding),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Your workouts', style: theme.textTheme.titleLarge),
-            const SizedBox(height: 16),
-            PlaceholderRow(
-              icon: Icons.fitness_center,
-              title: 'Exercise Library',
-              subtitle: 'Browse $exerciseCount exercises',
+    final l = context.l10n;
+    return Material(
+        type: MaterialType.transparency,
+        child: SafeArea(
+            child: FitFlowMaxWidth(
+                child: SingleChildScrollView(
+          padding: const EdgeInsets.all(AppDimens.screenPadding),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            TrainingHeading(l.trainingWorkoutsTitle, large: true),
+            const SizedBox(height: 8),
+            Text(l.trainingWorkoutsIntro, style: theme.textTheme.bodyLarge),
+            const SizedBox(height: 24),
+            Card(
+                child: ListTile(
+              contentPadding: const EdgeInsets.all(16),
+              title:
+                  Text(l.trainingPrograms, style: theme.textTheme.titleLarge),
+              subtitle: Text(l.trainingProgramsHelp),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push(AppRoutes.programs),
+            )),
+            const ActiveProgramCard(),
+            const SizedBox(height: 24),
+            TrainingHeading(l.trainingCustom),
+            const SizedBox(height: 8),
+            customAsync.when(
+              data: (templates) => templates.isEmpty
+                  ? _EmptyCustomState(
+                      onCreate: () => context.push(AppRoutes.customWorkoutNew))
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                          Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: OutlinedButton.icon(
+                                onPressed: () =>
+                                    context.push(AppRoutes.customWorkoutNew),
+                                icon: const Icon(Icons.add),
+                                label: Text(l.trainingCreateCustom),
+                              )),
+                          for (final template in templates)
+                            _CustomWorkoutCard(template: template),
+                        ]),
+              loading: () => Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: FitFlowLoading(
+                      label: context.l10n.trainingCustomLoading)),
+              error: (e, _) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(l.trainingCustomError),
+                    TextButton(
+                        onPressed: () => ref
+                            .read(customWorkoutControllerProvider.notifier)
+                            .refresh(),
+                        child: Text(l.trainingRetry)),
+                  ]),
+            ),
+            const SizedBox(height: 24),
+            TrainingHeading(l.trainingExplore),
+            const SizedBox(height: 8),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(l.trainingLibrary),
+              subtitle: Text(l.trainingBrowse(exerciseCount)),
+              trailing: const Icon(Icons.chevron_right),
               onTap: () => context.push(AppRoutes.exerciseLibrary),
             ),
-            const PlaceholderSection(
-                title: 'Recommended', subtitle: 'Workouts picked for your level and history.'),
-            // M16 Part 1 – real Programs entry replaces the old placeholder.
-            const ProgramsEntryRow(),
-            const ActiveProgramCard(),
-            const RecommendedProgramCard(),
-            const SizedBox(height: 8),
-            _CreateCustomRow(onTap: () => context.push(AppRoutes.customWorkoutNew)),
-            PlaceholderRow(
-              icon: Icons.account_tree_outlined,
-              title: 'Exercise skill trees',
-              subtitle:
-                  'Explore exercise progressions from easier to harder variations.',
+            const Divider(),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(l.trainingSkills),
+              subtitle: Text(l.trainingSkillsHelp),
+              trailing: const Icon(Icons.chevron_right),
               onTap: () => context.push(AppRoutes.skillTrees),
             ),
-            const SizedBox(height: 16),
-            Text('Custom workouts', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
-            const SizedBox(height: 12),
-            customAsync.when(
-              data: (templates) {
-                if (templates.isEmpty) {
-                  return _EmptyCustomState(onCreate: () => context.push(AppRoutes.customWorkoutNew));
-                }
-                return Column(
-                  children: [
-                    for (final t in templates) _CustomWorkoutCard(template: t),
-                  ],
-                );
-              },
-              loading: () => const Padding(
-                padding: EdgeInsets.symmetric(vertical: 24),
-                child: Center(child: CircularProgressIndicator()),
-              ),
-              error: (e, _) => Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Could not load custom workouts.'),
-                      const SizedBox(height: 8),
-                      FilledButton(
-                        onPressed: () => ref.read(customWorkoutControllerProvider.notifier).refresh(),
-                        child: const Text('Retry'),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _CreateCustomRow extends StatelessWidget {
-  const _CreateCustomRow({required this.onTap});
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Card(
-      margin: const EdgeInsets.only(bottom: AppDimens.itemGap),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: ListTile(
-          onTap: onTap,
-          leading: const Icon(Icons.add_circle_outline),
-          title: const Text('Create custom workout'),
-          subtitle: Text(
-            'Build your own workout with exercises from your library.',
-            style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-          ),
-          trailing: Icon(Icons.chevron_right, color: theme.colorScheme.onSurfaceVariant),
-        ),
-      ),
-    );
+            const SizedBox(height: 24),
+            Text(l.trainingAdaptiveHome, style: theme.textTheme.bodyMedium),
+            TextButton(
+                onPressed: () => context.go(AppRoutes.home),
+                child: Text(l.trainingAdaptiveAction)),
+          ]),
+        ))));
   }
 }
 
@@ -134,15 +127,17 @@ class _EmptyCustomState extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('No custom workouts yet',
-                style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+            Text(context.l10n.trainingCustomEmpty,
+                style: theme.textTheme.titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
-            Text('Build your own workout with exercises from your library.',
-                style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            Text(context.l10n.trainingCustomHelp,
+                style: theme.textTheme.bodyMedium
+                    ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
             const SizedBox(height: 12),
             FilledButton(
               onPressed: onCreate,
-              child: const Text('Create workout'),
+              child: Text(context.l10n.trainingCreate),
             ),
           ],
         ),
@@ -154,17 +149,6 @@ class _EmptyCustomState extends StatelessWidget {
 class _CustomWorkoutCard extends ConsumerWidget {
   const _CustomWorkoutCard({required this.template});
   final CustomWorkoutTemplate template;
-
-  String _formatDuration(Duration d) {
-    final m = d.inMinutes;
-    final s = d.inSeconds % 60;
-    if (m > 0) return '${m}m ${s > 0 ? '${s}s' : ''}'.trim();
-    return '${s}s';
-  }
-
-  String _targetLabel(WorkoutDuration dur) {
-    return dur.label;
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -195,7 +179,8 @@ class _CustomWorkoutCard extends ConsumerWidget {
     for (final entry in template.main) {
       final ex = catalogById[entry.exerciseId];
       if (ex?.movementPattern != null) {
-        movementChips.add(ex!.movementPattern!.label);
+        movementChips
+            .add(movementPatternLabel(context.l10n, ex!.movementPattern!));
       }
     }
 
@@ -214,32 +199,33 @@ class _CustomWorkoutCard extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(template.name,
-                          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+                          style: theme.textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.w600)),
                       const SizedBox(height: 4),
                       Text(
-                        'Target: ${_targetLabel(template.targetDuration)} • $totalExercises exercises'
-                        '${estimated != null ? ' • Est: ${_formatDuration(estimated)}' : ''}',
-                        style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                        context.l10n.trainingCustomSummary(
+                            workoutDurationLabel(
+                                context.l10n, template.targetDuration),
+                            totalExercises),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant),
                       ),
+                      if (estimated != null)
+                        Text(
+                            context.l10n.trainingEstimated(
+                                FitFlowLocaleFormat.formatDuration(
+                                    context.l10n, estimated)),
+                            style: theme.textTheme.bodySmall),
                       if (movementChips.isNotEmpty) ...[
                         const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 6,
-                          runSpacing: 6,
-                          children: [
-                            for (final chip in movementChips.take(4))
-                              Chip(
-                                label: Text(chip),
-                                visualDensity: VisualDensity.compact,
-                                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              ),
-                          ],
-                        ),
+                        Text(movementChips.take(4).join(' · '),
+                            style: theme.textTheme.bodySmall),
                       ],
                     ],
                   ),
                 ),
                 PopupMenuButton<String>(
+                  tooltip: context.l10n.trainingMoreActions,
                   onSelected: (value) async {
                     if (value == 'view') {
                       context.push(AppRoutes.customWorkoutDetail(template.id));
@@ -249,17 +235,16 @@ class _CustomWorkoutCard extends ConsumerWidget {
                       final confirmed = await showDialog<bool>(
                         context: context,
                         builder: (ctx) => AlertDialog(
-                          title: const Text('Delete custom workout?'),
-                          content: const Text(
-                              'This removes the saved workout. Completed workout history is not deleted.'),
+                          title: Text(context.l10n.trainingDeleteTitle),
+                          content: Text(context.l10n.trainingDeleteBody),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.of(ctx).pop(false),
-                              child: const Text('Cancel'),
+                              child: Text(context.l10n.trainingCancel),
                             ),
                             FilledButton(
                               onPressed: () => Navigator.of(ctx).pop(true),
-                              child: const Text('Delete'),
+                              child: Text(context.l10n.trainingDelete),
                             ),
                           ],
                         ),
@@ -270,31 +255,41 @@ class _CustomWorkoutCard extends ConsumerWidget {
                             .delete(template.id);
                         if (!success && context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Couldn't delete this workout. Try again.")),
+                            SnackBar(
+                                content:
+                                    Text(context.l10n.trainingDeleteError)),
                           );
                         }
                       }
                     }
                   },
-                  itemBuilder: (ctx) => const [
-                    PopupMenuItem(value: 'view', child: Text('View')),
-                    PopupMenuItem(value: 'edit', child: Text('Edit')),
-                    PopupMenuItem(value: 'delete', child: Text('Delete')),
+                  itemBuilder: (ctx) => [
+                    PopupMenuItem(
+                        value: 'view', child: Text(context.l10n.trainingView)),
+                    PopupMenuItem(
+                        value: 'edit', child: Text(context.l10n.trainingEdit)),
+                    PopupMenuItem(
+                        value: 'delete',
+                        child: Text(context.l10n.trainingDelete)),
                   ],
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            Row(
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
               children: [
-                OutlinedButton(
-                  onPressed: () => context.push(AppRoutes.customWorkoutDetail(template.id)),
-                  child: const Text('View'),
+                FilledButton(
+                  onPressed: () =>
+                      context.push(AppRoutes.customWorkoutDetail(template.id)),
+                  child: Text(context.l10n.trainingView),
                 ),
                 const SizedBox(width: 8),
-                FilledButton(
-                  onPressed: () => context.push(AppRoutes.customWorkoutEdit(template.id)),
-                  child: const Text('Edit'),
+                TextButton(
+                  onPressed: () =>
+                      context.push(AppRoutes.customWorkoutEdit(template.id)),
+                  child: Text(context.l10n.trainingEdit),
                 ),
               ],
             ),

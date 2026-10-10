@@ -46,7 +46,8 @@ void main() {
         {AdaptiveProgramsStorage.key: AdaptiveProgramsStorage.encode(state)});
   }
 
-  AdaptiveProgramsState balancedWithTwoDone({String? active = 'balanced_foundations'}) =>
+  AdaptiveProgramsState balancedWithTwoDone(
+          {String? active = 'balanced_foundations'}) =>
       AdaptiveProgramsState(
         activeProgramId: active,
         progressByProgram: {
@@ -131,7 +132,7 @@ void main() {
       seed(balancedWithTwoDone());
       await pumpAt(tester, AppRoutes.programs);
       expect(find.text('Active program'), findsOneWidget);
-      expect(find.text('2 of 12 completed'), findsOneWidget);
+      expect(find.text('2 of 12 sessions'), findsOneWidget);
       await tester.tap(find.text('Balanced Foundations'));
       await tester.pumpAndSettle();
       expect(find.byType(ProgramDetailScreen), findsOneWidget);
@@ -140,7 +141,15 @@ void main() {
     testWidgets('no medical/AI/success claims', (tester) async {
       SharedPreferences.setMockInitialValues({});
       await pumpAt(tester, AppRoutes.programs);
-      for (final banned in ['Best', 'Optimal', 'Guaranteed', 'AI', 'medical', 'lose weight', 'burn']) {
+      for (final banned in [
+        'Best',
+        'Optimal',
+        'Guaranteed',
+        'AI',
+        'medical',
+        'lose weight',
+        'burn'
+      ]) {
         expect(find.textContaining(banned), findsNothing, reason: banned);
       }
     });
@@ -192,10 +201,12 @@ void main() {
       expect(find.textContaining('behind'), findsNothing);
     });
 
-    testWidgets('session rows show focus, goal and View workout', (tester) async {
+    testWidgets('session rows show focus, goal and View workout',
+        (tester) async {
       SharedPreferences.setMockInitialValues({});
       await pumpAt(tester, AppRoutes.programDetail('balanced_foundations'));
-      expect(find.text('Full-body basics • Goal: General fitness'), findsWidgets);
+      expect(
+          find.text('Full-body basics • Goal: General fitness'), findsWidgets);
       await programScrollTo(
           tester, find.text('Strength • Goal: Build strength'));
       expect(find.text('Strength • Goal: Build strength'), findsWidgets);
@@ -210,13 +221,14 @@ void main() {
       expect(find.text('Week 1 • Session 1'), findsOneWidget);
     });
 
-    testWidgets('Start sets the program active and shows progress', (tester) async {
+    testWidgets('Start sets the program active and shows progress',
+        (tester) async {
       SharedPreferences.setMockInitialValues({});
       await pumpAt(tester, AppRoutes.programDetail('mobility_movement'));
       await tester.tap(find.text('Start program'));
       await tester.pumpAndSettle();
       expect(find.text('Active program'), findsOneWidget);
-      expect(find.text('0 of 12 workouts completed'), findsOneWidget);
+      expect(find.text('0 of 12 sessions'), findsOneWidget);
       expect(find.text('Continue'), findsOneWidget);
       expect(find.text('Restart program'), findsOneWidget);
       expect(find.text('Start program'), findsNothing);
@@ -228,25 +240,31 @@ void main() {
         (tester) async {
       seed(balancedWithTwoDone());
       await pumpAt(tester, AppRoutes.programDetail('balanced_foundations'));
-      expect(find.text('2 of 12 workouts completed'), findsOneWidget);
+      expect(find.text('2 of 12 sessions'), findsOneWidget);
       expect(find.byType(LinearProgressIndicator), findsOneWidget);
-      expect(find.text('Week 1 • Next: Week 1 • Session 2'), findsOneWidget);
+      expect(find.text('Week 1 • Next: Session 2'), findsOneWidget);
       // Sessions 1 and 3 of week 1 completed, session 2 is next.
       Finder rowOf(String sessionLabel) => find.ancestor(
             of: find.text(sessionLabel).first,
             matching: find.byType(ProgramSessionRow),
           );
-      expect(find.descendant(of: rowOf('Session 1'), matching: find.text('Completed')),
+      expect(
+          find.descendant(
+              of: rowOf('Session 1'), matching: find.text('Completed')),
           findsOneWidget);
-      expect(find.descendant(of: rowOf('Session 2'), matching: find.text('Next')),
+      await programScrollTo(tester, find.text('Session 2'));
+      expect(
+          find.descendant(of: rowOf('Session 2'), matching: find.text('Next')),
           findsOneWidget);
       await programScrollTo(tester, find.text('Session 3'));
-      expect(find.descendant(of: rowOf('Session 3'), matching: find.text('Completed')),
+      expect(
+          find.descendant(
+              of: rowOf('Session 3'), matching: find.text('Completed')),
           findsOneWidget);
       // Only one Next exists in the whole program.
       expect(find.text('Next').evaluate().length, lessThanOrEqualTo(1));
       await programScrollTo(tester, find.text('Week 2'));
-      expect(find.text('Planned'), findsWidgets);
+      expect(find.text('Upcoming'), findsWidgets);
       expect(find.text('Next'), findsNothing);
       expect(find.textContaining('fitness progress'), findsNothing);
       expect(find.textContaining('XP'), findsNothing);
@@ -261,7 +279,7 @@ void main() {
       await tester.tap(find.text('Resume program'));
       await tester.pumpAndSettle();
       expect(find.text('Active program'), findsOneWidget);
-      expect(find.text('2 of 12 workouts completed'), findsOneWidget);
+      expect(find.text('2 of 12 sessions'), findsOneWidget);
     });
 
     testWidgets('Switch asks confirmation, keeps old progress', (tester) async {
@@ -283,7 +301,7 @@ void main() {
       await tester.tap(find.text('Switch'));
       await tester.pumpAndSettle();
       expect(find.text('Active program'), findsOneWidget);
-      expect(find.text('0 of 16 workouts completed'), findsOneWidget);
+      expect(find.text('0 of 16 sessions'), findsOneWidget);
 
       final saved = await const AdaptiveProgramsStorage().load();
       expect(saved.activeProgramId, 'endurance_builder');
@@ -300,13 +318,13 @@ void main() {
         },
       ));
       await pumpAt(tester, AppRoutes.programDetail('balanced_foundations'));
-      expect(find.text('2 of 12 workouts completed'), findsOneWidget);
+      expect(find.text('2 of 12 sessions'), findsOneWidget);
       await tester.tap(find.text('Switch to this program'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Switch'));
       await tester.pumpAndSettle();
       expect(find.text('Active program'), findsOneWidget);
-      expect(find.text('2 of 12 workouts completed'), findsOneWidget);
+      expect(find.text('2 of 12 sessions'), findsOneWidget);
     });
 
     testWidgets('Restart asks confirmation and clears only program progress',
@@ -322,7 +340,7 @@ void main() {
           findsOneWidget);
       await tester.tap(find.text('Restart'));
       await tester.pumpAndSettle();
-      expect(find.text('0 of 12 workouts completed'), findsOneWidget);
+      expect(find.text('0 of 12 sessions'), findsOneWidget);
       expect(find.text('Active program'), findsOneWidget);
       expect(find.text('Completed'), findsNothing);
     });
@@ -350,7 +368,7 @@ void main() {
       ));
       await pumpAt(tester, AppRoutes.programDetail('mobility_movement'));
       expect(find.text('Program complete'), findsOneWidget);
-      expect(find.text('12 of 12 workouts completed'), findsOneWidget);
+      expect(find.text('12 of 12 sessions'), findsOneWidget);
       expect(find.text('Continue'), findsNothing);
       expect(find.text('Next'), findsNothing);
       expect(find.text('Restart program'), findsOneWidget);
@@ -363,7 +381,8 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('320px + 1.5 text scale renders without overflow', (tester) async {
+    testWidgets('320px + 1.5 text scale renders without overflow',
+        (tester) async {
       seed(balancedWithTwoDone());
       tester.view.physicalSize = const Size(320, 900);
       tester.view.devicePixelRatio = 1.0;
@@ -440,7 +459,8 @@ void main() {
       final cap = skillTreeCapabilityProfile();
       final session = AdaptiveProgramCatalog.balancedFoundations
           .sessionById('balanced_foundations_w1_s3')!;
-      final expected = WorkoutGenerator.generateCatalog(WorkoutGenerationContext(
+      final expected =
+          WorkoutGenerator.generateCatalog(WorkoutGenerationContext(
         userProfile: AdaptiveProgramGenerationProfile.forSession(
             current: profile, session: session),
         capabilityProfile: cap,
@@ -528,8 +548,7 @@ void main() {
           tester,
           AppRoutes.programSessionPreview(
               'balanced_foundations', 'balanced_foundations_w1_s1'),
-          overrides:
-              programOverrides(profile: programUngenerableProfile()));
+          overrides: programOverrides(profile: programUngenerableProfile()));
       expect(
           find.text(
               "This program workout can't be generated with your current setup."),
@@ -571,8 +590,8 @@ void main() {
 
     testWidgets('unknown program / session IDs are safe', (tester) async {
       SharedPreferences.setMockInitialValues({});
-      await pumpAt(tester,
-          AppRoutes.programSessionPreview('nope', 'nope_w1_s1'));
+      await pumpAt(
+          tester, AppRoutes.programSessionPreview('nope', 'nope_w1_s1'));
       expect(find.text('Program not found'), findsWidgets);
       expect(tester.takeException(), isNull);
 
@@ -616,7 +635,15 @@ void main() {
           tester,
           AppRoutes.programSessionPreview(
               'endurance_builder', 'endurance_builder_w1_s1'));
-      for (final banned in ['Best', 'Optimal', 'Guaranteed', 'AI ', 'medical', 'lose weight', 'burn fat']) {
+      for (final banned in [
+        'Best',
+        'Optimal',
+        'Guaranteed',
+        'AI ',
+        'medical',
+        'lose weight',
+        'burn fat'
+      ]) {
         expect(find.textContaining(banned), findsNothing, reason: banned);
       }
     });

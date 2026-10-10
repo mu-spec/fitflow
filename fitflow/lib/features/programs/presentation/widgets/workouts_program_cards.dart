@@ -1,3 +1,4 @@
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/onboarding/state/user_fitness_profile_controller.dart';
@@ -5,7 +6,6 @@ import 'package:fitflow/features/programs/application/adaptive_programs_controll
 import 'package:fitflow/features/programs/domain/adaptive_program_catalog.dart';
 import 'package:fitflow/features/programs/domain/adaptive_program_recommendation_policy.dart';
 import 'package:fitflow/features/programs/domain/adaptive_program_status.dart';
-import 'package:fitflow/features/programs/presentation/program_copy.dart';
 import 'package:fitflow/features/programs/presentation/widgets/program_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,9 +25,9 @@ class ProgramsEntryRow extends StatelessWidget {
         child: ListTile(
           onTap: () => context.push(AppRoutes.programs),
           leading: const Icon(Icons.calendar_view_week_outlined),
-          title: const Text(ProgramCopy.entryTitle),
+          title: Text(context.l10n.trainingProgramEntryTitle),
           subtitle: Text(
-            ProgramCopy.entrySubtitle,
+            context.l10n.trainingProgramEntrySubtitle,
             style: theme.textTheme.bodyMedium
                 ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
           ),
@@ -62,11 +62,11 @@ class RecommendedProgramCard extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(ProgramCopy.recommendedTitle,
+              Text(context.l10n.trainingProgramRecommendedTitle,
                   style: theme.textTheme.titleMedium
                       ?.copyWith(fontWeight: FontWeight.w600)),
               const SizedBox(height: 4),
-              Text(ProgramCopy.recommendedMissingProfile,
+              Text(context.l10n.trainingProgramRecommendedMissingProfile,
                   style: theme.textTheme.bodyMedium
                       ?.copyWith(color: colors.onSurfaceVariant)),
             ],
@@ -75,7 +75,8 @@ class RecommendedProgramCard extends ConsumerWidget {
       );
     }
 
-    final def = AdaptiveProgramRecommendationPolicy.recommendedFor(profile.goal);
+    final def =
+        AdaptiveProgramRecommendationPolicy.recommendedFor(profile.goal);
 
     return Card(
       margin: const EdgeInsets.only(bottom: AppDimens.itemGap),
@@ -84,7 +85,7 @@ class RecommendedProgramCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(ProgramCopy.recommendedTitle,
+            Text(context.l10n.trainingProgramRecommendedTitle,
                 style: theme.textTheme.titleMedium
                     ?.copyWith(fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
@@ -93,20 +94,20 @@ class RecommendedProgramCard extends ConsumerWidget {
                     ?.copyWith(fontWeight: FontWeight.w600)),
             const SizedBox(height: 4),
             Text(
-              '${ProgramCopy.weeksLabel(def.weekCount)} • ${ProgramCopy.perWeekLabel(def.sessionsPerWeek)}',
+              '${context.l10n.trainingProgramWeeks(def.weekCount)} • ${context.l10n.trainingProgramPerWeek(def.sessionsPerWeek)}',
               style: theme.textTheme.bodySmall
                   ?.copyWith(color: colors.onSurfaceVariant),
             ),
             const SizedBox(height: 8),
-            const ProgramTag(
-              label: ProgramCopy.recommendedMatch,
+            ProgramTag(
+              label: context.l10n.trainingProgramRecommendedMatch,
               icon: Icons.flag_outlined,
               emphasized: true,
             ),
             const SizedBox(height: 12),
             OutlinedButton(
               onPressed: () => context.push(AppRoutes.programDetail(def.id)),
-              child: const Text(ProgramCopy.viewProgram),
+              child: Text(context.l10n.trainingProgramViewProgram),
             ),
           ],
         ),
@@ -145,7 +146,7 @@ class ActiveProgramCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(ProgramCopy.activeTitle,
+            Text(context.l10n.trainingProgramActiveTitle,
                 style: theme.textTheme.labelMedium?.copyWith(
                   color: colors.onPrimaryContainer,
                   fontWeight: FontWeight.w600,
@@ -159,16 +160,17 @@ class ActiveProgramCard extends ConsumerWidget {
                 )),
             const SizedBox(height: 4),
             Text(
-              ProgramCopy.completedShort(
-                  status.completedCount, status.totalCount),
+              context.l10n
+                  .trainingSessions(status.completedCount, status.totalCount),
               style: theme.textTheme.bodyMedium
                   ?.copyWith(color: colors.onPrimaryContainer),
             ),
             const SizedBox(height: 4),
             Text(
               status.isComplete
-                  ? ProgramCopy.programComplete
-                  : '${ProgramCopy.weekLabel(status.currentWeek)} • Next: ${next!.title} — ${next.focus}',
+                  ? context.l10n.trainingProgramProgramComplete
+                  : context.l10n.trainingNextSession(status.currentWeek,
+                      context.l10n.trainingSession(next!.session)),
               style: theme.textTheme.bodySmall
                   ?.copyWith(color: colors.onPrimaryContainer),
             ),
@@ -176,14 +178,16 @@ class ActiveProgramCard extends ConsumerWidget {
             FilledButton.icon(
               onPressed: () {
                 if (next != null) {
-                  context.push(
-                      AppRoutes.programSessionPreview(def.id, next.id));
+                  context
+                      .push(AppRoutes.programSessionPreview(def.id, next.id));
                 } else {
                   context.push(AppRoutes.programDetail(def.id));
                 }
               },
               icon: const Icon(Icons.arrow_forward_rounded),
-              label: const Text(ProgramCopy.continueLabel),
+              label: Text(next == null
+                  ? context.l10n.trainingProgramViewProgram
+                  : context.l10n.trainingProgramContinueLabel),
             ),
           ],
         ),

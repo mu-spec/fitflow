@@ -1,3 +1,6 @@
+import 'package:fitflow/features/workouts/presentation/widgets/training_presentation.dart';
+import 'package:fitflow/core/design/fitflow_layout.dart';
+import 'package:fitflow/l10n/locale_format.dart';
 import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
@@ -25,7 +28,7 @@ class ExerciseDetailScreen extends StatelessWidget {
     if (exercise == null) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Exercise not found'),
+          title: Text(context.l10n.trainingNotFound),
         ),
         body: _NotFoundBody(exerciseId: exerciseId),
       );
@@ -39,37 +42,45 @@ class ExerciseDetailScreen extends StatelessWidget {
         title: Text(exercise.name),
         centerTitle: false,
       ),
-      body: SingleChildScrollView(
+      body: FitFlowMaxWidth(
+          child: SingleChildScrollView(
         padding: const EdgeInsets.all(AppDimens.screenPadding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _HeroSection(exercise: exercise),
             const SizedBox(height: 24),
-            _PrescriptionSection(exercise: exercise),
+            _EquipmentSection(exercise: exercise),
+            const SizedBox(height: 24),
+            if (exercise.instructions.isNotEmpty)
+              _HowToSection(exercise: exercise),
+            const SizedBox(height: 24),
+            _MusclesSection(exercise: exercise),
+            if (exercise.commonMistakes.isNotEmpty) ...[
+              const SizedBox(height: 24),
+              _MistakesSection(exercise: exercise),
+            ],
+            if (exercise.breathingGuidance != null) ...[
+              const SizedBox(height: 24),
+              _BreathingSection(exercise: exercise),
+            ],
             if (progression != null) ...[
               const SizedBox(height: 24),
               ExerciseProgressionSection(
-                progression: progression,
-                skillTreeFamilyId: skillTreeFamilyId,
-              ),
+                  progression: progression,
+                  skillTreeFamilyId: skillTreeFamilyId),
             ],
             const SizedBox(height: 24),
-            _MusclesSection(exercise: exercise),
-            const SizedBox(height: 24),
-            _EquipmentSection(exercise: exercise),
-            const SizedBox(height: 24),
-            _HowToSection(exercise: exercise),
-            const SizedBox(height: 24),
-            _MistakesSection(exercise: exercise),
-            const SizedBox(height: 24),
-            _BreathingSection(exercise: exercise),
-            const SizedBox(height: 24),
-            ExerciseCharacteristicsSection(exercise: exercise),
+            TrainingDisclosure(
+                title: context.l10n.trainingDefaults,
+                children: [_PrescriptionSection(exercise: exercise)]),
+            TrainingDisclosure(
+                title: context.l10n.trainingCatalogDetails,
+                children: [ExerciseCharacteristicsSection(exercise: exercise)]),
             const SizedBox(height: 32),
           ],
         ),
-      ),
+      )),
     );
   }
 }
@@ -84,7 +95,8 @@ String? _skillTreeFamilyIdFor(Exercise exercise) {
     capabilityProfile: null,
   );
   final tree = catalog.treeForFamilyId(familyId);
-  if (tree == null || !tree.nodes.any((node) => node.exercise.id == exercise.id)) {
+  if (tree == null ||
+      !tree.nodes.any((node) => node.exercise.id == exercise.id)) {
     return null;
   }
   return tree.familyId;
@@ -98,7 +110,7 @@ class _NotFoundBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Center(
+    return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(
@@ -111,7 +123,7 @@ class _NotFoundBody extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              'Exercise not found',
+              context.l10n.trainingNotFound,
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
@@ -119,7 +131,7 @@ class _NotFoundBody extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'This exercise is no longer available.',
+              context.l10n.trainingNotFoundHelp,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -144,7 +156,7 @@ class _NotFoundBody extends StatelessWidget {
                 }
               },
               icon: const Icon(Icons.arrow_back),
-              label: const Text('Back'),
+              label: Text(context.l10n.trainingBack),
             ),
           ],
         ),
@@ -159,44 +171,18 @@ class _HeroSection extends StatelessWidget {
   final Exercise exercise;
 
   String _levelLabel(BuildContext context) {
-    return difficultyLabel(context.l10n, exercise.difficulty);
+    return trainingDifficultyLabel(context.l10n, exercise.difficulty);
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          width: double.infinity,
-          height: 180,
-          decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(AppDimens.cardRadius),
-            border: Border.all(color: colorScheme.outlineVariant),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.fitness_center_outlined,
-                size: 48,
-                color: colorScheme.onSurfaceVariant,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Illustration coming soon',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 20),
+        const ExerciseArtwork(),
+        const SizedBox(height: 16),
         Text(
           exercise.name,
           style: theme.textTheme.headlineSmall?.copyWith(
@@ -209,7 +195,7 @@ class _HeroSection extends StatelessWidget {
           Text(
             exercise.shortDescription!,
             style: theme.textTheme.bodyLarge?.copyWith(
-              color: colorScheme.onSurfaceVariant,
+              color: theme.colorScheme.onSurfaceVariant,
               height: 1.4,
             ),
           ),
@@ -222,7 +208,8 @@ class _HeroSection extends StatelessWidget {
             if (exercise.movementPattern != null)
               _MetaChip(
                 icon: Icons.category_outlined,
-                label: exercise.movementPattern!.label,
+                label: movementPatternLabel(
+                    context.l10n, exercise.movementPattern!),
               ),
             _MetaChip(
               icon: Icons.signal_cellular_alt,
@@ -249,15 +236,7 @@ class _MetaChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Chip(
-      avatar: Icon(icon, size: 18),
-      label: Text(label),
-      visualDensity: VisualDensity.compact,
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      side: BorderSide(color: theme.colorScheme.outlineVariant),
-      backgroundColor: theme.colorScheme.surfaceContainerHigh,
-    );
+    return TrainingFact(label, icon: icon);
   }
 }
 
@@ -265,12 +244,6 @@ class _PrescriptionSection extends StatelessWidget {
   const _PrescriptionSection({required this.exercise});
 
   final Exercise exercise;
-
-  String _formatDuration(Duration d) {
-    final seconds = d.inSeconds;
-    if (seconds == 1) return '1 second';
-    return '$seconds seconds';
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -280,24 +253,26 @@ class _PrescriptionSection extends StatelessWidget {
     String prescription;
     if (exercise.exerciseType == ExerciseType.reps) {
       if (exercise.defaultReps != null) {
-        prescription = '${exercise.defaultReps} reps';
+        prescription = context.l10n.flowReps(exercise.defaultReps!);
       } else {
         prescription = 'Reps';
       }
     } else {
       if (exercise.defaultDuration != null) {
-        prescription = _formatDuration(exercise.defaultDuration!);
+        prescription = FitFlowLocaleFormat.formatDuration(
+            context.l10n, exercise.defaultDuration!);
       } else {
         prescription = 'Timed';
       }
     }
 
     final rest = exercise.defaultRest != null
-        ? 'Rest: ${_formatDuration(exercise.defaultRest!)}'
+        ? context.l10n.trainingRest(FitFlowLocaleFormat.formatDuration(
+            context.l10n, exercise.defaultRest!))
         : null;
 
     return _SectionCard(
-      title: 'Default Prescription',
+      title: '',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -332,7 +307,7 @@ class _PrescriptionSection extends StatelessWidget {
                       Text(
                         rest,
                         style: theme.textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -357,12 +332,12 @@ class _MusclesSection extends StatelessWidget {
     final theme = Theme.of(context);
 
     return _SectionCard(
-      title: 'Muscles Worked',
+      title: context.l10n.trainingMuscles,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Primary',
+            context.l10n.trainingPrimary,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.w700,
             ),
@@ -388,7 +363,7 @@ class _MusclesSection extends StatelessWidget {
           const SizedBox(height: 16),
           if (exercise.secondaryMuscles.isNotEmpty) ...[
             Text(
-              'Secondary',
+              context.l10n.trainingSecondary,
               style: theme.textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
@@ -404,8 +379,8 @@ class _MusclesSection extends StatelessWidget {
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         backgroundColor:
                             theme.colorScheme.surfaceContainerHighest,
-                        side: BorderSide(
-                            color: theme.colorScheme.outlineVariant),
+                        side:
+                            BorderSide(color: theme.colorScheme.outlineVariant),
                       ))
                   .toList(),
             ),
@@ -426,46 +401,14 @@ class _EquipmentSection extends StatelessWidget {
     final theme = Theme.of(context);
     final equipment = exercise.requiredEquipment;
 
-    String label;
-    List<Widget> chips;
-    if (equipment.isEmpty ||
-        equipment.contains(WorkoutEquipment.none)) {
-      label = 'No equipment';
-      chips = [
-        Chip(
-          label: const Text('No equipment'),
-          avatar: const Icon(Icons.check_circle_outline, size: 18),
-          visualDensity: VisualDensity.compact,
-        ),
-      ];
-    } else {
-      label = equipment.map((e) => e.label).join(' • ');
-      chips = equipment
-          .map((e) => Chip(
-                label: Text(e.label),
-                visualDensity: VisualDensity.compact,
-              ))
-          .toList();
-    }
-
-    return _SectionCard(
-      title: 'Equipment',
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: theme.textTheme.bodyMedium,
-          ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: chips,
-          ),
-        ],
-      ),
-    );
+    final label = equipment.isEmpty || equipment.contains(WorkoutEquipment.none)
+        ? context.l10n.trainingNoEquipment
+        : equipment.map((e) => equipmentLabel(context.l10n, e)).join(' · ');
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      TrainingHeading(context.l10n.trainingEquipment),
+      const SizedBox(height: 8),
+      Text(label, style: theme.textTheme.bodyMedium),
+    ]);
   }
 }
 
@@ -479,7 +422,7 @@ class _HowToSection extends StatelessWidget {
     final theme = Theme.of(context);
 
     return _SectionCard(
-      title: 'How to Perform',
+      title: context.l10n.trainingHowTo,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -492,8 +435,9 @@ class _HowToSection extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    width: 28,
-                    height: 28,
+                    constraints:
+                        const BoxConstraints(minWidth: 28, minHeight: 28),
+                    padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
                       color: theme.colorScheme.primary,
                       shape: BoxShape.circle,
@@ -533,7 +477,7 @@ class _MistakesSection extends StatelessWidget {
     final theme = Theme.of(context);
 
     return _SectionCard(
-      title: 'Common Mistakes',
+      title: context.l10n.trainingMistakes,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -582,7 +526,7 @@ class _BreathingSection extends StatelessWidget {
     final theme = Theme.of(context);
 
     return _SectionCard(
-      title: 'Breathing',
+      title: context.l10n.trainingBreathing,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -625,13 +569,10 @@ class _SectionCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              title,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 12),
+            if (title.isNotEmpty) ...[
+              TrainingHeading(title),
+              const SizedBox(height: 12)
+            ],
             child,
           ],
         ),

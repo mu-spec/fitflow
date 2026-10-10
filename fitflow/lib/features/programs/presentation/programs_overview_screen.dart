@@ -1,3 +1,4 @@
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/onboarding/state/user_fitness_profile_controller.dart';
@@ -7,7 +8,6 @@ import 'package:fitflow/features/programs/domain/adaptive_program_definition.dar
 import 'package:fitflow/features/programs/domain/adaptive_program_recommendation_policy.dart';
 import 'package:fitflow/features/programs/domain/adaptive_program_status.dart';
 import 'package:fitflow/features/programs/domain/adaptive_programs_state.dart';
-import 'package:fitflow/features/programs/presentation/program_copy.dart';
 import 'package:fitflow/features/programs/presentation/widgets/program_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,11 +21,21 @@ class ProgramsOverviewScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final goal = ref.watch(userFitnessProfileProvider).value?.goal;
-    final programsState = ref.watch(adaptiveProgramsControllerProvider).value ??
-        AdaptiveProgramsState.empty;
+    final programsAsync = ref.watch(adaptiveProgramsControllerProvider);
+    if (programsAsync.isLoading || programsAsync.hasError) {
+      return Scaffold(
+          appBar:
+              AppBar(title: Text(context.l10n.trainingProgramOverviewTitle)),
+          body: ProgramProgressState(
+            loading: programsAsync.isLoading,
+            onRetry: () =>
+                ref.read(adaptiveProgramsControllerProvider.notifier).refresh(),
+          ));
+    }
+    final programsState = programsAsync.value ?? AdaptiveProgramsState.empty;
 
     return Scaffold(
-      appBar: AppBar(title: const Text(ProgramCopy.overviewTitle)),
+      appBar: AppBar(title: Text(context.l10n.trainingProgramOverviewTitle)),
       body: SafeArea(
         child: Center(
           child: ConstrainedBox(
@@ -34,7 +44,7 @@ class ProgramsOverviewScreen extends ConsumerWidget {
               padding: const EdgeInsets.all(AppDimens.screenPadding),
               children: [
                 Text(
-                  ProgramCopy.overviewIntro,
+                  context.l10n.trainingProgramOverviewIntro,
                   style: theme.textTheme.bodyLarge?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -43,15 +53,15 @@ class ProgramsOverviewScreen extends ConsumerWidget {
                 for (final def in AdaptiveProgramCatalog.all)
                   _ProgramOverviewCard(
                     definition: def,
-                    isRecommended: AdaptiveProgramRecommendationPolicy
-                        .isRecommended(def.id, goal),
+                    isRecommended:
+                        AdaptiveProgramRecommendationPolicy.isRecommended(
+                            def.id, goal),
                     isActive: programsState.isActive(def.id),
                     status: AdaptiveProgramStatus(
                       definition: def,
                       progress: programsState.progressFor(def.id),
                     ),
-                    onTap: () =>
-                        context.push(AppRoutes.programDetail(def.id)),
+                    onTap: () => context.push(AppRoutes.programDetail(def.id)),
                   ),
               ],
             ),
@@ -100,6 +110,9 @@ class _ProgramOverviewCard extends StatelessWidget {
                       ?.copyWith(color: colors.onSurfaceVariant)),
               const SizedBox(height: 6),
               ProgramStructureLine(definition: definition),
+              const SizedBox(height: 10),
+              Text(programStatusLabel(context, status),
+                  style: theme.textTheme.labelLarge),
               if (isRecommended || isActive || status.hasProgress) ...[
                 const SizedBox(height: 10),
                 Wrap(
@@ -107,19 +120,19 @@ class _ProgramOverviewCard extends StatelessWidget {
                   runSpacing: 6,
                   children: [
                     if (isRecommended)
-                      const ProgramTag(
-                        label: ProgramCopy.recommendedMatch,
+                      ProgramTag(
+                        label: context.l10n.trainingProgramRecommendedMatch,
                         icon: Icons.flag_outlined,
                         emphasized: true,
                       ),
                     if (isActive)
-                      const ProgramTag(
-                        label: ProgramCopy.activeTitle,
+                      ProgramTag(
+                        label: context.l10n.trainingProgramActiveTitle,
                         icon: Icons.play_circle_outline,
                       ),
                     if (status.hasProgress)
                       ProgramTag(
-                        label: ProgramCopy.completedShort(
+                        label: context.l10n.trainingSessions(
                             status.completedCount, status.totalCount),
                         icon: Icons.check_circle_outline,
                       ),
@@ -129,7 +142,8 @@ class _ProgramOverviewCard extends StatelessWidget {
               const SizedBox(height: 8),
               Align(
                 alignment: Alignment.centerRight,
-                child: Icon(Icons.chevron_right, color: colors.onSurfaceVariant),
+                child:
+                    Icon(Icons.chevron_right, color: colors.onSurfaceVariant),
               ),
             ],
           ),

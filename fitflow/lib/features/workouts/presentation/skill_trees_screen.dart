@@ -1,3 +1,5 @@
+import 'package:fitflow/l10n/fitflow_l10n.dart';
+import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/workouts/presentation/widgets/skill_tree_family_card.dart';
@@ -16,14 +18,15 @@ class SkillTreesScreen extends ConsumerWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Exercise skill trees')),
-      body: SingleChildScrollView(
+      appBar: AppBar(title: Text(context.l10n.trainingSkills)),
+      body: FitFlowMaxWidth(
+          child: SingleChildScrollView(
         padding: const EdgeInsets.all(AppDimens.screenPadding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'See how exercise variations progress from easier to harder.',
+              context.l10n.trainingSkillIntro,
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -45,7 +48,7 @@ class SkillTreesScreen extends ConsumerWidget {
               ],
           ],
         ),
-      ),
+      )),
     );
   }
 }
@@ -68,8 +71,7 @@ class _TruthfulnessNote extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                'Your movement level helps show which exercises fit your current level. '
-                'It does not mean every easier exercise is mastered.',
+                context.l10n.trainingSkillTruth,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: colors.onSecondaryContainer,
                   height: 1.4,
@@ -96,15 +98,14 @@ class _NoSkillTreesState extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'No exercise skill trees available yet',
+              context.l10n.trainingSkillEmpty,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              'Trees appear when the exercise catalog contains at least two valid '
-              'active variations in a progression family.',
+              context.l10n.trainingSkillEmptyHelp,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),

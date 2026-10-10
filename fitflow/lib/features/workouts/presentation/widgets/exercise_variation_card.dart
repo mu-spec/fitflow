@@ -1,3 +1,6 @@
+import 'package:fitflow/l10n/fitflow_l10n.dart';
+import 'package:fitflow/l10n/enum_labels.dart';
+import 'package:fitflow/features/workouts/presentation/widgets/training_presentation.dart';
 import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/features/workouts/domain/exercise.dart';
 import 'package:flutter/material.dart';
@@ -21,20 +24,16 @@ class ExerciseVariationCard extends StatelessWidget {
   final VoidCallback? onTap;
   final bool isCurrent;
 
-  String _levelLabel() {
-    final num = exercise.difficulty.name.replaceFirst('level', '');
-    return 'Level $num';
-  }
-
-  String _metaLine() {
+  String _metaLine(BuildContext context) {
     final parts = <String>[];
-    parts.add(_levelLabel());
+    parts.add(trainingDifficultyLabel(context.l10n, exercise.difficulty));
     if (exercise.movementPattern != null) {
-      parts.add(exercise.movementPattern!.label);
+      parts.add(movementPatternLabel(context.l10n, exercise.movementPattern!));
     }
     if (exercise.primaryMuscles.isNotEmpty) {
       // Show up to 2 primary muscles for compactness
-      final muscles = exercise.primaryMuscles.take(2).map((m) => m.label).join(' • ');
+      final muscles =
+          exercise.primaryMuscles.take(2).map((m) => m.label).join(' • ');
       parts.add(muscles);
     }
     return parts.join(' • ');
@@ -73,7 +72,9 @@ class ExerciseVariationCard extends StatelessWidget {
               child: Icon(
                 directionIcon,
                 size: 18,
-                color: isCurrent ? colorScheme.onPrimary : colorScheme.onSurfaceVariant,
+                color: isCurrent
+                    ? colorScheme.onPrimary
+                    : colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(width: 12),
@@ -84,7 +85,9 @@ class ExerciseVariationCard extends StatelessWidget {
                   Text(
                     directionLabel,
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: isCurrent ? colorScheme.primary : colorScheme.onSurfaceVariant,
+                      color: isCurrent
+                          ? colorScheme.primary
+                          : colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 0.5,
                     ),
@@ -98,12 +101,10 @@ class ExerciseVariationCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    _metaLine(),
+                    _metaLine(context),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),

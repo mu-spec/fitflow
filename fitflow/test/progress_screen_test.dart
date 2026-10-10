@@ -28,7 +28,11 @@ CapabilityProfile createFullProfile(CapabilityLevel level) {
   final now = DateTime.utc(2026, 1, 1);
   final map = <MovementPattern, MovementCapability>{};
   for (final p in CapabilityProfile.trainablePatterns) {
-    map[p] = MovementCapability(movementPattern: p, level: level, source: CapabilitySource.initialAssessment, updatedAt: now);
+    map[p] = MovementCapability(
+        movementPattern: p,
+        level: level,
+        source: CapabilitySource.initialAssessment,
+        updatedAt: now);
   }
   return CapabilityProfile.fromMap(map);
 }
@@ -83,7 +87,8 @@ CompletedWorkout makeWorkout({
   DateTime? completedAt,
   List<CompletedWorkoutExercise>? main,
 }) {
-  final now = completedAt ?? DateTime.now().toUtc().subtract(const Duration(hours: 1));
+  final now =
+      completedAt ?? DateTime.now().toUtc().subtract(const Duration(hours: 1));
   final m = main ?? [makeEx()];
   return CompletedWorkout(
     id: id,
@@ -92,9 +97,23 @@ CompletedWorkout makeWorkout({
     estimatedDuration: const Duration(minutes: 22),
     totalExerciseCount: m.length,
     totalSetCount: m.fold(0, (s, e) => s + e.sets),
-    warmup: [makeEx(id: 'w1', name: 'Warmup', pattern: MovementPattern.warmup, section: WorkoutSectionType.warmup, sets: 1)],
+    warmup: [
+      makeEx(
+          id: 'w1',
+          name: 'Warmup',
+          pattern: MovementPattern.warmup,
+          section: WorkoutSectionType.warmup,
+          sets: 1)
+    ],
     main: m,
-    cooldown: [makeEx(id: 'c1', name: 'Cooldown', pattern: MovementPattern.cooldown, section: WorkoutSectionType.cooldown, sets: 1)],
+    cooldown: [
+      makeEx(
+          id: 'c1',
+          name: 'Cooldown',
+          pattern: MovementPattern.cooldown,
+          section: WorkoutSectionType.cooldown,
+          sets: 1)
+    ],
   );
 }
 
@@ -103,8 +122,10 @@ Widget buildProgressApp() {
   final cap = createFullProfile(CapabilityLevel.level3);
   return ProviderScope(
     overrides: [
-      userFitnessProfileProvider.overrideWith(() => FakeUserProfileController(buildOverride: () async => user)),
-      capabilityProfileProvider.overrideWith(() => FakeCapabilityController(buildOverride: () async => cap)),
+      userFitnessProfileProvider.overrideWith(
+          () => FakeUserProfileController(buildOverride: () async => user)),
+      capabilityProfileProvider.overrideWith(
+          () => FakeCapabilityController(buildOverride: () async => cap)),
       workoutCoachProvider.overrideWithValue(FakeWorkoutCoach()),
     ],
     child: Consumer(
@@ -129,7 +150,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('No completed workouts yet'), findsOneWidget);
-      expect(find.text('Finish a workout and your progress will appear here.'), findsOneWidget);
+      expect(find.text('Finish a workout and your progress will appear here.'),
+          findsOneWidget);
       expect(find.text('Start a workout'), findsOneWidget);
     });
 
@@ -148,13 +170,18 @@ void main() {
       await tester.pump(const Duration(seconds: 2));
       await tester.pumpAndSettle();
 
-      expect(find.text('Your adaptive workout').evaluate().isNotEmpty || find.text('FITFLOW').evaluate().isNotEmpty, true);
+      expect(
+          find.text('Your adaptive workout').evaluate().isNotEmpty ||
+              find.text('FITFLOW').evaluate().isNotEmpty,
+          true);
     });
 
     testWidgets('total workouts', (tester) async {
       final now = DateTime.now().toUtc();
-      final w1 = makeWorkout(id: 'w1', completedAt: now.subtract(const Duration(days: 1)));
-      final w2 = makeWorkout(id: 'w2', completedAt: now.subtract(const Duration(days: 2)));
+      final w1 = makeWorkout(
+          id: 'w1', completedAt: now.subtract(const Duration(days: 1)));
+      final w2 = makeWorkout(
+          id: 'w2', completedAt: now.subtract(const Duration(days: 2)));
       // Use storage to save properly
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
@@ -179,8 +206,10 @@ void main() {
       final prefs = await SharedPreferences.getInstance();
       final storage = WorkoutHistoryStorage(prefs);
       final now = DateTime.now().toUtc();
-      final wRecent = makeWorkout(id: 'recent', completedAt: now.subtract(const Duration(days: 1)));
-      final wOld = makeWorkout(id: 'old', completedAt: now.subtract(const Duration(days: 10)));
+      final wRecent = makeWorkout(
+          id: 'recent', completedAt: now.subtract(const Duration(days: 1)));
+      final wOld = makeWorkout(
+          id: 'old', completedAt: now.subtract(const Duration(days: 10)));
       await storage.add(wRecent);
       await storage.add(wOld);
 
@@ -192,7 +221,7 @@ void main() {
       await tester.tap(find.text('Progress'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Last 7 days'), findsOneWidget);
+      expect(find.text('Workouts — last 7 days'), findsOneWidget);
     });
 
     testWidgets('training recovery disclaimer', (tester) async {
@@ -209,15 +238,20 @@ void main() {
       await tester.tap(find.text('Progress'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Training recovery'), findsOneWidget);
-      expect(find.textContaining('not a medical recovery measure'), findsOneWidget);
+      await tester.ensureVisible(find.text('Training recovery'));
+      await tester.tap(find.text('Training recovery'));
+      await tester.pumpAndSettle();
+      expect(find.text('Training recovery'), findsNWidgets(2));
+      expect(find.textContaining('not a medical recovery measure'),
+          findsOneWidget);
     });
 
     testWidgets('recent movement status', (tester) async {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
       final storage = WorkoutHistoryStorage(prefs);
-      await storage.add(makeWorkout(main: [makeEx(pattern: MovementPattern.push)]));
+      await storage
+          .add(makeWorkout(main: [makeEx(pattern: MovementPattern.push)]));
 
       await tester.pumpWidget(buildProgressApp());
       await tester.pumpAndSettle();
@@ -227,6 +261,9 @@ void main() {
       await tester.tap(find.text('Progress'));
       await tester.pumpAndSettle();
 
+      await tester.ensureVisible(find.text('Training recovery'));
+      await tester.tap(find.text('Training recovery'));
+      await tester.pumpAndSettle();
       expect(find.text('Push'), findsWidgets);
     });
 
@@ -234,7 +271,8 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
       final storage = WorkoutHistoryStorage(prefs);
-      await storage.add(makeWorkout(main: [makeEx(pattern: MovementPattern.push)]));
+      await storage
+          .add(makeWorkout(main: [makeEx(pattern: MovementPattern.push)]));
 
       await tester.pumpWidget(buildProgressApp());
       await tester.pumpAndSettle();
@@ -244,6 +282,9 @@ void main() {
       await tester.tap(find.text('Progress'));
       await tester.pumpAndSettle();
 
+      await tester.ensureVisible(find.text('Training recovery'));
+      await tester.tap(find.text('Training recovery'));
+      await tester.pumpAndSettle();
       expect(find.textContaining('Last trained'), findsWidgets);
     });
 
@@ -251,7 +292,8 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
       final storage = WorkoutHistoryStorage(prefs);
-      await storage.add(makeWorkout(main: [makeEx(pattern: MovementPattern.push, sets: 3)]));
+      await storage.add(
+          makeWorkout(main: [makeEx(pattern: MovementPattern.push, sets: 3)]));
 
       await tester.pumpWidget(buildProgressApp());
       await tester.pumpAndSettle();
@@ -261,6 +303,9 @@ void main() {
       await tester.tap(find.text('Progress'));
       await tester.pumpAndSettle();
 
+      await tester.ensureVisible(find.text('Training recovery'));
+      await tester.tap(find.text('Training recovery'));
+      await tester.pumpAndSettle();
       expect(find.textContaining('sessions'), findsWidgets);
       expect(find.textContaining('sets this week'), findsWidgets);
     });
@@ -270,8 +315,10 @@ void main() {
       final prefs = await SharedPreferences.getInstance();
       final storage = WorkoutHistoryStorage(prefs);
       final now = DateTime.now().toUtc();
-      final w1 = makeWorkout(id: 'w1', completedAt: now.subtract(const Duration(days: 2)));
-      final w2 = makeWorkout(id: 'w2', completedAt: now.subtract(const Duration(days: 1)));
+      final w1 = makeWorkout(
+          id: 'w1', completedAt: now.subtract(const Duration(days: 2)));
+      final w2 = makeWorkout(
+          id: 'w2', completedAt: now.subtract(const Duration(days: 1)));
       await storage.add(w1);
       await storage.add(w2);
 
@@ -285,7 +332,7 @@ void main() {
 
       expect(find.text('Recent workouts'), findsOneWidget);
       // Check that w2 (newer) appears before w1 in the list order – we can check that both exist
-      expect(find.textContaining('exercises'), findsWidgets);
+      expect(find.textContaining('exercise'), findsWidgets);
     });
 
     testWidgets('maximum 10 visible on main screen', (tester) async {
@@ -294,7 +341,8 @@ void main() {
       final storage = WorkoutHistoryStorage(prefs);
       final now = DateTime.now().toUtc();
       for (int i = 0; i < 15; i++) {
-        final w = makeWorkout(id: 'w$i', completedAt: now.subtract(Duration(days: i)));
+        final w = makeWorkout(
+            id: 'w$i', completedAt: now.subtract(Duration(days: i)));
         await storage.add(w);
       }
 
@@ -307,14 +355,19 @@ void main() {
       await tester.pumpAndSettle();
 
       // Should show 10 cards + maybe indicator for more
-      expect(find.text('View workout'), findsNWidgets(10));
+      expect(find.text('Completed workout'), findsNWidgets(10));
+      expect(find.text('Show more workouts'), findsOneWidget);
     });
 
-    testWidgets('replaced exercise reflected in history detail', (tester) async {
+    testWidgets('replaced exercise reflected in history detail',
+        (tester) async {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
       final storage = WorkoutHistoryStorage(prefs);
-      final replaced = makeEx(id: 'chair_squat', name: 'Chair Squat', pattern: MovementPattern.squat);
+      final replaced = makeEx(
+          id: 'chair_squat',
+          name: 'Chair Squat',
+          pattern: MovementPattern.squat);
       await storage.add(makeWorkout(id: 'replaced_workout', main: [replaced]));
 
       await tester.pumpWidget(buildProgressApp());
@@ -325,7 +378,8 @@ void main() {
       await tester.tap(find.text('Progress'));
       await tester.pumpAndSettle();
 
-      final viewButton = find.text('View workout').first;
+      final viewButton =
+          find.widgetWithText(ListTile, 'Completed workout').first;
       await tester.ensureVisible(viewButton);
       await tester.pumpAndSettle();
       await tester.tap(viewButton);
@@ -348,14 +402,15 @@ void main() {
       await tester.tap(find.text('Progress'));
       await tester.pumpAndSettle();
 
-      final viewButton = find.text('View workout').first;
+      final viewButton =
+          find.widgetWithText(ListTile, 'Completed workout').first;
       await tester.ensureVisible(viewButton);
       await tester.pumpAndSettle();
       await tester.tap(viewButton);
       await tester.pumpAndSettle();
 
       expect(find.text('Warm-up'), findsWidgets);
-      expect(find.text('Main'), findsWidgets);
+      expect(find.text('Main workout'), findsWidgets);
       expect(find.text('Cooldown'), findsWidgets);
     });
 

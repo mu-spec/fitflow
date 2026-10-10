@@ -91,7 +91,7 @@ void main() {
 
     // Program flow: after applying, we land on the program detail.
     expect(find.byType(ProgramDetailScreen), findsOneWidget);
-    expect(find.text('1 of 12 workouts completed'), findsOneWidget);
+    expect(find.text('1 of 12 sessions'), findsOneWidget);
 
     final after = container.read(capabilityProfileProvider).value!;
     expect(after, isNot(equals(before)));
@@ -208,7 +208,7 @@ void main() {
     }
     await tester.pumpAndSettle();
     expect(find.text('Program complete'), findsWidgets);
-    expect(find.text('${def.totalSessionCount} of ${def.totalSessionCount} workouts completed'),
+    expect(find.text('${def.totalSessionCount} of ${def.totalSessionCount} sessions'),
         findsOneWidget);
     expect(find.text('Restart program'), findsOneWidget);
     expect(find.text('Next'), findsNothing);

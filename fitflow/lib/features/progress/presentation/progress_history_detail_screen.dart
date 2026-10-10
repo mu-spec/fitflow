@@ -1,3 +1,7 @@
+import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
+import 'package:fitflow/features/workouts/presentation/widgets/training_presentation.dart';
+import 'package:fitflow/core/design/fitflow_layout.dart';
+import 'package:fitflow/l10n/enum_labels.dart';
 import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/l10n/locale_format.dart';
@@ -12,17 +16,11 @@ class ProgressHistoryDetailScreen extends ConsumerWidget {
   final String sessionId;
 
   static String routePath(String sessionId) => '/progress/history/$sessionId';
-  static String routeName(String sessionId) => 'progress-history-detail-$sessionId';
+  static String routeName(String sessionId) =>
+      'progress-history-detail-$sessionId';
 
-  String _formatDuration(Duration? d) {
-    if (d == null) return '—';
-    final m = d.inMinutes;
-    final s = d.inSeconds % 60;
-    if (m > 0) {
-      return '${m}m ${s}s';
-    }
-    return '${s}s';
-  }
+  String _formatDuration(BuildContext context, Duration? d) =>
+      d == null ? '—' : FitFlowLocaleFormat.formatDuration(context.l10n, d);
 
   String _formatDateTime(BuildContext context, DateTime dt) {
     return FitFlowLocaleFormat.formatDateTime(context, dt);
@@ -36,8 +34,18 @@ class ProgressHistoryDetailScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(context.l10n.workoutDetail)),
       body: historyAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+        loading: () => SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: FitFlowLoading(label: context.l10n.trainingHistoryLoading)),
+        error: (e, _) => Center(
+            child: SingleChildScrollView(
+                child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Text(context.l10n.trainingHistoryError),
+          TextButton(
+              onPressed: () =>
+                  ref.read(workoutHistoryProvider.notifier).refresh(),
+              child: Text(context.l10n.trainingRetry)),
+        ]))),
         data: (history) {
           final workout = history.where((w) => w.id == sessionId).firstOrNull;
           if (workout == null) {
@@ -47,11 +55,14 @@ class ProgressHistoryDetailScreen extends ConsumerWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.search_off_rounded, size: 48, color: theme.colorScheme.onSurfaceVariant),
+                    Icon(Icons.search_off_rounded,
+                        size: 48, color: theme.colorScheme.onSurfaceVariant),
                     const SizedBox(height: 16),
-                    Text('Workout not found', style: theme.textTheme.titleMedium),
+                    Text(context.l10n.trainingHistoryMissing,
+                        style: theme.textTheme.titleMedium),
                     const SizedBox(height: 8),
-                    Text('This workout may have been cleared.', style: theme.textTheme.bodyMedium),
+                    Text(context.l10n.trainingHistoryMissingHelp,
+                        style: theme.textTheme.bodyMedium),
                   ],
                 ),
               ),
@@ -59,40 +70,59 @@ class ProgressHistoryDetailScreen extends ConsumerWidget {
           }
 
           return SafeArea(
-            child: SingleChildScrollView(
+            child: FitFlowMaxWidth(
+                child: SingleChildScrollView(
               padding: const EdgeInsets.all(AppDimens.screenPadding),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Completed workout', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
+                  Text(context.l10n.trainingHistoryCompleted,
+                      style: theme.textTheme.titleLarge
+                          ?.copyWith(fontWeight: FontWeight.w700)),
                   const SizedBox(height: 8),
-                  Text(_formatDateTime(context, workout.completedAt), style: theme.textTheme.bodyLarge),
+                  Text(_formatDateTime(context, workout.completedAt),
+                      style: theme.textTheme.bodyLarge),
                   const SizedBox(height: 16),
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Column(
                         children: [
-                          _DetailRow(label: 'Planned duration', value: _formatDuration(workout.targetDuration)),
+                          _DetailRow(
+                              label: context.l10n.trainingPlannedDuration,
+                              value: _formatDuration(
+                                  context, workout.targetDuration)),
                           const Divider(),
-                          _DetailRow(label: 'Estimated duration', value: _formatDuration(workout.estimatedDuration)),
+                          _DetailRow(
+                              label: context.l10n.trainingEstimatedDuration,
+                              value: _formatDuration(
+                                  context, workout.estimatedDuration)),
                           const Divider(),
-                          _DetailRow(label: 'Total exercises', value: '${workout.totalExerciseCount}'),
+                          _DetailRow(
+                              label: context.l10n.trainingTotalExercises,
+                              value: '${workout.totalExerciseCount}'),
                           const Divider(),
-                          _DetailRow(label: 'Total sets', value: '${workout.totalSetCount}'),
+                          _DetailRow(
+                              label: context.l10n.trainingTotalSets,
+                              value: '${workout.totalSetCount}'),
                         ],
                       ),
                     ),
                   ),
                   const SizedBox(height: 24),
-                  _SectionBlock(title: 'Warm-up', exercises: workout.warmup),
+                  _SectionBlock(
+                      title: context.l10n.flowWarmup,
+                      exercises: workout.warmup),
                   const SizedBox(height: 16),
-                  _SectionBlock(title: 'Main', exercises: workout.main),
+                  _SectionBlock(
+                      title: context.l10n.flowMain, exercises: workout.main),
                   const SizedBox(height: 16),
-                  _SectionBlock(title: 'Cooldown', exercises: workout.cooldown),
+                  _SectionBlock(
+                      title: context.l10n.flowCooldown,
+                      exercises: workout.cooldown),
                 ],
               ),
-            ),
+            )),
           );
         },
       ),
@@ -108,11 +138,15 @@ class _DetailRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Wrap(
+      alignment: WrapAlignment.spaceBetween,
+      spacing: 16,
+      runSpacing: 6,
       children: [
         Text(label, style: theme.textTheme.bodyMedium),
-        Text(value, style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
+        Text(value,
+            style: theme.textTheme.bodyMedium
+                ?.copyWith(fontWeight: FontWeight.w600)),
       ],
     );
   }
@@ -129,14 +163,27 @@ class _SectionBlock extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+        Text(title,
+            style: theme.textTheme.titleMedium
+                ?.copyWith(fontWeight: FontWeight.w700)),
         const SizedBox(height: 8),
         if (exercises.isEmpty)
-          Text('No exercises', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant))
+          Text(context.l10n.trainingNoExercises,
+              style: theme.textTheme.bodySmall
+                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant))
         else
           ...exercises.map((ex) {
-            final workload = ex.repsPerSet != null ? '${ex.sets} × ${ex.repsPerSet} reps' : '${ex.sets} × ${ex.workDuration?.inSeconds}s';
-            final movementLabel = ex.movementPattern?.label ?? 'Unclassified movement';
+            final workload = ex.repsPerSet != null
+                ? context.l10n.trainingWorkloadReps(ex.sets, ex.repsPerSet!)
+                : context.l10n.trainingWorkloadTimed(
+                    ex.sets,
+                    ex.workDuration == null
+                        ? '—'
+                        : FitFlowLocaleFormat.formatDuration(
+                            context.l10n, ex.workDuration!));
+            final movementLabel = ex.movementPattern == null
+                ? context.l10n.trainingUnclassified
+                : movementPatternLabel(context.l10n, ex.movementPattern!);
             return Card(
               margin: const EdgeInsets.only(bottom: 8),
               child: Padding(
@@ -144,13 +191,22 @@ class _SectionBlock extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(ex.exerciseName, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+                    Text(ex.exerciseName,
+                        style: theme.textTheme.titleSmall
+                            ?.copyWith(fontWeight: FontWeight.w600)),
                     const SizedBox(height: 4),
-                    Text('$movementLabel • Level ${ex.difficulty.name.replaceAll('level', '')} • ${ex.sectionType.label}', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+                    Text(
+                        '$movementLabel • ${trainingDifficultyLabel(context.l10n, ex.difficulty)}',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant)),
                     const SizedBox(height: 4),
                     Text(workload, style: theme.textTheme.bodyMedium),
                     const SizedBox(height: 2),
-                    Text('Rest ${ex.restBetweenSets.inSeconds}s', style: theme.textTheme.bodySmall),
+                    Text(
+                        context.l10n.trainingRest(
+                            FitFlowLocaleFormat.formatDuration(
+                                context.l10n, ex.restBetweenSets)),
+                        style: theme.textTheme.bodySmall),
                   ],
                 ),
               ),

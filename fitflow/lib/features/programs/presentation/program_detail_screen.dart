@@ -8,7 +8,6 @@ import 'package:fitflow/features/programs/domain/adaptive_program_definition.dar
 import 'package:fitflow/features/programs/domain/adaptive_program_recommendation_policy.dart';
 import 'package:fitflow/features/programs/domain/adaptive_program_status.dart';
 import 'package:fitflow/features/programs/domain/adaptive_programs_state.dart';
-import 'package:fitflow/features/programs/presentation/program_copy.dart';
 import 'package:fitflow/features/programs/presentation/widgets/program_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,10 +24,11 @@ class ProgramDetailScreen extends ConsumerWidget {
     final definition = AdaptiveProgramCatalog.byId(programId);
     if (definition == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text(ProgramCopy.programNotFound)),
-        body: const ProgramNotFoundBody(
-          title: ProgramCopy.programNotFound,
-          body: ProgramCopy.programNotFoundBody,
+        appBar:
+            AppBar(title: Text(context.l10n.trainingProgramProgramNotFound)),
+        body: ProgramNotFoundBody(
+          title: context.l10n.trainingProgramProgramNotFound,
+          body: context.l10n.trainingProgramProgramNotFoundBody,
         ),
       );
     }
@@ -37,6 +37,15 @@ class ProgramDetailScreen extends ConsumerWidget {
     final colors = theme.colorScheme;
     final goal = ref.watch(userFitnessProfileProvider).value?.goal;
     final programsAsync = ref.watch(adaptiveProgramsControllerProvider);
+    if (programsAsync.isLoading || programsAsync.hasError) {
+      return Scaffold(
+          appBar: AppBar(title: Text(definition.name)),
+          body: ProgramProgressState(
+            loading: programsAsync.isLoading,
+            onRetry: () =>
+                ref.read(adaptiveProgramsControllerProvider.notifier).refresh(),
+          ));
+    }
     final programsState = programsAsync.value ?? AdaptiveProgramsState.empty;
     final status = AdaptiveProgramStatus(
       definition: definition,
@@ -65,32 +74,33 @@ class ProgramDetailScreen extends ConsumerWidget {
                   runSpacing: 6,
                   children: [
                     ProgramTag(
-                        label: ProgramCopy.weeksLabel(definition.weekCount),
+                        label: context.l10n
+                            .trainingProgramWeeks(definition.weekCount),
                         icon: Icons.calendar_view_week_outlined),
                     ProgramTag(
-                        label: ProgramCopy.perWeekLabel(
-                            definition.sessionsPerWeek),
+                        label: context.l10n
+                            .trainingProgramPerWeek(definition.sessionsPerWeek),
                         icon: Icons.repeat),
                     ProgramTag(
-                        label: ProgramCopy.totalLabel(
-                            definition.totalSessionCount),
+                        label: context.l10n
+                            .trainingProgramTotal(definition.totalSessionCount),
                         icon: Icons.fitness_center_outlined),
                     if (isRecommended)
-                      const ProgramTag(
-                        label: ProgramCopy.recommendedMatch,
+                      ProgramTag(
+                        label: context.l10n.trainingProgramRecommendedMatch,
                         icon: Icons.flag_outlined,
                         emphasized: true,
                       ),
                     if (isActive)
-                      const ProgramTag(
-                        label: ProgramCopy.activeTitle,
+                      ProgramTag(
+                        label: context.l10n.trainingProgramActiveTitle,
                         icon: Icons.play_circle_outline,
                         emphasized: true,
                       ),
                   ],
                 ),
                 const SizedBox(height: 20),
-                if (status.hasProgress) ...[
+                ...[
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(16),
@@ -98,12 +108,15 @@ class ProgramDetailScreen extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           if (status.isComplete) ...[
-                            Row(
+                            Wrap(
+                              spacing: 8,
+                              crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
                                 Icon(Icons.check_circle_outline,
                                     color: colors.primary),
                                 const SizedBox(width: 8),
-                                Text(ProgramCopy.programComplete,
+                                Text(
+                                    context.l10n.trainingProgramProgramComplete,
                                     style: theme.textTheme.titleMedium
                                         ?.copyWith(
                                             fontWeight: FontWeight.w700)),
@@ -111,12 +124,18 @@ class ProgramDetailScreen extends ConsumerWidget {
                             ),
                             const SizedBox(height: 10),
                           ],
+                          Text(programStatusLabel(context, status),
+                              style: theme.textTheme.labelLarge),
+                          const SizedBox(height: 8),
                           ProgramCompletionBar(status: status),
                           if (!status.isComplete &&
                               status.nextSession != null) ...[
                             const SizedBox(height: 8),
                             Text(
-                              '${ProgramCopy.weekLabel(status.currentWeek)} • Next: ${status.nextSession!.title}',
+                              context.l10n.trainingNextSession(
+                                  status.currentWeek,
+                                  context.l10n.trainingSession(
+                                      status.nextSession!.session)),
                               style: theme.textTheme.bodySmall
                                   ?.copyWith(color: colors.onSurfaceVariant),
                             ),
@@ -135,9 +154,11 @@ class ProgramDetailScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 24),
                 for (final week in definition.weeks) ...[
-                  Text(ProgramCopy.weekLabel(week.number),
-                      style: theme.textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w700)),
+                  Semantics(
+                      header: true,
+                      child: Text(context.l10n.trainingProgramWeek(week.number),
+                          style: theme.textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.w700))),
                   const SizedBox(height: 8),
                   for (final session in week.sessions)
                     ProgramSessionRow(
@@ -175,7 +196,7 @@ class _ProgramActions extends ConsumerWidget {
   Future<void> _showFailure(BuildContext context) async {
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text(ProgramCopy.actionFailed)),
+      SnackBar(content: Text(context.l10n.trainingProgramActionFailed)),
     );
   }
 
@@ -188,10 +209,10 @@ class _ProgramActions extends ConsumerWidget {
       final next = status.nextSession;
       if (next != null) {
         buttons.add(FilledButton.icon(
-          onPressed: () => context.push(
-              AppRoutes.programSessionPreview(definition.id, next.id)),
+          onPressed: () => context
+              .push(AppRoutes.programSessionPreview(definition.id, next.id)),
           icon: const Icon(Icons.arrow_forward_rounded),
-          label: const Text(ProgramCopy.continueLabel),
+          label: Text(context.l10n.trainingProgramContinueLabel),
         ));
       }
     } else if (otherActive) {
@@ -203,7 +224,7 @@ class _ProgramActions extends ConsumerWidget {
           if (!ok && context.mounted) await _showFailure(context);
         },
         icon: const Icon(Icons.swap_horiz_rounded),
-        label: const Text(ProgramCopy.switchProgram),
+        label: Text(context.l10n.trainingProgramSwitchProgram),
       ));
     } else {
       buttons.add(FilledButton.icon(
@@ -215,7 +236,7 @@ class _ProgramActions extends ConsumerWidget {
             ? Icons.play_arrow_rounded
             : Icons.play_circle_outline),
         label: Text(status.hasProgress
-            ? ProgramCopy.resumeProgram
+            ? context.l10n.trainingProgramResumeProgram
             : context.l10n.programStart),
       ));
     }
@@ -229,7 +250,7 @@ class _ProgramActions extends ConsumerWidget {
           if (!ok && context.mounted) await _showFailure(context);
         },
         icon: const Icon(Icons.restart_alt_rounded),
-        label: const Text(ProgramCopy.restartProgram),
+        label: Text(context.l10n.trainingProgramRestartProgram),
       ));
     }
 
