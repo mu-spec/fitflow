@@ -23,20 +23,21 @@ class SystemMotion {
 
   static Duration emphasized(BuildContext context) =>
       duration(context, FitFlowMotion.emphasized);
+
+  /// Consistent authored overlays; native picker behavior stays platform-owned.
+  static AnimationStyle overlay(BuildContext context) => AnimationStyle(
+      duration: standard(context), reverseDuration: standard(context));
 }
 
-/// Page transition that keeps the normal Material zoom for everyone else and
-/// completes immediately when the system asks for reduced motion.
+/// One restrained, non-scaling route fade; immediate with reduced motion.
 class FitFlowPageTransitionsBuilder extends PageTransitionsBuilder {
   const FitFlowPageTransitionsBuilder({this.reducedMotion = false});
 
   final bool reducedMotion;
 
-  static const ZoomPageTransitionsBuilder _zoom = ZoomPageTransitionsBuilder();
-
   @override
   Duration get transitionDuration =>
-      reducedMotion ? Duration.zero : FitFlowMotion.emphasized;
+      reducedMotion ? Duration.zero : FitFlowMotion.standard;
 
   @override
   Duration get reverseTransitionDuration =>
@@ -53,12 +54,9 @@ class FitFlowPageTransitionsBuilder extends PageTransitionsBuilder {
     if (reducedMotion || MediaQuery.disableAnimationsOf(context)) {
       return child;
     }
-    return _zoom.buildTransitions(
-      route,
-      context,
-      animation,
-      secondaryAnimation,
-      child,
+    return FadeTransition(
+      opacity: animation.drive(CurveTween(curve: FitFlowMotion.standardCurve)),
+      child: child,
     );
   }
 }

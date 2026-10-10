@@ -2224,4 +2224,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String utilityEditSection(String section) {
     return 'Edit $section';
   }
+
+  @override
+  String get part6LoadingTuning => 'Loading movement feedback…';
+
+  @override
+  String get part6RepetitionWork => 'Repetitions';
+
+  @override
+  String part6AddExercise(String section) {
+    return 'Add exercise: $section';
+  }
+
+  @override
+  String get part6NoSectionExercises =>
+      'No eligible exercises available for this section.';
 }

@@ -125,7 +125,7 @@ void main() {
       );
       expect(
         const FitFlowPageTransitionsBuilder().transitionDuration,
-        FitFlowMotion.emphasized,
+        FitFlowMotion.standard,
       );
     });
   });

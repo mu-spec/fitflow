@@ -1,3 +1,4 @@
+import 'package:fitflow/core/accessibility/system_motion.dart';
 import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
@@ -225,6 +226,7 @@ class _CustomWorkoutCard extends ConsumerWidget {
                   ),
                 ),
                 PopupMenuButton<String>(
+                  popUpAnimationStyle: SystemMotion.overlay(context),
                   tooltip: context.l10n.trainingMoreActions,
                   onSelected: (value) async {
                     if (value == 'view') {
@@ -234,6 +236,7 @@ class _CustomWorkoutCard extends ConsumerWidget {
                     } else if (value == 'delete') {
                       final confirmed = await showDialog<bool>(
                         context: context,
+                        animationStyle: SystemMotion.overlay(context),
                         builder: (ctx) => AlertDialog(
                           title: Text(context.l10n.trainingDeleteTitle),
                           content: Text(context.l10n.trainingDeleteBody),

@@ -197,16 +197,11 @@ class _RecoveryBody extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
-          Semantics(
-            button: true,
-            enabled: !inFlight,
-            label: context.l10n.splashRecoveryAction,
-            hint: context.l10n.splashRecoveryHint,
-            child: ExcludeSemantics(
-              child: FilledButton(
-                onPressed: inFlight ? null : onRetry,
-                child: Text(context.l10n.splashRecoveryAction),
-              ),
+          FilledButton(
+            onPressed: inFlight ? null : onRetry,
+            child: Semantics(
+              hint: context.l10n.splashRecoveryHint,
+              child: Text(context.l10n.splashRecoveryAction),
             ),
           ),
         ],

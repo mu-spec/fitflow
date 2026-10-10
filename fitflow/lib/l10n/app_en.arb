@@ -1212,5 +1212,16 @@
         "type": "String"
       }
     }
-  }
+  },
+  "part6LoadingTuning": "Loading movement feedback…",
+  "part6RepetitionWork": "Repetitions",
+  "part6AddExercise": "Add exercise: {section}",
+  "@part6AddExercise": {
+    "placeholders": {
+      "section": {
+        "type": "String"
+      }
+    }
+  },
+  "part6NoSectionExercises": "No eligible exercises available for this section."
 }

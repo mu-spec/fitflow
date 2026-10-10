@@ -1,3 +1,4 @@
+import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
 import 'package:fitflow/features/workouts/presentation/widgets/training_presentation.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
@@ -19,37 +20,25 @@ class ProgressCapabilitySnapshot extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(context.l10n.trainingMovementSnapshot,
-            style: theme.textTheme.titleLarge
-                ?.copyWith(fontWeight: FontWeight.w700)),
+        Semantics(
+            header: true,
+            child: Text(context.l10n.trainingMovementSnapshot,
+                style: theme.textTheme.titleLarge
+                    ?.copyWith(fontWeight: FontWeight.w700))),
         const SizedBox(height: 4),
         Text(context.l10n.trainingMovementHelp,
             style: theme.textTheme.bodySmall
                 ?.copyWith(color: colorScheme.onSurfaceVariant)),
         const SizedBox(height: 16),
         capabilityAsync.when(
-          loading: () => Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  const CircularProgressIndicator(),
-                  const SizedBox(width: 12),
-                  Expanded(
-                      child: Text(context.l10n.trainingMovementLoading,
-                          style: theme.textTheme.bodyMedium)),
-                ],
-              ),
-            ),
-          ),
-          error: (e, _) => Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(context.l10n.trainingMovementUnavailable,
-                  style: theme.textTheme.bodyMedium
-                      ?.copyWith(color: colorScheme.onSurfaceVariant)),
-            ),
-          ),
+          loading: () =>
+              FitFlowLoading(label: context.l10n.trainingMovementLoading),
+          error: (e, _) => FitFlowErrorState(
+              title: context.l10n.trainingMovementUnavailable,
+              message: context.l10n.utilityRetryBody,
+              action: TextButton(
+                  onPressed: () => ref.invalidate(capabilityProfileProvider),
+                  child: Text(context.l10n.retry))),
           data: (profile) {
             if (profile == null) {
               return Card(

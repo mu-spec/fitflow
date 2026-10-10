@@ -40,7 +40,7 @@ class FitFlowNavigationShell extends StatelessWidget {
       // Keep the body in the same element position across bar/rail reflow.
       // This preserves branch-local widget state when the window is resized.
       return Scaffold(
-        body: Row(children: [
+        body: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           if (expanded)
             _FitFlowNavigationRail(
               destinations: destinations,
@@ -116,6 +116,8 @@ class _FitFlowNavigationRail extends StatelessWidget {
       right: false,
       child: DecoratedBox(
         decoration: BoxDecoration(
+          color: Theme.of(context).navigationRailTheme.backgroundColor ??
+              Theme.of(context).colorScheme.surface,
           border: Border(right: BorderSide(color: theme.divider)),
         ),
         child: SingleChildScrollView(

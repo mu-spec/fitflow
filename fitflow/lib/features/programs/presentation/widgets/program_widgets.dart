@@ -1,3 +1,4 @@
+import 'package:fitflow/core/accessibility/system_motion.dart';
 import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/app/config/app_dimensions.dart';
@@ -280,6 +281,7 @@ class ProgramDialogs {
   static Future<bool> confirmSwitch(BuildContext context) async {
     final result = await showDialog<bool>(
       context: context,
+      animationStyle: SystemMotion.overlay(context),
       builder: (ctx) => AlertDialog(
         title: Text(context.l10n.trainingProgramSwitchDialogTitle),
         content: Text(context.l10n.trainingProgramSwitchDialogBody),
@@ -301,6 +303,7 @@ class ProgramDialogs {
   static Future<bool> confirmRestart(BuildContext context) async {
     final result = await showDialog<bool>(
       context: context,
+      animationStyle: SystemMotion.overlay(context),
       builder: (ctx) => AlertDialog(
         title: Text(context.l10n.trainingProgramRestartDialogTitle),
         content: Text(context.l10n.trainingProgramRestartDialogBody),

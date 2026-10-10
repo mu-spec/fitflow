@@ -1,3 +1,4 @@
+import 'package:fitflow/core/accessibility/system_motion.dart';
 import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
@@ -49,6 +50,7 @@ class CustomWorkoutDetailScreen extends ConsumerWidget {
             onPressed: () async {
               final confirmed = await showDialog<bool>(
                 context: context,
+                animationStyle: SystemMotion.overlay(context),
                 builder: (ctx) => AlertDialog(
                   title: Text(context.l10n.trainingDeleteTitle),
                   content: Text(context.l10n.trainingDeleteBody),

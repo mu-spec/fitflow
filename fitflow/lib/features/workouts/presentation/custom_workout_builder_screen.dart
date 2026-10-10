@@ -1,3 +1,10 @@
+import 'package:fitflow/features/workouts/domain/exercise_type.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
+import 'package:fitflow/l10n/enum_labels.dart';
+import 'package:fitflow/features/workout_player/presentation/workout_copy.dart';
+import 'package:fitflow/features/workouts/presentation/widgets/training_presentation.dart';
+import 'package:fitflow/core/design/fitflow_spacing.dart';
+import 'package:fitflow/core/accessibility/system_motion.dart';
 import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/onboarding/data/user_fitness_profile.dart';
@@ -144,6 +151,7 @@ class _CustomWorkoutBuilderScreenState extends ConsumerState<CustomWorkoutBuilde
     if (!_isDirty) return true;
     final result = await showDialog<bool>(
       context: context,
+      animationStyle: SystemMotion.overlay(context),
       builder: (ctx) => AlertDialog(
         title: const Text('Discard changes?'),
         content: const Text('You have unsaved changes. Discard them?'),
@@ -233,6 +241,8 @@ class _CustomWorkoutBuilderScreenState extends ConsumerState<CustomWorkoutBuilde
 
     final result = await showModalBottomSheet<CustomWorkoutExerciseEntry>(
       context: context,
+      sheetAnimationStyle: SystemMotion.overlay(context),
+      useSafeArea: true,
       isScrollControlled: true,
       showDragHandle: true,
       builder: (ctx) {
@@ -272,6 +282,7 @@ class _CustomWorkoutBuilderScreenState extends ConsumerState<CustomWorkoutBuilde
 
     final updated = await showDialog<CustomWorkoutExerciseEntry>(
       context: context,
+      animationStyle: SystemMotion.overlay(context),
       builder: (ctx) => _PrescriptionEditorDialog(entry: entry, exercise: exercise),
     );
 
@@ -409,9 +420,17 @@ class _CustomWorkoutBuilderScreenState extends ConsumerState<CustomWorkoutBuilde
           title: Text(isEditing ? 'Edit workout' : 'Create workout'),
           actions: [
             if (_isSaving)
-              const Padding(
-                padding: EdgeInsets.all(16),
-                child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+              Padding(
+                padding: const EdgeInsets.all(FitFlowSpace.md),
+                child: Tooltip(
+                  message: context.l10n.utilitySaving,
+                  excludeFromSemantics: true,
+                  child: Semantics(
+                    label: context.l10n.utilitySaving,
+                    liveRegion: true,
+                    child: const ExcludeSemantics(child: Icon(Icons.hourglass_top)),
+                  ),
+                ),
               )
             else
               TextButton(
@@ -558,7 +577,8 @@ class _SectionEditor extends StatelessWidget {
           children: [
             LayoutBuilder(
               builder: (context, constraints) {
-                final isNarrow = constraints.maxWidth < 320;
+                final isNarrow = constraints.maxWidth < 320 ||
+                    MediaQuery.textScalerOf(context).scale(16) > 20;
                 if (isNarrow) {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -640,7 +660,7 @@ class _SectionEditor extends StatelessWidget {
                                   if (!isMissing) ...[
                                     const SizedBox(height: 2),
                                     Text(
-                                      '${exercise.movementPattern?.label ?? ''} • Level ${exercise.difficulty.name} • ${exercise.exerciseType.name}',
+                                      _customExerciseMetadata(context, exercise),
                                       style: theme.textTheme.bodySmall
                                           ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
                                     ),
@@ -663,19 +683,19 @@ class _SectionEditor extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 4),
-                        Row(
+                        Wrap(
+                          spacing: FitFlowSpace.xs,
+                          runSpacing: FitFlowSpace.xxs,
                           children: [
                             OutlinedButton(
                               onPressed: isMissing ? null : () => onEdit(entry),
                               child: const Text('Edit'),
                             ),
-                            const SizedBox(width: 8),
                             TextButton(
                               onPressed: () => onRemove(entry),
                               child: const Text('Remove'),
                             ),
                             if (isMissing) ...[
-                              const SizedBox(width: 8),
                               Text('Exercise no longer available',
                                   style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.error)),
                             ],
@@ -760,93 +780,129 @@ class _AddExerciseSheetState extends State<_AddExerciseSheet> {
     final theme = Theme.of(context);
     final filtered = _filteredExercises();
 
-    return DraggableScrollableSheet(
-      expand: false,
-      initialChildSize: 0.9,
-      maxChildSize: 0.95,
-      minChildSize: 0.5,
-      builder: (context, scrollController) {
-        return Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Add ${widget.sectionType.name} exercise',
-                  style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
-              const SizedBox(height: 12),
-              TextField(
-                controller: _searchController,
-                decoration: const InputDecoration(
-                  labelText: 'Search',
-                  hintText: 'Search by name',
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(),
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
+      child: DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.9,
+        maxChildSize: 0.95,
+        minChildSize: 0.5,
+        builder: (context, scrollController) => CustomScrollView(
+          controller: scrollController,
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          slivers: [
+            SliverPadding(
+              padding: const EdgeInsets.all(FitFlowSpace.md),
+              sliver: SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TrainingHeading(
+                      context.l10n.part6AddExercise(
+                        sectionLabel(context.l10n, widget.sectionType),
+                      ),
+                    ),
+                    const SizedBox(height: FitFlowSpace.sm),
+                    TextField(
+                      controller: _searchController,
+                      decoration: const InputDecoration(
+                        labelText: 'Search',
+                        hintText: 'Search by name',
+                        prefixIcon: Icon(Icons.search),
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 12),
-              Expanded(
-                child: filtered.isEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.search_off, size: 48),
-                            const SizedBox(height: 12),
-                            Text('No eligible exercises available for this section.',
-                                style: theme.textTheme.bodyMedium, textAlign: TextAlign.center),
-                          ],
-                        ),
-                      )
-                    : ListView.separated(
-                        controller: scrollController,
-                        itemCount: filtered.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 8),
-                        itemBuilder: (context, index) {
-                          final ex = filtered[index];
-                          final pres = WorkoutExercisePrescription.fromExerciseDefaults(ex)!;
-                          final workload = ex.exerciseType.name == 'reps'
-                              ? '${pres.sets} × ${pres.repsPerSet} reps'
-                              : '${pres.sets} × ${pres.workDuration!.inSeconds}s';
-                          final equipment = ex.requiredEquipment.isEmpty
-                              ? 'No equipment'
-                              : ex.requiredEquipment.map((e) => e.name).join(', ');
-
-                          return Card(
-                            child: ListTile(
-                              title: Text(ex.name,
-                                  style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    '${ex.movementPattern?.label ?? ''} • Level ${ex.difficulty.name} • $equipment • ${ex.exerciseType.name}',
-                                    style: theme.textTheme.bodySmall,
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(workload, style: theme.textTheme.bodySmall),
-                                ],
-                              ),
-                              trailing: const Icon(Icons.add_circle_outline),
-                              onTap: () {
-                                final entry = CustomWorkoutExerciseEntry(
-                                  exerciseId: ex.id,
-                                  sets: pres.sets,
-                                  repsPerSet: pres.repsPerSet,
-                                  workDuration: pres.workDuration,
-                                  restBetweenSets: pres.restBetweenSets,
-                                );
-                                Navigator.of(context).pop(entry);
-                              },
-                            ),
-                          );
-                        },
-                      ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(
+                FitFlowSpace.md,
+                0,
+                FitFlowSpace.md,
+                FitFlowSpace.md,
               ),
-            ],
-          ),
-        );
-      },
+              sliver: filtered.isEmpty
+                  ? SliverToBoxAdapter(
+                      child: Column(
+                        children: [
+                          Text(
+                            _searchQuery.isEmpty
+                                ? context.l10n.part6NoSectionExercises
+                                : context.l10n.trainingNoResults,
+                            style: theme.textTheme.bodyMedium,
+                            textAlign: TextAlign.center,
+                          ),
+                          if (_searchQuery.isNotEmpty)
+                            TextButton(
+                              onPressed: _searchController.clear,
+                              child: Text(context.l10n.clearSearch),
+                            ),
+                        ],
+                      ),
+                    )
+                  : SliverList.separated(
+                      itemCount: filtered.length,
+                      separatorBuilder: (_, __) =>
+                          const SizedBox(height: FitFlowSpace.xs),
+                      itemBuilder: (context, index) {
+                        final ex = filtered[index];
+                        final pres =
+                            WorkoutExercisePrescription.fromExerciseDefaults(
+                              ex,
+                            )!;
+                        final workload = ex.exerciseType.name == 'reps'
+                            ? '${pres.sets} × ${pres.repsPerSet} reps'
+                            : '${pres.sets} × ${pres.workDuration!.inSeconds}s';
+                        final equipment = ex.requiredEquipment.isEmpty
+                            ? context.l10n.flowNoEquipment
+                            : ex.requiredEquipment
+                                  .map((e) => equipmentLabel(context.l10n, e))
+                                  .join(', ');
+
+                        return Card(
+                          child: ListTile(
+                            title: Text(
+                              ex.name,
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 2),
+                                Text(
+                                  '${_customExerciseMetadata(context, ex)} · $equipment',
+                                  style: theme.textTheme.bodySmall,
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  workload,
+                                  style: theme.textTheme.bodySmall,
+                                ),
+                              ],
+                            ),
+                            trailing: const Icon(Icons.add_circle_outline),
+                            onTap: () {
+                              final entry = CustomWorkoutExerciseEntry(
+                                exerciseId: ex.id,
+                                sets: pres.sets,
+                                repsPerSet: pres.repsPerSet,
+                                workDuration: pres.workDuration,
+                                restBetweenSets: pres.restBetweenSets,
+                              );
+                              Navigator.of(context).pop(entry);
+                            },
+                          ),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -1006,4 +1062,17 @@ class _PrescriptionEditorDialogState extends State<_PrescriptionEditorDialog> {
       ],
     );
   }
+}
+
+/// Presentation-only labels; persisted enum values and eligibility are unchanged.
+String _customExerciseMetadata(BuildContext context, Exercise exercise) {
+  final l = context.l10n;
+  final pattern = exercise.movementPattern;
+  return [
+    if (pattern != null) movementPatternLabel(l, pattern),
+    trainingDifficultyLabel(l, exercise.difficulty),
+    exercise.exerciseType == ExerciseType.timed
+        ? l.flowTimedWork
+        : l.part6RepetitionWork,
+  ].join(' · ');
 }

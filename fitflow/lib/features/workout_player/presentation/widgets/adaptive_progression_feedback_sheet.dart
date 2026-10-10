@@ -1,3 +1,4 @@
+import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
 import 'package:fitflow/core/design/fitflow_radius.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/features/capability_assessment/presentation/capability_assessment_copy.dart';
@@ -190,7 +191,7 @@ class _AdaptiveProgressionFeedbackSheetState
             const SizedBox(height: FitFlowSpace.xs),
             SizedBox(
               child: _currentEvidence == null
-                  ? const Center(child: CircularProgressIndicator())
+                  ? FitFlowLoading(label: context.l10n.part6LoadingTuning)
                   : ListView.separated(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -349,11 +350,7 @@ class _AdaptiveProgressionFeedbackSheetState
                 onPressed:
                     (_feedback.isEmpty || _isApplying) ? null : _applyAndFinish,
                 child: _isApplying
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
+                    ? Text(context.l10n.utilitySaving)
                     : Text(context.l10n.flowApply),
               ),
             ),

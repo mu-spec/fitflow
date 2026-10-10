@@ -3778,6 +3778,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Edit {section}'**
   String utilityEditSection(String section);
+
+  /// No description provided for @part6LoadingTuning.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading movement feedback…'**
+  String get part6LoadingTuning;
+
+  /// No description provided for @part6RepetitionWork.
+  ///
+  /// In en, this message translates to:
+  /// **'Repetitions'**
+  String get part6RepetitionWork;
+
+  /// No description provided for @part6AddExercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Add exercise: {section}'**
+  String part6AddExercise(String section);
+
+  /// No description provided for @part6NoSectionExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'No eligible exercises available for this section.'**
+  String get part6NoSectionExercises;
 }
 
 class _AppLocalizationsDelegate
