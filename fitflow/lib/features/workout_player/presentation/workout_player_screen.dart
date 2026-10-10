@@ -1,3 +1,4 @@
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/home/presentation/widgets/home_empty_states.dart';
 import 'package:fitflow/features/home/presentation/widgets/home_error_state.dart';
@@ -25,16 +26,17 @@ class WorkoutPlayerScreen extends ConsumerWidget {
     final capabilityProfileAsync = ref.watch(capabilityProfileProvider);
     final sessionMode = ref.watch(workoutSessionModeProvider);
 
-    if (userProfileAsync is AsyncLoading || capabilityProfileAsync is AsyncLoading) {
+    if (userProfileAsync is AsyncLoading ||
+        capabilityProfileAsync is AsyncLoading) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Workout player')),
+        appBar: AppBar(title: Text(context.l10n.flowPlayer)),
         body: const HomeLoadingState(),
       );
     }
 
     if (userProfileAsync.hasError || capabilityProfileAsync.hasError) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Workout player')),
+        appBar: AppBar(title: Text(context.l10n.flowPlayer)),
         body: HomeErrorState(
           onRetry: () {
             ref.invalidate(userFitnessProfileProvider);
@@ -49,7 +51,7 @@ class WorkoutPlayerScreen extends ConsumerWidget {
 
     if (userProfile == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Workout player')),
+        appBar: AppBar(title: Text(context.l10n.flowPlayer)),
         body: HomeEmptyStates.missingUserProfile(
           context,
           onAction: () => context.go(AppRoutes.onboarding),
@@ -59,7 +61,7 @@ class WorkoutPlayerScreen extends ConsumerWidget {
 
     if (capabilityProfile == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Workout player')),
+        appBar: AppBar(title: Text(context.l10n.flowPlayer)),
         body: HomeEmptyStates.missingCapabilityProfile(
           context,
           onAction: () => context.go(AppRoutes.capabilityAssessment),
@@ -73,12 +75,13 @@ class WorkoutPlayerScreen extends ConsumerWidget {
       sessionMode: sessionMode,
     );
 
-    final WorkoutPlan? plan = WorkoutGenerator.generateCatalog(generationContext);
+    final WorkoutPlan? plan =
+        WorkoutGenerator.generateCatalog(generationContext);
 
     if (plan == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Workout player')),
-        body: const Center(child: Text('No workout available.')),
+        appBar: AppBar(title: Text(context.l10n.flowPlayer)),
+        body: Center(child: Text(context.l10n.flowUnavailable)),
       );
     }
 

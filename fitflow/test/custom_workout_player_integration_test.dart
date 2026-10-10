@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:fitflow/app/app.dart';
 import 'package:fitflow/features/onboarding/data/workout_duration.dart';
 import 'package:fitflow/features/workouts/domain/custom/custom_workout_controller.dart';
@@ -22,6 +23,12 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
 
     expect(find.text('Workout preview'), findsWidgets);
+    // The existing first-run completion SnackBar is still visible when this
+    // test navigates instantly. Let its two-second confirmation finish before
+    // tapping the new pinned footer (rather than tapping the overlay).
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+    expect(find.byType(SnackBar), findsNothing);
 
     await tester.scrollUntilVisible(find.text('Start workout'), 100, maxScrolls: 20);
     await tester.pump(const Duration(milliseconds: 300));

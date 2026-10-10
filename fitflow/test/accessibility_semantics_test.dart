@@ -207,8 +207,8 @@ void main() {
     controller.beginWorkout();
     await tester.pump();
 
-    final pause = tester.getSemantics(find.byTooltip('Pause workout'));
-    expect(pause.label, contains('Pause workout'));
+    final pause = tester.getSemantics(find.widgetWithText(FilledButton, 'Pause workout'));
+    expect(pause.getSemanticsData().label, contains('Pause workout'));
     expect(_button(pause), isTrue);
 
     final timer = tester.getSemantics(

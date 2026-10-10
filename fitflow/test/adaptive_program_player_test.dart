@@ -303,7 +303,7 @@ void main() {
       await tester.tap(find.byType(BackButton));
       await tester.pumpAndSettle();
       expect(find.text('End workout?'), findsOneWidget);
-      await tester.tap(find.text('Keep going'));
+      await tester.tap(find.text('Continue workout'));
       await tester.pumpAndSettle();
       expect(find.byType(WorkoutPlayerSessionView), findsOneWidget);
       expect(controller.state.phase, isNot(WorkoutPlayerPhase.completed));

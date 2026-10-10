@@ -336,7 +336,7 @@ void main() {
 
       expect(find.text('Workout complete'), findsOneWidget);
       // Ensure Done is visible (may be off-screen after adding Tune button)
-      final doneFinder = find.widgetWithText(OutlinedButton, 'Done');
+      final doneFinder = find.widgetWithText(FilledButton, 'Done');
       if (doneFinder.evaluate().isNotEmpty) {
         await tester.ensureVisible(doneFinder);
         await tester.pumpAndSettle();

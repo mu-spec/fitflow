@@ -1,3 +1,4 @@
+import 'package:fitflow/features/workout_preview/presentation/widgets/workout_preview_section_header.dart';
 import 'dart:async';
 
 import 'package:fitflow/app/config/app_theme.dart';
@@ -384,7 +385,12 @@ void main() {
 
       // Planned times should appear (e.g., "planned" and "budget")
       expect(find.textContaining('planned'), findsWidgets);
-      expect(find.textContaining('budget'), findsWidgets);
+      // Budget remains exact data without competing with the section estimate.
+      final plan = WorkoutGenerator.generateCatalog(WorkoutGenerationContext(
+        userProfile: userProfile, capabilityProfile: capabilityProfile))!;
+      final headers = tester.widgetList<WorkoutPreviewSectionHeader>(find.byType(WorkoutPreviewSectionHeader)).toList();
+      expect(headers.map((h) => h.budget), [plan.timeBudget.warmup, plan.timeBudget.main, plan.timeBudget.cooldown]);
+      expect(headers.map((h) => h.planned?.total), [plan.warmupEstimate?.total, plan.mainEstimate?.total, plan.cooldownEstimate?.total]);
 
       // Verify that planned times are truthful: we can check that warmup estimate total is displayed
       // Since formatting may be "2 min" etc, we just check that the widget exists

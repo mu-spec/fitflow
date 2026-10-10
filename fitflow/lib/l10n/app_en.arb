@@ -441,5 +441,337 @@
   "assessmentChoice4": "Strong",
   "assessmentChoice4Body": "Comfortable with challenging variations and higher training demand.",
   "assessmentChoice5": "Advanced",
-  "assessmentChoice5Body": "Comfortable with advanced variations and strong movement control."
+  "assessmentChoice5Body": "Comfortable with advanced variations and strong movement control.",
+  "flowPreview": "Workout preview",
+  "flowPlayer": "Workout player",
+  "flowCustom": "Custom workout",
+  "flowProgram": "Program workout",
+  "flowWarmup": "Warm-up",
+  "flowMain": "Main workout",
+  "flowCooldown": "Cooldown",
+  "flowReady": "Ready to begin",
+  "flowWork": "Work",
+  "flowRest": "Rest",
+  "flowNext": "Next exercise",
+  "flowPaused": "Paused",
+  "flowSeconds": "sec",
+  "flowRestSeconds": "sec rest",
+  "flowReps": "{count} reps",
+  "@flowReps": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "flowSet": "Set {current} of {total}",
+  "@flowSet": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "flowNextSet": "Next: Set {current} of {total}",
+  "@flowNextSet": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "flowExercisePosition": "Exercise {current} of {total} in this section",
+  "@flowExercisePosition": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "flowOverall": "Workout progress, {current} of {total} sets",
+  "@flowOverall": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "flowSetsProgress": "{current} / {total} sets",
+  "@flowSetsProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "flowWorkloadReps": "{sets, plural, =1{1 set} other{{sets} sets}} × {count} reps",
+  "@flowWorkloadReps": {
+    "placeholders": {
+      "sets": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "flowWorkloadTime": "{sets, plural, =1{1 set} other{{sets} sets}} × {count} sec",
+  "@flowWorkloadTime": {
+    "placeholders": {
+      "sets": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "flowCount": "{count, plural, =1{1 exercise} other{{count} exercises}}",
+  "@flowCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "flowTarget": "{minutes} min target",
+  "@flowTarget": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "flowEstimate": "{duration} planned",
+  "@flowEstimate": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "flowDuration": "{minutes}m {seconds}s",
+  "@flowDuration": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "flowUnknownDuration": "—",
+  "flowModeTemporary": "{mode} • Temporary for this workout",
+  "@flowModeTemporary": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "flowPreviewHelp": "Tap an exercise for details. Replace the current exercise in the player, before its first set is complete.",
+  "flowRestBetween": "{seconds} sec rest",
+  "@flowRestBetween": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "flowDetails": "Exercise details",
+  "flowReplace": "Replace exercise",
+  "flowReplaced": "Replaced {name}",
+  "@flowReplaced": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "flowCurrent": "Current: {name}",
+  "@flowCurrent": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "flowOriginal": "Original: {name}",
+  "@flowOriginal": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "flowUse": "Use this exercise",
+  "flowReplaceWith": "Replace with {name}",
+  "@flowReplaceWith": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "flowMoreReasons": "Why this fits",
+  "flowNoAlternatives": "No suitable alternatives",
+  "flowNoAlternativesBody": "No other exercise currently matches this movement, your ability, equipment, environment, and workout preferences.",
+  "flowNoEquipment": "No equipment",
+  "flowReasonMovement": "Same movement focus",
+  "flowReasonDifficulty": "Matches your current difficulty",
+  "flowReasonEasier": "Easier variation",
+  "flowReasonSetup": "Fits your equipment and environment",
+  "flowReasonPreferences": "Matches your workout preferences",
+  "flowReasonFamily": "Same exercise progression family",
+  "flowReasonWorkload": "Keeps the same sets and workload",
+  "flowMute": "Mute voice",
+  "flowVoice": "Enable voice",
+  "flowPause": "Pause workout",
+  "flowResume": "Resume workout",
+  "flowExitTitle": "End workout?",
+  "flowExitBody": "Your current session progress won't be saved.",
+  "flowKeepGoing": "Continue workout",
+  "flowExit": "Exit workout",
+  "flowComplete": "Workout complete",
+  "flowFinished": "You finished all sets.",
+  "flowExercises": "Exercises",
+  "flowSets": "Sets",
+  "flowTargetLabel": "Target duration",
+  "flowEstimateLabel": "Estimated duration",
+  "flowHistory": "Completed workouts are saved to your history on this device.",
+  "flowProgramComplete": "Program workout completed.",
+  "flowCustomNote": "Custom workouts don't change your movement levels.",
+  "flowTemporaryNote": "This was a temporary {mode} workout. Your movement levels stay unchanged.",
+  "@flowTemporaryNote": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "flowTune": "Tune next workout",
+  "flowTuneTitle": "Tune your next workout",
+  "flowTuneHelp": "Tell FitFlow how each movement felt. Your movement levels adapt independently.",
+  "flowApply": "Apply & finish",
+  "flowSkip": "Skip",
+  "flowTuneError": "Couldn't update your workout tuning. Try again.",
+  "flowWarmupComplete": "Warm-up complete",
+  "flowMainComplete": "Main workout complete",
+  "flowMainNext": "Main workout is next",
+  "flowCooldownNext": "Cooldown is next",
+  "flowContinueHelp": "Continue when you are ready.",
+  "flowRemaining": "Remaining {seconds} seconds",
+  "@flowRemaining": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "flowRestRemaining": "Rest remaining {seconds} seconds",
+  "@flowRestRemaining": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "flowTransitionRemaining": "Transition remaining {seconds} seconds",
+  "@flowTransitionRemaining": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "flowTimedWork": "Timed work",
+  "flowSectionComplete": "Section complete.",
+  "flowNextFallback": "the next exercise",
+  "flowReadyAnnouncement": "Ready. {section}. {name}.",
+  "@flowReadyAnnouncement": {
+    "placeholders": {
+      "section": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "flowWorkAnnouncement": "{paused}{section}. {name}. Set {current} of {total}. {target}.",
+  "@flowWorkAnnouncement": {
+    "placeholders": {
+      "paused": {
+        "type": "String"
+      },
+      "section": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      },
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "target": {
+        "type": "String"
+      }
+    }
+  },
+  "flowRestAnnouncement": "{paused}Rest. {name}.",
+  "@flowRestAnnouncement": {
+    "placeholders": {
+      "paused": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "flowNextAnnouncement": "{paused}Next exercise. {name}.",
+  "@flowNextAnnouncement": {
+    "placeholders": {
+      "paused": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "flowPausedPrefix": "Paused. ",
+  "flowCompleteAnnouncement": "Workout complete.",
+  "flowUnavailable": "No workout available.",
+  "flowEmptyTitle": "No complete workout available",
+  "flowEmptyBody": "Try adjusting your workout setup in Profile.",
+  "flowAdaptiveNote": "Built from your goal, movement levels, equipment, space, and preferences.",
+  "flowReadyCustom": "Custom workout • Your prescription",
+  "flowReadyProgram": "Program workout • Standard",
+  "flowDecisionPromoted": "Two Easy sessions at your current level: ready for the next variation.",
+  "flowDecisionReduced": "An easier variation next time, based on your Too hard feedback.",
+  "flowDecisionRight": "Keep this movement at its current level.",
+  "flowDecisionFirst": "One more Easy session at your current level may progress this movement.",
+  "flowDecisionNotQualified": "This session did not include qualifying work at your current level; no level change.",
+  "flowDecisionMaximum": "Already at the highest available level; no level change.",
+  "flowDecisionMinimum": "Already at the starting level; no level change."
 }

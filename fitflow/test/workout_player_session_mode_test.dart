@@ -80,7 +80,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(find.text('Low Energy'), findsWidgets);
+      expect(find.textContaining('Low Energy'), findsWidgets);
     });
 
     testWidgets('player stable plan not change when mode changes mid-session', (tester) async {
@@ -107,7 +107,7 @@ void main() {
       container.read(workoutSessionModeProvider.notifier).selectMode(WorkoutSessionMode.standard);
       await tester.pumpAndSettle();
       // Player should still show Low Energy chip because stable mode captured at init
-      expect(find.text('Low Energy'), findsWidgets);
+      expect(find.textContaining('Low Energy'), findsWidgets);
     });
   });
 }

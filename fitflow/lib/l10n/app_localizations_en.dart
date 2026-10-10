@@ -1025,4 +1025,394 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get assessmentChoice5Body =>
       'Comfortable with advanced variations and strong movement control.';
+
+  @override
+  String get flowPreview => 'Workout preview';
+
+  @override
+  String get flowPlayer => 'Workout player';
+
+  @override
+  String get flowCustom => 'Custom workout';
+
+  @override
+  String get flowProgram => 'Program workout';
+
+  @override
+  String get flowWarmup => 'Warm-up';
+
+  @override
+  String get flowMain => 'Main workout';
+
+  @override
+  String get flowCooldown => 'Cooldown';
+
+  @override
+  String get flowReady => 'Ready to begin';
+
+  @override
+  String get flowWork => 'Work';
+
+  @override
+  String get flowRest => 'Rest';
+
+  @override
+  String get flowNext => 'Next exercise';
+
+  @override
+  String get flowPaused => 'Paused';
+
+  @override
+  String get flowSeconds => 'sec';
+
+  @override
+  String get flowRestSeconds => 'sec rest';
+
+  @override
+  String flowReps(int count) {
+    return '$count reps';
+  }
+
+  @override
+  String flowSet(int current, int total) {
+    return 'Set $current of $total';
+  }
+
+  @override
+  String flowNextSet(int current, int total) {
+    return 'Next: Set $current of $total';
+  }
+
+  @override
+  String flowExercisePosition(int current, int total) {
+    return 'Exercise $current of $total in this section';
+  }
+
+  @override
+  String flowOverall(int current, int total) {
+    return 'Workout progress, $current of $total sets';
+  }
+
+  @override
+  String flowSetsProgress(int current, int total) {
+    return '$current / $total sets';
+  }
+
+  @override
+  String flowWorkloadReps(int sets, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      sets,
+      locale: localeName,
+      other: '$sets sets',
+      one: '1 set',
+    );
+    return '$_temp0 × $count reps';
+  }
+
+  @override
+  String flowWorkloadTime(int sets, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      sets,
+      locale: localeName,
+      other: '$sets sets',
+      one: '1 set',
+    );
+    return '$_temp0 × $count sec';
+  }
+
+  @override
+  String flowCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count exercises',
+      one: '1 exercise',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String flowTarget(int minutes) {
+    return '$minutes min target';
+  }
+
+  @override
+  String flowEstimate(String duration) {
+    return '$duration planned';
+  }
+
+  @override
+  String flowDuration(int minutes, int seconds) {
+    return '${minutes}m ${seconds}s';
+  }
+
+  @override
+  String get flowUnknownDuration => '—';
+
+  @override
+  String flowModeTemporary(String mode) {
+    return '$mode • Temporary for this workout';
+  }
+
+  @override
+  String get flowPreviewHelp =>
+      'Tap an exercise for details. Replace the current exercise in the player, before its first set is complete.';
+
+  @override
+  String flowRestBetween(int seconds) {
+    return '$seconds sec rest';
+  }
+
+  @override
+  String get flowDetails => 'Exercise details';
+
+  @override
+  String get flowReplace => 'Replace exercise';
+
+  @override
+  String flowReplaced(String name) {
+    return 'Replaced $name';
+  }
+
+  @override
+  String flowCurrent(String name) {
+    return 'Current: $name';
+  }
+
+  @override
+  String flowOriginal(String name) {
+    return 'Original: $name';
+  }
+
+  @override
+  String get flowUse => 'Use this exercise';
+
+  @override
+  String flowReplaceWith(String name) {
+    return 'Replace with $name';
+  }
+
+  @override
+  String get flowMoreReasons => 'Why this fits';
+
+  @override
+  String get flowNoAlternatives => 'No suitable alternatives';
+
+  @override
+  String get flowNoAlternativesBody =>
+      'No other exercise currently matches this movement, your ability, equipment, environment, and workout preferences.';
+
+  @override
+  String get flowNoEquipment => 'No equipment';
+
+  @override
+  String get flowReasonMovement => 'Same movement focus';
+
+  @override
+  String get flowReasonDifficulty => 'Matches your current difficulty';
+
+  @override
+  String get flowReasonEasier => 'Easier variation';
+
+  @override
+  String get flowReasonSetup => 'Fits your equipment and environment';
+
+  @override
+  String get flowReasonPreferences => 'Matches your workout preferences';
+
+  @override
+  String get flowReasonFamily => 'Same exercise progression family';
+
+  @override
+  String get flowReasonWorkload => 'Keeps the same sets and workload';
+
+  @override
+  String get flowMute => 'Mute voice';
+
+  @override
+  String get flowVoice => 'Enable voice';
+
+  @override
+  String get flowPause => 'Pause workout';
+
+  @override
+  String get flowResume => 'Resume workout';
+
+  @override
+  String get flowExitTitle => 'End workout?';
+
+  @override
+  String get flowExitBody => 'Your current session progress won\'t be saved.';
+
+  @override
+  String get flowKeepGoing => 'Continue workout';
+
+  @override
+  String get flowExit => 'Exit workout';
+
+  @override
+  String get flowComplete => 'Workout complete';
+
+  @override
+  String get flowFinished => 'You finished all sets.';
+
+  @override
+  String get flowExercises => 'Exercises';
+
+  @override
+  String get flowSets => 'Sets';
+
+  @override
+  String get flowTargetLabel => 'Target duration';
+
+  @override
+  String get flowEstimateLabel => 'Estimated duration';
+
+  @override
+  String get flowHistory =>
+      'Completed workouts are saved to your history on this device.';
+
+  @override
+  String get flowProgramComplete => 'Program workout completed.';
+
+  @override
+  String get flowCustomNote =>
+      'Custom workouts don\'t change your movement levels.';
+
+  @override
+  String flowTemporaryNote(String mode) {
+    return 'This was a temporary $mode workout. Your movement levels stay unchanged.';
+  }
+
+  @override
+  String get flowTune => 'Tune next workout';
+
+  @override
+  String get flowTuneTitle => 'Tune your next workout';
+
+  @override
+  String get flowTuneHelp =>
+      'Tell FitFlow how each movement felt. Your movement levels adapt independently.';
+
+  @override
+  String get flowApply => 'Apply & finish';
+
+  @override
+  String get flowSkip => 'Skip';
+
+  @override
+  String get flowTuneError =>
+      'Couldn\'t update your workout tuning. Try again.';
+
+  @override
+  String get flowWarmupComplete => 'Warm-up complete';
+
+  @override
+  String get flowMainComplete => 'Main workout complete';
+
+  @override
+  String get flowMainNext => 'Main workout is next';
+
+  @override
+  String get flowCooldownNext => 'Cooldown is next';
+
+  @override
+  String get flowContinueHelp => 'Continue when you are ready.';
+
+  @override
+  String flowRemaining(int seconds) {
+    return 'Remaining $seconds seconds';
+  }
+
+  @override
+  String flowRestRemaining(int seconds) {
+    return 'Rest remaining $seconds seconds';
+  }
+
+  @override
+  String flowTransitionRemaining(int seconds) {
+    return 'Transition remaining $seconds seconds';
+  }
+
+  @override
+  String get flowTimedWork => 'Timed work';
+
+  @override
+  String get flowSectionComplete => 'Section complete.';
+
+  @override
+  String get flowNextFallback => 'the next exercise';
+
+  @override
+  String flowReadyAnnouncement(String section, String name) {
+    return 'Ready. $section. $name.';
+  }
+
+  @override
+  String flowWorkAnnouncement(String paused, String section, String name,
+      int current, int total, String target) {
+    return '$paused$section. $name. Set $current of $total. $target.';
+  }
+
+  @override
+  String flowRestAnnouncement(String paused, String name) {
+    return '${paused}Rest. $name.';
+  }
+
+  @override
+  String flowNextAnnouncement(String paused, String name) {
+    return '${paused}Next exercise. $name.';
+  }
+
+  @override
+  String get flowPausedPrefix => 'Paused. ';
+
+  @override
+  String get flowCompleteAnnouncement => 'Workout complete.';
+
+  @override
+  String get flowUnavailable => 'No workout available.';
+
+  @override
+  String get flowEmptyTitle => 'No complete workout available';
+
+  @override
+  String get flowEmptyBody => 'Try adjusting your workout setup in Profile.';
+
+  @override
+  String get flowAdaptiveNote =>
+      'Built from your goal, movement levels, equipment, space, and preferences.';
+
+  @override
+  String get flowReadyCustom => 'Custom workout • Your prescription';
+
+  @override
+  String get flowReadyProgram => 'Program workout • Standard';
+
+  @override
+  String get flowDecisionPromoted =>
+      'Two Easy sessions at your current level: ready for the next variation.';
+
+  @override
+  String get flowDecisionReduced =>
+      'An easier variation next time, based on your Too hard feedback.';
+
+  @override
+  String get flowDecisionRight => 'Keep this movement at its current level.';
+
+  @override
+  String get flowDecisionFirst =>
+      'One more Easy session at your current level may progress this movement.';
+
+  @override
+  String get flowDecisionNotQualified =>
+      'This session did not include qualifying work at your current level; no level change.';
+
+  @override
+  String get flowDecisionMaximum =>
+      'Already at the highest available level; no level change.';
+
+  @override
+  String get flowDecisionMinimum =>
+      'Already at the starting level; no level change.';
 }

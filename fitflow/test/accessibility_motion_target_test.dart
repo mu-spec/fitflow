@@ -140,7 +140,7 @@ void main() {
     container.read(workoutPlayerControllerProvider(plan).notifier).beginWorkout();
     await tester.pump();
 
-    final pause = tester.getRect(find.byTooltip('Pause workout'));
+    final pause = tester.getRect(find.widgetWithText(FilledButton, 'Pause workout'));
     expect(pause.width, greaterThanOrEqualTo(SystemMotion.minTouchTarget));
     expect(pause.height, greaterThanOrEqualTo(SystemMotion.minTouchTarget));
 

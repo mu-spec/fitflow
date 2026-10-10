@@ -286,7 +286,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('End workout?'), findsOneWidget);
-      await tester.tap(find.text('Keep going'));
+      await tester.tap(find.text('Continue workout'));
       await tester.pumpAndSettle();
 
       expect(find.text('End workout?'), findsNothing);
@@ -313,7 +313,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('End workout?'), findsOneWidget);
-      await tester.tap(find.text('End workout').last);
+      await tester.tap(find.text('Exit workout').last);
       await tester.pumpAndSettle();
 
       expect(find.text('Workout preview'), findsOneWidget);

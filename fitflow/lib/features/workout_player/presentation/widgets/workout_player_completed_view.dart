@@ -1,3 +1,10 @@
+import 'package:fitflow/core/design/fitflow_spacing.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
+import 'package:fitflow/l10n/enum_labels.dart';
+import 'package:fitflow/core/design/fitflow_theme_extension.dart';
+import 'package:fitflow/core/design/fitflow_layout.dart';
+import 'package:fitflow/core/accessibility/system_motion.dart';
+import 'package:fitflow/features/workout_player/presentation/workout_copy.dart';
 import 'package:fitflow/app/router/app_router.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/workout_player/application/workout_player_controller.dart';
@@ -46,16 +53,6 @@ class WorkoutPlayerCompletedView extends ConsumerWidget {
   final String? doneRoute;
   final String? completionNote;
 
-  String _formatDuration(Duration? d) {
-    if (d == null) return '—';
-    final m = d.inMinutes;
-    final s = d.inSeconds % 60;
-    if (m > 0) {
-      return '${m}m ${s}s';
-    }
-    return '${s}s';
-  }
-
   Future<void> _openTuneSheet(BuildContext context, WidgetRef ref) async {
     List<WorkoutExercisePrescription> effectiveMain;
     try {
@@ -82,6 +79,12 @@ class WorkoutPlayerCompletedView extends ConsumerWidget {
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
+      useSafeArea: true,
+      constraints:
+          const BoxConstraints(maxWidth: FitFlowLayout.maxReadableWidth),
+      sheetAnimationStyle: AnimationStyle(
+          duration: SystemMotion.standard(context),
+          reverseDuration: SystemMotion.micro(context)),
       builder: (ctx) {
         return DraggableScrollableSheet(
           expand: false,
@@ -150,151 +153,100 @@ class WorkoutPlayerCompletedView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    final totalExercises = plan.totalExerciseCount;
-    final completedSets = state.completedSets;
-    final totalSets = state.totalSets;
-    final isTemporary = sessionOrigin == WorkoutSessionOrigin.adaptive && sessionMode != WorkoutSessionMode.standard;
+    final text = Theme.of(context).textTheme;
+    final l = context.l10n;
+    final t = FitFlowTheme.of(context);
+    final isTemporary = sessionOrigin == WorkoutSessionOrigin.adaptive &&
+        sessionMode != WorkoutSessionMode.standard;
     final isCustom = sessionOrigin == WorkoutSessionOrigin.custom;
     final isProgram = sessionOrigin == WorkoutSessionOrigin.program;
-    final note = completionNote ?? (isProgram ? programCompletedCopy : null);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        const SizedBox(height: 32),
-        Container(
-          width: 96,
-          height: 96,
-          decoration: BoxDecoration(
-            color: colorScheme.primaryContainer,
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            Icons.check_rounded,
-            size: 56,
-            color: colorScheme.onPrimaryContainer,
-          ),
-        ),
-        const SizedBox(height: 24),
-        Text(
-          'Workout complete',
-          style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 12),
-        Text(
-          'Great job! You finished all sets.',
-          style: theme.textTheme.bodyLarge?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        if (isTemporary) ...[
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: colorScheme.secondaryContainer,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              'This was a temporary ${sessionMode.label} workout. Your movement levels stay unchanged.',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colorScheme.onSecondaryContainer,
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ],
-        if (isCustom) ...[
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: colorScheme.secondaryContainer,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              "Custom workouts don't change your movement levels.",
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colorScheme.onSecondaryContainer,
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ],
-        if (note != null) ...[
-          const SizedBox(height: 12),
-          Text(
-            note,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w500,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-        const SizedBox(height: 24),
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
+    final note = completionNote == programCompletedCopy
+        ? l.flowProgramComplete
+        : completionNote ?? (isProgram ? l.flowProgramComplete : null);
+    return Padding(
+        padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.md),
+        child:
+            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Center(
+              child: DecoratedBox(
+                  decoration:
+                      BoxDecoration(color: t.success, shape: BoxShape.circle),
+                  child: Padding(
+                      padding: const EdgeInsets.all(FitFlowSpace.md),
+                      child: ExcludeSemantics(
+                          child: Icon(Icons.check_rounded,
+                              size: 32, color: t.onSuccess))))),
+          const SizedBox(height: FitFlowSpace.lg),
+          Semantics(
+              header: true,
+              child: Text(l.flowComplete,
+                  style: text.headlineMedium, textAlign: TextAlign.center)),
+          const SizedBox(height: FitFlowSpace.xs),
+          Text(l.flowFinished,
+              style: text.bodyLarge, textAlign: TextAlign.center),
+          const SizedBox(height: FitFlowSpace.xl),
+          Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 32,
+              runSpacing: 16,
               children: [
-                _StatRow(label: 'Exercises', value: '$totalExercises'),
-                const Divider(),
-                _StatRow(label: 'Sets', value: '$completedSets / $totalSets'),
-                const Divider(),
-                _StatRow(label: 'Target duration', value: _formatDuration(plan.targetDuration)),
-                const SizedBox(height: 8),
-                _StatRow(label: 'Estimated duration', value: _formatDuration(plan.estimatedDuration)),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          historySavedCopy,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 24),
-        if (!isTemporary && !isCustom)
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton(
-              onPressed: () => _openTuneSheet(context, ref),
-              child: const Text('Tune next workout'),
-            ),
-          ),
-        if (!isTemporary && !isCustom) const SizedBox(height: 8),
-        _OnceOutlinedButton(
-          onPressed: () => _handleDone(context, ref),
-          child: const Text('Done'),
-        ),
-      ],
-    );
+                Column(children: [
+                  Text('${plan.totalExerciseCount}', style: text.displayMedium),
+                  Text(l.flowExercises, style: text.labelLarge)
+                ]),
+                Column(children: [
+                  Text('${state.completedSets} / ${state.totalSets}',
+                      style: text.displayMedium),
+                  Text(l.flowSets, style: text.labelLarge)
+                ]),
+              ]),
+          const SizedBox(height: FitFlowSpace.lg),
+          const Divider(),
+          const SizedBox(height: FitFlowSpace.sm),
+          _StatRow(
+              label: l.flowTargetLabel,
+              value: plannedDuration(l, plan.targetDuration)),
+          const SizedBox(height: FitFlowSpace.xs),
+          _StatRow(
+              label: l.flowEstimateLabel,
+              value: plannedDuration(l, plan.estimatedDuration)),
+          const SizedBox(height: FitFlowSpace.sm),
+          if (isTemporary)
+            Text(l.flowTemporaryNote(sessionModeLabel(l, sessionMode)),
+                style: text.bodyMedium, textAlign: TextAlign.center),
+          if (isCustom)
+            Text(l.flowCustomNote,
+                style: text.bodyMedium, textAlign: TextAlign.center),
+          if (note != null)
+            Text(note, style: text.bodyMedium, textAlign: TextAlign.center),
+          const SizedBox(height: FitFlowSpace.sm),
+          Text(l.flowHistory,
+              style: text.bodySmall, textAlign: TextAlign.center),
+          const SizedBox(height: FitFlowSpace.xl),
+          _OnceDoneButton(
+              onPressed: () => _handleDone(context, ref), child: Text(l.done)),
+          if (!isTemporary && !isCustom) ...[
+            const SizedBox(height: FitFlowSpace.xs),
+            OutlinedButton(
+                onPressed: () => _openTuneSheet(context, ref),
+                child: Text(l.flowTune)),
+          ],
+        ]));
   }
 }
 
 /// Ignores repeat presses so a rapid double-tap cannot run Done twice.
-class _OnceOutlinedButton extends StatefulWidget {
-  const _OnceOutlinedButton({required this.onPressed, required this.child});
+class _OnceDoneButton extends StatefulWidget {
+  const _OnceDoneButton({required this.onPressed, required this.child});
 
   final VoidCallback onPressed;
   final Widget child;
 
   @override
-  State<_OnceOutlinedButton> createState() => _OnceOutlinedButtonState();
+  State<_OnceDoneButton> createState() => _OnceDoneButtonState();
 }
 
-class _OnceOutlinedButtonState extends State<_OnceOutlinedButton> {
+class _OnceDoneButtonState extends State<_OnceDoneButton> {
   bool _fired = false;
 
   void _press() {
@@ -307,7 +259,7 @@ class _OnceOutlinedButtonState extends State<_OnceOutlinedButton> {
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      child: OutlinedButton(
+      child: FilledButton(
         onPressed: _fired ? null : _press,
         child: widget.child,
       ),
@@ -327,12 +279,13 @@ class _StatRow extends StatelessWidget {
     return Row(
       children: [
         Expanded(child: Text(label, style: theme.textTheme.bodyMedium)),
-        const SizedBox(width: 8),
+        const SizedBox(width: FitFlowSpace.xs),
         Flexible(
           child: Text(
             value,
             textAlign: TextAlign.end,
-            style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+            style: theme.textTheme.bodyMedium
+                ?.copyWith(fontWeight: FontWeight.w600),
           ),
         ),
       ],

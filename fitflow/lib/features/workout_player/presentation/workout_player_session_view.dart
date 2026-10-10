@@ -1,9 +1,18 @@
-import 'package:fitflow/app/config/app_dimensions.dart';
+import 'package:fitflow/app/router/app_routes.dart';
+import 'package:fitflow/core/design/fitflow_layout.dart';
+import 'package:fitflow/core/design/fitflow_spacing.dart';
+import 'package:fitflow/core/accessibility/system_motion.dart';
+import 'package:fitflow/core/design/fitflow_motion.dart';
+import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
+import 'package:fitflow/l10n/enum_labels.dart';
+import 'package:fitflow/l10n/app_localizations.dart';
+import 'package:fitflow/features/workout_player/presentation/workout_copy.dart';
+import 'package:fitflow/features/workout_player/presentation/widgets/workout_replacement_picker.dart';
 import 'package:fitflow/features/workout_player/application/workout_player_controller.dart';
 import 'package:fitflow/features/workout_player/application/workout_player_state.dart';
 import 'package:fitflow/features/workout_player/domain/workout_player_phase.dart';
 import 'package:fitflow/features/workout_player/domain/workout_player_completion.dart';
-import 'package:fitflow/features/workout_player/domain/workout_replacement_option.dart';
 import 'package:fitflow/features/workout_player/domain/workout_session_origin.dart';
 import 'package:fitflow/features/workout_player/presentation/player_accessibility.dart';
 import 'package:fitflow/features/workout_player/presentation/widgets/workout_player_completed_view.dart';
@@ -49,12 +58,15 @@ class WorkoutPlayerSessionView extends ConsumerStatefulWidget {
   final String? completionNote;
 
   @override
-  ConsumerState<WorkoutPlayerSessionView> createState() => _WorkoutPlayerSessionViewState();
+  ConsumerState<WorkoutPlayerSessionView> createState() =>
+      _WorkoutPlayerSessionViewState();
 }
 
-class _WorkoutPlayerSessionViewState extends ConsumerState<WorkoutPlayerSessionView> {
+class _WorkoutPlayerSessionViewState
+    extends ConsumerState<WorkoutPlayerSessionView> {
   late final AppLifecycleListener _lifecycleListener;
   bool _allowPop = false;
+  final _phasePresentationKey = GlobalKey();
   late final WorkoutPlan _stablePlan;
   late final WorkoutSessionMode _stableMode;
   late final WorkoutSessionOrigin _stableOrigin;
@@ -84,15 +96,20 @@ class _WorkoutPlayerSessionViewState extends ConsumerState<WorkoutPlayerSessionV
   void _maybeRecordHistory(WorkoutPlayerState state) {
     if (state.phase != WorkoutPlayerPhase.completed) return;
     try {
-      final controller = ref.read(workoutPlayerControllerProvider(_stablePlan).notifier);
+      final controller =
+          ref.read(workoutPlayerControllerProvider(_stablePlan).notifier);
       final sessionId = controller.sessionId;
       if (_recordedSessionIds.contains(sessionId)) return;
       _recordedSessionIds.add(sessionId);
 
-      final completedWorkout = controller.createCompletedWorkoutSnapshot(plan: _stablePlan);
+      final completedWorkout =
+          controller.createCompletedWorkoutSnapshot(plan: _stablePlan);
 
       // ignore: discarded_futures
-      ref.read(workoutHistoryProvider.notifier).addWorkout(completedWorkout).then((success) {
+      ref
+          .read(workoutHistoryProvider.notifier)
+          .addWorkout(completedWorkout)
+          .then((success) {
         if (!mounted) return;
         if (!success) {
           _recordedSessionIds.remove(sessionId);
@@ -114,14 +131,16 @@ class _WorkoutPlayerSessionViewState extends ConsumerState<WorkoutPlayerSessionV
     final callback = widget.onWorkoutCompleted;
     if (callback == null) return;
     try {
-      final controller = ref.read(workoutPlayerControllerProvider(_stablePlan).notifier);
+      final controller =
+          ref.read(workoutPlayerControllerProvider(_stablePlan).notifier);
       final sessionId = controller.sessionId;
       if (_notifiedSessionIds.contains(sessionId)) return;
       _notifiedSessionIds.add(sessionId);
 
       final completion = WorkoutPlayerCompletion(
         playerSessionId: sessionId,
-        completedWorkout: controller.createCompletedWorkoutSnapshot(plan: _stablePlan),
+        completedWorkout:
+            controller.createCompletedWorkoutSnapshot(plan: _stablePlan),
         plan: _stablePlan,
         origin: _stableOrigin,
       );
@@ -159,7 +178,9 @@ class _WorkoutPlayerSessionViewState extends ConsumerState<WorkoutPlayerSessionV
     if (playerState.phase == WorkoutPlayerPhase.work ||
         playerState.phase == WorkoutPlayerPhase.rest ||
         playerState.phase == WorkoutPlayerPhase.transition) {
-      ref.read(workoutPlayerControllerProvider(_stablePlan).notifier).pauseForLifecycle();
+      ref
+          .read(workoutPlayerControllerProvider(_stablePlan).notifier)
+          .pauseForLifecycle();
     }
   }
 
@@ -167,31 +188,30 @@ class _WorkoutPlayerSessionViewState extends ConsumerState<WorkoutPlayerSessionV
     final result = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => AlertDialog(
-        title: const Text('End workout?'),
-        content: const Text("Your current session progress won't be saved."),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Keep going'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('End workout'),
-          ),
-        ],
+      animationStyle: AnimationStyle(
+          duration: SystemMotion.standard(context),
+          reverseDuration: SystemMotion.micro(context)),
+      builder: (ctx) => FitFlowConfirmDialog(
+        title: context.l10n.flowExitTitle,
+        message: context.l10n.flowExitBody,
+        cancelLabel: context.l10n.flowKeepGoing,
+        confirmLabel: context.l10n.flowExit,
+        destructive: true,
       ),
     );
     return result ?? false;
   }
 
   Future<void> _handleReplaceExercise() async {
-    final controller = ref.read(workoutPlayerControllerProvider(_stablePlan).notifier);
+    final controller =
+        ref.read(workoutPlayerControllerProvider(_stablePlan).notifier);
     final state = ref.read(workoutPlayerControllerProvider(_stablePlan));
 
     if (!controller.canReplaceCurrentExercise) return;
 
-    if (state.isTimedExercise && state.phase == WorkoutPlayerPhase.work && !state.isPaused) {
+    if (state.isTimedExercise &&
+        state.phase == WorkoutPlayerPhase.work &&
+        !state.isPaused) {
       controller.pause();
     }
 
@@ -203,6 +223,12 @@ class _WorkoutPlayerSessionViewState extends ConsumerState<WorkoutPlayerSessionV
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
+      useSafeArea: true,
+      constraints:
+          const BoxConstraints(maxWidth: FitFlowLayout.maxReadableWidth),
+      sheetAnimationStyle: AnimationStyle(
+          duration: SystemMotion.standard(context),
+          reverseDuration: SystemMotion.micro(context)),
       builder: (ctx) {
         return DraggableScrollableSheet(
           expand: false,
@@ -210,7 +236,7 @@ class _WorkoutPlayerSessionViewState extends ConsumerState<WorkoutPlayerSessionV
           maxChildSize: 0.95,
           minChildSize: 0.5,
           builder: (context, scrollController) {
-            return _ReplacementPicker(
+            return WorkoutReplacementPicker(
               currentPrescription: state.currentPrescription,
               originalExerciseName: state.originalExerciseName,
               options: options,
@@ -231,7 +257,8 @@ class _WorkoutPlayerSessionViewState extends ConsumerState<WorkoutPlayerSessionV
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(workoutPlayerControllerProvider(_stablePlan));
-    final controller = ref.read(workoutPlayerControllerProvider(_stablePlan).notifier);
+    final controller =
+        ref.read(workoutPlayerControllerProvider(_stablePlan).notifier);
 
     if (state.phase == WorkoutPlayerPhase.completed) {
       Future.microtask(() {
@@ -249,7 +276,8 @@ class _WorkoutPlayerSessionViewState extends ConsumerState<WorkoutPlayerSessionV
         state.phase == WorkoutPlayerPhase.sectionBreak;
 
     final canPop = !_allowPop
-        ? (state.phase == WorkoutPlayerPhase.ready || state.phase == WorkoutPlayerPhase.completed)
+        ? (state.phase == WorkoutPlayerPhase.ready ||
+            state.phase == WorkoutPlayerPhase.completed)
         : true;
 
     return PopScope(
@@ -280,116 +308,121 @@ class _WorkoutPlayerSessionViewState extends ConsumerState<WorkoutPlayerSessionV
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(_appBarTitle(_stableOrigin)),
+          title: Text(_appBarTitle(context.l10n, _stableOrigin)),
           actions: [
-            if (_stableOrigin == WorkoutSessionOrigin.adaptive && _stableMode != WorkoutSessionMode.standard)
-              Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: Chip(
-                  label: Text(_stableMode.label),
-                  visualDensity: VisualDensity.compact,
-                ),
-              ),
             IconButton(
-              tooltip: state.voiceEnabled ? 'Mute voice' : 'Enable voice',
+              tooltip: state.voiceEnabled
+                  ? context.l10n.flowMute
+                  : context.l10n.flowVoice,
               onPressed: () => controller.toggleVoice(),
-              icon: Icon(
-                state.voiceEnabled ? Icons.volume_up_rounded : Icons.volume_off_rounded,
-                semanticLabel: state.voiceEnabled ? 'Mute voice' : 'Enable voice',
-              ),
+              icon: Icon(state.voiceEnabled
+                  ? Icons.volume_up_rounded
+                  : Icons.volume_off_rounded),
             ),
-            if (state.phase != WorkoutPlayerPhase.ready &&
-                state.phase != WorkoutPlayerPhase.completed &&
-                state.phase != WorkoutPlayerPhase.sectionBreak)
-              IconButton(
-                tooltip: state.isPaused ? 'Resume workout' : 'Pause workout',
-                onPressed: () {
-                  if (state.isPaused) {
-                    controller.resume();
-                  } else {
-                    controller.pause();
-                  }
-                },
-                icon: Icon(
-                  state.isPaused ? Icons.play_arrow_rounded : Icons.pause_rounded,
-                  semanticLabel: state.isPaused ? 'Resume workout' : 'Pause workout',
-                ),
-              ),
           ],
         ),
         body: SafeArea(
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 720),
-              child: Padding(
-                padding: const EdgeInsets.all(AppDimens.screenPadding),
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    final phase = _buildPhaseBody(context, state, controller);
-                    final actions = <Widget>[
-                      const SizedBox(height: 8),
-                      if (controller.canReplaceCurrentExercise)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: OutlinedButton.icon(
-                              onPressed: _handleReplaceExercise,
-                              icon: const Icon(Icons.swap_horiz_rounded),
-                              label: const Text('Replace exercise'),
-                            ),
-                          ),
-                        ),
-                      WorkoutPlayerControls(
-                        state: state,
-                        controller: controller,
-                        plan: _stablePlan,
-                      ),
-                      const SizedBox(height: 8),
-                    ];
-                    final header = <Widget>[
-                      PlayerPhaseAnnouncement(
-                        message: playerPhaseAnnouncement(state),
-                      ),
-                      WorkoutPlayerProgressHeader(state: state),
-                      const SizedBox(height: 16),
-                      if (state.isCurrentReplaced)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: Text(
-                            state.originalExerciseName != null
-                                ? 'Replaced ${state.originalExerciseName}'
-                                : 'Replaced',
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                          ),
-                        ),
-                    ];
-                    // Short landscape heights cannot pin the controls without
-                    // overflowing. Taller layouts keep them on screen.
-                    if (constraints.maxHeight < 360) {
-                      return SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [...header, phase, ...actions],
-                        ),
-                      );
-                    }
-                    return Column(
-                      children: [
-                        ...header,
-                        Expanded(child: SingleChildScrollView(child: phase)),
-                        ...actions,
-                      ],
-                    );
-                  },
+            child: FitFlowMaxWidth(
+                child: Padding(
+          padding: EdgeInsets.all(MediaQuery.sizeOf(context).width < 360
+              ? FitFlowSpace.md
+              : FitFlowSpace.xl),
+          child: LayoutBuilder(builder: (context, constraints) {
+            // Entry is keyed by phase/exercise only, not countdown, set or pause.
+            // No outgoing subtree is retained, and controller ownership stays above.
+            final phase = KeyedSubtree(
+                key: _phasePresentationKey,
+                child: TweenAnimationBuilder<double>(
+                  key: ValueKey(
+                      'phase_${state.phase}_${state.sectionIndex}_${state.exerciseIndex}_${state.currentPrescription.exercise.id}'),
+                  tween: Tween(begin: 0, end: 1),
+                  duration: SystemMotion.standard(context),
+                  curve: FitFlowMotion.standardCurve,
+                  builder: (context, value, child) => Opacity(
+                      opacity: value,
+                      alwaysIncludeSemantics: true,
+                      child: child),
+                  child: _buildPhaseBody(context, state, controller),
+                ));
+            final controls = WorkoutPlayerControls(
+                state: state, controller: controller, plan: _stablePlan);
+            final actions = <Widget>[
+              controls,
+              if (controller.canReplaceCurrentExercise) ...[
+                const SizedBox(height: FitFlowSpace.xs),
+                TextButton.icon(
+                    onPressed: _handleReplaceExercise,
+                    icon: const Icon(Icons.swap_horiz_rounded),
+                    label: Text(context.l10n.flowReplace)),
+              ],
+              if (state.phase == WorkoutPlayerPhase.ready || state.isPaused)
+                TextButton.icon(
+                  onPressed: () => context.push(AppRoutes.exerciseDetail(
+                      state.currentPrescription.exercise.id)),
+                  icon: const Icon(Icons.info_outline_rounded),
+                  label: Text(context.l10n.flowDetails),
                 ),
-              ),
-            ),
-          ),
-        ),
+            ];
+            final header = <Widget>[
+              PlayerPhaseAnnouncement(
+                  message: playerPhaseAnnouncement(state, context.l10n)),
+              if (state.phase != WorkoutPlayerPhase.completed) ...[
+                WorkoutPlayerProgressHeader(state: state),
+                const SizedBox(height: FitFlowSpace.md),
+                if (_stableOrigin == WorkoutSessionOrigin.adaptive &&
+                    _stableMode != WorkoutSessionMode.standard) ...[
+                  Text(
+                      context.l10n.flowModeTemporary(
+                          sessionModeLabel(context.l10n, _stableMode)),
+                      style: Theme.of(context).textTheme.labelMedium),
+                  const SizedBox(height: FitFlowSpace.sm),
+                ],
+              ],
+            ];
+            // Width changes presentation only; session/provider ownership stays
+            // above this layout, with no width-based session keys.
+            final wide = constraints.maxWidth >= 600 &&
+                state.phase != WorkoutPlayerPhase.completed;
+            if (wide) {
+              return SingleChildScrollView(
+                  child: Column(children: [
+                ...header,
+                Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Expanded(flex: 3, child: phase),
+                  const SizedBox(width: FitFlowSpace.xl),
+                  Expanded(
+                      flex: 2,
+                      child: Padding(
+                          padding: const EdgeInsets.only(top: FitFlowSpace.xl),
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: actions))),
+                ]),
+              ]));
+            }
+            final largeText = MediaQuery.textScalerOf(context).scale(16) > 24;
+            if (constraints.maxHeight < 400 ||
+                (largeText && constraints.maxHeight < 640)) {
+              return SingleChildScrollView(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                    ...header,
+                    phase,
+                    const SizedBox(height: FitFlowSpace.md),
+                    ...actions
+                  ]));
+            }
+            return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ...header,
+                  Expanded(child: SingleChildScrollView(child: phase)),
+                  const SizedBox(height: FitFlowSpace.sm),
+                  ...actions,
+                ]);
+          }),
+        ))),
       ),
     );
   }
@@ -401,7 +434,10 @@ class _WorkoutPlayerSessionViewState extends ConsumerState<WorkoutPlayerSessionV
   ) {
     switch (state.phase) {
       case WorkoutPlayerPhase.ready:
-        return _ReadyView(state: state, sessionMode: _stableMode, sessionOrigin: _stableOrigin);
+        return _ReadyView(
+            state: state,
+            sessionMode: _stableMode,
+            sessionOrigin: _stableOrigin);
       case WorkoutPlayerPhase.work:
         return WorkoutPlayerExerciseCenter(state: state);
       case WorkoutPlayerPhase.rest:
@@ -424,317 +460,58 @@ class _WorkoutPlayerSessionViewState extends ConsumerState<WorkoutPlayerSessionV
   }
 }
 
-String _appBarTitle(WorkoutSessionOrigin origin) {
-  switch (origin) {
-    case WorkoutSessionOrigin.custom:
-      return 'Custom workout';
-    case WorkoutSessionOrigin.program:
-      return 'Program workout';
-    case WorkoutSessionOrigin.adaptive:
-      return 'Workout player';
-  }
-}
+String _appBarTitle(AppLocalizations l, WorkoutSessionOrigin origin) =>
+    switch (origin) {
+      WorkoutSessionOrigin.custom => l.flowCustom,
+      WorkoutSessionOrigin.program => l.flowProgram,
+      WorkoutSessionOrigin.adaptive => l.flowPlayer,
+    };
 
 class _ReadyView extends StatelessWidget {
-  const _ReadyView({required this.state, required this.sessionMode, required this.sessionOrigin});
-
+  const _ReadyView(
+      {required this.state,
+      required this.sessionMode,
+      required this.sessionOrigin});
   final WorkoutPlayerState state;
   final WorkoutSessionMode sessionMode;
   final WorkoutSessionOrigin sessionOrigin;
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final prescription = state.currentPrescription;
-    final isTimed = prescription.workDuration != null;
-    final prescriptionText = isTimed
-        ? '${prescription.sets} sets × ${prescription.workDuration!.inSeconds} sec'
-        : '${prescription.sets} sets × ${prescription.repsPerSet} reps';
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        const SizedBox(height: 24),
-        Icon(
-          Icons.self_improvement_outlined,
-          size: 64,
-          color: theme.colorScheme.primary,
-          semanticLabel: 'Warm-up',
-        ),
-        const SizedBox(height: 16),
-        Text(
-          'Ready to begin',
-          style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 12),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.secondaryContainer,
-            borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
-          ),
-          child: Text(
-            state.sectionType.name.toUpperCase(),
-            style: theme.textTheme.labelMedium?.copyWith(
-              color: theme.colorScheme.onSecondaryContainer,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-        if (sessionOrigin == WorkoutSessionOrigin.adaptive && sessionMode != WorkoutSessionMode.standard) ...[
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.secondaryContainer,
-              borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
-            ),
-            child: Text(
-              '${sessionMode.label} • Temporary for this workout',
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: theme.colorScheme.onSecondaryContainer,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-        if (sessionOrigin == WorkoutSessionOrigin.custom) ...[
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.secondaryContainer,
-              borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
-            ),
-            child: Text(
-              'Custom workout • Your prescription',
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: theme.colorScheme.onSecondaryContainer,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-        if (sessionOrigin == WorkoutSessionOrigin.program) ...[
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.secondaryContainer,
-              borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
-            ),
-            child: Text(
-              'Program workout • ${WorkoutSessionMode.standard.label}',
-              style: theme.textTheme.labelMedium?.copyWith(
-                color: theme.colorScheme.onSecondaryContainer,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-        const SizedBox(height: 16),
-        Text(
-          prescription.exercise.name,
-          style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-          textAlign: TextAlign.center,
-        ),
-        if (state.isCurrentReplaced && state.originalExerciseName != null) ...[
-          const SizedBox(height: 4),
-          Text(
-            'Replaced ${state.originalExerciseName}',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ],
-        if (prescription.exercise.movementPattern != null) ...[
-          const SizedBox(height: 4),
-          Text(
-            prescription.exercise.movementPattern!.label,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ],
-        const SizedBox(height: 16),
-        Text(
-          prescriptionText,
-          style: theme.textTheme.titleMedium,
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 24),
-        Text(
-          'Total: ${state.totalSets} sets',
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          state.progressLabel,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-          semanticsLabel: 'Progress ${state.completedSets} of ${state.totalSets} sets',
-        ),
-      ],
-    );
-  }
-}
-
-class _ReplacementPicker extends StatelessWidget {
-  const _ReplacementPicker({
-    required this.currentPrescription,
-    required this.options,
-    required this.scrollController,
-    required this.onSelect,
-    this.originalExerciseName,
-  });
-
-  final dynamic currentPrescription;
-  final List<WorkoutReplacementOption> options;
-  final ScrollController scrollController;
-  final void Function(WorkoutReplacementOption) onSelect;
-  final String? originalExerciseName;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final text = Theme.of(context).textTheme;
+    final l = context.l10n;
     return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Replace exercise',
-                  style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-                ),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Cancel'),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text('Current: ${currentPrescription.exercise.name}', style: theme.textTheme.bodyMedium),
-          if (originalExerciseName != null) ...[
-            const SizedBox(height: 4),
-            Text('Original: $originalExerciseName', style: theme.textTheme.bodySmall),
+        padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.xl),
+        child:
+            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Text(l.flowReady,
+              style: text.labelLarge, textAlign: TextAlign.center),
+          const SizedBox(height: FitFlowSpace.md),
+          Semantics(
+              header: true,
+              child: Text(state.currentPrescription.exercise.name,
+                  style: text.headlineMedium, textAlign: TextAlign.center)),
+          if (state.isCurrentReplaced &&
+              state.originalExerciseName != null) ...[
+            const SizedBox(height: FitFlowSpace.xs),
+            Text(l.flowReplaced(state.originalExerciseName!),
+                style: text.bodySmall, textAlign: TextAlign.center),
           ],
-          const SizedBox(height: 16),
-          const Divider(),
-          const SizedBox(height: 8),
-          Expanded(
-            child: options.isEmpty
-                ? _NoAlternativesView(scrollController: scrollController)
-                : ListView.separated(
-                    controller: scrollController,
-                    itemCount: options.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
-                    itemBuilder: (context, index) {
-                      final option = options[index];
-                      final exercise = option.exercise;
-                      final prescription = option.prescription;
-                      final isTimed = prescription.workDuration != null;
-                      final workloadText = isTimed
-                          ? '${prescription.sets} sets × ${prescription.workDuration!.inSeconds} sec'
-                          : '${prescription.sets} sets × ${prescription.repsPerSet} reps';
-                      final equipmentText = exercise.requiredEquipment.isEmpty ||
-                              exercise.requiredEquipment.contains(
-                                // ignore: avoid_dynamic_calls
-                                exercise.requiredEquipment.firstWhere(
-                                  (e) => e.toString().contains('none'),
-                                  orElse: () => exercise.requiredEquipment.first,
-                                ),
-                              )
-                          ? 'No equipment'
-                          : exercise.requiredEquipment.map((e) => e.toString().split('.').last).join(', ');
-
-                      return Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(exercise.name,
-                                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
-                              const SizedBox(height: 4),
-                              Text(
-                                '${exercise.movementPattern?.label ?? ''} • Level ${exercise.difficulty.toString().split('.').last.replaceAll('level', '')} • $equipmentText',
-                                style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(workloadText, style: theme.textTheme.bodyMedium),
-                              const SizedBox(height: 8),
-                              Text('Why this works:',
-                                  style: theme.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600)),
-                              const SizedBox(height: 4),
-                              ...option.reasonLabels.map(
-                                (r) => Padding(
-                                  padding: const EdgeInsets.only(bottom: 2),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      const Text('• '),
-                                      Expanded(child: Text(r, style: theme.textTheme.bodySmall)),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              SizedBox(
-                                width: double.infinity,
-                                child: Semantics(
-                                  button: true,
-                                  label: 'Replace with ${exercise.name}',
-                                  hint: option.reasonLabels.join('. '),
-                                  child: FilledButton(
-                                    onPressed: () => onSelect(option),
-                                    child: const Text('Use this exercise'),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _NoAlternativesView extends StatelessWidget {
-  const _NoAlternativesView({required this.scrollController});
-
-  final ScrollController scrollController;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return ListView(
-      controller: scrollController,
-      children: [
-        const SizedBox(height: 32),
-        Icon(Icons.search_off_rounded, size: 48, color: theme.colorScheme.onSurfaceVariant),
-        const SizedBox(height: 16),
-        Text('No suitable alternatives',
-            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600), textAlign: TextAlign.center),
-        const SizedBox(height: 8),
-        Text(
-          'No other exercise currently matches this movement, your ability, equipment, environment, and workout preferences.',
-          style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-          textAlign: TextAlign.center,
-        ),
-      ],
-    );
+          const SizedBox(height: FitFlowSpace.md),
+          Text(workloadLabel(l, state.currentPrescription),
+              style: text.titleLarge, textAlign: TextAlign.center),
+          const SizedBox(height: FitFlowSpace.xs),
+          Text(equipmentSummary(l, state.currentPrescription),
+              style: text.bodyMedium, textAlign: TextAlign.center),
+          if (sessionOrigin == WorkoutSessionOrigin.custom ||
+              sessionOrigin == WorkoutSessionOrigin.program) ...[
+            const SizedBox(height: FitFlowSpace.md),
+            Text(
+                sessionOrigin == WorkoutSessionOrigin.custom
+                    ? l.flowReadyCustom
+                    : l.flowReadyProgram,
+                style: text.bodySmall,
+                textAlign: TextAlign.center),
+          ],
+        ]));
   }
 }

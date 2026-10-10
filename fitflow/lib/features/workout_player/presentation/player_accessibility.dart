@@ -1,36 +1,37 @@
 import 'package:fitflow/features/workout_player/application/workout_player_state.dart';
 import 'package:fitflow/features/workout_player/domain/workout_player_phase.dart';
-import 'package:fitflow/features/workouts/domain/workout/workout_section_type.dart';
+import 'package:fitflow/features/workout_player/presentation/workout_copy.dart';
+import 'package:fitflow/l10n/app_localizations.dart';
+import 'package:fitflow/l10n/app_localizations_en.dart';
 import 'package:flutter/material.dart';
 
 /// Phase-level announcement. Intentionally omits the countdown so TalkBack
 /// is not spammed every second. Timer values are exposed separately and are
 /// not live regions.
-String playerPhaseAnnouncement(WorkoutPlayerState state) {
+String playerPhaseAnnouncement(WorkoutPlayerState state,
+    [AppLocalizations? localization]) {
+  final l = localization ?? AppLocalizationsEn();
   final name = state.currentPrescription.exercise.name;
-  final section = switch (state.sectionType) {
-    WorkoutSectionType.warmup => 'Warm-up',
-    WorkoutSectionType.main => 'Main workout',
-    WorkoutSectionType.cooldown => 'Cooldown',
-  };
-  final paused = state.isPaused ? 'Paused. ' : '';
+  final section = sectionLabel(l, state.sectionType);
+  final paused = state.isPaused ? l.flowPausedPrefix : '';
   switch (state.phase) {
     case WorkoutPlayerPhase.ready:
-      return 'Ready. $section. $name.';
+      return l.flowReadyAnnouncement(section, name);
     case WorkoutPlayerPhase.work:
       final target = state.isRepsExercise
-          ? '${state.currentPrescription.repsPerSet} reps'
-          : 'Timed work';
-      return '$paused$section. $name. Set ${state.setNumber} of ${state.totalSetsForCurrentExercise}. $target.';
+          ? l.flowReps(state.currentPrescription.repsPerSet!)
+          : l.flowTimedWork;
+      return l.flowWorkAnnouncement(paused, section, name, state.setNumber,
+          state.totalSetsForCurrentExercise, target);
     case WorkoutPlayerPhase.rest:
-      return '${paused}Rest. $name.';
+      return l.flowRestAnnouncement(paused, name);
     case WorkoutPlayerPhase.transition:
-      final next = state.nextPrescription?.exercise.name ?? 'the next exercise';
-      return '${paused}Next exercise. $next.';
+      return l.flowNextAnnouncement(
+          paused, state.nextPrescription?.exercise.name ?? l.flowNextFallback);
     case WorkoutPlayerPhase.sectionBreak:
-      return 'Section complete.';
+      return l.flowSectionComplete;
     case WorkoutPlayerPhase.completed:
-      return 'Workout complete.';
+      return l.flowCompleteAnnouncement;
   }
 }
 

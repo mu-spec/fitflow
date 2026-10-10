@@ -1851,6 +1851,619 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Comfortable with advanced variations and strong movement control.'**
   String get assessmentChoice5Body;
+
+  /// No description provided for @flowPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout preview'**
+  String get flowPreview;
+
+  /// No description provided for @flowPlayer.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout player'**
+  String get flowPlayer;
+
+  /// No description provided for @flowCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom workout'**
+  String get flowCustom;
+
+  /// No description provided for @flowProgram.
+  ///
+  /// In en, this message translates to:
+  /// **'Program workout'**
+  String get flowProgram;
+
+  /// No description provided for @flowWarmup.
+  ///
+  /// In en, this message translates to:
+  /// **'Warm-up'**
+  String get flowWarmup;
+
+  /// No description provided for @flowMain.
+  ///
+  /// In en, this message translates to:
+  /// **'Main workout'**
+  String get flowMain;
+
+  /// No description provided for @flowCooldown.
+  ///
+  /// In en, this message translates to:
+  /// **'Cooldown'**
+  String get flowCooldown;
+
+  /// No description provided for @flowReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to begin'**
+  String get flowReady;
+
+  /// No description provided for @flowWork.
+  ///
+  /// In en, this message translates to:
+  /// **'Work'**
+  String get flowWork;
+
+  /// No description provided for @flowRest.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest'**
+  String get flowRest;
+
+  /// No description provided for @flowNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next exercise'**
+  String get flowNext;
+
+  /// No description provided for @flowPaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get flowPaused;
+
+  /// No description provided for @flowSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'sec'**
+  String get flowSeconds;
+
+  /// No description provided for @flowRestSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'sec rest'**
+  String get flowRestSeconds;
+
+  /// No description provided for @flowReps.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} reps'**
+  String flowReps(int count);
+
+  /// No description provided for @flowSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Set {current} of {total}'**
+  String flowSet(int current, int total);
+
+  /// No description provided for @flowNextSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Next: Set {current} of {total}'**
+  String flowNextSet(int current, int total);
+
+  /// No description provided for @flowExercisePosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise {current} of {total} in this section'**
+  String flowExercisePosition(int current, int total);
+
+  /// No description provided for @flowOverall.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout progress, {current} of {total} sets'**
+  String flowOverall(int current, int total);
+
+  /// No description provided for @flowSetsProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{current} / {total} sets'**
+  String flowSetsProgress(int current, int total);
+
+  /// No description provided for @flowWorkloadReps.
+  ///
+  /// In en, this message translates to:
+  /// **'{sets, plural, =1{1 set} other{{sets} sets}} × {count} reps'**
+  String flowWorkloadReps(int sets, int count);
+
+  /// No description provided for @flowWorkloadTime.
+  ///
+  /// In en, this message translates to:
+  /// **'{sets, plural, =1{1 set} other{{sets} sets}} × {count} sec'**
+  String flowWorkloadTime(int sets, int count);
+
+  /// No description provided for @flowCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 exercise} other{{count} exercises}}'**
+  String flowCount(int count);
+
+  /// No description provided for @flowTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min target'**
+  String flowTarget(int minutes);
+
+  /// No description provided for @flowEstimate.
+  ///
+  /// In en, this message translates to:
+  /// **'{duration} planned'**
+  String flowEstimate(String duration);
+
+  /// No description provided for @flowDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes}m {seconds}s'**
+  String flowDuration(int minutes, int seconds);
+
+  /// No description provided for @flowUnknownDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'—'**
+  String get flowUnknownDuration;
+
+  /// No description provided for @flowModeTemporary.
+  ///
+  /// In en, this message translates to:
+  /// **'{mode} • Temporary for this workout'**
+  String flowModeTemporary(String mode);
+
+  /// No description provided for @flowPreviewHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap an exercise for details. Replace the current exercise in the player, before its first set is complete.'**
+  String get flowPreviewHelp;
+
+  /// No description provided for @flowRestBetween.
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds} sec rest'**
+  String flowRestBetween(int seconds);
+
+  /// No description provided for @flowDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise details'**
+  String get flowDetails;
+
+  /// No description provided for @flowReplace.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace exercise'**
+  String get flowReplace;
+
+  /// No description provided for @flowReplaced.
+  ///
+  /// In en, this message translates to:
+  /// **'Replaced {name}'**
+  String flowReplaced(String name);
+
+  /// No description provided for @flowCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Current: {name}'**
+  String flowCurrent(String name);
+
+  /// No description provided for @flowOriginal.
+  ///
+  /// In en, this message translates to:
+  /// **'Original: {name}'**
+  String flowOriginal(String name);
+
+  /// No description provided for @flowUse.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this exercise'**
+  String get flowUse;
+
+  /// No description provided for @flowReplaceWith.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace with {name}'**
+  String flowReplaceWith(String name);
+
+  /// No description provided for @flowMoreReasons.
+  ///
+  /// In en, this message translates to:
+  /// **'Why this fits'**
+  String get flowMoreReasons;
+
+  /// No description provided for @flowNoAlternatives.
+  ///
+  /// In en, this message translates to:
+  /// **'No suitable alternatives'**
+  String get flowNoAlternatives;
+
+  /// No description provided for @flowNoAlternativesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'No other exercise currently matches this movement, your ability, equipment, environment, and workout preferences.'**
+  String get flowNoAlternativesBody;
+
+  /// No description provided for @flowNoEquipment.
+  ///
+  /// In en, this message translates to:
+  /// **'No equipment'**
+  String get flowNoEquipment;
+
+  /// No description provided for @flowReasonMovement.
+  ///
+  /// In en, this message translates to:
+  /// **'Same movement focus'**
+  String get flowReasonMovement;
+
+  /// No description provided for @flowReasonDifficulty.
+  ///
+  /// In en, this message translates to:
+  /// **'Matches your current difficulty'**
+  String get flowReasonDifficulty;
+
+  /// No description provided for @flowReasonEasier.
+  ///
+  /// In en, this message translates to:
+  /// **'Easier variation'**
+  String get flowReasonEasier;
+
+  /// No description provided for @flowReasonSetup.
+  ///
+  /// In en, this message translates to:
+  /// **'Fits your equipment and environment'**
+  String get flowReasonSetup;
+
+  /// No description provided for @flowReasonPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Matches your workout preferences'**
+  String get flowReasonPreferences;
+
+  /// No description provided for @flowReasonFamily.
+  ///
+  /// In en, this message translates to:
+  /// **'Same exercise progression family'**
+  String get flowReasonFamily;
+
+  /// No description provided for @flowReasonWorkload.
+  ///
+  /// In en, this message translates to:
+  /// **'Keeps the same sets and workload'**
+  String get flowReasonWorkload;
+
+  /// No description provided for @flowMute.
+  ///
+  /// In en, this message translates to:
+  /// **'Mute voice'**
+  String get flowMute;
+
+  /// No description provided for @flowVoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable voice'**
+  String get flowVoice;
+
+  /// No description provided for @flowPause.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause workout'**
+  String get flowPause;
+
+  /// No description provided for @flowResume.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume workout'**
+  String get flowResume;
+
+  /// No description provided for @flowExitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'End workout?'**
+  String get flowExitTitle;
+
+  /// No description provided for @flowExitBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your current session progress won\'t be saved.'**
+  String get flowExitBody;
+
+  /// No description provided for @flowKeepGoing.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue workout'**
+  String get flowKeepGoing;
+
+  /// No description provided for @flowExit.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit workout'**
+  String get flowExit;
+
+  /// No description provided for @flowComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout complete'**
+  String get flowComplete;
+
+  /// No description provided for @flowFinished.
+  ///
+  /// In en, this message translates to:
+  /// **'You finished all sets.'**
+  String get flowFinished;
+
+  /// No description provided for @flowExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercises'**
+  String get flowExercises;
+
+  /// No description provided for @flowSets.
+  ///
+  /// In en, this message translates to:
+  /// **'Sets'**
+  String get flowSets;
+
+  /// No description provided for @flowTargetLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Target duration'**
+  String get flowTargetLabel;
+
+  /// No description provided for @flowEstimateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated duration'**
+  String get flowEstimateLabel;
+
+  /// No description provided for @flowHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed workouts are saved to your history on this device.'**
+  String get flowHistory;
+
+  /// No description provided for @flowProgramComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Program workout completed.'**
+  String get flowProgramComplete;
+
+  /// No description provided for @flowCustomNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom workouts don\'t change your movement levels.'**
+  String get flowCustomNote;
+
+  /// No description provided for @flowTemporaryNote.
+  ///
+  /// In en, this message translates to:
+  /// **'This was a temporary {mode} workout. Your movement levels stay unchanged.'**
+  String flowTemporaryNote(String mode);
+
+  /// No description provided for @flowTune.
+  ///
+  /// In en, this message translates to:
+  /// **'Tune next workout'**
+  String get flowTune;
+
+  /// No description provided for @flowTuneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tune your next workout'**
+  String get flowTuneTitle;
+
+  /// No description provided for @flowTuneHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell FitFlow how each movement felt. Your movement levels adapt independently.'**
+  String get flowTuneHelp;
+
+  /// No description provided for @flowApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply & finish'**
+  String get flowApply;
+
+  /// No description provided for @flowSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get flowSkip;
+
+  /// No description provided for @flowTuneError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t update your workout tuning. Try again.'**
+  String get flowTuneError;
+
+  /// No description provided for @flowWarmupComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Warm-up complete'**
+  String get flowWarmupComplete;
+
+  /// No description provided for @flowMainComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Main workout complete'**
+  String get flowMainComplete;
+
+  /// No description provided for @flowMainNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Main workout is next'**
+  String get flowMainNext;
+
+  /// No description provided for @flowCooldownNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Cooldown is next'**
+  String get flowCooldownNext;
+
+  /// No description provided for @flowContinueHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue when you are ready.'**
+  String get flowContinueHelp;
+
+  /// No description provided for @flowRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining {seconds} seconds'**
+  String flowRemaining(int seconds);
+
+  /// No description provided for @flowRestRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'Rest remaining {seconds} seconds'**
+  String flowRestRemaining(int seconds);
+
+  /// No description provided for @flowTransitionRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'Transition remaining {seconds} seconds'**
+  String flowTransitionRemaining(int seconds);
+
+  /// No description provided for @flowTimedWork.
+  ///
+  /// In en, this message translates to:
+  /// **'Timed work'**
+  String get flowTimedWork;
+
+  /// No description provided for @flowSectionComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Section complete.'**
+  String get flowSectionComplete;
+
+  /// No description provided for @flowNextFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'the next exercise'**
+  String get flowNextFallback;
+
+  /// No description provided for @flowReadyAnnouncement.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready. {section}. {name}.'**
+  String flowReadyAnnouncement(String section, String name);
+
+  /// No description provided for @flowWorkAnnouncement.
+  ///
+  /// In en, this message translates to:
+  /// **'{paused}{section}. {name}. Set {current} of {total}. {target}.'**
+  String flowWorkAnnouncement(String paused, String section, String name,
+      int current, int total, String target);
+
+  /// No description provided for @flowRestAnnouncement.
+  ///
+  /// In en, this message translates to:
+  /// **'{paused}Rest. {name}.'**
+  String flowRestAnnouncement(String paused, String name);
+
+  /// No description provided for @flowNextAnnouncement.
+  ///
+  /// In en, this message translates to:
+  /// **'{paused}Next exercise. {name}.'**
+  String flowNextAnnouncement(String paused, String name);
+
+  /// No description provided for @flowPausedPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused. '**
+  String get flowPausedPrefix;
+
+  /// No description provided for @flowCompleteAnnouncement.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout complete.'**
+  String get flowCompleteAnnouncement;
+
+  /// No description provided for @flowUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No workout available.'**
+  String get flowUnavailable;
+
+  /// No description provided for @flowEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No complete workout available'**
+  String get flowEmptyTitle;
+
+  /// No description provided for @flowEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Try adjusting your workout setup in Profile.'**
+  String get flowEmptyBody;
+
+  /// No description provided for @flowAdaptiveNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Built from your goal, movement levels, equipment, space, and preferences.'**
+  String get flowAdaptiveNote;
+
+  /// No description provided for @flowReadyCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom workout • Your prescription'**
+  String get flowReadyCustom;
+
+  /// No description provided for @flowReadyProgram.
+  ///
+  /// In en, this message translates to:
+  /// **'Program workout • Standard'**
+  String get flowReadyProgram;
+
+  /// No description provided for @flowDecisionPromoted.
+  ///
+  /// In en, this message translates to:
+  /// **'Two Easy sessions at your current level: ready for the next variation.'**
+  String get flowDecisionPromoted;
+
+  /// No description provided for @flowDecisionReduced.
+  ///
+  /// In en, this message translates to:
+  /// **'An easier variation next time, based on your Too hard feedback.'**
+  String get flowDecisionReduced;
+
+  /// No description provided for @flowDecisionRight.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep this movement at its current level.'**
+  String get flowDecisionRight;
+
+  /// No description provided for @flowDecisionFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'One more Easy session at your current level may progress this movement.'**
+  String get flowDecisionFirst;
+
+  /// No description provided for @flowDecisionNotQualified.
+  ///
+  /// In en, this message translates to:
+  /// **'This session did not include qualifying work at your current level; no level change.'**
+  String get flowDecisionNotQualified;
+
+  /// No description provided for @flowDecisionMaximum.
+  ///
+  /// In en, this message translates to:
+  /// **'Already at the highest available level; no level change.'**
+  String get flowDecisionMaximum;
+
+  /// No description provided for @flowDecisionMinimum.
+  ///
+  /// In en, this message translates to:
+  /// **'Already at the starting level; no level change.'**
+  String get flowDecisionMinimum;
 }
 
 class _AppLocalizationsDelegate

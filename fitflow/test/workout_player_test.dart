@@ -232,7 +232,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text(firstExerciseName), findsOneWidget);
-      expect(find.textContaining('WARM-UP'), findsOneWidget);
+      expect(find.textContaining('Warm-up'), findsOneWidget);
     });
   });
 

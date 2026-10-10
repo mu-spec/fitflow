@@ -1,91 +1,49 @@
+import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/features/workout_player/application/workout_player_state.dart';
-import 'package:fitflow/features/workout_player/presentation/player_accessibility.dart';
+import 'package:fitflow/features/workout_player/presentation/widgets/workout_phase_focus.dart';
+import 'package:fitflow/features/workout_player/presentation/workout_copy.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:flutter/material.dart';
 
-/// Rest UI: Rest, countdown, exercise name, upcoming set number, Skip rest.
 class WorkoutPlayerRestView extends StatelessWidget {
   const WorkoutPlayerRestView({super.key, required this.state});
-
   final WorkoutPlayerState state;
-
-  String _formatRemaining(Duration d) {
-    final totalSeconds = d.inSeconds;
-    if (totalSeconds < 0) return '0';
-    final minutes = totalSeconds ~/ 60;
-    final seconds = totalSeconds % 60;
-    if (minutes > 0) {
-      return '$minutes:${seconds.toString().padLeft(2, '0')}';
-    }
-    return '$seconds';
-  }
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        const SizedBox(height: 24),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            color: colorScheme.tertiaryContainer,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Text(
-            'Rest',
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: colorScheme.onTertiaryContainer,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-        const SizedBox(height: 24),
-        PlayerTimerSemantics(
-          label: 'Rest remaining ${state.remaining.inSeconds} seconds',
-          child: Text(
-            _formatRemaining(state.remaining),
-            style: theme.textTheme.displayLarge?.copyWith(
-              fontWeight: FontWeight.w800,
-              color: state.isPaused ? colorScheme.onSurfaceVariant : colorScheme.primary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          'sec rest',
-          style: theme.textTheme.titleMedium?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-          ),
-        ),
-        const SizedBox(height: 24),
-        Text(
-          state.currentPrescription.exercise.name,
-          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Next: Set ${state.setNumber + 1} of ${state.totalSetsForCurrentExercise}',
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        if (state.isPaused) ...[
-          const SizedBox(height: 16),
+    final l = context.l10n;
+    final text = Theme.of(context).textTheme;
+    return Padding(
+        padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.md),
+        child:
+            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          WorkoutPhaseLabel(
+              label: l.flowRest,
+              icon: Icons.spa_outlined,
+              rest: true,
+              paused: state.isPaused),
+          if (state.isPaused)
+            Padding(
+                padding: const EdgeInsets.only(top: FitFlowSpace.xs),
+                child: Text(l.flowRest, textAlign: TextAlign.center)),
+          const SizedBox(height: FitFlowSpace.xl),
+          WorkoutCountdown(
+              remaining: state.remaining,
+              semanticLabel: l.flowRestRemaining(state.remaining.inSeconds)),
+          const SizedBox(height: FitFlowSpace.xs),
+          Text(l.flowRestSeconds,
+              style: text.bodyMedium, textAlign: TextAlign.center),
+          const SizedBox(height: FitFlowSpace.xl),
           Text(
-            'Paused',
-            style: theme.textTheme.labelLarge?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ],
-    );
+              l.flowNextSet(
+                  state.setNumber + 1, state.totalSetsForCurrentExercise),
+              style: text.labelLarge,
+              textAlign: TextAlign.center),
+          const SizedBox(height: FitFlowSpace.xs),
+          Text(state.currentPrescription.exercise.name,
+              style: text.titleLarge, textAlign: TextAlign.center),
+          const SizedBox(height: FitFlowSpace.xs),
+          Text(workloadLabel(l, state.currentPrescription),
+              style: text.bodyMedium, textAlign: TextAlign.center),
+        ]));
   }
 }

@@ -1,3 +1,6 @@
+import 'package:fitflow/core/design/fitflow_radius.dart';
+import 'package:fitflow/core/design/fitflow_spacing.dart';
+import 'package:fitflow/features/capability_assessment/presentation/capability_assessment_copy.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
@@ -149,14 +152,14 @@ class _AdaptiveProgressionFeedbackSheetState
       } else {
         setState(() {
           _isApplying = false;
-          _errorMessage = result.errorMessage ?? "Couldn't update your workout tuning. Try again.";
+          _errorMessage = result.errorMessage ?? context.l10n.flowTuneError;
         });
       }
     } catch (_) {
       if (mounted) {
         setState(() {
           _isApplying = false;
-          _errorMessage = "Couldn't update your workout tuning. Try again.";
+          _errorMessage = context.l10n.flowTuneError;
         });
       }
     }
@@ -167,172 +170,218 @@ class _AdaptiveProgressionFeedbackSheetState
     final theme = Theme.of(context);
     final movements = _uniqueMainMovements;
 
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Tune your next workout',
-              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
-          const SizedBox(height: 8),
-          Text('Tell FitFlow how each movement felt. Your movement levels adapt independently.',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              )),
-          const SizedBox(height: 16),
-          const Divider(),
-          const SizedBox(height: 8),
-          Expanded(
-            child: _currentEvidence == null
-                ? const Center(child: CircularProgressIndicator())
-                : ListView.separated(
-                    controller: widget.scrollController,
-                    itemCount: movements.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 16),
-                    itemBuilder: (context, index) {
-                      final pattern = movements[index];
-                      final currentCap = widget.currentProfile.capabilityFor(pattern);
-                      final currentLevel = currentCap?.level;
-                      final selectedFeedback = _feedback[pattern];
-                      final decision = _previewResult?.decisions[pattern];
+    return SingleChildScrollView(
+      controller: widget.scrollController,
+      child: Padding(
+        padding: const EdgeInsets.all(FitFlowSpace.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(context.l10n.flowTuneTitle,
+                style: theme.textTheme.titleLarge
+                    ?.copyWith(fontWeight: FontWeight.w700)),
+            const SizedBox(height: FitFlowSpace.xs),
+            Text(context.l10n.flowTuneHelp,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                )),
+            const SizedBox(height: FitFlowSpace.md),
+            const Divider(),
+            const SizedBox(height: FitFlowSpace.xs),
+            SizedBox(
+              child: _currentEvidence == null
+                  ? const Center(child: CircularProgressIndicator())
+                  : ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: movements.length,
+                      separatorBuilder: (_, __) =>
+                          const SizedBox(height: FitFlowSpace.md),
+                      itemBuilder: (context, index) {
+                        final pattern = movements[index];
+                        final currentCap =
+                            widget.currentProfile.capabilityFor(pattern);
+                        final currentLevel = currentCap?.level;
+                        final selectedFeedback = _feedback[pattern];
+                        final decision = _previewResult?.decisions[pattern];
 
-                      return Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                crossAxisAlignment: WrapCrossAlignment.center,
-                                children: [
-                                  Text(pattern.name.toUpperCase(),
-                                      style: theme.textTheme.titleMedium
-                                          ?.copyWith(fontWeight: FontWeight.w600)),
-                                  if (currentLevel != null)
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 4),
-                                      decoration: BoxDecoration(
-                                        color: theme.colorScheme.secondaryContainer,
-                                        borderRadius: BorderRadius.circular(8),
+                        return Container(
+                          decoration: BoxDecoration(
+                              border: Border(
+                                  bottom: BorderSide(
+                                      color:
+                                          theme.colorScheme.outlineVariant))),
+                          child: Padding(
+                            padding: const EdgeInsets.all(FitFlowSpace.sm),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Wrap(
+                                  spacing: 8,
+                                  runSpacing: 8,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: [
+                                    Text(
+                                        movementPatternLabel(
+                                            context.l10n, pattern),
+                                        style: theme.textTheme.titleMedium
+                                            ?.copyWith(
+                                                fontWeight: FontWeight.w600)),
+                                    if (currentLevel != null)
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: FitFlowSpace.xs,
+                                            vertical: FitFlowSpace.xxs),
+                                        decoration: BoxDecoration(
+                                          color: theme
+                                              .colorScheme.secondaryContainer,
+                                          borderRadius:
+                                              FitFlowRadius.smallBorder,
+                                        ),
+                                        child: Text(
+                                          assessmentChoice(
+                                              context.l10n, currentLevel),
+                                          style: theme.textTheme.labelSmall,
+                                        ),
                                       ),
-                                      child: Text(
-                                        currentLevel.label,
-                                        style: theme.textTheme.labelSmall,
-                                      ),
-                                    ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              _FeedbackChoices(
-                                selected: selectedFeedback,
-                                onChanged: (next) {
-                                  setState(() {
-                                    if (next == null) {
-                                      _feedback.remove(pattern);
-                                    } else {
-                                      _feedback[pattern] = next;
-                                    }
-                                  });
-                                  _updatePreview();
-                                },
-                              ),
-                              if (decision != null) ...[
-                                const SizedBox(height: 8),
-                                Container(
-                                  width: double.infinity,
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: theme.colorScheme.surfaceContainerHighest,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    decision.explanation,
-                                    style: theme.textTheme.bodySmall,
-                                  ),
+                                  ],
                                 ),
-                                if (decision.type == MovementProgressionDecisionType.promoted) ...[
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '${decision.previousLevel.label} → ${decision.newLevel.label}',
-                                    style: theme.textTheme.labelMedium?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                      color: theme.colorScheme.primary,
+                                const SizedBox(height: FitFlowSpace.xs),
+                                _FeedbackChoices(
+                                  selected: selectedFeedback,
+                                  onChanged: (next) {
+                                    setState(() {
+                                      if (next == null) {
+                                        _feedback.remove(pattern);
+                                      } else {
+                                        _feedback[pattern] = next;
+                                      }
+                                    });
+                                    _updatePreview();
+                                  },
+                                ),
+                                if (decision != null) ...[
+                                  const SizedBox(height: FitFlowSpace.xs),
+                                  Container(
+                                    width: double.infinity,
+                                    padding:
+                                        const EdgeInsets.all(FitFlowSpace.xs),
+                                    decoration: BoxDecoration(
+                                      color: theme
+                                          .colorScheme.surfaceContainerHighest,
+                                      borderRadius: FitFlowRadius.smallBorder,
+                                    ),
+                                    child: Text(
+                                      _decisionCopy(context, decision.type),
+                                      style: theme.textTheme.bodySmall,
                                     ),
                                   ),
-                                ] else if (decision.type ==
-                                    MovementProgressionDecisionType.reduced) ...[
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '${decision.previousLevel.label} → ${decision.newLevel.label}',
-                                    style: theme.textTheme.labelMedium?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                      color: theme.colorScheme.error,
+                                  if (decision.type ==
+                                      MovementProgressionDecisionType
+                                          .promoted) ...[
+                                    const SizedBox(height: FitFlowSpace.xxs),
+                                    Text(
+                                      '${assessmentChoice(context.l10n, decision.previousLevel)} → ${assessmentChoice(context.l10n, decision.newLevel)}',
+                                      style:
+                                          theme.textTheme.labelMedium?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                        color: theme.colorScheme.primary,
+                                      ),
                                     ),
-                                  ),
+                                  ] else if (decision.type ==
+                                      MovementProgressionDecisionType
+                                          .reduced) ...[
+                                    const SizedBox(height: FitFlowSpace.xxs),
+                                    Text(
+                                      '${assessmentChoice(context.l10n, decision.previousLevel)} → ${assessmentChoice(context.l10n, decision.newLevel)}',
+                                      style:
+                                          theme.textTheme.labelMedium?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                        color: theme.colorScheme.error,
+                                      ),
+                                    ),
+                                  ],
                                 ],
                               ],
-                            ],
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
-          ),
-          if (_errorMessage != null) ...[
-            const SizedBox(height: 8),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.errorContainer,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                _errorMessage!,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onErrorContainer,
+                        );
+                      },
+                    ),
+            ),
+            if (_errorMessage != null) ...[
+              const SizedBox(height: FitFlowSpace.xs),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(FitFlowSpace.sm),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.errorContainer,
+                  borderRadius: FitFlowRadius.smallBorder,
                 ),
+                child: Text(
+                  context.l10n.flowTuneError,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onErrorContainer,
+                  ),
+                ),
+              ),
+            ],
+            const SizedBox(height: FitFlowSpace.md),
+            FitFlowActionPair(
+              expand: true,
+              leading: OutlinedButton(
+                onPressed: _isApplying
+                    ? null
+                    : () {
+                        // Skip – do not change capability or evidence
+                        if (context.mounted) {
+                          try {
+                            context.go(widget._destination);
+                          } catch (_) {
+                            // In tests without GoRouter, just pop or do nothing
+                            Navigator.of(context).maybePop();
+                          }
+                        }
+                      },
+                child: Text(context.l10n.flowSkip),
+              ),
+              trailing: FilledButton(
+                onPressed:
+                    (_feedback.isEmpty || _isApplying) ? null : _applyAndFinish,
+                child: _isApplying
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text(context.l10n.flowApply),
               ),
             ),
           ],
-          const SizedBox(height: 16),
-          FitFlowActionPair(
-            expand: true,
-            leading: OutlinedButton(
-              onPressed: _isApplying
-                  ? null
-                  : () {
-                      // Skip – do not change capability or evidence
-                      if (context.mounted) {
-                        try {
-                          context.go(widget._destination);
-                        } catch (_) {
-                          // In tests without GoRouter, just pop or do nothing
-                          Navigator.of(context).maybePop();
-                        }
-                      }
-                    },
-              child: const Text('Skip'),
-            ),
-            trailing: FilledButton(
-              onPressed: (_feedback.isEmpty || _isApplying) ? null : _applyAndFinish,
-              child: _isApplying
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Apply & finish'),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
 }
+
+String _decisionCopy(
+        BuildContext context, MovementProgressionDecisionType type) =>
+    switch (type) {
+      MovementProgressionDecisionType.promoted =>
+        context.l10n.flowDecisionPromoted,
+      MovementProgressionDecisionType.reduced =>
+        context.l10n.flowDecisionReduced,
+      MovementProgressionDecisionType.unchangedJustRight =>
+        context.l10n.flowDecisionRight,
+      MovementProgressionDecisionType.firstEasySignal =>
+        context.l10n.flowDecisionFirst,
+      MovementProgressionDecisionType.easyNotQualified =>
+        context.l10n.flowDecisionNotQualified,
+      MovementProgressionDecisionType.alreadyAtMaximum =>
+        context.l10n.flowDecisionMaximum,
+      MovementProgressionDecisionType.alreadyAtMinimum =>
+        context.l10n.flowDecisionMinimum,
+    };
 
 class _FeedbackChoices extends StatelessWidget {
   const _FeedbackChoices({
@@ -360,7 +409,7 @@ class _FeedbackChoices extends StatelessWidget {
             ButtonSegment(
               value: option,
               label: Text(feedbackLabel(context.l10n, option)),
-              tooltip: option.description,
+              tooltip: feedbackDescription(context.l10n, option),
             ),
         ],
         selected: selected != null ? {selected!} : {},
@@ -377,12 +426,13 @@ class _FeedbackChoices extends StatelessWidget {
       children: [
         for (final option in _options)
           Padding(
-            padding: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.only(bottom: FitFlowSpace.xs),
             child: Semantics(
               button: true,
               selected: selected == option,
               inMutuallyExclusiveGroup: true,
-              label: '${feedbackLabel(context.l10n, option)}. ${feedbackDescription(context.l10n, option)}',
+              label:
+                  '${feedbackLabel(context.l10n, option)}. ${feedbackDescription(context.l10n, option)}',
               child: OutlinedButton.icon(
                 onPressed: () => onChanged(selected == option ? null : option),
                 icon: Icon(

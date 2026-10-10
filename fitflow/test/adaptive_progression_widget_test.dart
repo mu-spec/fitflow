@@ -222,7 +222,7 @@ void main() {
       final cap = createFullProfile(CapabilityLevel.level2);
       await tester.pumpWidget(buildFeedbackSheetApp(capabilityProfile: cap));
       await tester.pumpAndSettle();
-      expect(find.textContaining('Level 2'), findsWidgets);
+      expect(find.textContaining('Basic'), findsWidgets);
     });
 
     testWidgets('Too hard / Just right / Easy controls', (tester) async {
@@ -312,9 +312,9 @@ void main() {
         await tester.pumpAndSettle();
         // Should show promotion preview if push qualifies
         // We check for any promotion text
-        final hasPromotion = find.textContaining('moved from').evaluate().isNotEmpty;
+        final hasPromotion = find.textContaining('Two Easy sessions').evaluate().isNotEmpty;
         // Might be easyNotQualified if below cap, so we just ensure no crash
-        expect(hasPromotion || find.textContaining('stays at').evaluate().isNotEmpty, true);
+        expect(hasPromotion || find.textContaining('no level change').evaluate().isNotEmpty || find.textContaining('One more Easy').evaluate().isNotEmpty, true);
       }
     });
 
@@ -353,7 +353,7 @@ void main() {
         await tester.tap(easyButtons.first);
         await tester.pumpAndSettle();
         // If below cap, should show stays and below-level explanation
-        expect(find.textContaining('stays at').evaluate().isNotEmpty || find.textContaining('below').evaluate().isNotEmpty, true);
+        expect(find.textContaining('no level change').evaluate().isNotEmpty || find.textContaining('One more Easy').evaluate().isNotEmpty, true);
       }
     });
 
@@ -367,7 +367,7 @@ void main() {
         await tester.tap(tooHardButtons.first);
         await tester.pumpAndSettle();
         expect(find.textContaining('Too hard'), findsWidgets);
-        expect(find.textContaining('moved from'), findsOneWidget);
+        expect(find.textContaining('An easier variation next time'), findsOneWidget);
       }
     });
 
@@ -376,6 +376,7 @@ void main() {
       final cap = createFullProfile(CapabilityLevel.level2);
       await tester.pumpWidget(buildFeedbackSheetApp(capabilityProfile: cap));
       await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Skip'));
       await tester.tap(find.text('Skip'));
       await tester.pumpAndSettle();
       final prefs = await SharedPreferences.getInstance();
@@ -429,6 +430,7 @@ void main() {
       if (easyButtons.evaluate().isNotEmpty) {
         await tester.tap(easyButtons.first);
         await tester.pump(const Duration(milliseconds: 300));
+        await tester.ensureVisible(find.text('Apply & finish'));
         await tester.tap(find.text('Apply & finish'));
         await tester.pump(const Duration(milliseconds: 800));
         await tester.pump(const Duration(milliseconds: 500));
