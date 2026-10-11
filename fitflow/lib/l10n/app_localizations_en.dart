@@ -2239,4 +2239,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get part6NoSectionExercises =>
       'No eligible exercises available for this section.';
+
+  @override
+  String get v2HomeTargetUnit => 'min target';
 }

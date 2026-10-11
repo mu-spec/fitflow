@@ -2,6 +2,7 @@ import 'package:fitflow/core/accessibility/system_motion.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/core/design/fitflow_motion.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
+import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/core/design/widgets/fitflow_buttons.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/app/router/app_routes.dart';
@@ -103,55 +104,59 @@ class HomeScreen extends ConsumerWidget {
 
     // Presentation only: the same generated plan, mode and comeback policy.
     return Scaffold(
+        backgroundColor: FitFlowVisualV2.of(context).page,
         body: SafeArea(child: LayoutBuilder(builder: (context, constraints) {
-      final inset = constraints.maxWidth < 360
-          ? FitFlowSpace.md
-          : FitFlowSpace.screenHorizontal;
-      return SingleChildScrollView(
-          child: FitFlowMaxWidth(
-              child: Padding(
-        padding:
-            EdgeInsets.symmetric(horizontal: inset, vertical: FitFlowSpace.xl),
-        child:
-            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          const HomeHeader(),
-          const SizedBox(height: FitFlowSpace.xl),
-          if (plan == null) ...[
-            HomeEmptyStates.noWorkoutAvailable(context,
-                userProfile: userProfile),
-            const SizedBox(height: FitFlowSpace.md),
-            const HomeSessionModeControl(),
-          ] else
-            TweenAnimationBuilder<double>(
-              tween: Tween(begin: 0, end: 1),
-              duration: SystemMotion.standard(context),
-              curve: FitFlowMotion.standardCurve,
-              builder: (_, value, child) =>
-                  Opacity(opacity: value, child: child),
-              child: HomeWorkoutHeroCard(
-                  plan: plan,
-                  userProfile: userProfile,
-                  effectiveDuration: generationContext.effectiveWorkoutDuration,
-                  sessionMode: sessionMode),
-            ),
-          if (showComebackSuggestion) ...[
-            const SizedBox(height: FitFlowSpace.lg),
-            const ComebackSuggestionCard(),
-          ],
-          if (plan != null) ...[
-            const SizedBox(height: FitFlowSpace.xl),
-            HomeMovementFocus(plan: plan),
-          ],
-          const SizedBox(height: FitFlowSpace.md),
-          HomePersonalizationCard(userProfile: userProfile),
-          const SizedBox(height: FitFlowSpace.xs),
-          Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: FitFlowTertiaryButton(
-                  label: context.l10n.homeBrowse,
-                  onPressed: () => context.go(AppRoutes.exerciseLibrary))),
-        ]),
-      )));
-    })));
+          final inset = constraints.maxWidth < 360
+              ? FitFlowSpace.md
+              : FitFlowSpace.screenHorizontal;
+          return SingleChildScrollView(
+              child: FitFlowMaxWidth(
+                  child: Padding(
+            padding: EdgeInsets.symmetric(
+                horizontal: inset, vertical: FitFlowSpace.xl),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const HomeHeader(),
+                  const SizedBox(height: FitFlowSpace.xl),
+                  if (plan == null) ...[
+                    HomeEmptyStates.noWorkoutAvailable(context,
+                        userProfile: userProfile),
+                    const SizedBox(height: FitFlowSpace.md),
+                    const HomeSessionModeControl(),
+                  ] else
+                    TweenAnimationBuilder<double>(
+                      tween: Tween(begin: 0, end: 1),
+                      duration: SystemMotion.standard(context),
+                      curve: FitFlowMotion.standardCurve,
+                      builder: (_, value, child) =>
+                          Opacity(opacity: value, child: child),
+                      child: HomeWorkoutHeroCard(
+                          plan: plan,
+                          userProfile: userProfile,
+                          effectiveDuration:
+                              generationContext.effectiveWorkoutDuration,
+                          sessionMode: sessionMode),
+                    ),
+                  if (showComebackSuggestion) ...[
+                    const SizedBox(height: FitFlowSpace.lg),
+                    const ComebackSuggestionCard(),
+                  ],
+                  if (plan != null) ...[
+                    const SizedBox(height: FitFlowSpace.xl),
+                    HomeMovementFocus(plan: plan),
+                  ],
+                  const SizedBox(height: FitFlowSpace.md),
+                  HomePersonalizationCard(userProfile: userProfile),
+                  const SizedBox(height: FitFlowSpace.xs),
+                  Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: FitFlowTertiaryButton(
+                          label: context.l10n.homeBrowse,
+                          onPressed: () =>
+                              context.go(AppRoutes.exerciseLibrary))),
+                ]),
+          )));
+        })));
   }
 }

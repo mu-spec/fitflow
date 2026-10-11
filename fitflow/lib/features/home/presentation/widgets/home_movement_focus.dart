@@ -1,5 +1,5 @@
 import 'package:fitflow/core/design/fitflow_spacing.dart';
-import 'package:fitflow/core/design/fitflow_theme_extension.dart';
+import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/features/workouts/domain/movement_pattern.dart';
@@ -39,17 +39,12 @@ class HomeMovementFocus extends StatelessWidget {
       Semantics(
           header: true,
           child: Text(context.l10n.homeFocus,
-              style: Theme.of(context).textTheme.titleSmall)),
+              style: Theme.of(context).textTheme.titleMedium)),
       const SizedBox(height: FitFlowSpace.xs),
-      Text(
-          patterns
-              .take(5)
-              .map((p) => movementPatternLabel(context.l10n, p))
-              .join(' · '),
-          style: Theme.of(context)
-              .textTheme
-              .bodyMedium
-              ?.copyWith(color: FitFlowTheme.of(context).textSecondary)),
+      Wrap(spacing: FitFlowSpace.xs, runSpacing: FitFlowSpace.xs, children: [
+        for (final pattern in patterns.take(5))
+          FitFlowV2Tag(movementPatternLabel(context.l10n, pattern)),
+      ]),
     ]);
   }
 }

@@ -3802,6 +3802,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No eligible exercises available for this section.'**
   String get part6NoSectionExercises;
+
+  /// No description provided for @v2HomeTargetUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'min target'**
+  String get v2HomeTargetUnit;
 }
 
 class _AppLocalizationsDelegate

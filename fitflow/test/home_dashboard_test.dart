@@ -227,8 +227,8 @@ void main() {
 
       await tester.pumpWidget(buildHomeScreen(overrides: overrides));
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('Built for you'));
-      await tester.tap(find.text('Built for you'));
+      await tester.ensureVisible(find.text('Your setup and workout preferences'));
+      await tester.tap(find.text('Your setup and workout preferences'));
       await tester.pumpAndSettle();
 
       expect(find.text('Built for you'), findsOneWidget);
@@ -256,8 +256,8 @@ void main() {
 
       await tester.pumpWidget(buildHomeScreen(overrides: overrides));
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('Built for you'));
-      await tester.tap(find.text('Built for you'));
+      await tester.ensureVisible(find.text('Your setup and workout preferences'));
+      await tester.tap(find.text('Your setup and workout preferences'));
       await tester.pumpAndSettle();
       expect(find.text('No equipment'), findsOneWidget);
       expect(find.textContaining('None, No equipment'), findsNothing);
@@ -280,8 +280,8 @@ void main() {
 
       await tester.pumpWidget(buildHomeScreen(overrides: overrides));
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('Built for you'));
-      await tester.tap(find.text('Built for you'));
+      await tester.ensureVisible(find.text('Your setup and workout preferences'));
+      await tester.tap(find.text('Your setup and workout preferences'));
       await tester.pumpAndSettle();
       expect(find.textContaining('Dumbbells'), findsOneWidget);
       expect(find.textContaining('Exercise mat'), findsOneWidget);
@@ -302,8 +302,8 @@ void main() {
 
       await tester.pumpWidget(buildHomeScreen(overrides: overrides));
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('Built for you'));
-      await tester.tap(find.text('Built for you'));
+      await tester.ensureVisible(find.text('Your setup and workout preferences'));
+      await tester.tap(find.text('Your setup and workout preferences'));
       await tester.pumpAndSettle();
       expect(find.text('No special restrictions'), findsOneWidget);
     });
@@ -323,8 +323,8 @@ void main() {
 
       await tester.pumpWidget(buildHomeScreen(overrides: overrides));
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('Built for you'));
-      await tester.tap(find.text('Built for you'));
+      await tester.ensureVisible(find.text('Your setup and workout preferences'));
+      await tester.tap(find.text('Your setup and workout preferences'));
       await tester.pumpAndSettle();
       expect(find.textContaining('Standing only'), findsOneWidget);
     });

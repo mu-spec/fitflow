@@ -1223,5 +1223,6 @@
       }
     }
   },
-  "part6NoSectionExercises": "No eligible exercises available for this section."
+  "part6NoSectionExercises": "No eligible exercises available for this section.",
+  "v2HomeTargetUnit": "min target"
 }

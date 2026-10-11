@@ -1,3 +1,4 @@
+import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/core/accessibility/system_motion.dart';
 import 'package:fitflow/core/design/fitflow_motion.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
@@ -13,21 +14,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HomeSessionModeControl extends ConsumerWidget {
-  const HomeSessionModeControl({super.key});
+  const HomeSessionModeControl({super.key, this.emphasized = false});
+  final bool emphasized;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mode = ref.watch(workoutSessionModeProvider);
     final colors = FitFlowTheme.of(context);
     final text = Theme.of(context).textTheme;
+    final v = FitFlowVisualV2.of(context);
+    final ink = emphasized ? v.onHero : colors.textPrimary;
+    final secondary = emphasized ? v.heroSecondary : colors.textSecondary;
+    final accent = emphasized ? v.action : colors.brand;
     return Row(children: [
       ExcludeSemantics(
-          child: Icon(Icons.tune_outlined, color: colors.brand, size: 20)),
+          child: Icon(Icons.tune_outlined, color: accent, size: 20)),
       const SizedBox(width: FitFlowSpace.xs),
       Expanded(
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(context.l10n.homeMode,
-            style: text.bodySmall?.copyWith(color: colors.textSecondary)),
+            style: text.bodySmall?.copyWith(color: secondary)),
         Semantics(
             liveRegion: true,
             child: TweenAnimationBuilder<double>(
@@ -38,13 +44,14 @@ class HomeSessionModeControl extends ConsumerWidget {
               builder: (_, value, child) =>
                   Opacity(opacity: value, child: child),
               child: Text(sessionModeLabel(context.l10n, mode),
-                  style: text.titleSmall),
+                  style: text.titleSmall?.copyWith(color: ink)),
             )),
         if (mode != WorkoutSessionMode.standard)
           Text(context.l10n.homeTemporary,
-              style: text.bodySmall?.copyWith(color: colors.textSecondary)),
+              style: text.bodySmall?.copyWith(color: secondary)),
       ])),
       TextButton(
+          style: TextButton.styleFrom(foregroundColor: accent),
           onPressed: () => FitFlowSheet.show<void>(context,
               child: const ChooseWorkoutModeSheet()),
           child: Text(context.l10n.homeAdjust)),
@@ -98,7 +105,9 @@ class ChooseWorkoutModeSheet extends ConsumerWidget {
 class ComebackSuggestionCard extends ConsumerWidget {
   const ComebackSuggestionCard({super.key});
   @override
-  Widget build(BuildContext context, WidgetRef ref) => Column(
+  Widget build(BuildContext context, WidgetRef ref) => FitFlowV2InfoSurface(
+      tonal: true,
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(context.l10n.homeComebackSuggestion,
@@ -109,5 +118,5 @@ class ComebackSuggestionCard extends ConsumerWidget {
                   .read(workoutSessionModeProvider.notifier)
                   .selectMode(WorkoutSessionMode.comeback)),
         ],
-      );
+      ));
 }

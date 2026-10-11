@@ -13,6 +13,8 @@ class FitFlowPrimaryButton extends StatelessWidget {
     this.icon,
     this.loading = false,
     this.expand = false,
+    this.style,
+    this.semanticHint,
   });
 
   final String label;
@@ -20,6 +22,8 @@ class FitFlowPrimaryButton extends StatelessWidget {
   final IconData? icon;
   final bool loading;
   final bool expand;
+  final ButtonStyle? style;
+  final String? semanticHint;
 
   @override
   Widget build(BuildContext context) {
@@ -49,8 +53,11 @@ class FitFlowPrimaryButton extends StatelessWidget {
             : _LabeledIcon(icon: icon!, label: label);
 
     final button = FilledButton(
+      style: style,
       onPressed: enabled ? onPressed : null,
-      child: child,
+      child: semanticHint == null
+          ? child
+          : Semantics(hint: semanticHint, child: child),
     );
     return _wrap(
       button,
