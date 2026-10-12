@@ -1,3 +1,6 @@
+import 'package:fitflow/core/design/fitflow_spacing.dart';
+import 'package:fitflow/core/design/fitflow_visual_v2.dart';
+import 'package:fitflow/core/design/widgets/fitflow_v2_feature_art.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/app/router/app_routes.dart';
@@ -116,15 +119,17 @@ class RecommendedProgramCard extends ConsumerWidget {
   }
 }
 
-/// Active program card: factual completion and the next planned session.
-/// Renders nothing when no program is active.
+/// Active program card (Visual V2): same factual completion, next planned
+/// session and exact navigation as before — promoted to first-class emphasis
+/// on the V2 hero surface, with decorative programs artwork that yields to
+/// large text. Renders nothing when no program is active.
 class ActiveProgramCard extends ConsumerWidget {
   const ActiveProgramCard({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final v = FitFlowVisualV2.of(context);
     final stateAsync = ref.watch(adaptiveProgramsControllerProvider);
     final state = stateAsync.value;
     if (state == null) return const SizedBox.shrink();
@@ -138,56 +143,87 @@ class ActiveProgramCard extends ConsumerWidget {
     );
     final next = status.nextSession;
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: AppDimens.itemGap),
-      color: colors.primaryContainer,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+    final texts = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(context.l10n.trainingProgramActiveTitle,
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: v.action,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 1,
+            )),
+        const SizedBox(height: FitFlowSpace.xs),
+        Text(def.name,
+            style: theme.textTheme.titleLarge?.copyWith(
+              color: v.onHero,
+              fontWeight: FontWeight.w700,
+            )),
+        const SizedBox(height: FitFlowSpace.xxs),
+        Text(
+          context.l10n
+              .trainingSessions(status.completedCount, status.totalCount),
+          style: theme.textTheme.bodyMedium?.copyWith(color: v.onHero),
+        ),
+        const SizedBox(height: FitFlowSpace.xxs),
+        Text(
+          status.isComplete
+              ? context.l10n.trainingProgramProgramComplete
+              : context.l10n.trainingNextSession(status.currentWeek,
+                  context.l10n.trainingSession(next!.session)),
+          style: theme.textTheme.bodySmall?.copyWith(color: v.heroSecondary),
+        ),
+      ],
+    );
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: FitFlowSpace.lg),
+      child: FitFlowV2HeroSurface(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(context.l10n.trainingProgramActiveTitle,
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: colors.onPrimaryContainer,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.6,
-                )),
-            const SizedBox(height: 6),
-            Text(def.name,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: colors.onPrimaryContainer,
-                  fontWeight: FontWeight.w700,
-                )),
-            const SizedBox(height: 4),
-            Text(
-              context.l10n
-                  .trainingSessions(status.completedCount, status.totalCount),
-              style: theme.textTheme.bodyMedium
-                  ?.copyWith(color: colors.onPrimaryContainer),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              status.isComplete
-                  ? context.l10n.trainingProgramProgramComplete
-                  : context.l10n.trainingNextSession(status.currentWeek,
-                      context.l10n.trainingSession(next!.session)),
-              style: theme.textTheme.bodySmall
-                  ?.copyWith(color: colors.onPrimaryContainer),
-            ),
-            const SizedBox(height: 12),
-            FilledButton.icon(
-              onPressed: () {
-                if (next != null) {
-                  context
-                      .push(AppRoutes.programSessionPreview(def.id, next.id));
-                } else {
-                  context.push(AppRoutes.programDetail(def.id));
-                }
-              },
-              icon: const Icon(Icons.arrow_forward_rounded),
-              label: Text(next == null
-                  ? context.l10n.trainingProgramViewProgram
-                  : context.l10n.trainingProgramContinueLabel),
+            LayoutBuilder(builder: (context, constraints) {
+              // Artwork yields space to text; the text never shrinks.
+              final largeText = MediaQuery.textScalerOf(context).scale(16) > 22;
+              final artSize = largeText ? 64.0 : 88.0;
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(child: texts),
+                  const SizedBox(width: FitFlowSpace.xs),
+                  SizedBox(
+                    width: artSize,
+                    height: artSize,
+                    child: const FitFlowV2FeatureArt(
+                      kind: FitFlowV2FeatureArtKind.programs,
+                      onHero: true,
+                    ),
+                  ),
+                ],
+              );
+            }),
+            const SizedBox(height: FitFlowSpace.md),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: FilledButton.icon(
+                onPressed: () {
+                  if (next != null) {
+                    context
+                        .push(AppRoutes.programSessionPreview(def.id, next.id));
+                  } else {
+                    context.push(AppRoutes.programDetail(def.id));
+                  }
+                },
+                style: FilledButton.styleFrom(
+                  backgroundColor: v.action,
+                  foregroundColor: v.onAction,
+                  minimumSize: const Size(64, 56),
+                  overlayColor: v.onAction.withValues(alpha: .12),
+                ),
+                icon: const Icon(Icons.arrow_forward_rounded),
+                label: Text(next == null
+                    ? context.l10n.trainingProgramViewProgram
+                    : context.l10n.trainingProgramContinueLabel),
+              ),
             ),
           ],
         ),
