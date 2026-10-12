@@ -20,6 +20,14 @@ class EnvironmentStepContent extends ConsumerWidget {
         for (final environment in TrainingEnvironment.values)
           OnboardingChoice(
             label: environmentLabel(context.l10n, environment),
+            icon: switch (environment) {
+              TrainingEnvironment.apartment => Icons.volume_down_outlined,
+              TrainingEnvironment.normalHome => Icons.home_outlined,
+              TrainingEnvironment.smallRoom => Icons.crop_square_rounded,
+              TrainingEnvironment.largeRoom => Icons.aspect_ratio_rounded,
+              TrainingEnvironment.hotel => Icons.luggage_outlined,
+              TrainingEnvironment.outdoor => Icons.park_outlined,
+            },
             selected: state.environment == environment,
             onSelected: () => controller.selectEnvironment(environment),
           ),

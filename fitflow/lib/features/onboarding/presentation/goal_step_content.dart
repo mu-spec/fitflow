@@ -20,6 +20,15 @@ class GoalStepContent extends ConsumerWidget {
         for (final goal in FitnessGoal.values)
           OnboardingChoice(
             label: fitnessGoalLabel(context.l10n, goal),
+            icon: switch (goal) {
+              FitnessGoal.generalFitness => Icons.explore_outlined,
+              FitnessGoal.buildStrength => Icons.fitness_center_rounded,
+              FitnessGoal.buildMuscle => Icons.sports_gymnastics_rounded,
+              FitnessGoal.loseWeight => Icons.directions_walk_rounded,
+              FitnessGoal.improveEndurance => Icons.route_outlined,
+              FitnessGoal.improveMobility => Icons.open_with_rounded,
+              FitnessGoal.stayActive => Icons.wb_sunny_outlined,
+            },
             selected: state.goal == goal,
             onSelected: () => controller.selectGoal(goal),
           ),

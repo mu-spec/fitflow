@@ -1,3 +1,5 @@
+import 'package:fitflow/core/design/fitflow_visual_v2.dart';
+import 'package:fitflow/core/design/fitflow_v2_setup.dart';
 import 'package:fitflow/core/accessibility/system_motion.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/core/design/fitflow_motion.dart';
@@ -37,8 +39,7 @@ class OnboardingShell extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = FitFlowTheme.of(context);
-    final actions = Padding(
-      padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.sm),
+    final actions = FitFlowV2ActionSurface(
       child: Row(children: [
         FitFlowTertiaryButton(
             label: context.l10n.back,
@@ -46,6 +47,7 @@ class OnboardingShell extends StatelessWidget {
         const SizedBox(width: FitFlowSpace.sm),
         Expanded(
             child: FilledButton(
+          style: FitFlowV2ActionSurface.primaryStyle(context),
           onPressed: canContinue && !saving ? onContinue : null,
           child: Text(saving ? context.l10n.onboardingSaving : trailingLabel,
               textAlign: TextAlign.center),
@@ -63,7 +65,10 @@ class OnboardingShell extends StatelessWidget {
               Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             Semantics(
                 header: true,
-                child: Text(title, style: theme.textTheme.headlineMedium)),
+                child: Text(title,
+                    style: step == 1
+                        ? theme.textTheme.headlineSmall
+                        : theme.textTheme.headlineMedium)),
             if (description != null) ...[
               const SizedBox(height: FitFlowSpace.xs),
               Text(description!,
@@ -76,7 +81,7 @@ class OnboardingShell extends StatelessWidget {
                   style: theme.textTheme.labelMedium
                       ?.copyWith(color: colors.textSecondary)),
             ],
-            const SizedBox(height: FitFlowSpace.xl),
+            const SizedBox(height: FitFlowSpace.md),
             content,
             if (error != null) ...[
               const SizedBox(height: FitFlowSpace.md),
@@ -89,37 +94,38 @@ class OnboardingShell extends StatelessWidget {
           ]),
         );
     return Scaffold(
+        backgroundColor: FitFlowVisualV2.of(context).page,
         body: SafeArea(
             child: FitFlowMaxWidth(
-      maxWidth: FitFlowLayout.maxReadableWidth,
-      child: LayoutBuilder(builder: (context, constraints) {
-        final compact = constraints.maxWidth < 360;
-        final padding =
-            compact ? FitFlowSpace.md : FitFlowSpace.screenHorizontal;
-        final short = constraints.maxHeight < 400;
-        final progress = Padding(
-          padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.md),
-          child: OnboardingProgress(step: step, totalSteps: totalSteps),
-        );
-        return Padding(
-          padding: EdgeInsets.symmetric(horizontal: padding),
-          child: short
-              ? SingleChildScrollView(
-                  key: ValueKey('short_$step'),
-                  child: Column(
+          maxWidth: FitFlowLayout.maxReadableWidth,
+          child: LayoutBuilder(builder: (context, constraints) {
+            final compact = constraints.maxWidth < 360;
+            final padding =
+                compact ? FitFlowSpace.md : FitFlowSpace.screenHorizontal;
+            final short = constraints.maxHeight < 400;
+            final progress = Padding(
+              padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.md),
+              child: OnboardingProgress(step: step, totalSteps: totalSteps),
+            );
+            return Padding(
+              padding: EdgeInsets.symmetric(horizontal: padding),
+              child: short
+                  ? SingleChildScrollView(
+                      key: ValueKey('short_$step'),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [progress, body(), actions]))
+                  : Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [progress, body(), actions]))
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                      progress,
-                      Expanded(
-                          child: SingleChildScrollView(
-                              key: ValueKey('step_$step'), child: body())),
-                      actions,
-                    ]),
-        );
-      }),
-    )));
+                      children: [
+                          progress,
+                          Expanded(
+                              child: SingleChildScrollView(
+                                  key: ValueKey('step_$step'), child: body())),
+                          actions,
+                        ]),
+            );
+          }),
+        )));
   }
 }

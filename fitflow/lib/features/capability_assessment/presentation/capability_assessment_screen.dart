@@ -2,7 +2,9 @@ import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
-import 'package:fitflow/core/design/widgets/fitflow_surfaces.dart';
+import 'package:fitflow/core/design/fitflow_visual_v2.dart';
+import 'package:fitflow/core/design/fitflow_v2_setup.dart';
+import 'package:fitflow/core/design/fitflow_radius.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
 import 'package:fitflow/features/capability_assessment/presentation/capability_assessment_copy.dart';
 import 'package:fitflow/app/router/app_routes.dart';
@@ -107,6 +109,7 @@ class _CapabilityAssessmentScreenState
 
     if (isUserLoading || isCapabilityLoading) {
       return Scaffold(
+          backgroundColor: FitFlowVisualV2.of(context).page,
           body: SafeArea(
               child: FitFlowLoading(label: context.l10n.assessmentLoading)));
     }
@@ -124,12 +127,14 @@ class _CapabilityAssessmentScreenState
         }
       });
       return Scaffold(
+          backgroundColor: FitFlowVisualV2.of(context).page,
           body: FitFlowLoading(label: context.l10n.assessmentLoading));
     }
 
     // If user profile is null, recovery to onboarding
     if (userProfile == null) {
       return Scaffold(
+          backgroundColor: FitFlowVisualV2.of(context).page,
           appBar: AppBar(title: Text(context.l10n.movementCheckTitle)),
           body: SafeArea(
               child: SingleChildScrollView(
@@ -158,10 +163,11 @@ class _CapabilityAssessmentScreenState
     final l10n = context.l10n;
     final text = Theme.of(context).textTheme;
     final colors = FitFlowTheme.of(context);
-    final save = Padding(
-      padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.sm),
+    final v = FitFlowVisualV2.of(context);
+    final save = FitFlowV2ActionSurface(
       child: FilledButton(
         key: const Key('save_and_continue_button'),
+        style: FitFlowV2ActionSurface.primaryStyle(context),
         onPressed: _isSaving ? null : _saveAndContinue,
         child: Text(_isSaving ? l10n.assessmentSaving : l10n.assessmentSave,
             textAlign: TextAlign.center),
@@ -173,7 +179,9 @@ class _CapabilityAssessmentScreenState
         if (!didPop) context.go(AppRoutes.onboarding);
       },
       child: Scaffold(
+        backgroundColor: v.page,
         appBar: AppBar(
+          backgroundColor: v.page,
           title: Text(l10n.movementCheckTitle),
           leading: IconButton(
               icon: const BackButtonIcon(),
@@ -194,14 +202,26 @@ class _CapabilityAssessmentScreenState
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Semantics(
-                          header: true,
-                          child: Text(l10n.assessmentIntro,
-                              style: text.headlineMedium)),
-                      const SizedBox(height: FitFlowSpace.xs),
-                      Text(l10n.assessmentBody,
-                          style: text.bodyMedium
-                              ?.copyWith(color: colors.textSecondary)),
+                      FitFlowV2HeroSurface(
+                          child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(children: [
+                            Expanded(
+                                child: Semantics(
+                                    header: true,
+                                    child: Text(l10n.assessmentIntro,
+                                        style: text.headlineSmall
+                                            ?.copyWith(color: v.onHero)))),
+                            const SizedBox(width: FitFlowSpace.xs),
+                            const FitFlowV2AdaptiveMotif(size: 56),
+                          ]),
+                          const SizedBox(height: FitFlowSpace.sm),
+                          Text(l10n.assessmentBody,
+                              style: text.bodyMedium
+                                  ?.copyWith(color: v.heroSecondary)),
+                        ],
+                      )),
                       const SizedBox(height: FitFlowSpace.md),
                       FitFlowProgress(
                           label: l10n.assessmentProgress(
@@ -237,6 +257,7 @@ class _CapabilityAssessmentScreenState
                       key: ValueKey(
                           'assessment_card_${item.movementPattern.name}'),
                       item: item,
+                      ordinal: index + 1,
                       currentLevel: currentAnswer?.selectedLevel ??
                           CapabilityLevel.level3,
                       isChanged: isChanged,
@@ -294,10 +315,12 @@ class _MovementAssessmentCard extends StatelessWidget {
   const _MovementAssessmentCard(
       {super.key,
       required this.item,
+      required this.ordinal,
       required this.currentLevel,
       required this.isChanged,
       required this.onLevelSelected});
   final CapabilityAssessmentItem item;
+  final int ordinal;
   final CapabilityLevel currentLevel;
   final bool isChanged;
   final ValueChanged<CapabilityLevel> onLevelSelected;
@@ -307,41 +330,86 @@ class _MovementAssessmentCard extends StatelessWidget {
     final l10n = context.l10n;
     final text = Theme.of(context).textTheme;
     final colors = FitFlowTheme.of(context);
-    return FitFlowSurface(
+    final v = FitFlowVisualV2.of(context);
+    return FitFlowV2InfoSurface(
+        tonal: ordinal.isEven,
         child:
             Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      Semantics(
-          header: true,
-          child: Text(assessmentTitle(l10n, item.movementPattern),
-              style: text.titleMedium)),
-      const SizedBox(height: FitFlowSpace.xxs),
-      Text(assessmentPrompt(l10n, item.movementPattern),
-          style: text.bodyMedium?.copyWith(color: colors.textSecondary)),
-      const SizedBox(height: FitFlowSpace.xs),
-      Text(assessmentExamples(l10n, item.movementPattern),
-          style: text.bodySmall?.copyWith(color: colors.textMuted)),
-      const SizedBox(height: FitFlowSpace.sm),
-      Text(l10n.assessmentChoose, style: text.labelMedium),
-      const SizedBox(height: FitFlowSpace.xs),
-      Wrap(spacing: FitFlowSpace.xs, runSpacing: FitFlowSpace.xxs, children: [
-        for (final level in CapabilityLevel.values)
-          ChoiceChip(
-            key: ValueKey('level_${item.movementPattern.name}_${level.name}'),
-            label: Text(assessmentChoice(l10n, level)),
-            tooltip: assessmentChoiceBody(l10n, level),
-            selected: level == currentLevel,
-            onSelected: (selected) {
-              if (selected) onLevelSelected(level);
-            },
-            showCheckmark: true,
-            materialTapTargetSize: MaterialTapTargetSize.padded,
-          ),
-      ]),
-      const SizedBox(height: FitFlowSpace.xs),
-      Text(assessmentChoiceBody(l10n, currentLevel), style: text.bodySmall),
-      const SizedBox(height: FitFlowSpace.xs),
-      Text(isChanged ? l10n.assessmentChanged : l10n.assessmentSuggested,
-          style: text.labelSmall?.copyWith(color: colors.textSecondary)),
-    ]));
+          Row(children: [
+            ExcludeSemantics(
+                child: Container(
+                    padding: const EdgeInsets.all(FitFlowSpace.xs),
+                    decoration: BoxDecoration(
+                        color: v.heroStart,
+                        borderRadius: FitFlowRadius.smallBorder),
+                    child: Text(ordinal.toString().padLeft(2, '0'),
+                        style: text.labelMedium?.copyWith(color: v.action)))),
+            const SizedBox(width: FitFlowSpace.sm),
+            Expanded(
+                child: Semantics(
+                    header: true,
+                    child: Text(assessmentTitle(l10n, item.movementPattern),
+                        style: text.titleMedium))),
+          ]),
+          const SizedBox(height: FitFlowSpace.xxs),
+          Text(assessmentPrompt(l10n, item.movementPattern),
+              style: text.bodyMedium?.copyWith(color: colors.textSecondary)),
+          const SizedBox(height: FitFlowSpace.xs),
+          Text(assessmentExamples(l10n, item.movementPattern),
+              style: text.bodySmall?.copyWith(color: colors.textMuted)),
+          const SizedBox(height: FitFlowSpace.sm),
+          Text(l10n.assessmentChoose, style: text.labelMedium),
+          const SizedBox(height: FitFlowSpace.xs),
+          Wrap(
+              spacing: FitFlowSpace.xs,
+              runSpacing: FitFlowSpace.xxs,
+              children: [
+                for (final level in CapabilityLevel.values)
+                  ChoiceChip(
+                    key: ValueKey(
+                        'level_${item.movementPattern.name}_${level.name}'),
+                    label: Text(assessmentChoice(l10n, level)),
+                    tooltip: assessmentChoiceBody(l10n, level),
+                    selected: level == currentLevel,
+                    onSelected: (selected) {
+                      if (selected) onLevelSelected(level);
+                    },
+                    selectedColor: v.heroStart,
+                    backgroundColor: v.support,
+                    checkmarkColor: v.action,
+                    labelStyle: text.labelLarge?.copyWith(
+                        color: level == currentLevel
+                            ? v.onHero
+                            : colors.textPrimary),
+                    side: BorderSide(
+                        color: level == currentLevel
+                            ? colors.brand
+                            : v.subtleBorder),
+                    showCheckmark: true,
+                    materialTapTargetSize: MaterialTapTargetSize.padded,
+                  ),
+              ]),
+          const SizedBox(height: FitFlowSpace.xs),
+          Padding(
+              padding: const EdgeInsets.only(top: FitFlowSpace.xxs),
+              child: Text(assessmentChoiceBody(l10n, currentLevel),
+                  style: text.bodySmall)),
+          const SizedBox(height: FitFlowSpace.xs),
+          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            ExcludeSemantics(
+                child: Icon(
+                    isChanged ? Icons.check_rounded : Icons.tune_rounded,
+                    size: 16,
+                    color: colors.brand)),
+            const SizedBox(width: FitFlowSpace.xs),
+            Expanded(
+                child: Text(
+                    isChanged
+                        ? l10n.assessmentChanged
+                        : l10n.assessmentSuggested,
+                    style: text.labelSmall
+                        ?.copyWith(color: colors.textSecondary))),
+          ]),
+        ]));
   }
 }

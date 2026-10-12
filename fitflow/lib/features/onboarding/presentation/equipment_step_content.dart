@@ -1,3 +1,4 @@
+import 'package:fitflow/core/design/fitflow_v2_setup.dart';
 import 'package:fitflow/features/onboarding/data/workout_equipment.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
@@ -16,7 +17,7 @@ class EquipmentStepContent extends ConsumerWidget {
     final state = ref.watch(onboardingControllerProvider);
     final controller = ref.read(onboardingControllerProvider.notifier);
 
-    return Column(
+    return FitFlowV2OptionGrid(
       children: [
         for (final equipment in WorkoutEquipment.values)
           OnboardingChoice(
