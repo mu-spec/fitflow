@@ -1,3 +1,4 @@
+import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/features/workout_player/application/workout_player_controller.dart';
 import 'package:fitflow/features/workout_player/application/workout_player_state.dart';
@@ -16,11 +17,23 @@ class WorkoutPlayerControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
+    // Only active work (including paused work) opts in; Rest/Completion and
+    // all other phases keep their original presentation and action branches.
+    final active = state.phase == WorkoutPlayerPhase.work;
+    final t = FitFlowTheme.of(context);
     Widget primary(String label, VoidCallback? action, IconData icon) =>
         SizedBox(
           width: double.infinity,
           child: FilledButton.icon(
-              onPressed: action, icon: Icon(icon), label: Text(label)),
+              style: active
+                  ? FilledButton.styleFrom(
+                      minimumSize: const Size(48, 56),
+                      backgroundColor: t.brand,
+                      foregroundColor: t.onBrand)
+                  : null,
+              onPressed: action,
+              icon: Icon(icon),
+              label: Text(label)),
         );
     if (state.isPaused) {
       return primary(l.resume, controller.resume, Icons.play_arrow_rounded);
@@ -40,6 +53,10 @@ class WorkoutPlayerControls extends StatelessWidget {
                   l.setComplete, controller.completeSet, Icons.check_rounded),
               const SizedBox(height: FitFlowSpace.xs),
               OutlinedButton.icon(
+                  style: active
+                      ? OutlinedButton.styleFrom(
+                          minimumSize: const Size(48, 48))
+                      : null,
                   onPressed: controller.pause,
                   icon: const Icon(Icons.pause_rounded),
                   label: Text(l.pause)),

@@ -1,3 +1,5 @@
+import 'package:fitflow/core/design/fitflow_visual_v2.dart';
+import 'package:fitflow/core/design/widgets/fitflow_v2_workout_media.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
@@ -156,6 +158,14 @@ class WorkoutPlayerCompletedView extends ConsumerWidget {
     final text = Theme.of(context).textTheme;
     final l = context.l10n;
     final t = FitFlowTheme.of(context);
+    final v = FitFlowVisualV2.of(context);
+    final compact = WorkoutV2Layout.largeText(context) ||
+        WorkoutV2Layout.viewport(context).height < 400;
+    final identity = switch (sessionOrigin) {
+      WorkoutSessionOrigin.adaptive => l.flowPlayer,
+      WorkoutSessionOrigin.custom => l.flowCustom,
+      WorkoutSessionOrigin.program => l.flowProgram,
+    };
     final isTemporary = sessionOrigin == WorkoutSessionOrigin.adaptive &&
         sessionMode != WorkoutSessionMode.standard;
     final isCustom = sessionOrigin == WorkoutSessionOrigin.custom;
@@ -163,75 +173,126 @@ class WorkoutPlayerCompletedView extends ConsumerWidget {
     final note = completionNote == programCompletedCopy
         ? l.flowProgramComplete
         : completionNote ?? (isProgram ? l.flowProgramComplete : null);
-    return Padding(
-        padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.md),
-        child:
-            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Center(
-              child: DecoratedBox(
-                  decoration:
-                      BoxDecoration(color: t.success, shape: BoxShape.circle),
-                  child: Padding(
-                      padding: const EdgeInsets.all(FitFlowSpace.md),
-                      child: ExcludeSemantics(
-                          child: Icon(Icons.check_rounded,
-                              size: 32, color: t.onSuccess))))),
-          const SizedBox(height: FitFlowSpace.lg),
-          Semantics(
-              header: true,
-              child: Text(l.flowComplete,
-                  style: text.headlineMedium, textAlign: TextAlign.center)),
-          const SizedBox(height: FitFlowSpace.xs),
-          Text(l.flowFinished,
-              style: text.bodyLarge, textAlign: TextAlign.center),
-          const SizedBox(height: FitFlowSpace.xl),
-          Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 32,
-              runSpacing: 16,
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        FitFlowV2HeroSurface(
+          key: const ValueKey('v2_completed_hero'),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Pure decoration: no achievement, score or new announcement.
+              ExcludeSemantics(
+                child: Center(
+                  child: SizedBox(
+                    key: const ValueKey('v2_completed_mark'),
+                    width: compact ? 40 : 64,
+                    height: compact ? 40 : 64,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: t.success,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: v.heroLine),
+                      ),
+                      child: Icon(Icons.check_rounded,
+                          size: compact ? 24 : 32, color: t.onSuccess),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: FitFlowSpace.sm),
+              Text(identity,
+                  style: text.labelLarge?.copyWith(color: v.heroSecondary),
+                  textAlign: TextAlign.center),
+              const SizedBox(height: FitFlowSpace.xs),
+              Semantics(
+                header: true,
+                child: Text(l.flowComplete,
+                    style: text.headlineMedium?.copyWith(color: v.onHero),
+                    textAlign: TextAlign.center),
+              ),
+              const SizedBox(height: FitFlowSpace.xs),
+              Text(l.flowFinished,
+                  style: text.bodyLarge?.copyWith(color: v.heroSecondary),
+                  textAlign: TextAlign.center),
+            ],
+          ),
+        ),
+        const SizedBox(height: FitFlowSpace.md),
+        LayoutBuilder(builder: (context, constraints) {
+          final exercises = _CompletionFact(
+            key: const ValueKey('v2_completed_exercises'),
+            value: '${plan.totalExerciseCount}',
+            label: l.flowExercises,
+          );
+          final sets = _CompletionFact(
+            key: const ValueKey('v2_completed_sets'),
+            value: '${state.completedSets} / ${state.totalSets}',
+            label: l.flowSets,
+          );
+          if (constraints.maxWidth >= 460 &&
+              !WorkoutV2Layout.largeText(context)) {
+            return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Expanded(child: exercises),
+              const SizedBox(width: FitFlowSpace.sm),
+              Expanded(child: sets),
+            ]);
+          }
+          return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Column(children: [
-                  Text('${plan.totalExerciseCount}', style: text.displayMedium),
-                  Text(l.flowExercises, style: text.labelLarge)
-                ]),
-                Column(children: [
-                  Text('${state.completedSets} / ${state.totalSets}',
-                      style: text.displayMedium),
-                  Text(l.flowSets, style: text.labelLarge)
-                ]),
-              ]),
-          const SizedBox(height: FitFlowSpace.lg),
-          const Divider(),
-          const SizedBox(height: FitFlowSpace.sm),
-          _StatRow(
-              label: l.flowTargetLabel,
-              value: plannedDuration(l, plan.targetDuration)),
-          const SizedBox(height: FitFlowSpace.xs),
-          _StatRow(
-              label: l.flowEstimateLabel,
-              value: plannedDuration(l, plan.estimatedDuration)),
-          const SizedBox(height: FitFlowSpace.sm),
-          if (isTemporary)
-            Text(l.flowTemporaryNote(sessionModeLabel(l, sessionMode)),
-                style: text.bodyMedium, textAlign: TextAlign.center),
-          if (isCustom)
-            Text(l.flowCustomNote,
-                style: text.bodyMedium, textAlign: TextAlign.center),
-          if (note != null)
-            Text(note, style: text.bodyMedium, textAlign: TextAlign.center),
-          const SizedBox(height: FitFlowSpace.sm),
-          Text(l.flowHistory,
-              style: text.bodySmall, textAlign: TextAlign.center),
-          const SizedBox(height: FitFlowSpace.xl),
-          _OnceDoneButton(
-              onPressed: () => _handleDone(context, ref), child: Text(l.done)),
-          if (!isTemporary && !isCustom) ...[
+                exercises,
+                const SizedBox(height: FitFlowSpace.xs),
+                sets
+              ]);
+        }),
+        const SizedBox(height: FitFlowSpace.sm),
+        FitFlowV2InfoSurface(
+          key: const ValueKey('v2_completed_durations'),
+          child: Column(children: [
+            _StatRow(
+                label: l.flowTargetLabel,
+                value: plannedDuration(l, plan.targetDuration)),
             const SizedBox(height: FitFlowSpace.xs),
-            OutlinedButton(
-                onPressed: () => _openTuneSheet(context, ref),
-                child: Text(l.flowTune)),
-          ],
-        ]));
+            _StatRow(
+                label: l.flowEstimateLabel,
+                value: plannedDuration(l, plan.estimatedDuration)),
+          ]),
+        ),
+        const SizedBox(height: FitFlowSpace.md),
+        if (isTemporary)
+          Text(l.flowTemporaryNote(sessionModeLabel(l, sessionMode)),
+              style: text.bodyMedium, textAlign: TextAlign.center),
+        if (isCustom)
+          Text(l.flowCustomNote,
+              style: text.bodyMedium, textAlign: TextAlign.center),
+        if (note != null)
+          Text(note, style: text.bodyMedium, textAlign: TextAlign.center),
+        const SizedBox(height: FitFlowSpace.sm),
+        Text(l.flowHistory,
+            style: text.bodySmall?.copyWith(color: t.textSecondary),
+            textAlign: TextAlign.center),
+        const SizedBox(height: FitFlowSpace.lg),
+        _OnceDoneButton(
+            onPressed: () => _handleDone(context, ref), child: Text(l.done)),
+        if (!isTemporary && !isCustom) ...[
+          const SizedBox(height: FitFlowSpace.xs),
+          OutlinedButton(
+              style: OutlinedButton.styleFrom(minimumSize: const Size(48, 48)),
+              onPressed: () => _openTuneSheet(context, ref),
+              child: Text(l.flowTune)),
+        ],
+      ],
+    );
+    // Session already supplies an unbounded scroll area. Standalone bounded
+    // consumers need their own scroll; never nest scrolling in the session.
+    return LayoutBuilder(builder: (context, constraints) {
+      if (constraints.hasBoundedHeight) {
+        return SingleChildScrollView(
+            key: const ValueKey('v2_completed_scroll'), child: content);
+      }
+      return content;
+    });
   }
 }
 
@@ -260,9 +321,31 @@ class _OnceDoneButtonState extends State<_OnceDoneButton> {
     return SizedBox(
       width: double.infinity,
       child: FilledButton(
+        style: FilledButton.styleFrom(minimumSize: const Size(48, 56)),
         onPressed: _fired ? null : _press,
         child: widget.child,
       ),
+    );
+  }
+}
+
+/// Existing canonical facts, not computed rewards or elapsed-time claims.
+class _CompletionFact extends StatelessWidget {
+  const _CompletionFact({super.key, required this.value, required this.label});
+  final String value;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+    final t = FitFlowTheme.of(context);
+    return FitFlowV2InfoSurface(
+      tonal: true,
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(value, style: text.displayMedium?.copyWith(color: t.textPrimary)),
+        const SizedBox(height: FitFlowSpace.xxs),
+        Text(label, style: text.labelLarge?.copyWith(color: t.textSecondary)),
+      ]),
     );
   }
 }

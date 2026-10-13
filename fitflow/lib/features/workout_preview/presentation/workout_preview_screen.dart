@@ -1,3 +1,5 @@
+import 'package:fitflow/core/design/fitflow_visual_v2.dart';
+import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
@@ -92,8 +94,14 @@ class WorkoutPreviewScreen extends ConsumerWidget {
       );
     }
 
+    final v = FitFlowVisualV2.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.flowPreview)),
+      backgroundColor: v.page,
+      appBar: AppBar(
+        title: Text(context.l10n.flowPreview),
+        backgroundColor: v.page,
+        scrolledUnderElevation: 0,
+      ),
       body: SafeArea(
           child: FitFlowMaxWidth(
               child: Padding(
@@ -105,6 +113,7 @@ class WorkoutPreviewScreen extends ConsumerWidget {
               width: double.infinity,
               child: FilledButton.icon(
                 key: const Key('preview_start'),
+                style: FilledButton.styleFrom(minimumSize: const Size(48, 56)),
                 onPressed: () => context.push(AppRoutes.workoutPlayer),
                 icon: const Icon(Icons.play_arrow_rounded),
                 label: Text(context.l10n.startWorkout),
@@ -117,28 +126,37 @@ class WorkoutPreviewScreen extends ConsumerWidget {
                 sessionMode: sessionMode),
             const SizedBox(height: FitFlowSpace.md),
             Text(context.l10n.flowPreviewHelp,
-                style: Theme.of(context).textTheme.bodyMedium),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: FitFlowTheme.of(context).textSecondary)),
             const SizedBox(height: FitFlowSpace.xl),
             WorkoutPreviewSectionHeader(
                 title: context.l10n.flowWarmup,
                 exerciseCount: plan.warmup.exerciseCount,
                 planned: plan.warmupEstimate,
-                budget: plan.timeBudget.warmup),
+                budget: plan.timeBudget.warmup,
+                visualV2: true),
             _buildExerciseList(context, plan.warmup.exercises),
             const SizedBox(height: FitFlowSpace.xl),
             WorkoutPreviewSectionHeader(
                 title: context.l10n.flowMain,
                 exerciseCount: plan.main.exerciseCount,
                 planned: plan.mainEstimate,
-                budget: plan.timeBudget.main),
-            _buildExerciseList(context, plan.main.exercises),
+                budget: plan.timeBudget.main,
+                visualV2: true),
+            _buildExerciseList(context, plan.main.exercises,
+                startIndex: plan.warmup.exerciseCount),
             const SizedBox(height: FitFlowSpace.xl),
             WorkoutPreviewSectionHeader(
                 title: context.l10n.flowCooldown,
                 exerciseCount: plan.cooldown.exerciseCount,
                 planned: plan.cooldownEstimate,
-                budget: plan.timeBudget.cooldown),
-            _buildExerciseList(context, plan.cooldown.exercises),
+                budget: plan.timeBudget.cooldown,
+                visualV2: true),
+            _buildExerciseList(context, plan.cooldown.exercises,
+                startIndex:
+                    plan.warmup.exerciseCount + plan.main.exerciseCount),
             const SizedBox(height: FitFlowSpace.xl),
             const WorkoutPreviewAdaptiveNote(),
             const SizedBox(height: FitFlowSpace.md),
@@ -166,10 +184,15 @@ class WorkoutPreviewScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildExerciseList(BuildContext context,
-          List<WorkoutExercisePrescription> prescriptions) =>
+  Widget _buildExerciseList(
+          BuildContext context, List<WorkoutExercisePrescription> prescriptions,
+          {int startIndex = 0}) =>
       Column(children: [
-        for (final p in prescriptions)
-          WorkoutPreviewExerciseRow(prescription: p)
+        for (var i = 0; i < prescriptions.length; i++)
+          WorkoutPreviewExerciseRow(
+            prescription: prescriptions[i],
+            visualV2: true,
+            sequenceNumber: startIndex + i + 1,
+          )
       ]);
 }

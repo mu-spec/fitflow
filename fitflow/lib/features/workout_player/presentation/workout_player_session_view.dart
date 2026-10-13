@@ -1,3 +1,5 @@
+import 'package:fitflow/core/design/fitflow_visual_v2.dart';
+import 'package:fitflow/core/design/widgets/fitflow_v2_workout_media.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
@@ -191,11 +193,13 @@ class _WorkoutPlayerSessionViewState
       animationStyle: AnimationStyle(
           duration: SystemMotion.standard(context),
           reverseDuration: SystemMotion.micro(context)),
+      // Same localized copy/actions; the dismissing overlay must not look up
+      // ancestors through the already-deactivated underlying session route.
       builder: (ctx) => FitFlowConfirmDialog(
-        title: context.l10n.flowExitTitle,
-        message: context.l10n.flowExitBody,
-        cancelLabel: context.l10n.flowKeepGoing,
-        confirmLabel: context.l10n.flowExit,
+        title: ctx.l10n.flowExitTitle,
+        message: ctx.l10n.flowExitBody,
+        cancelLabel: ctx.l10n.flowKeepGoing,
+        confirmLabel: ctx.l10n.flowExit,
         destructive: true,
       ),
     );
@@ -280,6 +284,11 @@ class _WorkoutPlayerSessionViewState
             state.phase == WorkoutPlayerPhase.completed)
         : true;
 
+    // Visual V2 is confined to active work, including paused work. Ready,
+    // Rest, transition, section break and Completion retain their old tree.
+    final workPresentation = state.phase == WorkoutPlayerPhase.work;
+    final v = FitFlowVisualV2.of(context);
+
     return PopScope(
       canPop: canPop,
       onPopInvokedWithResult: (didPop, result) async {
@@ -307,10 +316,23 @@ class _WorkoutPlayerSessionViewState
         }
       },
       child: Scaffold(
+        backgroundColor: workPresentation ? v.page : null,
         appBar: AppBar(
-          title: Text(_appBarTitle(context.l10n, _stableOrigin)),
+          backgroundColor: workPresentation ? v.page : null,
+          scrolledUnderElevation: workPresentation ? 0 : null,
+          toolbarHeight: workPresentation && WorkoutV2Layout.largeText(context)
+              ? 80
+              : null,
+          title: Text(_appBarTitle(context.l10n, _stableOrigin),
+              style: workPresentation
+                  ? Theme.of(context).textTheme.titleMedium
+                  : null,
+              maxLines: workPresentation ? 2 : null),
           actions: [
             IconButton(
+              constraints: workPresentation
+                  ? const BoxConstraints(minWidth: 48, minHeight: 48)
+                  : null,
               tooltip: state.voiceEnabled
                   ? context.l10n.flowMute
                   : context.l10n.flowVoice,
@@ -351,12 +373,18 @@ class _WorkoutPlayerSessionViewState
               if (controller.canReplaceCurrentExercise) ...[
                 const SizedBox(height: FitFlowSpace.xs),
                 TextButton.icon(
+                    style: workPresentation
+                        ? TextButton.styleFrom(minimumSize: const Size(48, 48))
+                        : null,
                     onPressed: _handleReplaceExercise,
                     icon: const Icon(Icons.swap_horiz_rounded),
                     label: Text(context.l10n.flowReplace)),
               ],
               if (state.phase == WorkoutPlayerPhase.ready || state.isPaused)
                 TextButton.icon(
+                  style: workPresentation
+                      ? TextButton.styleFrom(minimumSize: const Size(48, 48))
+                      : null,
                   onPressed: () => context.push(AppRoutes.exerciseDetail(
                       state.currentPrescription.exercise.id)),
                   icon: const Icon(Icons.info_outline_rounded),
@@ -379,6 +407,59 @@ class _WorkoutPlayerSessionViewState
                 ],
               ],
             ];
+            if (workPresentation) {
+              // Keep the exact same phase/header/action objects and controller
+              // above width changes. Media sizing never selects a new session.
+              final largeType = WorkoutV2Layout.largeText(context);
+              final sideBySide = constraints.maxWidth >= 600 && !largeType;
+              final short = constraints.maxHeight < 400;
+              if (sideBySide) {
+                return SingleChildScrollView(
+                  key: const ValueKey('v2_active_player_scroll'),
+                  child: Column(children: [
+                    ...header,
+                    Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(flex: 3, child: phase),
+                          const SizedBox(width: FitFlowSpace.md),
+                          Expanded(
+                              flex: 2,
+                              child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: actions)),
+                        ]),
+                  ]),
+                );
+              }
+              if (short || largeType) {
+                return SingleChildScrollView(
+                  key: const ValueKey('v2_active_player_scroll'),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      ...header,
+                      phase,
+                      const SizedBox(height: FitFlowSpace.md),
+                      ...actions,
+                    ],
+                  ),
+                );
+              }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  ...header,
+                  Expanded(
+                      child: SingleChildScrollView(
+                          key: const ValueKey('v2_active_player_scroll'),
+                          child: phase)),
+                  const SizedBox(height: FitFlowSpace.sm),
+                  ...actions,
+                ],
+              );
+            }
             // Width changes presentation only; session/provider ownership stays
             // above this layout, with no width-based session keys.
             final wide = constraints.maxWidth >= 600 &&
