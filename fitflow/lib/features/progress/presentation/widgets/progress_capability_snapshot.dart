@@ -1,3 +1,5 @@
+import 'package:fitflow/core/design/fitflow_spacing.dart';
+import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
 import 'package:fitflow/features/workouts/presentation/widgets/training_presentation.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
@@ -21,15 +23,20 @@ class ProgressCapabilitySnapshot extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Semantics(
-            header: true,
-            child: Text(context.l10n.trainingMovementSnapshot,
-                style: theme.textTheme.titleLarge
-                    ?.copyWith(fontWeight: FontWeight.w700))),
-        const SizedBox(height: 4),
-        Text(context.l10n.trainingMovementHelp,
-            style: theme.textTheme.bodySmall
-                ?.copyWith(color: colorScheme.onSurfaceVariant)),
-        const SizedBox(height: 16),
+          header: true,
+          child: Text(
+            context.l10n.trainingMovementSnapshot,
+            style: theme.textTheme.titleLarge
+                ?.copyWith(fontWeight: FontWeight.w700),
+          ),
+        ),
+        const SizedBox(height: FitFlowSpace.xxs),
+        Text(
+          context.l10n.trainingMovementHelp,
+          style: theme.textTheme.bodySmall
+              ?.copyWith(color: colorScheme.onSurfaceVariant),
+        ),
+        const SizedBox(height: FitFlowSpace.md),
         capabilityAsync.when(
           loading: () =>
               FitFlowLoading(label: context.l10n.trainingMovementLoading),
@@ -41,11 +48,11 @@ class ProgressCapabilitySnapshot extends ConsumerWidget {
                   child: Text(context.l10n.retry))),
           data: (profile) {
             if (profile == null) {
-              return Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Text(context.l10n.trainingMovementMissing,
-                      style: theme.textTheme.bodyMedium),
+              return FitFlowV2InfoSurface(
+                tonal: true,
+                child: Text(
+                  context.l10n.trainingMovementMissing,
+                  style: theme.textTheme.bodyMedium,
                 ),
               );
             }
@@ -63,21 +70,29 @@ class _CapabilityGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            for (final pattern in CapabilityProfile.trainablePatterns) ...[
-              _CapabilityRow(
+    return FitFlowV2InfoSurface(
+      padding: EdgeInsets.zero,
+      child: Column(
+        children: [
+          for (final pattern in CapabilityProfile.trainablePatterns) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: FitFlowSpace.md,
+                vertical: FitFlowSpace.xs,
+              ),
+              child: _CapabilityRow(
                 patternLabel: movementPatternLabel(context.l10n, pattern),
                 level: profile.capabilityFor(pattern)?.level,
               ),
-              if (pattern != CapabilityProfile.trainablePatterns.last)
-                const Divider(height: 20),
-            ],
+            ),
+            if (pattern != CapabilityProfile.trainablePatterns.last)
+              const Divider(
+                height: 1,
+                indent: FitFlowSpace.md,
+                endIndent: FitFlowSpace.md,
+              ),
           ],
-        ),
+        ],
       ),
     );
   }
@@ -89,13 +104,20 @@ class _CapabilityRow extends StatelessWidget {
   final CapabilityLevel? level;
 
   @override
-  Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Wrap(spacing: 12, runSpacing: 6, children: [
-          Text(patternLabel, style: Theme.of(context).textTheme.titleSmall),
-          Text(level == null
-              ? context.l10n.trainingUnknown
-              : trainingLevelLabel(context.l10n, level!)),
-        ]),
+  Widget build(BuildContext context) => Wrap(
+        spacing: FitFlowSpace.xs,
+        runSpacing: FitFlowSpace.xs,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Text(
+            patternLabel,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+          FitFlowV2Tag(
+            level == null
+                ? context.l10n.trainingUnknown
+                : trainingLevelLabel(context.l10n, level!),
+          ),
+        ],
       );
 }

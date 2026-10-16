@@ -1,3 +1,5 @@
+import 'package:fitflow/core/design/fitflow_spacing.dart';
+import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/features/workouts/domain/recovery/movement_recovery_status.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/l10n/locale_format.dart';
@@ -39,50 +41,85 @@ class ProgressRecoverySection extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final trainedStatuses =
+        recoveryStatuses.where((s) => s.lastTrained != null).toList();
+    final untrainedStatuses =
+        recoveryStatuses.where((s) => s.lastTrained == null).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Training recovery',
-            style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
-        const SizedBox(height: 4),
-        Text('Based on your recent FitFlow training history, not a medical recovery measure.',
-            style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant)),
-        const SizedBox(height: 4),
-        Text('Based only on time since this movement appeared in your FitFlow workouts.',
-            style: theme.textTheme.bodySmall
-                ?.copyWith(color: colorScheme.onSurfaceVariant, fontStyle: FontStyle.italic)),
-        const SizedBox(height: 16),
-        if (recoveryStatuses.where((s) => s.lastTrained != null).isEmpty)
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                  'No recent training data. Complete workouts with different movements to see recovery.',
-                  style: theme.textTheme.bodyMedium),
+        Semantics(
+          header: true,
+          child: Text(
+            'Training recovery',
+            style: theme.textTheme.titleLarge
+                ?.copyWith(fontWeight: FontWeight.w700),
+          ),
+        ),
+        const SizedBox(height: FitFlowSpace.xxs),
+        Text(
+          'Based on your recent FitFlow training history, not a medical recovery measure.',
+          style: theme.textTheme.bodySmall
+              ?.copyWith(color: colorScheme.onSurfaceVariant),
+        ),
+        const SizedBox(height: FitFlowSpace.xxs),
+        Text(
+          'Based only on time since this movement appeared in your FitFlow workouts.',
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+            fontStyle: FontStyle.italic,
+          ),
+        ),
+        const SizedBox(height: FitFlowSpace.md),
+        if (trainedStatuses.isEmpty)
+          FitFlowV2InfoSurface(
+            tonal: true,
+            child: Text(
+              'No recent training data. Complete workouts with different movements to see recovery.',
+              style: theme.textTheme.bodyMedium,
             ),
           )
         else
-          ...recoveryStatuses.where((s) => s.lastTrained != null).map((status) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: _RecoveryCard(
-                status: status,
-                friendlyLastTrained: _friendlyLastTrained(context, status.lastTrained),
-              ),
-            );
-          }),
+          FitFlowV2InfoSurface(
+            padding: EdgeInsets.zero,
+            child: Column(
+              children: [
+                for (var i = 0; i < trainedStatuses.length; i++) ...[
+                  _RecoveryRow(
+                    status: trainedStatuses[i],
+                    friendlyLastTrained: _friendlyLastTrained(
+                      context,
+                      trainedStatuses[i].lastTrained,
+                    ),
+                  ),
+                  if (i != trainedStatuses.length - 1)
+                    const Divider(
+                      height: 1,
+                      indent: FitFlowSpace.md,
+                      endIndent: FitFlowSpace.md,
+                    ),
+                ],
+              ],
+            ),
+          ),
         if (recoveryStatuses.any((s) => s.lastTrained == null)) ...[
-          const SizedBox(height: 16),
-          Text('Movements not trained yet',
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
-          const SizedBox(height: 8),
+          const SizedBox(height: FitFlowSpace.md),
+          Semantics(
+            header: true,
+            child: Text(
+              'Movements not trained yet',
+              style: theme.textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w600),
+            ),
+          ),
+          const SizedBox(height: FitFlowSpace.xs),
           Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: recoveryStatuses.where((s) => s.lastTrained == null).map((s) {
-              return Chip(label: Text(s.movementPattern.label));
-            }).toList(),
+            spacing: FitFlowSpace.xs,
+            runSpacing: FitFlowSpace.xs,
+            children: untrainedStatuses
+                .map((status) => FitFlowV2Tag(status.movementPattern.label))
+                .toList(),
           ),
         ],
       ],
@@ -90,8 +127,12 @@ class ProgressRecoverySection extends StatelessWidget {
   }
 }
 
-class _RecoveryCard extends StatelessWidget {
-  const _RecoveryCard({required this.status, required this.friendlyLastTrained});
+class _RecoveryRow extends StatelessWidget {
+  const _RecoveryRow({
+    required this.status,
+    required this.friendlyLastTrained,
+  });
+
   final MovementRecoveryStatus status;
   final String friendlyLastTrained;
 
@@ -100,59 +141,36 @@ class _RecoveryCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    Color categoryColor;
-    switch (status.category) {
-      case RecoveryCategory.trainedRecently:
-        categoryColor = colorScheme.primary;
-        break;
-      case RecoveryCategory.resting:
-        categoryColor = colorScheme.secondary;
-        break;
-      case RecoveryCategory.wellRested:
-        categoryColor = colorScheme.tertiary;
-        break;
-      case RecoveryCategory.notTrainedRecently:
-        categoryColor = colorScheme.onSurfaceVariant;
-        break;
-    }
-
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(status.movementPattern.label,
-                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-                      overflow: TextOverflow.ellipsis),
-                ),
-                const SizedBox(width: 8),
-                Flexible(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: categoryColor.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(status.category.label,
-                        style: theme.textTheme.labelSmall
-                            ?.copyWith(color: categoryColor, fontWeight: FontWeight.w600),
-                        overflow: TextOverflow.ellipsis),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(friendlyLastTrained,
-                style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant)),
-            const SizedBox(height: 4),
-            Text('${status.sessionsLast7Days} sessions • ${status.setsLast7Days} sets this week',
-                style: theme.textTheme.bodyMedium),
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.all(FitFlowSpace.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Wrap(
+            spacing: FitFlowSpace.xs,
+            runSpacing: FitFlowSpace.xs,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Text(
+                status.movementPattern.label,
+                style: theme.textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.w700),
+              ),
+              FitFlowV2Tag(status.category.label),
+            ],
+          ),
+          const SizedBox(height: FitFlowSpace.xs),
+          Text(
+            friendlyLastTrained,
+            style: theme.textTheme.bodySmall
+                ?.copyWith(color: colorScheme.onSurfaceVariant),
+          ),
+          const SizedBox(height: FitFlowSpace.xxs),
+          Text(
+            '${status.sessionsLast7Days} sessions • ${status.setsLast7Days} sets this week',
+            style: theme.textTheme.bodyMedium,
+          ),
+        ],
       ),
     );
   }

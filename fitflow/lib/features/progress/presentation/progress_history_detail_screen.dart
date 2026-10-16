@@ -1,12 +1,16 @@
-import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
-import 'package:fitflow/features/workouts/presentation/widgets/training_presentation.dart';
-import 'package:fitflow/core/design/fitflow_layout.dart';
-import 'package:fitflow/l10n/enum_labels.dart';
 import 'package:fitflow/app/config/app_dimensions.dart';
-import 'package:fitflow/l10n/fitflow_l10n.dart';
-import 'package:fitflow/l10n/locale_format.dart';
+import 'package:fitflow/core/design/fitflow_layout.dart';
+import 'package:fitflow/core/design/fitflow_radius.dart';
+import 'package:fitflow/core/design/fitflow_spacing.dart';
+import 'package:fitflow/core/design/fitflow_theme_extension.dart';
+import 'package:fitflow/core/design/fitflow_visual_v2.dart';
+import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
 import 'package:fitflow/features/workouts/application/workout_history_controller.dart';
 import 'package:fitflow/features/workouts/domain/history/completed_workout_exercise.dart';
+import 'package:fitflow/features/workouts/presentation/widgets/training_presentation.dart';
+import 'package:fitflow/l10n/enum_labels.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
+import 'package:fitflow/l10n/locale_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -29,102 +33,202 @@ class ProgressHistoryDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final historyAsync = ref.watch(workoutHistoryProvider);
-    final theme = Theme.of(context);
+    final visual = FitFlowVisualV2.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.workoutDetail)),
+      backgroundColor: visual.page,
+      appBar: AppBar(
+        title: Text(context.l10n.workoutDetail),
+        backgroundColor: visual.page,
+        surfaceTintColor: Colors.transparent,
+      ),
       body: historyAsync.when(
         loading: () => SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: FitFlowLoading(label: context.l10n.trainingHistoryLoading)),
+          padding: const EdgeInsets.all(24),
+          child: FitFlowLoading(
+            label: context.l10n.trainingHistoryLoading,
+          ),
+        ),
         error: (e, _) => Center(
-            child: SingleChildScrollView(
-                child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text(context.l10n.trainingHistoryError),
-          TextButton(
-              onPressed: () =>
-                  ref.read(workoutHistoryProvider.notifier).refresh(),
-              child: Text(context.l10n.trainingRetry)),
-        ]))),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(context.l10n.trainingHistoryError),
+                TextButton(
+                  onPressed: () =>
+                      ref.read(workoutHistoryProvider.notifier).refresh(),
+                  child: Text(context.l10n.trainingRetry),
+                ),
+              ],
+            ),
+          ),
+        ),
         data: (history) {
           final workout = history.where((w) => w.id == sessionId).firstOrNull;
           if (workout == null) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(AppDimens.screenPadding),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.search_off_rounded,
-                        size: 48, color: theme.colorScheme.onSurfaceVariant),
-                    const SizedBox(height: 16),
-                    Text(context.l10n.trainingHistoryMissing,
-                        style: theme.textTheme.titleMedium),
-                    const SizedBox(height: 8),
-                    Text(context.l10n.trainingHistoryMissingHelp,
-                        style: theme.textTheme.bodyMedium),
-                  ],
-                ),
-              ),
-            );
+            return _missingHistoryState(context);
           }
 
           return SafeArea(
             child: FitFlowMaxWidth(
-                child: SingleChildScrollView(
-              padding: const EdgeInsets.all(AppDimens.screenPadding),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(context.l10n.trainingHistoryCompleted,
-                      style: theme.textTheme.titleLarge
-                          ?.copyWith(fontWeight: FontWeight.w700)),
-                  const SizedBox(height: 8),
-                  Text(_formatDateTime(context, workout.completedAt),
-                      style: theme.textTheme.bodyLarge),
-                  const SizedBox(height: 16),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
+              maxWidth: FitFlowLayout.maxReadableWidth,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(
+                  FitFlowSpace.screenHorizontal,
+                  FitFlowSpace.lg,
+                  FitFlowSpace.screenHorizontal,
+                  FitFlowSpace.xxl,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ExcludeSemantics(
+                          child: Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color: visual.tint,
+                              borderRadius: FitFlowRadius.mediumBorder,
+                            ),
+                            child: Icon(
+                              Icons.check_circle_outline_rounded,
+                              color: FitFlowTheme.of(context).brand,
+                              size: 24,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: FitFlowSpace.md),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Semantics(
+                                header: true,
+                                child: Text(
+                                  context.l10n.trainingHistoryCompleted,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleLarge
+                                      ?.copyWith(fontWeight: FontWeight.w700),
+                                ),
+                              ),
+                              const SizedBox(height: FitFlowSpace.xs),
+                              Text(
+                                _formatDateTime(context, workout.completedAt),
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: FitFlowSpace.xl),
+                    FitFlowV2InfoSurface(
+                      padding: const EdgeInsets.all(FitFlowSpace.md),
                       child: Column(
                         children: [
                           _DetailRow(
-                              label: context.l10n.trainingPlannedDuration,
-                              value: _formatDuration(
-                                  context, workout.targetDuration)),
-                          const Divider(),
+                            label: context.l10n.trainingPlannedDuration,
+                            value: _formatDuration(
+                              context,
+                              workout.targetDuration,
+                            ),
+                          ),
+                          const Divider(height: FitFlowSpace.md),
                           _DetailRow(
-                              label: context.l10n.trainingEstimatedDuration,
-                              value: _formatDuration(
-                                  context, workout.estimatedDuration)),
-                          const Divider(),
+                            label: context.l10n.trainingEstimatedDuration,
+                            value: _formatDuration(
+                              context,
+                              workout.estimatedDuration,
+                            ),
+                          ),
+                          const Divider(height: FitFlowSpace.md),
                           _DetailRow(
-                              label: context.l10n.trainingTotalExercises,
-                              value: '${workout.totalExerciseCount}'),
-                          const Divider(),
+                            label: context.l10n.trainingTotalExercises,
+                            value: '${workout.totalExerciseCount}',
+                          ),
+                          const Divider(height: FitFlowSpace.md),
                           _DetailRow(
-                              label: context.l10n.trainingTotalSets,
-                              value: '${workout.totalSetCount}'),
+                            label: context.l10n.trainingTotalSets,
+                            value: '${workout.totalSetCount}',
+                          ),
                         ],
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                  _SectionBlock(
+                    const SizedBox(height: FitFlowSpace.section),
+                    _SectionBlock(
                       title: context.l10n.flowWarmup,
-                      exercises: workout.warmup),
-                  const SizedBox(height: 16),
-                  _SectionBlock(
-                      title: context.l10n.flowMain, exercises: workout.main),
-                  const SizedBox(height: 16),
-                  _SectionBlock(
+                      exercises: workout.warmup,
+                    ),
+                    const SizedBox(height: FitFlowSpace.section),
+                    _SectionBlock(
+                      title: context.l10n.flowMain,
+                      exercises: workout.main,
+                    ),
+                    const SizedBox(height: FitFlowSpace.section),
+                    _SectionBlock(
                       title: context.l10n.flowCooldown,
-                      exercises: workout.cooldown),
-                ],
+                      exercises: workout.cooldown,
+                    ),
+                  ],
+                ),
               ),
-            )),
+            ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _missingHistoryState(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = FitFlowTheme.of(context);
+
+    return SafeArea(
+      child: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(AppDimens.screenPadding),
+          child: FitFlowMaxWidth(
+            maxWidth: FitFlowLayout.maxReadableWidth,
+            child: FitFlowV2InfoSurface(
+              tonal: true,
+              padding: const EdgeInsets.all(FitFlowSpace.xl),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ExcludeSemantics(
+                    child: Icon(
+                      Icons.search_off_rounded,
+                      size: 48,
+                      color: colors.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: FitFlowSpace.md),
+                  Semantics(
+                    header: true,
+                    child: Text(
+                      context.l10n.trainingHistoryMissing,
+                      style: theme.textTheme.titleMedium,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  const SizedBox(height: FitFlowSpace.xs),
+                  Text(
+                    context.l10n.trainingHistoryMissingHelp,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colors.textSecondary,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -132,87 +236,160 @@ class ProgressHistoryDetailScreen extends ConsumerWidget {
 
 class _DetailRow extends StatelessWidget {
   const _DetailRow({required this.label, required this.value});
+
   final String label;
   final String value;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Wrap(
-      alignment: WrapAlignment.spaceBetween,
-      spacing: 16,
-      runSpacing: 6,
-      children: [
-        Text(label, style: theme.textTheme.bodyMedium),
-        Text(value,
-            style: theme.textTheme.bodyMedium
-                ?.copyWith(fontWeight: FontWeight.w600)),
-      ],
+    final colors = FitFlowTheme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.xs),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colors.textSecondary,
+              ),
+            ),
+          ),
+          const SizedBox(width: FitFlowSpace.md),
+          Flexible(
+            child: Text(
+              value,
+              textAlign: TextAlign.end,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
 class _SectionBlock extends StatelessWidget {
   const _SectionBlock({required this.title, required this.exercises});
+
   final String title;
   final List<CompletedWorkoutExercise> exercises;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colors = FitFlowTheme.of(context);
+
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(title,
-            style: theme.textTheme.titleMedium
-                ?.copyWith(fontWeight: FontWeight.w700)),
-        const SizedBox(height: 8),
-        if (exercises.isEmpty)
-          Text(context.l10n.trainingNoExercises,
-              style: theme.textTheme.bodySmall
-                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant))
-        else
-          ...exercises.map((ex) {
-            final workload = ex.repsPerSet != null
-                ? context.l10n.trainingWorkloadReps(ex.sets, ex.repsPerSet!)
-                : context.l10n.trainingWorkloadTimed(
-                    ex.sets,
-                    ex.workDuration == null
-                        ? '—'
-                        : FitFlowLocaleFormat.formatDuration(
-                            context.l10n, ex.workDuration!));
-            final movementLabel = ex.movementPattern == null
-                ? context.l10n.trainingUnclassified
-                : movementPatternLabel(context.l10n, ex.movementPattern!);
-            return Card(
-              margin: const EdgeInsets.only(bottom: 8),
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+        Semantics(
+          header: true,
+          child: Text(
+            title,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+        const SizedBox(height: FitFlowSpace.sm),
+        FitFlowV2InfoSurface(
+          padding: EdgeInsets.zero,
+          child: exercises.isEmpty
+              ? Padding(
+                  padding: const EdgeInsets.all(FitFlowSpace.md),
+                  child: Text(
+                    context.l10n.trainingNoExercises,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: colors.textSecondary,
+                    ),
+                  ),
+                )
+              : Column(
                   children: [
-                    Text(ex.exerciseName,
-                        style: theme.textTheme.titleSmall
-                            ?.copyWith(fontWeight: FontWeight.w600)),
-                    const SizedBox(height: 4),
-                    Text(
-                        '$movementLabel • ${trainingDifficultyLabel(context.l10n, ex.difficulty)}',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant)),
-                    const SizedBox(height: 4),
-                    Text(workload, style: theme.textTheme.bodyMedium),
-                    const SizedBox(height: 2),
-                    Text(
-                        context.l10n.trainingRest(
-                            FitFlowLocaleFormat.formatDuration(
-                                context.l10n, ex.restBetweenSets)),
-                        style: theme.textTheme.bodySmall),
+                    for (var i = 0; i < exercises.length; i++) ...[
+                      _ExerciseRecord(exercise: exercises[i]),
+                      if (i < exercises.length - 1)
+                        const Divider(
+                          height: 1,
+                          indent: FitFlowSpace.md,
+                          endIndent: FitFlowSpace.md,
+                        ),
+                    ],
                   ],
                 ),
-              ),
-            );
-          }),
+        ),
       ],
+    );
+  }
+}
+
+class _ExerciseRecord extends StatelessWidget {
+  const _ExerciseRecord({required this.exercise});
+
+  final CompletedWorkoutExercise exercise;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = context.l10n;
+    final theme = Theme.of(context);
+    final colors = FitFlowTheme.of(context);
+    final workload = exercise.repsPerSet != null
+        ? l.trainingWorkloadReps(exercise.sets, exercise.repsPerSet!)
+        : l.trainingWorkloadTimed(
+            exercise.sets,
+            exercise.workDuration == null
+                ? '—'
+                : FitFlowLocaleFormat.formatDuration(
+                    l,
+                    exercise.workDuration!,
+                  ),
+          );
+    final movementLabel = exercise.movementPattern == null
+        ? l.trainingUnclassified
+        : movementPatternLabel(l, exercise.movementPattern!);
+
+    return Padding(
+      padding: const EdgeInsets.all(FitFlowSpace.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            exercise.exerciseName,
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: FitFlowSpace.xxs),
+          Text(
+            '$movementLabel • ${trainingDifficultyLabel(l, exercise.difficulty)}',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: colors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: FitFlowSpace.xs),
+          Text(
+            workload,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: FitFlowSpace.xxs),
+          Text(
+            l.trainingRest(
+              FitFlowLocaleFormat.formatDuration(l, exercise.restBetweenSets),
+            ),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: colors.textSecondary,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
