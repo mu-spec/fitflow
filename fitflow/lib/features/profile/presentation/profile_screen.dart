@@ -1,13 +1,15 @@
-import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/onboarding/data/user_fitness_profile.dart';
 import 'package:fitflow/features/onboarding/state/user_fitness_profile_controller.dart';
 import 'package:fitflow/features/profile/presentation/profile_summary_format.dart';
+import 'package:fitflow/features/profile/presentation/widgets/profile_editor_widgets.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
+import 'package:fitflow/core/design/fitflow_spacing.dart';
+import 'package:fitflow/core/design/fitflow_theme_extension.dart';
+import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
 import 'package:fitflow/features/capability_assessment/presentation/capability_assessment_copy.dart';
-import 'package:fitflow/features/settings/presentation/widgets/utility_presentation.dart';
 import 'package:fitflow/features/workouts/state/capability_profile_controller.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
 import 'package:flutter/material.dart';
@@ -22,23 +24,27 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(userFitnessProfileProvider);
+    final visual = FitFlowVisualV2.of(context);
 
-    return SafeArea(
-      child: Align(
-        alignment: Alignment.topCenter,
-        child: ConstrainedBox(
-          constraints:
-              const BoxConstraints(maxWidth: FitFlowLayout.maxReadableWidth),
-          child: profileAsync.when(
-            loading: () => const _ProfileLoadingState(),
-            error: (error, stackTrace) => _ProfileErrorState(
-              onRetry: () => ref.invalidate(userFitnessProfileProvider),
+    return ColoredBox(
+      color: visual.page,
+      child: SafeArea(
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: ConstrainedBox(
+            constraints:
+                const BoxConstraints(maxWidth: FitFlowLayout.maxReadableWidth),
+            child: profileAsync.when(
+              loading: () => const _ProfileLoadingState(),
+              error: (error, stackTrace) => _ProfileErrorState(
+                onRetry: () => ref.invalidate(userFitnessProfileProvider),
+              ),
+              data: (profile) => profile == null
+                  ? _ProfileMissingState(
+                      onSetup: () => context.go(AppRoutes.onboarding),
+                    )
+                  : _ProfileSummaryList(profile: profile),
             ),
-            data: (profile) => profile == null
-                ? _ProfileMissingState(
-                    onSetup: () => context.go(AppRoutes.onboarding),
-                  )
-                : _ProfileSummaryList(profile: profile),
           ),
         ),
       ),
@@ -85,54 +91,100 @@ class _ProfileSummaryList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final brand = FitFlowTheme.of(context);
+    final l = context.l10n;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(AppDimens.screenPadding),
+      padding: const EdgeInsets.fromLTRB(
+        FitFlowSpace.screenHorizontal,
+        FitFlowSpace.xl,
+        FitFlowSpace.screenHorizontal,
+        FitFlowSpace.xxxl,
+      ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          Text(
+            l.homeBrand,
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: brand.brand,
+              letterSpacing: 1.2,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: FitFlowSpace.xs),
           Semantics(
-              header: true,
-              child: Text(context.l10n.yourProfile,
-                  style: theme.textTheme.headlineMedium)),
-          const SizedBox(height: 4),
+            header: true,
+            child: Text(
+              l.yourProfile,
+              style: theme.textTheme.headlineMedium,
+            ),
+          ),
+          const SizedBox(height: FitFlowSpace.sm),
           Text(
             'Your settings shape how FitFlow adapts future workouts.',
-            style: theme.textTheme.bodyMedium?.copyWith(
+            style: theme.textTheme.bodyLarge?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
-          const SizedBox(height: 16),
-          _ProfileSummaryRow(
-            icon: Icons.tune_rounded,
-            title: 'Fitness Profile',
-            subtitle:
-                '${fitnessProfileSummaryPrimary(profile, l10n: context.l10n)}\n${fitnessProfileSummarySecondary(profile, l10n: context.l10n)}',
-            onTap: () => context.go(AppRoutes.fitnessProfile),
+          const SizedBox(height: FitFlowSpace.xl),
+          FitFlowV2InfoSurface(
+            padding: EdgeInsets.zero,
+            child: Column(
+              children: [
+                _ProfileSummaryRow(
+                  icon: Icons.tune_rounded,
+                  title: 'Fitness Profile',
+                  subtitle:
+                      '${fitnessProfileSummaryPrimary(profile, l10n: l)}\n${fitnessProfileSummarySecondary(profile, l10n: l)}',
+                  onTap: () => context.go(AppRoutes.fitnessProfile),
+                ),
+                const Divider(
+                  height: 1,
+                  indent: FitFlowSpace.md,
+                  endIndent: FitFlowSpace.md,
+                ),
+                _ProfileSummaryRow(
+                  icon: Icons.build,
+                  title: 'Equipment',
+                  subtitle: formatEquipmentSummary(
+                    profile.equipment,
+                    l10n: l,
+                    showAll: true,
+                  ),
+                  onTap: () => context.go(AppRoutes.equipment),
+                ),
+                const Divider(
+                  height: 1,
+                  indent: FitFlowSpace.md,
+                  endIndent: FitFlowSpace.md,
+                ),
+                _ProfileSummaryRow(
+                  icon: Icons.tune,
+                  title: 'Workout Preferences',
+                  subtitle: formatPreferencesSummary(
+                    profile.preferences,
+                    l10n: l,
+                    showAll: true,
+                  ),
+                  onTap: () => context.go(AppRoutes.workoutPreferences),
+                ),
+              ],
+            ),
           ),
-          _ProfileSummaryRow(
-            icon: Icons.build,
-            title: 'Equipment',
-            subtitle: formatEquipmentSummary(profile.equipment,
-                l10n: context.l10n, showAll: true),
-            onTap: () => context.go(AppRoutes.equipment),
-          ),
-          _ProfileSummaryRow(
-            icon: Icons.tune,
-            title: 'Workout Preferences',
-            subtitle: formatPreferencesSummary(profile.preferences,
-                l10n: context.l10n, showAll: true),
-            onTap: () => context.go(AppRoutes.workoutPreferences),
-          ),
-          const Divider(height: 24),
+          const SizedBox(height: FitFlowSpace.md),
           const _MovementSummary(),
-          const Divider(height: 24),
-          _ProfileSummaryRow(
-            icon: Icons.settings,
-            title: 'Settings',
-            subtitle: context.l10n.utilitySettingsSummary,
-            isEditing: false,
-            onTap: () => context.go(AppRoutes.settings),
+          const SizedBox(height: FitFlowSpace.md),
+          FitFlowV2InfoSurface(
+            tonal: true,
+            padding: EdgeInsets.zero,
+            child: _ProfileSummaryRow(
+              icon: Icons.settings,
+              title: 'Settings',
+              subtitle: l.utilitySettingsSummary,
+              isEditing: false,
+              onTap: () => context.go(AppRoutes.settings),
+            ),
           ),
         ],
       ),
@@ -160,24 +212,35 @@ class _ProfileSummaryRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Material(
-      type: MaterialType.transparency,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: ListTile(
-          onTap: onTap,
-          leading: Icon(icon),
-          title: Text(title),
-          subtitle: Text(
-            subtitle,
-            style: theme.textTheme.bodyMedium
-                ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+    return ListTile(
+      onTap: onTap,
+      minVerticalPadding: FitFlowSpace.xxs,
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: FitFlowSpace.md,
+      ),
+      leading: ExcludeSemantics(
+        child: Icon(
+          icon,
+          color: theme.colorScheme.primary,
+        ),
+      ),
+      title: Text(
+        title,
+        style: theme.textTheme.titleMedium,
+      ),
+      subtitle: Text(
+        subtitle,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+      ),
+      trailing: Tooltip(
+        message: isEditing ? context.l10n.utilityEditSection(title) : title,
+        child: ExcludeSemantics(
+          child: Icon(
+            isEditing ? Icons.edit_outlined : Icons.chevron_right,
+            color: theme.colorScheme.onSurfaceVariant,
           ),
-          trailing: Tooltip(
-              message:
-                  isEditing ? context.l10n.utilityEditSection(title) : title,
-              child: Icon(isEditing ? Icons.edit_outlined : Icons.chevron_right,
-                  color: theme.colorScheme.onSurfaceVariant)),
         ),
       ),
     );
@@ -187,47 +250,68 @@ class _ProfileSummaryRow extends StatelessWidget {
 /// Read-only: the existing assessment is a first-run gate, not an editor.
 class _MovementSummary extends ConsumerWidget {
   const _MovementSummary();
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = context.l10n;
     final current = ref.watch(capabilityProfileProvider);
-    return UtilityDisclosure(
-        title: l.utilityMovementTitle,
-        summary: l.utilityMovementSummary,
-        children: [
-          Text(l.utilityMovementBody),
-          const SizedBox(height: 12),
-          current.when(
-              loading: () => FitFlowLoading(label: l.assessmentLoading),
-              error: (_, __) => FitFlowErrorState(
-                  title: l.utilityMovementError,
-                  message: l.utilityRetryBody,
-                  action: TextButton(
-                      onPressed: () =>
-                          ref.invalidate(capabilityProfileProvider),
-                      child: Text(l.retry))),
-              data: (profile) => profile == null
-                  ? Text(l.utilityMovementMissing)
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+    final theme = Theme.of(context);
+
+    return ProfileDisclosure(
+      title: l.utilityMovementTitle,
+      summary: l.utilityMovementSummary,
+      children: [
+        Text(l.utilityMovementBody),
+        const SizedBox(height: FitFlowSpace.sm),
+        current.when(
+          loading: () => FitFlowLoading(label: l.assessmentLoading),
+          error: (_, __) => FitFlowErrorState(
+            title: l.utilityMovementError,
+            message: l.utilityRetryBody,
+            action: TextButton(
+              onPressed: () => ref.invalidate(capabilityProfileProvider),
+              child: Text(l.retry),
+            ),
+          ),
+          data: (profile) {
+            if (profile == null) {
+              return Text(l.utilityMovementMissing);
+            }
+            final values = profile.all;
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (var index = 0; index < values.length; index++) ...[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: FitFlowSpace.xs,
+                    ),
+                    child: Wrap(
+                      alignment: WrapAlignment.spaceBetween,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: FitFlowSpace.sm,
+                      runSpacing: FitFlowSpace.xxs,
                       children: [
-                          for (final value in profile.all)
-                            Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 8),
-                                child: Wrap(
-                                    spacing: 16,
-                                    runSpacing: 4,
-                                    alignment: WrapAlignment.spaceBetween,
-                                    children: [
-                                      Text(movementPatternLabel(
-                                          l, value.movementPattern)),
-                                      Text(assessmentChoice(l, value.level),
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleSmall),
-                                    ])),
-                        ])),
-        ]);
+                        Text(
+                          movementPatternLabel(
+                            l,
+                            values[index].movementPattern,
+                          ),
+                          style: theme.textTheme.bodyLarge,
+                        ),
+                        FitFlowV2Tag(
+                          assessmentChoice(l, values[index].level),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (index < values.length - 1) const Divider(height: 1),
+                ],
+              ],
+            );
+          },
+        ),
+      ],
+    );
   }
 }

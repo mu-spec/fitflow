@@ -1,11 +1,11 @@
-import 'package:fitflow/features/settings/presentation/widgets/utility_presentation.dart';
-import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/features/onboarding/data/experience_level.dart';
 import 'package:fitflow/features/onboarding/data/fitness_goal.dart';
 import 'package:fitflow/features/onboarding/data/training_environment.dart';
 import 'package:fitflow/features/onboarding/data/user_fitness_profile.dart';
 import 'package:fitflow/features/onboarding/data/workout_duration.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
+import 'package:fitflow/core/design/fitflow_spacing.dart';
+import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
@@ -94,6 +94,10 @@ class _FitnessProfileEditorScreenState
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final visual = FitFlowVisualV2.of(context);
+    final viewportWidth = MediaQuery.sizeOf(context).width;
+    final titleScale = MediaQuery.textScalerOf(context).scale(16);
+    final largeText = titleScale > 20;
     final profileAsync = ref.watch(userFitnessProfileProvider);
 
     return PopScope(
@@ -105,7 +109,14 @@ class _FitnessProfileEditorScreenState
         confirmDiscardEditorChanges(context);
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Fitness profile')),
+        backgroundColor: visual.page,
+        appBar: AppBar(
+          toolbarHeight: largeText ? (titleScale > 28 ? 120 : 104) : null,
+          title: Semantics(
+            header: true,
+            child: Text('Fitness profile'),
+          ),
+        ),
         body: SafeArea(
           child: profileAsync.when(
             loading: () =>
@@ -127,91 +138,117 @@ class _FitnessProfileEditorScreenState
               final draft = _draft!;
 
               return SingleChildScrollView(
-                padding: const EdgeInsets.all(AppDimens.screenPadding),
+                padding: EdgeInsets.symmetric(
+                  horizontal: viewportWidth < 360
+                      ? FitFlowSpace.md
+                      : FitFlowSpace.screenHorizontal,
+                  vertical: FitFlowSpace.md,
+                ),
                 child: Center(
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(
-                        maxWidth: FitFlowLayout.maxReadableWidth),
+                      maxWidth: FitFlowLayout.maxReadableWidth,
+                    ),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(
-                          'These settings shape future adaptive workouts.',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
+                        FitFlowV2InfoSurface(
+                          tonal: true,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'These settings shape future adaptive workouts.',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                              const SizedBox(height: FitFlowSpace.xs),
+                              Text(
+                                context.l10n.utilityEditorDraft,
+                                style: theme.textTheme.bodySmall,
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        Text(context.l10n.utilityEditorDraft,
-                            style: theme.textTheme.bodySmall),
-                        const SizedBox(height: 20),
-                        UtilityDisclosure(
-                            title: context.l10n.utilityGoal,
-                            summary: context.l10n.utilitySelectedValue(
-                                fitnessGoalLabel(context.l10n, draft.goal)),
-                            children: [
-                              for (final goal in FitnessGoal.values)
-                                ProfileOptionTile(
-                                  enabled: !_saving,
-                                  label: fitnessGoalLabel(context.l10n, goal),
-                                  selected: draft.goal == goal,
-                                  onSelected: () =>
-                                      _update((p) => p.copyWith(goal: goal)),
+                        const SizedBox(height: FitFlowSpace.md),
+                        ProfileDisclosure(
+                          title: context.l10n.utilityGoal,
+                          summary: context.l10n.utilitySelectedValue(
+                            fitnessGoalLabel(context.l10n, draft.goal),
+                          ),
+                          children: [
+                            for (final goal in FitnessGoal.values)
+                              ProfileOptionTile(
+                                enabled: !_saving,
+                                label: fitnessGoalLabel(context.l10n, goal),
+                                selected: draft.goal == goal,
+                                onSelected: () =>
+                                    _update((p) => p.copyWith(goal: goal)),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: FitFlowSpace.sm),
+                        ProfileDisclosure(
+                          title: context.l10n.utilityExperience,
+                          summary: context.l10n.utilitySelectedValue(
+                            experienceLabel(context.l10n, draft.experience),
+                          ),
+                          children: [
+                            for (final level in ExperienceLevel.values)
+                              ProfileOptionTile(
+                                enabled: !_saving,
+                                label: experienceLabel(context.l10n, level),
+                                helperText: experienceHelp(context.l10n, level),
+                                selected: draft.experience == level,
+                                onSelected: () => _update(
+                                  (p) => p.copyWith(experience: level),
                                 ),
-                            ]),
-                        const SizedBox(height: 12),
-                        UtilityDisclosure(
-                            title: context.l10n.utilityExperience,
-                            summary: context.l10n.utilitySelectedValue(
-                                experienceLabel(
-                                    context.l10n, draft.experience)),
-                            children: [
-                              for (final level in ExperienceLevel.values)
-                                ProfileOptionTile(
-                                  enabled: !_saving,
-                                  label: experienceLabel(context.l10n, level),
-                                  helperText:
-                                      experienceHelp(context.l10n, level),
-                                  selected: draft.experience == level,
-                                  onSelected: () => _update(
-                                      (p) => p.copyWith(experience: level)),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: FitFlowSpace.sm),
+                        ProfileDisclosure(
+                          title: context.l10n.utilityDuration,
+                          summary: context.l10n.utilitySelectedValue(
+                            workoutDurationLabel(
+                              context.l10n,
+                              draft.workoutDuration,
+                            ),
+                          ),
+                          children: [
+                            for (final duration in WorkoutDuration.values)
+                              ProfileOptionTile(
+                                enabled: !_saving,
+                                label: workoutDurationLabel(
+                                  context.l10n,
+                                  duration,
                                 ),
-                            ]),
-                        const SizedBox(height: 12),
-                        UtilityDisclosure(
-                            title: context.l10n.utilityDuration,
-                            summary: context.l10n.utilitySelectedValue(
-                                workoutDurationLabel(
-                                    context.l10n, draft.workoutDuration)),
-                            children: [
-                              for (final duration in WorkoutDuration.values)
-                                ProfileOptionTile(
-                                  enabled: !_saving,
-                                  label: workoutDurationLabel(
-                                      context.l10n, duration),
-                                  selected: draft.workoutDuration == duration,
-                                  onSelected: () => _update(
-                                    (p) =>
-                                        p.copyWith(workoutDuration: duration),
-                                  ),
+                                selected: draft.workoutDuration == duration,
+                                onSelected: () => _update(
+                                  (p) => p.copyWith(workoutDuration: duration),
                                 ),
-                            ]),
-                        const SizedBox(height: 12),
-                        UtilityDisclosure(
-                            title: context.l10n.utilityEnvironment,
-                            summary: context.l10n.utilitySelectedValue(
-                                environmentLabel(
-                                    context.l10n, draft.environment)),
-                            children: [
-                              for (final env in TrainingEnvironment.values)
-                                ProfileOptionTile(
-                                  enabled: !_saving,
-                                  label: environmentLabel(context.l10n, env),
-                                  selected: draft.environment == env,
-                                  onSelected: () => _update(
-                                      (p) => p.copyWith(environment: env)),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: FitFlowSpace.sm),
+                        ProfileDisclosure(
+                          title: context.l10n.utilityEnvironment,
+                          summary: context.l10n.utilitySelectedValue(
+                            environmentLabel(context.l10n, draft.environment),
+                          ),
+                          children: [
+                            for (final env in TrainingEnvironment.values)
+                              ProfileOptionTile(
+                                enabled: !_saving,
+                                label: environmentLabel(context.l10n, env),
+                                selected: draft.environment == env,
+                                onSelected: () => _update(
+                                  (p) => p.copyWith(environment: env),
                                 ),
-                            ]),
+                              ),
+                          ],
+                        ),
                       ],
                     ),
                   ),

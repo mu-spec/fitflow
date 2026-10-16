@@ -7,6 +7,7 @@ import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
 import 'package:fitflow/core/design/widgets/fitflow_v2_feature_art.dart';
 import 'package:fitflow/core/design/widgets/fitflow_v2_feature_card.dart';
+import 'package:fitflow/core/design/widgets/fitflow_v2_exercise_media.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
 import 'package:fitflow/l10n/locale_format.dart';
@@ -276,6 +277,10 @@ class _CustomWorkoutCard extends ConsumerWidget {
       }
     }
 
+    final firstMainEntry = template.main.isEmpty ? null : template.main.first;
+    final firstMainExercise =
+        firstMainEntry == null ? null : catalogById[firstMainEntry.exerciseId];
+
     return Padding(
       padding: const EdgeInsets.only(bottom: FitFlowSpace.sm),
       child: FitFlowV2InfoSurface(
@@ -285,33 +290,49 @@ class _CustomWorkoutCard extends ConsumerWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                if (firstMainExercise != null) ...[
+                  FitFlowV2ExerciseMedia.forExercise(
+                    exercise: firstMainExercise,
+                    width: 52,
+                    height: 52,
+                  ),
+                  const SizedBox(width: FitFlowSpace.sm),
+                ],
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(template.name,
+                      Semantics(
+                        header: true,
+                        child: Text(
+                          template.name,
                           style: theme.textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.w600)),
+                              ?.copyWith(fontWeight: FontWeight.w600),
+                        ),
+                      ),
                       const SizedBox(height: FitFlowSpace.xxs),
                       Text(
                         context.l10n.trainingCustomSummary(
-                            workoutDurationLabel(
-                                context.l10n, template.targetDuration),
-                            totalExercises),
+                          workoutDurationLabel(
+                            context.l10n,
+                            template.targetDuration,
+                          ),
+                          totalExercises,
+                        ),
                         style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant),
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                       ),
                       if (estimated != null)
                         Text(
-                            context.l10n.trainingEstimated(
-                                FitFlowLocaleFormat.formatDuration(
-                                    context.l10n, estimated)),
-                            style: theme.textTheme.bodySmall),
-                      if (movementChips.isNotEmpty) ...[
-                        const SizedBox(height: FitFlowSpace.xs),
-                        Text(movementChips.take(4).join(' · '),
-                            style: theme.textTheme.bodySmall),
-                      ],
+                          context.l10n.trainingEstimated(
+                            FitFlowLocaleFormat.formatDuration(
+                              context.l10n,
+                              estimated,
+                            ),
+                          ),
+                          style: theme.textTheme.bodySmall,
+                        ),
                     ],
                   ),
                 ),
@@ -349,8 +370,8 @@ class _CustomWorkoutCard extends ConsumerWidget {
                         if (!success && context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                                content:
-                                    Text(context.l10n.trainingDeleteError)),
+                              content: Text(context.l10n.trainingDeleteError),
+                            ),
                           );
                         }
                       }
@@ -358,17 +379,31 @@ class _CustomWorkoutCard extends ConsumerWidget {
                   },
                   itemBuilder: (ctx) => [
                     PopupMenuItem(
-                        value: 'view', child: Text(context.l10n.trainingView)),
+                      value: 'view',
+                      child: Text(context.l10n.trainingView),
+                    ),
                     PopupMenuItem(
-                        value: 'edit', child: Text(context.l10n.trainingEdit)),
+                      value: 'edit',
+                      child: Text(context.l10n.trainingEdit),
+                    ),
                     PopupMenuItem(
-                        value: 'delete',
-                        child: Text(context.l10n.trainingDelete)),
+                      value: 'delete',
+                      child: Text(context.l10n.trainingDelete),
+                    ),
                   ],
                 ),
               ],
             ),
-            const SizedBox(height: FitFlowSpace.xs),
+            if (movementChips.isNotEmpty) ...[
+              const SizedBox(height: FitFlowSpace.sm),
+              Wrap(
+                spacing: FitFlowSpace.xs,
+                runSpacing: FitFlowSpace.xs,
+                children:
+                    movementChips.map((label) => FitFlowV2Tag(label)).toList(),
+              ),
+            ],
+            const SizedBox(height: FitFlowSpace.sm),
             Wrap(
               spacing: FitFlowSpace.xs,
               runSpacing: FitFlowSpace.xs,
@@ -379,6 +414,9 @@ class _CustomWorkoutCard extends ConsumerWidget {
                   child: Text(context.l10n.trainingView),
                 ),
                 TextButton(
+                  style: TextButton.styleFrom(
+                    minimumSize: const Size(64, SystemMotion.minTouchTarget),
+                  ),
                   onPressed: () =>
                       context.push(AppRoutes.customWorkoutEdit(template.id)),
                   child: Text(context.l10n.trainingEdit),

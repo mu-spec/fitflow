@@ -1,5 +1,7 @@
+import 'package:fitflow/core/design/fitflow_layout.dart';
+import 'package:fitflow/core/design/fitflow_spacing.dart';
+import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
-import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/backup/application/backup_restore_controller.dart';
@@ -67,22 +69,65 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
     final state = ref.watch(backupRestoreControllerProvider);
     final controller = ref.read(backupRestoreControllerProvider.notifier);
     final theme = Theme.of(context);
+    final visual = FitFlowVisualV2.of(context);
+    final viewportWidth = MediaQuery.sizeOf(context).width;
+    final titleScale = MediaQuery.textScalerOf(context).scale(16);
+    final largeText = titleScale > 20;
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.backupScreenTitle)),
+      backgroundColor: visual.page,
+      appBar: AppBar(
+        toolbarHeight: largeText ? (titleScale > 28 ? 120 : 104) : null,
+        title: Semantics(
+          header: true,
+          child: Text(context.l10n.backupScreenTitle),
+        ),
+      ),
       body: SafeArea(
         child: Align(
           alignment: Alignment.topCenter,
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 640),
+            constraints: const BoxConstraints(
+              maxWidth: FitFlowLayout.maxReadableWidth,
+            ),
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(AppDimens.screenPadding),
+              padding: EdgeInsets.fromLTRB(
+                viewportWidth < 360
+                    ? FitFlowSpace.md
+                    : FitFlowSpace.screenHorizontal,
+                FitFlowSpace.md,
+                viewportWidth < 360
+                    ? FitFlowSpace.md
+                    : FitFlowSpace.screenHorizontal,
+                FitFlowSpace.xxl,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(BackupCopy.storageNote,
-                      style: theme.textTheme.bodyMedium),
-                  const SizedBox(height: 24),
+                  FitFlowV2InfoSurface(
+                    tonal: true,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ExcludeSemantics(
+                          child: Icon(
+                            Icons.info_outline_rounded,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        const SizedBox(width: FitFlowSpace.sm),
+                        Expanded(
+                          child: Text(
+                            BackupCopy.storageNote,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: FitFlowSpace.md),
                   _SectionCard(
                     icon: Icons.save_alt_rounded,
                     title: BackupCopy.createTitle,
@@ -93,15 +138,21 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                       icon: state.phase == BackupRestorePhase.creating
                           ? const SizedBox.square(
                               dimension: 18,
-                              child: Icon(Icons.hourglass_top, size: 18),
+                              child: ExcludeSemantics(
+                                child: Icon(Icons.hourglass_top, size: 18),
+                              ),
                             )
-                          : const Icon(Icons.download_rounded),
-                      label: Text(state.phase == BackupRestorePhase.creating
-                          ? context.l10n.utilitySaving
-                          : context.l10n.backupCreate),
+                          : const ExcludeSemantics(
+                              child: Icon(Icons.download_rounded),
+                            ),
+                      label: Text(
+                        state.phase == BackupRestorePhase.creating
+                            ? context.l10n.utilitySaving
+                            : context.l10n.backupCreate,
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: FitFlowSpace.md),
                   _SectionCard(
                     icon: Icons.restore_rounded,
                     title: BackupCopy.restoreTitle,
@@ -110,14 +161,18 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                       key: BackupRestoreScreen.chooseFileButtonKey,
                       onPressed:
                           state.isBusy ? null : controller.pickAndValidate,
-                      icon: const Icon(Icons.folder_open_rounded),
-                      label: Text(state.phase == BackupRestorePhase.picking
-                          ? context.l10n.utilityUpdating
-                          : context.l10n.backupChooseFile),
+                      icon: const ExcludeSemantics(
+                        child: Icon(Icons.folder_open_rounded),
+                      ),
+                      label: Text(
+                        state.phase == BackupRestorePhase.picking
+                            ? context.l10n.utilityUpdating
+                            : context.l10n.backupChooseFile,
+                      ),
                     ),
                   ),
                   if (state.preview != null) ...[
-                    const SizedBox(height: AppDimens.itemGap),
+                    const SizedBox(height: FitFlowSpace.md),
                     BackupPreviewCard(
                       preview: state.preview!,
                       isBusy: state.phase == BackupRestorePhase.restoring,
@@ -125,21 +180,30 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                       onDiscard: controller.discardPending,
                     ),
                   ],
-                  const SizedBox(height: 24),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(Icons.description_outlined,
-                          size: 18, color: theme.colorScheme.onSurfaceVariant),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          BackupCopy.privacyNote,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant),
+                  const SizedBox(height: FitFlowSpace.md),
+                  FitFlowV2InfoSurface(
+                    tonal: true,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ExcludeSemantics(
+                          child: Icon(
+                            Icons.description_outlined,
+                            size: 18,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: FitFlowSpace.sm),
+                        Expanded(
+                          child: Text(
+                            BackupCopy.privacyNote,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -167,29 +231,33 @@ class _SectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+    return FitFlowV2InfoSurface(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(icon, color: theme.colorScheme.primary),
-              const SizedBox(width: AppDimens.itemGap),
+              ExcludeSemantics(
+                child: Icon(icon, color: theme.colorScheme.primary),
+              ),
+              const SizedBox(width: FitFlowSpace.sm),
               Expanded(
                 child: Semantics(
-                    header: true,
-                    child: Text(
-                      title,
-                      style: theme.textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w600),
-                    )),
+                  header: true,
+                  child: Text(
+                    title,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: FitFlowSpace.xs),
           Text(description, style: theme.textTheme.bodyMedium),
-          const SizedBox(height: AppDimens.itemGap),
+          const SizedBox(height: FitFlowSpace.md),
           action,
         ],
       ),

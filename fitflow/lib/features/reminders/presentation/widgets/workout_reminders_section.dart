@@ -1,4 +1,6 @@
 import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
+import 'package:fitflow/core/design/fitflow_spacing.dart';
+import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/features/settings/presentation/widgets/utility_presentation.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/l10n/locale_format.dart';
@@ -156,11 +158,18 @@ class _WorkoutRemindersSectionState
                   _run(() => controller.setEnabled(value));
                 },
         ),
-        const SizedBox(height: 4),
-        _StatusLine(status: status),
+        const SizedBox(height: FitFlowSpace.xs),
+        FitFlowV2InfoSurface(
+          tonal: true,
+          padding: const EdgeInsets.symmetric(
+            horizontal: FitFlowSpace.md,
+            vertical: FitFlowSpace.xs,
+          ),
+          child: _StatusLine(status: status),
+        ),
         if (status == WorkoutReminderScheduleStatus.permissionBlocked ||
             state.permission == WorkoutReminderPermissionStatus.denied) ...[
-          const SizedBox(height: 8),
+          const SizedBox(height: FitFlowSpace.xs),
           Align(
             alignment: AlignmentDirectional.centerStart,
             child: OutlinedButton.icon(
@@ -171,16 +180,27 @@ class _WorkoutRemindersSectionState
                       _run(controller.openNotificationSettings,
                           failure: WorkoutReminderMessage.settingsUnavailable);
                     },
-              icon: const Icon(Icons.settings_outlined),
+              icon: const ExcludeSemantics(
+                child: Icon(Icons.settings_outlined),
+              ),
               label: Text(context.l10n.reminderOpenSettings),
             ),
           ),
         ],
-        const Divider(height: 24),
-        Text(l.utilitySavedSchedule),
-        const SizedBox(height: 12),
-        Text(context.l10n.reminderDaysLabel, style: theme.textTheme.labelLarge),
-        const SizedBox(height: 8),
+        const Divider(height: FitFlowSpace.xl),
+        Semantics(
+          header: true,
+          child: Text(
+            l.utilitySavedSchedule,
+            style: theme.textTheme.titleSmall,
+          ),
+        ),
+        const SizedBox(height: FitFlowSpace.md),
+        Text(
+          context.l10n.reminderDaysLabel,
+          style: theme.textTheme.labelLarge,
+        ),
+        const SizedBox(height: FitFlowSpace.xs),
         _WeekdayPicker(
           selected: prefs.weekdays,
           enabled: !busy,
@@ -190,38 +210,65 @@ class _WorkoutRemindersSectionState
           },
         ),
         if (prefs.weekdays.isEmpty) ...[
-          const SizedBox(height: 6),
+          const SizedBox(height: FitFlowSpace.xs),
           Text(
             context.l10n.reminderSelectDay,
             style: theme.textTheme.bodySmall?.copyWith(color: colors.error),
           ),
         ],
-        const SizedBox(height: 4),
+        const SizedBox(height: FitFlowSpace.xs),
         ListTile(
+          minVerticalPadding: FitFlowSpace.xs,
           contentPadding: EdgeInsets.zero,
-          leading: const Icon(Icons.schedule_outlined),
+          leading: const ExcludeSemantics(
+            child: Icon(Icons.schedule_outlined),
+          ),
           title: Text(context.l10n.reminderTimeLabel),
           subtitle: Text(_formatTime(context, prefs.time)),
-          trailing: const Icon(Icons.edit_outlined),
+          trailing: const ExcludeSemantics(
+            child: Icon(Icons.edit_outlined),
+          ),
           enabled: !busy,
           onTap: () {
             // ignore: discarded_futures
             _run(() => _pickTime(prefs.time));
           },
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: FitFlowSpace.xs),
         Text(
           scheduleSummary(context, prefs),
           style:
               theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 4),
-        Text(
-          context.l10n.reminderInexactNote,
-          style: theme.textTheme.bodySmall
-              ?.copyWith(color: colors.onSurfaceVariant),
+        const SizedBox(height: FitFlowSpace.xs),
+        FitFlowV2InfoSurface(
+          tonal: true,
+          padding: const EdgeInsets.symmetric(
+            horizontal: FitFlowSpace.md,
+            vertical: FitFlowSpace.xs,
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ExcludeSemantics(
+                child: Icon(
+                  Icons.info_outline_rounded,
+                  size: 18,
+                  color: colors.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(width: FitFlowSpace.sm),
+              Expanded(
+                child: Text(
+                  context.l10n.reminderInexactNote,
+                  style: theme.textTheme.bodySmall
+                      ?.copyWith(color: colors.onSurfaceVariant),
+                ),
+              ),
+            ],
+          ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: FitFlowSpace.md),
         Align(
           alignment: AlignmentDirectional.centerStart,
           child: FilledButton.tonalIcon(
@@ -232,7 +279,9 @@ class _WorkoutRemindersSectionState
                         failure: WorkoutReminderMessage.testFailed);
                   }
                 : null,
-            icon: const Icon(Icons.notifications_active_outlined),
+            icon: const ExcludeSemantics(
+              child: Icon(Icons.notifications_active_outlined),
+            ),
             label: Text(context.l10n.reminderSendTest),
           ),
         ),
@@ -296,8 +345,8 @@ class _StatusLine extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 18, color: color),
-        const SizedBox(width: 8),
+        ExcludeSemantics(child: Icon(icon, size: 18, color: color)),
+        const SizedBox(width: FitFlowSpace.sm),
         Expanded(
           child: Text(text,
               style: theme.textTheme.bodyMedium?.copyWith(color: color)),
@@ -325,8 +374,8 @@ class _WeekdayPicker extends StatelessWidget {
       material.firstDayOfWeekIndex,
     );
     return Wrap(
-      spacing: 6,
-      runSpacing: 6,
+      spacing: FitFlowSpace.xs,
+      runSpacing: FitFlowSpace.xs,
       children: [
         for (final weekday in order)
           ConstrainedBox(

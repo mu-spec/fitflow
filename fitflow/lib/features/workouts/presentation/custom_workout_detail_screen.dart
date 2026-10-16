@@ -1,5 +1,8 @@
 import 'package:fitflow/core/accessibility/system_motion.dart';
 import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
+import 'package:fitflow/core/design/fitflow_spacing.dart';
+import 'package:fitflow/core/design/fitflow_visual_v2.dart';
+import 'package:fitflow/core/design/widgets/fitflow_v2_exercise_media.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
 import 'package:fitflow/features/workouts/presentation/widgets/training_presentation.dart';
@@ -31,11 +34,13 @@ class CustomWorkoutDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final visual = FitFlowVisualV2.of(context);
     final customAsync = ref.watch(customWorkoutControllerProvider);
     final userProfileAsync = ref.watch(userFitnessProfileProvider);
     final capabilityAsync = ref.watch(capabilityProfileProvider);
 
     return Scaffold(
+      backgroundColor: visual.page,
       appBar: AppBar(
         title: Text(context.l10n.flowCustom),
         actions: [
@@ -121,17 +126,26 @@ class CustomWorkoutDetailScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(template.name,
+                    Semantics(
+                      header: true,
+                      child: Text(
+                        template.name,
                         style: theme.textTheme.headlineSmall
-                            ?.copyWith(fontWeight: FontWeight.w700)),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Target: ${template.targetDuration.label} • $totalExercises exercises • $totalSets sets'
-                      '${resolvedPlan?.estimatedDuration != null ? ' • Est: ${_formatDuration(resolvedPlan!.estimatedDuration!)}' : ''}',
-                      style: theme.textTheme.bodyMedium
-                          ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                            ?.copyWith(fontWeight: FontWeight.w700),
+                      ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: FitFlowSpace.xs),
+                    FitFlowV2InfoSurface(
+                      tonal: true,
+                      child: Text(
+                        'Target: ${template.targetDuration.label} • $totalExercises exercises • $totalSets sets'
+                        '${resolvedPlan?.estimatedDuration != null ? ' • Est: ${_formatDuration(resolvedPlan!.estimatedDuration!)}' : ''}',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: FitFlowSpace.md),
                     if (issues.isNotEmpty) ...[
                       Card(
                         color: theme.colorScheme.errorContainer,
@@ -183,43 +197,70 @@ class CustomWorkoutDetailScreen extends ConsumerWidget {
                       const SizedBox(height: 16),
                     ],
                     _SectionPreview(
-                        title: 'Warm-up',
-                        entries: template.warmup,
-                        catalogById: catalogById,
-                        planSection: resolvedPlan?.warmup),
-                    const SizedBox(height: 12),
+                      title: 'Warm-up',
+                      entries: template.warmup,
+                      catalogById: catalogById,
+                      planSection: resolvedPlan?.warmup,
+                    ),
+                    const SizedBox(height: FitFlowSpace.sm),
                     _SectionPreview(
-                        title: 'Main',
-                        entries: template.main,
-                        catalogById: catalogById,
-                        planSection: resolvedPlan?.main),
-                    const SizedBox(height: 12),
+                      title: 'Main',
+                      entries: template.main,
+                      catalogById: catalogById,
+                      planSection: resolvedPlan?.main,
+                    ),
+                    const SizedBox(height: FitFlowSpace.sm),
                     _SectionPreview(
-                        title: 'Cool-down',
-                        entries: template.cooldown,
-                        catalogById: catalogById,
-                        planSection: resolvedPlan?.cooldown),
-                    const SizedBox(height: 24),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: OutlinedButton(
-                            onPressed: () => context
-                                .push(AppRoutes.customWorkoutEdit(workoutId)),
-                            child: Text(context.l10n.trainingEdit),
+                      title: 'Cool-down',
+                      entries: template.cooldown,
+                      catalogById: catalogById,
+                      planSection: resolvedPlan?.cooldown,
+                    ),
+                    const SizedBox(height: FitFlowSpace.lg),
+                    LayoutBuilder(
+                      builder: (context, constraints) {
+                        final stackActions = constraints.maxWidth < 420 ||
+                            MediaQuery.textScalerOf(context).scale(16) > 20;
+                        final editButton = OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size.fromHeight(
+                              SystemMotion.minTouchTarget,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: FilledButton(
-                            onPressed: resolvedPlan != null
-                                ? () => context.push(
-                                    AppRoutes.customWorkoutPlayer(workoutId))
-                                : null,
-                            child: Text(context.l10n.trainingCustomStart),
+                          onPressed: () => context
+                              .push(AppRoutes.customWorkoutEdit(workoutId)),
+                          child: Text(context.l10n.trainingEdit),
+                        );
+                        final startButton = FilledButton(
+                          style: FilledButton.styleFrom(
+                            minimumSize: const Size.fromHeight(
+                              SystemMotion.minTouchTarget,
+                            ),
                           ),
-                        ),
-                      ],
+                          onPressed: resolvedPlan != null
+                              ? () => context.push(
+                                  AppRoutes.customWorkoutPlayer(workoutId))
+                              : null,
+                          child: Text(context.l10n.trainingCustomStart),
+                        );
+                        if (stackActions) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              editButton,
+                              const SizedBox(height: FitFlowSpace.xs),
+                              startButton,
+                            ],
+                          );
+                        }
+                        return Row(
+                          children: [
+                            Expanded(child: editButton),
+                            const SizedBox(width: FitFlowSpace.sm),
+                            Expanded(child: startButton),
+                          ],
+                        );
+                      },
                     ),
                     if (resolvedPlan == null) ...[
                       const SizedBox(height: 8),
@@ -265,65 +306,81 @@ class _SectionPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title,
-                style: theme.textTheme.titleMedium
-                    ?.copyWith(fontWeight: FontWeight.w600)),
-            const Divider(),
-            if (entries.isEmpty)
-              Text(context.l10n.trainingNoExercises,
-                  style: theme.textTheme.bodySmall
-                      ?.copyWith(color: theme.colorScheme.onSurfaceVariant))
-            else
-              for (final entry in entries) ...[
-                Builder(
-                  builder: (context) {
-                    final Exercise? ex = catalogById[entry.exerciseId];
-                    final isMissing = ex == null;
-                    final workload = entry.isTimed
-                        ? '${entry.sets} × ${entry.workDuration!.inSeconds}s'
-                        : '${entry.sets} × ${entry.repsPerSet} reps';
-                    final rest = '${entry.restBetweenSets.inSeconds}s rest';
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (isMissing)
-                                  Text(context.l10n.trainingMissingExercise,
-                                      style: theme.textTheme.bodyMedium
-                                          ?.copyWith(
-                                              fontWeight: FontWeight.w600,
-                                              color: theme.colorScheme.error))
-                                else
-                                  Text(ex.name,
-                                      style: theme.textTheme.bodyMedium
-                                          ?.copyWith(
-                                              fontWeight: FontWeight.w600)),
-                                if (!isMissing)
-                                  Text(
-                                      '${ex.movementPattern == null ? '' : movementPatternLabel(context.l10n, ex.movementPattern!)} • ${trainingDifficultyLabel(context.l10n, ex.difficulty)} • $workload • $rest',
-                                      style: theme.textTheme.bodySmall),
-                              ],
-                            ),
+    return FitFlowV2InfoSurface(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Semantics(
+            header: true,
+            child: Text(
+              title,
+              style: theme.textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w600),
+            ),
+          ),
+          const SizedBox(height: FitFlowSpace.sm),
+          if (entries.isEmpty)
+            Text(
+              context.l10n.trainingNoExercises,
+              style: theme.textTheme.bodySmall
+                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+            )
+          else
+            for (final entry in entries) ...[
+              Builder(
+                builder: (context) {
+                  final Exercise? ex = catalogById[entry.exerciseId];
+                  final workload = entry.isTimed
+                      ? '${entry.sets} × ${entry.workDuration!.inSeconds}s'
+                      : '${entry.sets} × ${entry.repsPerSet} reps';
+                  final rest = '${entry.restBetweenSets.inSeconds}s rest';
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: FitFlowSpace.sm),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (ex != null) ...[
+                          FitFlowV2ExerciseMedia.forExercise(
+                            exercise: ex,
+                            width: 52,
+                            height: 52,
                           ),
+                          const SizedBox(width: FitFlowSpace.sm),
                         ],
-                      ),
-                    );
-                  },
-                ),
-              ],
-          ],
-        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (ex == null)
+                                Text(
+                                  context.l10n.trainingMissingExercise,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    color: theme.colorScheme.error,
+                                  ),
+                                )
+                              else
+                                Text(
+                                  ex.name,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              if (ex != null)
+                                Text(
+                                  '${ex.movementPattern == null ? '' : movementPatternLabel(context.l10n, ex.movementPattern!)} • ${trainingDifficultyLabel(context.l10n, ex.difficulty)} • $workload • $rest',
+                                  style: theme.textTheme.bodySmall,
+                                ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ],
+        ],
       ),
     );
   }

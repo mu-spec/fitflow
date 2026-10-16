@@ -1,5 +1,7 @@
 import 'package:fitflow/core/design/fitflow_layout.dart';
-import 'package:fitflow/app/config/app_dimensions.dart';
+import 'package:fitflow/core/design/fitflow_spacing.dart';
+import 'package:fitflow/core/design/fitflow_visual_v2.dart';
+import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:flutter/material.dart';
 
 /// In-app explanation of FitFlow V1 data handling.
@@ -62,36 +64,81 @@ class PrivacyPolicyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final visual = FitFlowVisualV2.of(context);
+    final viewportWidth = MediaQuery.sizeOf(context).width;
+    final titleScale = MediaQuery.textScalerOf(context).scale(16);
+    final largeText = titleScale > 20;
+
     return Scaffold(
-      appBar: AppBar(title: const Text(title)),
+      backgroundColor: visual.page,
+      appBar: AppBar(
+        toolbarHeight: largeText ? (titleScale > 28 ? 120 : 104) : null,
+        title: Semantics(
+          header: true,
+          child: const Text(title),
+        ),
+      ),
       body: SafeArea(
         child: Align(
           alignment: Alignment.topCenter,
           child: ConstrainedBox(
-            constraints:
-                const BoxConstraints(maxWidth: FitFlowLayout.maxReadableWidth),
+            constraints: const BoxConstraints(
+              maxWidth: FitFlowLayout.maxReadableWidth,
+            ),
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(AppDimens.screenPadding),
+              padding: EdgeInsets.fromLTRB(
+                viewportWidth < 360
+                    ? FitFlowSpace.md
+                    : FitFlowSpace.screenHorizontal,
+                FitFlowSpace.md,
+                viewportWidth < 360
+                    ? FitFlowSpace.md
+                    : FitFlowSpace.screenHorizontal,
+                FitFlowSpace.xxl,
+              ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    'This page describes how FitFlow handles information in this version of the app.',
-                    style: theme.textTheme.bodyLarge,
+                  FitFlowV2InfoSurface(
+                    tonal: true,
+                    child: Text(
+                      'This page describes how FitFlow handles information in this version of the app.',
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: FitFlowTheme.of(context).textPrimary,
+                      ),
+                    ),
                   ),
-                  const SizedBox(height: 16),
-                  for (final section in sections) ...[
-                    Semantics(
-                        header: true,
-                        child: Text(
-                          section.heading,
-                          style: theme.textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.w600),
-                        )),
-                    const SizedBox(height: 8),
-                    Text(section.body, style: theme.textTheme.bodyMedium),
-                    const SizedBox(height: 20),
-                  ],
+                  const SizedBox(height: FitFlowSpace.md),
+                  FitFlowV2InfoSurface(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        for (var index = 0;
+                            index < sections.length;
+                            index++) ...[
+                          Semantics(
+                            header: true,
+                            child: Text(
+                              sections[index].heading,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: FitFlowSpace.xs),
+                          Text(
+                            sections[index].body,
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                          if (index < sections.length - 1) ...[
+                            const SizedBox(height: FitFlowSpace.md),
+                            const Divider(height: 1),
+                            const SizedBox(height: FitFlowSpace.md),
+                          ],
+                        ],
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),

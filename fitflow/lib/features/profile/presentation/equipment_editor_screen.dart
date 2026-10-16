@@ -1,7 +1,8 @@
-import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/features/onboarding/data/user_fitness_profile.dart';
 import 'package:fitflow/features/onboarding/data/workout_equipment.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
+import 'package:fitflow/core/design/fitflow_spacing.dart';
+import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
@@ -107,6 +108,10 @@ class _EquipmentEditorScreenState extends ConsumerState<EquipmentEditorScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final visual = FitFlowVisualV2.of(context);
+    final viewportWidth = MediaQuery.sizeOf(context).width;
+    final titleScale = MediaQuery.textScalerOf(context).scale(16);
+    final largeText = titleScale > 20;
     final profileAsync = ref.watch(userFitnessProfileProvider);
 
     return PopScope(
@@ -116,7 +121,14 @@ class _EquipmentEditorScreenState extends ConsumerState<EquipmentEditorScreen> {
         confirmDiscardEditorChanges(context);
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Equipment')),
+        backgroundColor: visual.page,
+        appBar: AppBar(
+          toolbarHeight: largeText ? (titleScale > 28 ? 120 : 104) : null,
+          title: Semantics(
+            header: true,
+            child: Text('Equipment'),
+          ),
+        ),
         body: SafeArea(
           child: profileAsync.when(
             loading: () =>
@@ -138,24 +150,40 @@ class _EquipmentEditorScreenState extends ConsumerState<EquipmentEditorScreen> {
               final draft = _draft!;
 
               return SingleChildScrollView(
-                padding: const EdgeInsets.all(AppDimens.screenPadding),
+                padding: EdgeInsets.symmetric(
+                  horizontal: viewportWidth < 360
+                      ? FitFlowSpace.md
+                      : FitFlowSpace.screenHorizontal,
+                  vertical: FitFlowSpace.md,
+                ),
                 child: Center(
                   child: ConstrainedBox(
                     constraints: const BoxConstraints(
-                        maxWidth: FitFlowLayout.maxReadableWidth),
+                      maxWidth: FitFlowLayout.maxReadableWidth,
+                    ),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(
-                          'Choose the equipment you currently have available.',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
+                        FitFlowV2InfoSurface(
+                          tonal: true,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Choose the equipment you currently have available.',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                              const SizedBox(height: FitFlowSpace.xs),
+                              Text(
+                                context.l10n.utilityEditorDraft,
+                                style: theme.textTheme.bodySmall,
+                              ),
+                            ],
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        Text(context.l10n.utilityEditorDraft,
-                            style: theme.textTheme.bodySmall),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: FitFlowSpace.md),
                         for (final equipment in WorkoutEquipment.values)
                           ProfileOptionTile(
                             enabled: !_saving,

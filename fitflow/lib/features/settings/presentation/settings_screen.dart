@@ -1,14 +1,15 @@
-import 'package:fitflow/core/design/fitflow_layout.dart';
-import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
-import 'package:fitflow/features/settings/presentation/widgets/utility_presentation.dart';
-import 'package:fitflow/l10n/enum_labels.dart';
-import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/app/router/app_routes.dart';
-import 'package:fitflow/l10n/fitflow_l10n.dart';
+import 'package:fitflow/core/design/fitflow_layout.dart';
+import 'package:fitflow/core/design/fitflow_spacing.dart';
+import 'package:fitflow/core/design/fitflow_visual_v2.dart';
+import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
 import 'package:fitflow/features/backup/presentation/widgets/backup_restore_settings_entry.dart';
 import 'package:fitflow/features/reminders/presentation/widgets/workout_reminders_section.dart';
 import 'package:fitflow/features/settings/data/appearance_mode.dart';
+import 'package:fitflow/features/settings/presentation/widgets/utility_presentation.dart';
 import 'package:fitflow/features/settings/state/appearance_controller.dart';
+import 'package:fitflow/l10n/enum_labels.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -66,90 +67,149 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final visual = FitFlowVisualV2.of(context);
     final appearance = ref.watch(appearanceControllerProvider);
     final mode = appearance.valueOrNull ?? AppearanceMode.system;
     final l = context.l10n;
+    final viewportWidth = MediaQuery.sizeOf(context).width;
+    final titleScale = MediaQuery.textScalerOf(context).scale(16);
+    final largeText = titleScale > 20;
 
     return Scaffold(
-      appBar: AppBar(title: Text(context.l10n.settingsTitle)),
+      backgroundColor: visual.page,
+      appBar: AppBar(
+        toolbarHeight: largeText ? (titleScale > 28 ? 120 : 104) : null,
+        title: Semantics(
+          header: true,
+          child: Text(l.settingsTitle),
+        ),
+      ),
       body: SafeArea(
         child: Align(
           alignment: Alignment.topCenter,
           child: ConstrainedBox(
-            constraints:
-                const BoxConstraints(maxWidth: FitFlowLayout.maxReadableWidth),
+            constraints: const BoxConstraints(
+              maxWidth: FitFlowLayout.maxReadableWidth,
+            ),
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(AppDimens.screenPadding),
+              padding: EdgeInsets.fromLTRB(
+                viewportWidth < 360
+                    ? FitFlowSpace.md
+                    : FitFlowSpace.screenHorizontal,
+                FitFlowSpace.sm,
+                viewportWidth < 360
+                    ? FitFlowSpace.md
+                    : FitFlowSpace.screenHorizontal,
+                FitFlowSpace.xxl,
+              ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   UtilityHeading(l.utilityPreferences),
                   UtilityDisclosure(
-                      title: l.utilityAppearance,
-                      summary: _savingAppearance
-                          ? l.utilitySaving
-                          : appearance.isLoading
-                              ? l.utilityUpdating
-                              : appearance.hasError
-                                  ? l.utilityRetryBody
-                                  : l.utilityCurrentValue(
-                                      mode == AppearanceMode.system
-                                          ? l.utilitySystemDefault
-                                          : appearanceModeLabel(l, mode)),
-                      children: [
-                        if (appearance.isLoading)
-                          FitFlowLoading(label: l.utilityUpdating)
-                        else if (appearance.hasError)
-                          FitFlowErrorState(
-                              title: l.utilityAppearance,
-                              message: l.utilityRetryBody,
-                              action: TextButton(
-                                  onPressed: () => ref
-                                      .invalidate(appearanceControllerProvider),
-                                  child: Text(l.retry)))
-                        else
-                          RadioGroup<AppearanceMode>(
-                              groupValue: mode,
-                              onChanged: (value) {
-                                if (value == null || _savingAppearance) return;
-                                // ignore: discarded_futures
-                                _selectAppearance(value);
-                              },
-                              child: Column(children: [
-                                _AppearanceOption(
-                                    title: l.utilitySystemDefault,
-                                    subtitle: l.utilitySystemHelp,
-                                    value: AppearanceMode.system,
-                                    selected: mode == AppearanceMode.system,
-                                    enabled: !_savingAppearance),
-                                _AppearanceOption(
-                                    title: l.appearanceLight,
-                                    subtitle: l.utilityLightHelp,
-                                    value: AppearanceMode.light,
-                                    selected: mode == AppearanceMode.light,
-                                    enabled: !_savingAppearance),
-                                _AppearanceOption(
-                                    title: l.appearanceDark,
-                                    subtitle: l.utilityDarkHelp,
-                                    value: AppearanceMode.dark,
-                                    selected: mode == AppearanceMode.dark,
-                                    enabled: !_savingAppearance),
-                              ])),
-                      ]),
-                  const SizedBox(height: 24),
+                    title: l.utilityAppearance,
+                    summary: _savingAppearance
+                        ? l.utilitySaving
+                        : appearance.isLoading
+                            ? l.utilityUpdating
+                            : appearance.hasError
+                                ? l.utilityRetryBody
+                                : l.utilityCurrentValue(
+                                    mode == AppearanceMode.system
+                                        ? l.utilitySystemDefault
+                                        : appearanceModeLabel(l, mode),
+                                  ),
+                    children: [
+                      if (appearance.isLoading)
+                        FitFlowLoading(label: l.utilityUpdating)
+                      else if (appearance.hasError)
+                        FitFlowErrorState(
+                          title: l.utilityAppearance,
+                          message: l.utilityRetryBody,
+                          action: TextButton(
+                            onPressed: () =>
+                                ref.invalidate(appearanceControllerProvider),
+                            child: Text(l.retry),
+                          ),
+                        )
+                      else
+                        RadioGroup<AppearanceMode>(
+                          groupValue: mode,
+                          onChanged: (value) {
+                            if (value == null || _savingAppearance) return;
+                            // ignore: discarded_futures
+                            _selectAppearance(value);
+                          },
+                          child: Column(
+                            children: [
+                              _AppearanceOption(
+                                title: l.utilitySystemDefault,
+                                subtitle: l.utilitySystemHelp,
+                                value: AppearanceMode.system,
+                                selected: mode == AppearanceMode.system,
+                                enabled: !_savingAppearance,
+                              ),
+                              _AppearanceOption(
+                                title: l.appearanceLight,
+                                subtitle: l.utilityLightHelp,
+                                value: AppearanceMode.light,
+                                selected: mode == AppearanceMode.light,
+                                enabled: !_savingAppearance,
+                              ),
+                              _AppearanceOption(
+                                title: l.appearanceDark,
+                                subtitle: l.utilityDarkHelp,
+                                value: AppearanceMode.dark,
+                                selected: mode == AppearanceMode.dark,
+                                enabled: !_savingAppearance,
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: FitFlowSpace.sm),
                   const WorkoutRemindersSection(),
-                  const SizedBox(height: 24),
-                  UtilityHeading(l.utilityData),
-                  const SizedBox(height: AppDimens.itemGap),
-                  const BackupRestoreSettingsEntry(),
-                  const SizedBox(height: AppDimens.itemGap),
-                  UtilityHeading(l.utilityAbout),
-                  const _PrivacyPolicyEntry(),
-                  const SizedBox(height: 24),
-                  Text(
-                    SettingsScreen.localDataFooter,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
+                  const SizedBox(height: FitFlowSpace.md),
+                  FitFlowV2InfoSurface(
+                    padding: EdgeInsets.zero,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        UtilityHeading(l.utilityData),
+                        const BackupRestoreSettingsEntry(),
+                        const Divider(
+                          height: 1,
+                          indent: FitFlowSpace.md,
+                          endIndent: FitFlowSpace.md,
+                        ),
+                        UtilityHeading(l.utilityAbout),
+                        const _PrivacyPolicyEntry(),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: FitFlowSpace.md),
+                  FitFlowV2InfoSurface(
+                    tonal: true,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ExcludeSemantics(
+                          child: Icon(
+                            Icons.info_outline_rounded,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        const SizedBox(width: FitFlowSpace.sm),
+                        Expanded(
+                          child: Text(
+                            SettingsScreen.localDataFooter,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -169,16 +229,25 @@ class _PrivacyPolicyEntry extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      type: MaterialType.transparency,
-      child: ListTile(
-        key: tileKey,
-        leading: const Icon(Icons.privacy_tip_outlined),
-        title: const Text('Privacy Policy'),
-        subtitle: const Text('How FitFlow handles information on this device.'),
-        trailing: const Icon(Icons.chevron_right_rounded),
-        onTap: () => context.go(AppRoutes.privacyPolicy),
+    final theme = Theme.of(context);
+    return ListTile(
+      key: tileKey,
+      minVerticalPadding: FitFlowSpace.xs,
+      contentPadding: const EdgeInsets.symmetric(
+        horizontal: FitFlowSpace.md,
       ),
+      leading: ExcludeSemantics(
+        child: Icon(
+          Icons.privacy_tip_outlined,
+          color: theme.colorScheme.primary,
+        ),
+      ),
+      title: const Text('Privacy Policy'),
+      subtitle: const Text('How FitFlow handles information on this device.'),
+      trailing: const ExcludeSemantics(
+        child: Icon(Icons.chevron_right_rounded),
+      ),
+      onTap: () => context.go(AppRoutes.privacyPolicy),
     );
   }
 }
@@ -203,11 +272,12 @@ class _AppearanceOption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RadioListTile<AppearanceMode>(
-        contentPadding: EdgeInsets.zero,
-        title: Text(title),
-        subtitle: Text(subtitle),
-        value: value,
-        selected: selected,
-        enabled: enabled);
+      contentPadding: EdgeInsets.zero,
+      title: Text(title),
+      subtitle: Text(subtitle),
+      value: value,
+      selected: selected,
+      enabled: enabled,
+    );
   }
 }
