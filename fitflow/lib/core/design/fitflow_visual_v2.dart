@@ -12,19 +12,19 @@ class FitFlowVisualV2 {
   FitFlowVisualV2.fromTheme(FitFlowTheme theme, Brightness brightness) {
     final dark = brightness == Brightness.dark;
     final p = theme.palette;
-    page = Color.lerp(p.background, p.brandContainer, dark ? .10 : .22)!;
-    heroStart = dark ? p.brandContainer : p.onBrandContainer;
-    heroEnd = Color.lerp(heroStart, p.brand, dark ? .08 : .20)!;
+    page = p.background;
+    heroStart = dark ? p.elevatedSurface : p.onBrandContainer;
+    // Keep legacy consumers compatible while removing large gradient blocks.
+    heroEnd = heroStart;
     onHero = dark ? p.textPrimary : p.onBrand;
     heroSecondary = Color.lerp(onHero, heroStart, .18)!;
-    heroLine = onHero.withValues(alpha: .20);
-    action =
-        dark ? Color.lerp(p.brand, p.onBrandContainer, .70)! : p.brandContainer;
+    heroLine = dark ? p.border : onHero.withValues(alpha: .20);
+    action = dark ? p.brand : p.brandContainer;
     onAction = dark ? p.onBrand : p.onBrandContainer;
     support = p.surface;
-    tint = Color.lerp(p.surface, p.brandContainer, dark ? .32 : .48)!;
+    tint = p.subtleSurface;
     onTint = p.textPrimary;
-    subtleBorder = Color.lerp(p.border, p.brand, .12)!;
+    subtleBorder = p.border;
   }
 
   late final Color page, heroStart, heroEnd, onHero, heroSecondary, heroLine;
@@ -41,10 +41,7 @@ class FitFlowV2HeroSurface extends StatelessWidget {
     return DecoratedBox(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(FitFlowRadius.sheet),
-        gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [v.heroStart, v.heroEnd]),
+        color: v.heroStart,
         border: Border.all(color: v.heroLine),
       ),
       child:

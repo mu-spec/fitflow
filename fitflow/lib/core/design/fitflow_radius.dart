@@ -6,8 +6,8 @@ class FitFlowRadius {
 
   static const double small = 8;
   static const double medium = 12;
-  static const double card = 20;
-  static const double sheet = 28;
+  static const double card = 16;
+  static const double sheet = 18;
   static const double pill = 999;
 
   static const BorderRadius smallBorder =

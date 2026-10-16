@@ -87,7 +87,7 @@ void main() {
         expect(theme.brightness, isNotNull);
         expect(
           theme.filledButtonTheme.style?.minimumSize?.resolve({}),
-          const Size(48, 48),
+          const Size(48, 52),
         );
         expect(theme.scaffoldBackgroundColor, isNot(theme.colorScheme.primary));
         final focused = theme.filledButtonTheme.style?.overlayColor

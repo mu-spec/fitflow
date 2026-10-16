@@ -11,21 +11,21 @@ class FitFlowTypography {
   static const List<FontFeature> tabular = [FontFeature.tabularFigures()];
 
   static const TextStyle displayHero = TextStyle(
-    fontSize: 40,
-    height: 1.05,
-    fontWeight: FontWeight.w700,
-    letterSpacing: -0.8,
-  );
-
-  static const TextStyle screenTitle = TextStyle(
     fontSize: 28,
     height: 1.15,
     fontWeight: FontWeight.w700,
     letterSpacing: -0.4,
   );
 
+  static const TextStyle screenTitle = TextStyle(
+    fontSize: 26,
+    height: 1.15,
+    fontWeight: FontWeight.w700,
+    letterSpacing: -0.4,
+  );
+
   static const TextStyle sectionHeading = TextStyle(
-    fontSize: 22,
+    fontSize: 20,
     height: 1.2,
     fontWeight: FontWeight.w600,
     letterSpacing: -0.2,
@@ -50,8 +50,8 @@ class FitFlowTypography {
   );
 
   static const TextStyle label = TextStyle(
-    fontSize: 14,
-    height: 1.2,
+    fontSize: 15,
+    height: 1.3,
     fontWeight: FontWeight.w600,
     letterSpacing: 0.1,
   );
@@ -96,7 +96,7 @@ class FitFlowTypography {
       labelLarge: label,
       labelMedium: caption,
       labelSmall: TextStyle(
-        fontSize: 11,
+        fontSize: 12,
         height: 1.25,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.3,

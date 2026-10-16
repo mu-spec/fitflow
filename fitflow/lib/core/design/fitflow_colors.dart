@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-/// Provisional FitFlow color tokens.
+/// FitFlow presentation tokens. Dark brand values follow the Phase 1 written
+/// brief; final visual-reference matching is pending reference delivery.
 ///
 /// [brandPrimary] is a working brand color, not a locked logo color. Later
 /// branding can replace this one constant without scattering raw values.
@@ -48,23 +49,23 @@ class FitFlowColors {
   );
 
   static const FitFlowPalette dark = FitFlowPalette(
-    brand: Color(0xFF3EBEA3),
+    brand: Color(0xFF67E8C3),
     onBrand: Color(0xFF06241C),
-    brandContainer: Color(0xFF0E3F36),
+    brandContainer: Color(0xFF163C32),
     onBrandContainer: Color(0xFFD5F0E8),
-    accent: Color(0xFFF0B27A),
-    onAccent: Color(0xFF2A1408),
-    accentContainer: Color(0xFF3E2A18),
-    onAccentContainer: Color(0xFFF6E4D4),
-    background: Color(0xFF0C110F),
-    surface: Color(0xFF151C19),
-    elevatedSurface: Color(0xFF1C2521),
-    subtleSurface: Color(0xFF1A2420),
-    textPrimary: Color(0xFFF2F6F4),
-    textSecondary: Color(0xFFC5D2CC),
-    textMuted: Color(0xFF9AADA4),
-    border: Color(0xFF2C3A35),
-    divider: Color(0xFF24302B),
+    accent: Color(0xFF45BFA6),
+    onAccent: Color(0xFF06241C),
+    accentContainer: Color(0xFF123A31),
+    onAccentContainer: Color(0xFFC3EEE1),
+    background: Color(0xFF0B1210),
+    surface: Color(0xFF141E19),
+    elevatedSurface: Color(0xFF202D25),
+    subtleSurface: Color(0xFF19251F),
+    textPrimary: Color(0xFFF3F7F4),
+    textSecondary: Color(0xFFB9C7BF),
+    textMuted: Color(0xFF97ACA0),
+    border: Color(0xFF304138),
+    divider: Color(0xFF25362C),
     success: Color(0xFF7DCEA0),
     onSuccess: Color(0xFF06241C),
     warning: Color(0xFFE0B15A),
@@ -75,7 +76,7 @@ class FitFlowColors {
     onErrorContainer: Color(0xFFF9D9D6),
     info: Color(0xFF9ECAE8),
     onInfo: Color(0xFF0C2433),
-    workoutActive: Color(0xFF3EBEA3),
+    workoutActive: Color(0xFF67E8C3),
     onWorkoutActive: Color(0xFF06241C),
     workoutRest: Color(0xFF8EB4D4),
     onWorkoutRest: Color(0xFF0C2433),

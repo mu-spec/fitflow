@@ -60,11 +60,14 @@ class FitFlowThemeData {
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        height: 72,
+        height: 64,
         elevation: 0,
         backgroundColor: palette.surface,
         surfaceTintColor: Colors.transparent,
-        indicatorColor: palette.brand.withValues(alpha: 0.16),
+        indicatorColor: palette.brand.withValues(alpha: 0.08),
+        indicatorShape: const RoundedRectangleBorder(
+          borderRadius: FitFlowRadius.smallBorder,
+        ),
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         overlayColor: _overlay(palette),
         iconTheme: WidgetStateProperty.resolveWith((states) {
@@ -85,7 +88,10 @@ class FitFlowThemeData {
       navigationRailTheme: NavigationRailThemeData(
         backgroundColor: palette.surface,
         elevation: 0,
-        indicatorColor: palette.brand.withValues(alpha: 0.16),
+        indicatorColor: palette.brand.withValues(alpha: 0.08),
+        indicatorShape: const RoundedRectangleBorder(
+          borderRadius: FitFlowRadius.smallBorder,
+        ),
         selectedIconTheme: IconThemeData(color: palette.brand, size: 24),
         unselectedIconTheme:
             IconThemeData(color: palette.textSecondary, size: 24),
@@ -236,19 +242,18 @@ class FitFlowThemeData {
           isDark ? FitFlowColors.brandPrimary : const Color(0xFF7ED9C4),
       surfaceTint: Colors.transparent,
       surfaceContainerLowest: isDark ? palette.background : palette.surface,
-      surfaceContainerLow:
-          isDark ? const Color(0xFF121916) : const Color(0xFFF7FAF8),
+      surfaceContainerLow: isDark ? palette.surface : const Color(0xFFF7FAF8),
       surfaceContainer: isDark ? palette.surface : const Color(0xFFEEF3F0),
       surfaceContainerHigh:
           isDark ? palette.elevatedSurface : palette.subtleSurface,
       surfaceContainerHighest:
-          isDark ? const Color(0xFF24302B) : const Color(0xFFDCE6E1),
+          isDark ? const Color(0xFF29382F) : const Color(0xFFDCE6E1),
     );
   }
 
   static ButtonStyle _filledStyle(FitFlowPalette palette) {
     return FilledButton.styleFrom(
-      minimumSize: const Size(48, 48),
+      minimumSize: const Size(48, 52),
       tapTargetSize: MaterialTapTargetSize.padded,
       elevation: 0,
       backgroundColor: palette.brand,
@@ -269,7 +274,8 @@ class FitFlowThemeData {
     return OutlinedButton.styleFrom(
       minimumSize: const Size(48, 48),
       tapTargetSize: MaterialTapTargetSize.padded,
-      foregroundColor: palette.brand,
+      backgroundColor: palette.surface,
+      foregroundColor: palette.textPrimary,
       disabledForegroundColor: palette.textMuted,
       textStyle: FitFlowTypography.label,
       side: BorderSide(color: palette.border),
@@ -285,7 +291,7 @@ class FitFlowThemeData {
         if (states.contains(WidgetState.focused)) {
           return BorderSide(color: palette.focus, width: 2);
         }
-        return BorderSide(color: palette.brand);
+        return BorderSide(color: palette.border);
       }),
     );
   }
