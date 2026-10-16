@@ -1,6 +1,7 @@
+import 'package:fitflow/core/design/fitflow_spacing.dart';
+import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/features/workouts/presentation/widgets/training_presentation.dart';
-import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/workouts/domain/exercise_progression.dart';
 import 'package:fitflow/features/workouts/presentation/widgets/exercise_variation_card.dart';
@@ -24,71 +25,74 @@ class ExerciseProgressionSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final visual = FitFlowVisualV2.of(context);
 
-    return Card(
-      elevation: 0,
-      margin: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppDimens.cardRadius),
-        side: BorderSide(color: colorScheme.outlineVariant),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
+    return FitFlowV2InfoSurface(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Semantics(
+            header: true,
+            child: Text(
               context.l10n.trainingProgression,
-              style: theme.textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 12),
-            TrainingFact(
-                context.l10n.trainingStep(progression.step, progression.total)),
-            const SizedBox(height: 16),
-            // Variation cards: easier, current, harder
-            if (progression.easier != null) ...[
-              ExerciseVariationCard(
-                exercise: progression.easier!,
-                directionLabel: context.l10n.trainingEasier,
-                directionIcon: Icons.arrow_back,
-                onTap: () => context.push(
-                  AppRoutes.exerciseDetail(progression.easier!.id),
-                ),
+              style: theme.textTheme.titleLarge?.copyWith(
+                color: visual.onTint,
+                fontWeight: FontWeight.w700,
               ),
-              const SizedBox(height: 10),
-            ],
-            // Current
+            ),
+          ),
+          const SizedBox(height: FitFlowSpace.sm),
+          TrainingFact(
+              context.l10n.trainingStep(progression.step, progression.total)),
+          const SizedBox(height: FitFlowSpace.md),
+          // Variation cards: easier, current, harder
+          if (progression.easier != null) ...[
             ExerciseVariationCard(
-              exercise: progression.current,
-              directionLabel: context.l10n.trainingCurrent,
-              directionIcon: Icons.my_location,
-              isCurrent: true,
+              key: ValueKey('exercise_variation_${progression.easier!.id}'),
+              exercise: progression.easier!,
+              directionLabel: context.l10n.trainingEasier,
+              directionIcon: Icons.arrow_back,
+              onTap: () => context.push(
+                AppRoutes.exerciseDetail(progression.easier!.id),
+              ),
             ),
-            if (progression.harder != null) ...[
-              const SizedBox(height: 10),
-              ExerciseVariationCard(
-                exercise: progression.harder!,
-                directionLabel: context.l10n.trainingHarder,
-                directionIcon: Icons.arrow_forward,
-                onTap: () => context.push(
-                  AppRoutes.exerciseDetail(progression.harder!.id),
-                ),
-              ),
-            ],
-            if (skillTreeFamilyId != null) ...[
-              const SizedBox(height: 16),
-              OutlinedButton.icon(
-                onPressed: () => context.push(
-                  AppRoutes.skillTreeFamily(skillTreeFamilyId!),
-                ),
-                icon: const Icon(Icons.account_tree_outlined),
-                label: Text(context.l10n.trainingViewTree),
-              ),
-            ],
+            const SizedBox(height: FitFlowSpace.xs),
           ],
-        ),
+          // Current
+          ExerciseVariationCard(
+            key: ValueKey('exercise_variation_${progression.current.id}'),
+            exercise: progression.current,
+            directionLabel: context.l10n.trainingCurrent,
+            directionIcon: Icons.my_location,
+            isCurrent: true,
+          ),
+          if (progression.harder != null) ...[
+            const SizedBox(height: FitFlowSpace.xs),
+            ExerciseVariationCard(
+              key: ValueKey('exercise_variation_${progression.harder!.id}'),
+              exercise: progression.harder!,
+              directionLabel: context.l10n.trainingHarder,
+              directionIcon: Icons.arrow_forward,
+              onTap: () => context.push(
+                AppRoutes.exerciseDetail(progression.harder!.id),
+              ),
+            ),
+          ],
+          if (skillTreeFamilyId != null) ...[
+            const SizedBox(height: FitFlowSpace.md),
+            OutlinedButton.icon(
+              key: const ValueKey('exercise_skill_tree_button'),
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size(48, 48),
+              ),
+              onPressed: () => context.push(
+                AppRoutes.skillTreeFamily(skillTreeFamilyId!),
+              ),
+              icon: const Icon(Icons.account_tree_outlined),
+              label: Text(context.l10n.trainingViewTree),
+            ),
+          ],
+        ],
       ),
     );
   }

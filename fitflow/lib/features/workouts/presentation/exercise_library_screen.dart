@@ -1,6 +1,10 @@
 import 'package:fitflow/features/workouts/presentation/widgets/training_presentation.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
+import 'package:fitflow/core/design/fitflow_radius.dart';
+import 'package:fitflow/core/design/fitflow_spacing.dart';
+import 'package:fitflow/core/design/fitflow_theme_extension.dart';
+import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/core/accessibility/system_motion.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
@@ -106,15 +110,26 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
   Widget build(BuildContext context) {
     final allExercises = _allExercises;
     final theme = Theme.of(context);
+    final v = FitFlowVisualV2.of(context);
+
+    final libraryAppBar = AppBar(
+      title: Text(context.l10n.exerciseLibraryTitle),
+      centerTitle: false,
+      toolbarHeight: 56,
+      backgroundColor: v.page,
+      surfaceTintColor: Colors.transparent,
+      scrolledUnderElevation: 0,
+    );
 
     // True empty catalog
     if (allExercises.isEmpty) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text(context.l10n.exerciseLibraryTitle),
-          centerTitle: false,
+        backgroundColor: v.page,
+        appBar: libraryAppBar,
+        body: SafeArea(
+          top: false,
+          child: SingleChildScrollView(child: _EmptyState(theme: theme)),
         ),
-        body: SingleChildScrollView(child: _EmptyState(theme: theme)),
       );
     }
 
@@ -124,183 +139,255 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
     final activeCount = _filter.activeFilterCount;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(context.l10n.exerciseLibraryTitle),
-        centerTitle: false,
-      ),
-      body: FitFlowMaxWidth(
+      backgroundColor: v.page,
+      appBar: libraryAppBar,
+      body: SafeArea(
+        top: false,
+        child: FitFlowMaxWidth(
           child: CustomScrollView(
-        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-        slivers: [
-          SliverToBoxAdapter(
-              child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Search field
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-                child: TextField(
-                  controller: _searchController,
-                  onChanged: _updateSearch,
-                  textInputAction: TextInputAction.search,
-                  onSubmitted: (_) => FocusScope.of(context).unfocus(),
-                  decoration: InputDecoration(
-                    hintText: context.l10n.searchExercises,
-                    prefixIcon: const Icon(Icons.search),
-                    suffixIcon: hasSearch
-                        ? IconButton(
-                            icon: const Icon(Icons.clear),
-                            onPressed: _clearSearch,
-                            tooltip: context.l10n.clearSearch,
-                          )
-                        : null,
-                    border: const OutlineInputBorder(),
-                    isDense: true,
-                  ),
-                ),
-              ),
-              // Quick filters
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      FilterChip(
-                        chipAnimationStyle: ChipAnimationStyle(
-                            selectAnimation: AnimationStyle(
-                                duration: SystemMotion.micro(context),
-                                reverseDuration: SystemMotion.micro(context))),
-                        label: Text(context.l10n.quickNoEquipment),
-                        selected: _filter.noEquipment,
-                        onSelected: (v) => setState(
-                            () => _filter = _filter.copyWith(noEquipment: v)),
-                      ),
-                      const SizedBox(width: 8),
-                      FilterChip(
-                        chipAnimationStyle: ChipAnimationStyle(
-                            selectAnimation: AnimationStyle(
-                                duration: SystemMotion.micro(context),
-                                reverseDuration: SystemMotion.micro(context))),
-                        label: Text(context.l10n.trainingStanding),
-                        selected: _filter.standingOnly,
-                        onSelected: (v) => setState(
-                            () => _filter = _filter.copyWith(standingOnly: v)),
-                      ),
-                      const SizedBox(width: 8),
-                      FilterChip(
-                        chipAnimationStyle: ChipAnimationStyle(
-                            selectAnimation: AnimationStyle(
-                                duration: SystemMotion.micro(context),
-                                reverseDuration: SystemMotion.micro(context))),
-                        label: Text(context.l10n.trainingLowImpact),
-                        selected: _filter.lowImpact,
-                        onSelected: (v) => setState(
-                            () => _filter = _filter.copyWith(lowImpact: v)),
-                      ),
-                      const SizedBox(width: 8),
-                      FilterChip(
-                        chipAnimationStyle: ChipAnimationStyle(
-                            selectAnimation: AnimationStyle(
-                                duration: SystemMotion.micro(context),
-                                reverseDuration: SystemMotion.micro(context))),
-                        label: Text(context.l10n.quickQuiet),
-                        selected: _filter.quiet,
-                        onSelected: (v) => setState(
-                            () => _filter = _filter.copyWith(quiet: v)),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              // Filter controls + result count
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                // Wrap keeps the controls row overflow-free at narrow widths and
-                // large text scales: single line with space-between when it fits,
-                // graceful second line instead of clipping when it does not.
-                child: Wrap(
-                  alignment: WrapAlignment.spaceBetween,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    OutlinedButton.icon(
-                      onPressed: _openFilterSheet,
-                      icon: const Icon(Icons.tune, size: 18),
-                      label: Text(hasActiveFilters
-                          ? context.l10n.filtersWithCount(activeCount)
-                          : context.l10n.filters),
-                    ),
-                    if (hasActiveFilters)
-                      TextButton(
-                        onPressed: _clearFilters,
-                        child: Text(context.l10n.trainingClearFilters),
-                      ),
-                    if (hasActiveFilters && hasSearch)
-                      TextButton(
-                        onPressed: _clearAll,
-                        child: Text(context.l10n.trainingClearAll),
-                      ),
-                    Text(
-                      context.l10n.trainingExerciseCount(filtered.length),
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                        fontWeight: FontWeight.w600,
+            key: const ValueKey('exercise_library_scroll'),
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            slivers: [
+              SliverToBoxAdapter(
+                  child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Search field
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                    child: TextField(
+                      key: const ValueKey('exercise_library_search'),
+                      controller: _searchController,
+                      onChanged: _updateSearch,
+                      textInputAction: TextInputAction.search,
+                      onSubmitted: (_) => FocusScope.of(context).unfocus(),
+                      cursorColor: FitFlowTheme.of(context).brand,
+                      style: theme.textTheme.bodyLarge,
+                      decoration: InputDecoration(
+                        hintText: context.l10n.searchExercises,
+                        prefixIcon: const Icon(Icons.search_rounded),
+                        suffixIcon: hasSearch
+                            ? IconButton(
+                                icon: const Icon(Icons.clear),
+                                onPressed: _clearSearch,
+                                tooltip: context.l10n.clearSearch,
+                              )
+                            : null,
+                        filled: true,
+                        fillColor: v.support,
+                        isDense: false,
+                        constraints: const BoxConstraints(minHeight: 52),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: FitFlowRadius.mediumBorder,
+                          borderSide: BorderSide(color: v.subtleBorder),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: FitFlowRadius.mediumBorder,
+                          borderSide: BorderSide(color: v.subtleBorder),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: FitFlowRadius.mediumBorder,
+                          borderSide: BorderSide(
+                            color: FitFlowTheme.of(context).brand,
+                            width: 2,
+                          ),
+                        ),
                       ),
                     ),
-                  ],
+                  ),
+                  // Quick filters
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          FilterChip(
+                            showCheckmark: true,
+                            materialTapTargetSize: MaterialTapTargetSize.padded,
+                            chipAnimationStyle: ChipAnimationStyle(
+                                selectAnimation: AnimationStyle(
+                                    duration: SystemMotion.micro(context),
+                                    reverseDuration:
+                                        SystemMotion.micro(context))),
+                            label: Text(context.l10n.quickNoEquipment),
+                            selected: _filter.noEquipment,
+                            onSelected: (v) => setState(() =>
+                                _filter = _filter.copyWith(noEquipment: v)),
+                          ),
+                          const SizedBox(width: 8),
+                          FilterChip(
+                            showCheckmark: true,
+                            materialTapTargetSize: MaterialTapTargetSize.padded,
+                            chipAnimationStyle: ChipAnimationStyle(
+                                selectAnimation: AnimationStyle(
+                                    duration: SystemMotion.micro(context),
+                                    reverseDuration:
+                                        SystemMotion.micro(context))),
+                            label: Text(context.l10n.trainingStanding),
+                            selected: _filter.standingOnly,
+                            onSelected: (v) => setState(() =>
+                                _filter = _filter.copyWith(standingOnly: v)),
+                          ),
+                          const SizedBox(width: 8),
+                          FilterChip(
+                            showCheckmark: true,
+                            materialTapTargetSize: MaterialTapTargetSize.padded,
+                            chipAnimationStyle: ChipAnimationStyle(
+                                selectAnimation: AnimationStyle(
+                                    duration: SystemMotion.micro(context),
+                                    reverseDuration:
+                                        SystemMotion.micro(context))),
+                            label: Text(context.l10n.trainingLowImpact),
+                            selected: _filter.lowImpact,
+                            onSelected: (v) => setState(
+                                () => _filter = _filter.copyWith(lowImpact: v)),
+                          ),
+                          const SizedBox(width: 8),
+                          FilterChip(
+                            showCheckmark: true,
+                            materialTapTargetSize: MaterialTapTargetSize.padded,
+                            chipAnimationStyle: ChipAnimationStyle(
+                                selectAnimation: AnimationStyle(
+                                    duration: SystemMotion.micro(context),
+                                    reverseDuration:
+                                        SystemMotion.micro(context))),
+                            label: Text(context.l10n.quickQuiet),
+                            selected: _filter.quiet,
+                            onSelected: (v) => setState(
+                                () => _filter = _filter.copyWith(quiet: v)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: FitFlowSpace.xs),
+                  // Result count and existing filter actions share a quiet V2 surface.
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: FitFlowSpace.md),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: v.support,
+                        borderRadius: FitFlowRadius.mediumBorder,
+                        border: Border.all(color: v.subtleBorder),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: FitFlowSpace.xs,
+                          vertical: FitFlowSpace.xxs,
+                        ),
+                        // Wrap keeps controls reachable at compact widths and
+                        // larger text without changing their actions or ordering.
+                        child: Wrap(
+                          alignment: WrapAlignment.spaceBetween,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          spacing: FitFlowSpace.xs,
+                          runSpacing: FitFlowSpace.xxs,
+                          children: [
+                            OutlinedButton.icon(
+                              style: OutlinedButton.styleFrom(
+                                minimumSize: const Size(48, 48),
+                              ),
+                              onPressed: _openFilterSheet,
+                              icon: const Icon(Icons.tune_rounded, size: 18),
+                              label: Text(hasActiveFilters
+                                  ? context.l10n.filtersWithCount(activeCount)
+                                  : context.l10n.filters),
+                            ),
+                            if (hasActiveFilters)
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                  minimumSize: const Size(48, 48),
+                                ),
+                                onPressed: _clearFilters,
+                                child: Text(context.l10n.trainingClearFilters),
+                              ),
+                            if (hasActiveFilters && hasSearch)
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                  minimumSize: const Size(48, 48),
+                                ),
+                                onPressed: _clearAll,
+                                child: Text(context.l10n.trainingClearAll),
+                              ),
+                            Text(
+                              context.l10n
+                                  .trainingExerciseCount(filtered.length),
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                color: FitFlowTheme.of(context).textSecondary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: FitFlowSpace.sm),
+                  const Divider(height: 1),
+                  if (_filter.movementPatterns.isNotEmpty ||
+                      _filter.difficulties.isNotEmpty ||
+                      _filter.equipment.isNotEmpty ||
+                      _filter.positions.isNotEmpty)
+                    Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                        child: Text(
+                            [
+                              ..._filter.movementPatterns.map(
+                                  (v) => movementPatternLabel(context.l10n, v)),
+                              ..._filter.difficulties.map((v) =>
+                                  trainingDifficultyLabel(context.l10n, v)),
+                              ..._filter.equipment
+                                  .map((v) => equipmentLabel(context.l10n, v)),
+                              ..._filter.positions.map((v) => v.label),
+                            ].join(' · '),
+                            style: theme.textTheme.bodySmall)),
+                ],
+              )),
+              if (filtered.isEmpty)
+                SliverToBoxAdapter(
+                    child: _NoResultsState(
+                  theme: theme,
+                  hasActiveFilters: hasActiveFilters,
+                  hasSearch: hasSearch,
+                  onClearFilters: _clearFilters,
+                  onClearAll:
+                      (hasActiveFilters || hasSearch) ? _clearAll : null,
+                ))
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(
+                    FitFlowSpace.sm,
+                    FitFlowSpace.xs,
+                    FitFlowSpace.sm,
+                    0,
+                  ),
+                  sliver: SliverList.separated(
+                    itemCount: filtered.length,
+                    separatorBuilder: (_, __) =>
+                        const SizedBox(height: FitFlowSpace.xs),
+                    itemBuilder: (context, index) {
+                      final exercise = filtered[index];
+                      return ExerciseListTile(
+                        key: ValueKey(exercise.id),
+                        exercise: exercise,
+                        onTap: () =>
+                            context.push(AppRoutes.exerciseDetail(exercise.id)),
+                      );
+                    },
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              const Divider(height: 1),
-              if (_filter.movementPatterns.isNotEmpty ||
-                  _filter.difficulties.isNotEmpty ||
-                  _filter.equipment.isNotEmpty ||
-                  _filter.positions.isNotEmpty)
-                Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-                    child: Text(
-                        [
-                          ..._filter.movementPatterns.map(
-                              (v) => movementPatternLabel(context.l10n, v)),
-                          ..._filter.difficulties.map(
-                              (v) => trainingDifficultyLabel(context.l10n, v)),
-                          ..._filter.equipment
-                              .map((v) => equipmentLabel(context.l10n, v)),
-                          ..._filter.positions.map((v) => v.label),
-                        ].join(' · '),
-                        style: theme.textTheme.bodySmall)),
+              const SliverToBoxAdapter(
+                  child: SizedBox(height: FitFlowSpace.xl)),
             ],
-          )),
-          if (filtered.isEmpty)
-            SliverToBoxAdapter(
-                child: _NoResultsState(
-              theme: theme,
-              hasActiveFilters: hasActiveFilters,
-              hasSearch: hasSearch,
-              onClearFilters: _clearFilters,
-              onClearAll: (hasActiveFilters || hasSearch) ? _clearAll : null,
-            ))
-          else
-            SliverList.separated(
-              itemCount: filtered.length,
-              separatorBuilder: (_, __) =>
-                  const Divider(height: 1, indent: 16, endIndent: 16),
-              itemBuilder: (context, index) {
-                final exercise = filtered[index];
-                return ExerciseListTile(
-                  key: ValueKey(exercise.id),
-                  exercise: exercise,
-                  onTap: () =>
-                      context.push(AppRoutes.exerciseDetail(exercise.id)),
-                );
-              },
-            ),
-          const SliverToBoxAdapter(child: SizedBox(height: 24)),
-        ],
-      )),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -389,17 +476,26 @@ class _NoResultsState extends StatelessWidget {
             const SizedBox(height: 16),
             if (hasActiveFilters)
               FilledButton(
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size(48, 48),
+                ),
                 onPressed: onClearFilters,
                 child: Text(context.l10n.trainingClearFilters),
               ),
             if (hasSearch && !hasActiveFilters && onClearAll != null)
               FilledButton(
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size(48, 48),
+                ),
                 onPressed: onClearAll,
                 child: Text(context.l10n.clearSearch),
               ),
             if (hasSearch && hasActiveFilters && onClearAll != null) ...[
               const SizedBox(height: 8),
               OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(48, 48),
+                ),
                 onPressed: onClearAll,
                 child: Text(context.l10n.trainingClearAll),
               ),

@@ -76,10 +76,17 @@ class ExerciseFilterSheet extends StatelessWidget {
                   TrainingHeading(context.l10n.filters),
                   if (filter.hasActiveFilters)
                     TextButton(
+                      style: TextButton.styleFrom(
+                        minimumSize: const Size(48, 48),
+                      ),
                       onPressed: () => onChanged(filter.clearFilters()),
                       child: Text(context.l10n.trainingClearFilters),
                     ),
                   IconButton(
+                    constraints: const BoxConstraints(
+                      minWidth: 48,
+                      minHeight: 48,
+                    ),
                     tooltip: context.l10n.trainingClose,
                     icon: const Icon(Icons.close),
                     onPressed: () => Navigator.of(context).pop(),
@@ -97,6 +104,8 @@ class ExerciseFilterSheet extends StatelessWidget {
                   children: MovementPattern.values.map((pattern) {
                     final selected = filter.movementPatterns.contains(pattern);
                     return FilterChip(
+                      showCheckmark: true,
+                      materialTapTargetSize: MaterialTapTargetSize.padded,
                       chipAnimationStyle: ChipAnimationStyle(
                           selectAnimation: AnimationStyle(
                               duration: SystemMotion.micro(context),
@@ -117,6 +126,8 @@ class ExerciseFilterSheet extends StatelessWidget {
                     final selected = filter.difficulties.contains(diff);
                     final label = trainingDifficultyLabel(context.l10n, diff);
                     return FilterChip(
+                      showCheckmark: true,
+                      materialTapTargetSize: MaterialTapTargetSize.padded,
                       chipAnimationStyle: ChipAnimationStyle(
                           selectAnimation: AnimationStyle(
                               duration: SystemMotion.micro(context),
@@ -136,6 +147,8 @@ class ExerciseFilterSheet extends StatelessWidget {
                   children: WorkoutEquipment.values.map((eq) {
                     final selected = filter.equipment.contains(eq);
                     return FilterChip(
+                      showCheckmark: true,
+                      materialTapTargetSize: MaterialTapTargetSize.padded,
                       chipAnimationStyle: ChipAnimationStyle(
                           selectAnimation: AnimationStyle(
                               duration: SystemMotion.micro(context),
@@ -155,6 +168,8 @@ class ExerciseFilterSheet extends StatelessWidget {
                   children: ExercisePosition.values.map((pos) {
                     final selected = filter.positions.contains(pos);
                     return FilterChip(
+                      showCheckmark: true,
+                      materialTapTargetSize: MaterialTapTargetSize.padded,
                       chipAnimationStyle: ChipAnimationStyle(
                           selectAnimation: AnimationStyle(
                               duration: SystemMotion.micro(context),
@@ -170,6 +185,9 @@ class ExerciseFilterSheet extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: FilledButton(
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size(48, 48),
+                  ),
                   onPressed: () => Navigator.of(context).pop(),
                   child: Text(context.l10n.trainingDone),
                 ),

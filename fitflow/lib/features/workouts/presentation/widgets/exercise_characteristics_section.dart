@@ -1,4 +1,6 @@
-import 'package:fitflow/app/config/app_dimensions.dart';
+import 'package:fitflow/core/design/fitflow_spacing.dart';
+import 'package:fitflow/core/design/fitflow_theme_extension.dart';
+import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/features/workouts/domain/exercise.dart';
 import 'package:fitflow/features/workouts/domain/exercise_position.dart';
 import 'package:fitflow/features/workouts/domain/impact_level.dart';
@@ -33,114 +35,116 @@ class ExerciseCharacteristicsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final visual = FitFlowVisualV2.of(context);
     final summary = _summaryTraits();
 
-    return Card(
-      elevation: 0,
-      margin: EdgeInsets.zero,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppDimens.cardRadius),
-        side: BorderSide(color: colorScheme.outlineVariant),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
+    return FitFlowV2InfoSurface(
+      padding: const EdgeInsets.all(FitFlowSpace.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Semantics(
+            header: true,
+            child: Text(
               'Exercise Characteristics',
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-            ),
-            if (summary.isNotEmpty) ...[
-              const SizedBox(height: 12),
-              // Constraint summary chips
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: summary.map((trait) {
-                  IconData icon;
-                  switch (trait) {
-                    case 'Quiet':
-                      icon = Icons.volume_down_outlined;
-                      break;
-                    case 'Low impact':
-                      icon = Icons.self_improvement_outlined;
-                      break;
-                    case 'Standing':
-                      icon = Icons.accessibility_new;
-                      break;
-                    case 'Small space':
-                      icon = Icons.square_foot_outlined;
-                      break;
-                    default:
-                      icon = Icons.check_circle_outline;
-                  }
-                  return Chip(
-                    avatar: Icon(icon, size: 18),
-                    label: Text(trait),
-                    visualDensity: VisualDensity.compact,
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    backgroundColor: colorScheme.secondaryContainer,
-                    side: BorderSide(
-                        color: colorScheme.outlineVariant
-                            .withValues(alpha: 0.5)),
-                  );
-                }).toList(),
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: visual.onTint,
+                fontWeight: FontWeight.w700,
               ),
-              const SizedBox(height: 8),
-              // Concise summary line like "Quiet • Low impact • Small space"
-              Text(
-                summary.join(' • '),
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                  fontStyle: FontStyle.italic,
-                ),
+            ),
+          ),
+          if (summary.isNotEmpty) ...[
+            const SizedBox(height: FitFlowSpace.sm),
+            // Constraint summary chips
+            Wrap(
+              spacing: FitFlowSpace.xs,
+              runSpacing: FitFlowSpace.xs,
+              children: summary.map((trait) {
+                IconData icon;
+                switch (trait) {
+                  case 'Quiet':
+                    icon = Icons.volume_down_outlined;
+                    break;
+                  case 'Low impact':
+                    icon = Icons.self_improvement_outlined;
+                    break;
+                  case 'Standing':
+                    icon = Icons.accessibility_new;
+                    break;
+                  case 'Small space':
+                    icon = Icons.square_foot_outlined;
+                    break;
+                  default:
+                    icon = Icons.check_circle_outline;
+                }
+                return Chip(
+                  avatar: ExcludeSemantics(
+                    child: Icon(
+                      icon,
+                      size: 18,
+                      color: FitFlowTheme.of(context).brand,
+                    ),
+                  ),
+                  label: Text(trait),
+                  visualDensity: VisualDensity.compact,
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  backgroundColor: visual.tint,
+                  side: BorderSide(color: visual.subtleBorder),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: FitFlowSpace.xs),
+            // Concise summary line like "Quiet • Low impact • Small space"
+            Text(
+              summary.join(' • '),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: FitFlowTheme.of(context).textSecondary,
+                fontStyle: FontStyle.italic,
               ),
-            ],
-            const SizedBox(height: 16),
-            // Detailed rows, improved scanning
-            _CharRow(
-              label: 'Position',
-              value: exercise.bodyPosition?.label ?? '—',
-              icon: Icons.accessibility_new,
-              highlight: isStanding,
-            ),
-            const Divider(height: 20),
-            _CharRow(
-              label: 'Impact',
-              value: exercise.impactLevel.label,
-              icon: Icons.bolt_outlined,
-              highlight: isLowImpact,
-            ),
-            const Divider(height: 20),
-            _CharRow(
-              label: 'Noise',
-              value: exercise.noiseLevel.label,
-              icon: Icons.volume_up_outlined,
-              highlight: isQuiet,
-            ),
-            const Divider(height: 20),
-            _CharRow(
-              label: 'Space',
-              value: exercise.spaceRequirement.label,
-              icon: Icons.square_foot_outlined,
-              highlight: isSmallSpace,
-            ),
-            const Divider(height: 20),
-            _CharRow(
-              label: 'Wrist load',
-              value: exercise.wristLoad.label,
-              icon: Icons.front_hand_outlined,
-            ),
-            const Divider(height: 20),
-            _CharRow(
-              label: 'Knee load',
-              value: exercise.kneeLoad.label,
-              icon: Icons.airline_seat_legroom_extra_outlined,
             ),
           ],
-        ),
+          const SizedBox(height: FitFlowSpace.md),
+          // Detailed rows, improved scanning
+          _CharRow(
+            label: 'Position',
+            value: exercise.bodyPosition?.label ?? '—',
+            icon: Icons.accessibility_new,
+            highlight: isStanding,
+          ),
+          Divider(height: 20, color: visual.subtleBorder),
+          _CharRow(
+            label: 'Impact',
+            value: exercise.impactLevel.label,
+            icon: Icons.bolt_outlined,
+            highlight: isLowImpact,
+          ),
+          Divider(height: 20, color: visual.subtleBorder),
+          _CharRow(
+            label: 'Noise',
+            value: exercise.noiseLevel.label,
+            icon: Icons.volume_up_outlined,
+            highlight: isQuiet,
+          ),
+          Divider(height: 20, color: visual.subtleBorder),
+          _CharRow(
+            label: 'Space',
+            value: exercise.spaceRequirement.label,
+            icon: Icons.square_foot_outlined,
+            highlight: isSmallSpace,
+          ),
+          Divider(height: 20, color: visual.subtleBorder),
+          _CharRow(
+            label: 'Wrist load',
+            value: exercise.wristLoad.label,
+            icon: Icons.front_hand_outlined,
+          ),
+          Divider(height: 20, color: visual.subtleBorder),
+          _CharRow(
+            label: 'Knee load',
+            value: exercise.kneeLoad.label,
+            icon: Icons.airline_seat_legroom_extra_outlined,
+          ),
+        ],
       ),
     );
   }
@@ -162,48 +166,101 @@ class _CharRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(6),
+    final visual = FitFlowVisualV2.of(context);
+
+    Widget valueLabel(TextAlign textAlign) => Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: FitFlowSpace.xs,
+            vertical: FitFlowSpace.xxs,
+          ),
           decoration: BoxDecoration(
-            color: highlight ? colorScheme.primaryContainer : colorScheme.surfaceContainerHighest,
+            color: highlight ? visual.tint : Colors.transparent,
             borderRadius: BorderRadius.circular(6),
           ),
-          child: Icon(
-            icon,
-            size: 18,
-            color: highlight ? colorScheme.onPrimaryContainer : colorScheme.onSurfaceVariant,
-          ),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
           child: Text(
-            label,
+            value,
+            textAlign: textAlign,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant,
+              color: highlight
+                  ? FitFlowTheme.of(context).brand
+                  : FitFlowTheme.of(context).textPrimary,
+              fontWeight: FontWeight.w600,
             ),
           ),
-        ),
-        Flexible(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: highlight ? colorScheme.secondaryContainer : Colors.transparent,
-              borderRadius: BorderRadius.circular(6),
+        );
+
+    Widget leadingIcon() => Container(
+          width: 32,
+          height: 32,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: highlight ? visual.tint : visual.support,
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: ExcludeSemantics(
+            child: Icon(
+              icon,
+              size: 18,
+              color: highlight
+                  ? FitFlowTheme.of(context).brand
+                  : FitFlowTheme.of(context).textSecondary,
             ),
-            child: Text(
-              value,
-              textAlign: TextAlign.end,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: highlight ? colorScheme.onSecondaryContainer : null,
+          ),
+        );
+
+    final textScale = MediaQuery.textScalerOf(context).scale(1);
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 360 || textScale >= 1.4;
+        if (compact) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  leadingIcon(),
+                  const SizedBox(width: FitFlowSpace.xs),
+                  Expanded(
+                    child: Text(
+                      label,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: FitFlowTheme.of(context).textSecondary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 40,
+                  top: FitFlowSpace.xxs,
+                ),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: valueLabel(TextAlign.start),
+                ),
+              ),
+            ],
+          );
+        }
+
+        return Row(
+          children: [
+            leadingIcon(),
+            const SizedBox(width: FitFlowSpace.xs),
+            Expanded(
+              child: Text(
+                label,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: FitFlowTheme.of(context).textSecondary,
+                ),
               ),
             ),
-          ),
-        ),
-      ],
+            const SizedBox(width: FitFlowSpace.xs),
+            Flexible(child: valueLabel(TextAlign.end)),
+          ],
+        );
+      },
     );
   }
 }

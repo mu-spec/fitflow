@@ -1,13 +1,17 @@
-import 'package:fitflow/l10n/fitflow_l10n.dart';
-import 'package:fitflow/l10n/enum_labels.dart';
-import 'package:fitflow/features/workouts/presentation/widgets/training_presentation.dart';
-import 'package:fitflow/app/config/app_dimensions.dart';
+import 'package:fitflow/core/design/fitflow_radius.dart';
+import 'package:fitflow/core/design/fitflow_theme_extension.dart';
+import 'package:fitflow/core/design/fitflow_visual_v2.dart';
+import 'package:fitflow/core/design/widgets/fitflow_v2_exercise_media.dart';
 import 'package:fitflow/features/workouts/domain/exercise.dart';
+import 'package:fitflow/l10n/enum_labels.dart';
+import 'package:fitflow/l10n/fitflow_l10n.dart';
+import 'package:fitflow/features/workouts/presentation/widgets/training_presentation.dart';
 import 'package:flutter/material.dart';
 
-/// Compact tappable card for an easier/harder variation.
+/// Compact canonical variation row with its existing directional context.
 ///
-/// Shows name, difficulty, primary muscles or movement, and directional label.
+/// Shows the same factual metadata as before, alongside the shared decorative
+/// exercise visual. The current exercise remains non-interactive.
 class ExerciseVariationCard extends StatelessWidget {
   const ExerciseVariationCard({
     super.key,
@@ -42,96 +46,110 @@ class ExerciseVariationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final visual = FitFlowVisualV2.of(context);
+    final viewport = MediaQuery.sizeOf(context);
+    final textScale = MediaQuery.textScalerOf(context).scale(1);
+    final compact =
+        viewport.width < 400 || viewport.height <= 400 || textScale >= 1.4;
+    final mediaWidth = compact ? 56.0 : 68.0;
+    final mediaHeight = compact ? 46.0 : 56.0;
+    final radius = BorderRadius.circular(FitFlowRadius.medium);
 
-    final card = Card(
-      elevation: 0,
-      margin: EdgeInsets.zero,
+    return Material(
+      color: isCurrent ? visual.tint : visual.support,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
+        borderRadius: radius,
         side: BorderSide(
-          color: isCurrent ? colorScheme.primary : colorScheme.outlineVariant,
+          color:
+              isCurrent ? FitFlowTheme.of(context).brand : visual.subtleBorder,
           width: isCurrent ? 1.5 : 1,
         ),
       ),
-      color: isCurrent
-          ? colorScheme.primaryContainer.withValues(alpha: 0.35)
-          : null,
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: isCurrent
-                    ? colorScheme.primary
-                    : colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(
-                directionIcon,
-                size: 18,
-                color: isCurrent
-                    ? colorScheme.onPrimary
-                    : colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    directionLabel,
-                    style: theme.textTheme.labelSmall?.copyWith(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: isCurrent ? null : onTap,
+        borderRadius: radius,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 80),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                FitFlowV2ExerciseMedia.forExercise(
+                  key: ValueKey('exercise_variation_media_${exercise.id}'),
+                  exercise: exercise,
+                  width: mediaWidth,
+                  height: mediaHeight,
+                  borderRadius: FitFlowRadius.smallBorder,
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  width: 32,
+                  height: 32,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: isCurrent
+                        ? FitFlowTheme.of(context).brand
+                        : visual.tint,
+                    borderRadius: FitFlowRadius.smallBorder,
+                  ),
+                  child: ExcludeSemantics(
+                    child: Icon(
+                      directionIcon,
+                      size: 17,
                       color: isCurrent
-                          ? colorScheme.primary
-                          : colorScheme.onSurfaceVariant,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 0.5,
+                          ? FitFlowTheme.of(context).onBrand
+                          : FitFlowTheme.of(context).textSecondary,
                     ),
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    exercise.name,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        directionLabel,
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: FitFlowTheme.of(context).brand,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: .35,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        exercise.name,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          color: FitFlowTheme.of(context).textPrimary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        _metaLine(context),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: FitFlowTheme.of(context).textSecondary,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    _metaLine(context),
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
+                ),
+                if (!isCurrent) ...[
+                  const SizedBox(width: 4),
+                  ExcludeSemantics(
+                    child: Icon(
+                      Icons.chevron_right_rounded,
+                      size: 20,
+                      color: FitFlowTheme.of(context).textMuted,
                     ),
                   ),
                 ],
-              ),
+              ],
             ),
-            if (!isCurrent) ...[
-              const SizedBox(width: 8),
-              Icon(
-                Icons.chevron_right,
-                size: 20,
-                color: colorScheme.onSurfaceVariant,
-              ),
-            ],
-          ],
+          ),
         ),
-      ),
-    );
-
-    if (isCurrent || onTap == null) {
-      return card;
-    }
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
-        child: card,
       ),
     );
   }
