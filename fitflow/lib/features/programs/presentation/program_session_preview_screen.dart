@@ -1,5 +1,9 @@
-import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/app/router/app_routes.dart';
+import 'package:fitflow/core/design/fitflow_layout.dart';
+import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
+import 'package:fitflow/core/design/fitflow_spacing.dart';
+import 'package:fitflow/core/design/fitflow_theme_extension.dart';
+import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/features/home/presentation/widgets/home_empty_states.dart';
 import 'package:fitflow/features/home/presentation/widgets/home_error_state.dart';
 import 'package:fitflow/features/home/presentation/widgets/home_loading_state.dart';
@@ -37,10 +41,16 @@ class ProgramSessionPreviewScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final visual = FitFlowVisualV2.of(context);
     final definition = AdaptiveProgramCatalog.byId(programId);
     if (definition == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text(ProgramCopy.programNotFound)),
+        backgroundColor: visual.page,
+        appBar: AppBar(
+          title: const Text(ProgramCopy.programNotFound),
+          backgroundColor: visual.page,
+          scrolledUnderElevation: 0,
+        ),
         body: const ProgramNotFoundBody(
           title: ProgramCopy.programNotFound,
           body: ProgramCopy.programNotFoundBody,
@@ -50,7 +60,12 @@ class ProgramSessionPreviewScreen extends ConsumerWidget {
     final session = definition.sessionById(sessionId);
     if (session == null) {
       return Scaffold(
-        appBar: AppBar(title: Text(definition.name)),
+        backgroundColor: visual.page,
+        appBar: AppBar(
+          title: Text(definition.name),
+          backgroundColor: visual.page,
+          scrolledUnderElevation: 0,
+        ),
         body: const ProgramNotFoundBody(
           title: ProgramCopy.sessionNotFound,
           body: ProgramCopy.sessionNotFoundBody,
@@ -67,13 +82,22 @@ class ProgramSessionPreviewScreen extends ConsumerWidget {
       progress: programsState.progressFor(definition.id),
     );
 
-    final appBar = AppBar(title: const Text(ProgramCopy.previewTitle));
+    final appBar = AppBar(
+      title: const Text(ProgramCopy.previewTitle),
+      backgroundColor: visual.page,
+      scrolledUnderElevation: 0,
+    );
 
     if (userProfileAsync.isLoading || capabilityAsync.isLoading) {
-      return Scaffold(appBar: appBar, body: const HomeLoadingState());
+      return Scaffold(
+        backgroundColor: visual.page,
+        appBar: appBar,
+        body: const HomeLoadingState(),
+      );
     }
     if (userProfileAsync.hasError || capabilityAsync.hasError) {
       return Scaffold(
+        backgroundColor: visual.page,
         appBar: appBar,
         body: HomeErrorState(onRetry: () {
           ref.invalidate(userFitnessProfileProvider);
@@ -85,6 +109,7 @@ class ProgramSessionPreviewScreen extends ConsumerWidget {
     final capability = capabilityAsync.value;
     if (userProfile == null) {
       return Scaffold(
+        backgroundColor: visual.page,
         appBar: appBar,
         body: HomeEmptyStates.missingUserProfile(
           context,
@@ -94,6 +119,7 @@ class ProgramSessionPreviewScreen extends ConsumerWidget {
     }
     if (capability == null) {
       return Scaffold(
+        backgroundColor: visual.page,
         appBar: appBar,
         body: HomeEmptyStates.missingCapabilityProfile(
           context,
@@ -113,81 +139,89 @@ class ProgramSessionPreviewScreen extends ConsumerWidget {
     final plan = resolution.plan;
 
     return Scaffold(
+      backgroundColor: visual.page,
       appBar: appBar,
       body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 720),
-            child: ListView(
-              padding: const EdgeInsets.all(AppDimens.screenPadding),
-              children: [
-                _ProgramSessionSummaryCard(
-                  definition: definition,
-                  session: session,
-                  status: status.statusOf(session),
-                  targetMinutes: userProfile.workoutDuration.minutes,
-                  plan: plan,
-                ),
-                const SizedBox(height: 12),
-                _NoteCard(
-                  icon: Icons.info_outline,
-                  lines: const [
-                    ProgramCopy.adaptationNote,
-                    ProgramCopy.goalUnchangedNote,
-                  ],
-                ),
-                const SizedBox(height: 24),
-                if (plan == null)
-                  _GenerationFailedCard(
-                    message: resolution.issue?.message ??
-                        ProgramCopy.generationFailed,
-                  )
-                else ...[
-                  WorkoutPreviewSectionHeader(
-                    title: 'Warm-up',
-                    exerciseCount: plan.warmup.exerciseCount,
-                    planned: plan.warmupEstimate,
-                    budget: plan.timeBudget.warmup,
-                  ),
-                  const SizedBox(height: 8),
-                  _exerciseList(plan.warmup.exercises),
-                  const SizedBox(height: 24),
-                  WorkoutPreviewSectionHeader(
-                    title: 'Main workout',
-                    exerciseCount: plan.main.exerciseCount,
-                    planned: plan.mainEstimate,
-                    budget: plan.timeBudget.main,
-                  ),
-                  const SizedBox(height: 8),
-                  _exerciseList(plan.main.exercises),
-                  const SizedBox(height: 24),
-                  WorkoutPreviewSectionHeader(
-                    title: 'Cooldown',
-                    exerciseCount: plan.cooldown.exerciseCount,
-                    planned: plan.cooldownEstimate,
-                    budget: plan.timeBudget.cooldown,
-                  ),
-                  const SizedBox(height: 8),
-                  _exerciseList(plan.cooldown.exercises),
-                  const SizedBox(height: 24),
-                  // Part 2: Start opens the shared Player for this planned
-                  // session. The Player generates its own frozen plan from
-                  // the current profile/capability at open time.
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton.icon(
-                      onPressed: () => context.push(
-                        AppRoutes.programSessionPlayer(
-                            definition.id, session.id),
-                      ),
-                      icon: const Icon(Icons.play_arrow_rounded),
-                      label: const Text(ProgramCopy.startWorkout),
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 16),
-              ],
+        child: FitFlowMaxWidth(
+          maxWidth: FitFlowLayout.maxContentWidth,
+          child: ListView(
+            padding: EdgeInsets.all(
+              MediaQuery.sizeOf(context).width < 360
+                  ? FitFlowSpace.md
+                  : FitFlowSpace.xl,
             ),
+            children: [
+              _ProgramSessionSummaryCard(
+                definition: definition,
+                session: session,
+                status: status.statusOf(session),
+                targetMinutes: userProfile.workoutDuration.minutes,
+                plan: plan,
+              ),
+              const SizedBox(height: FitFlowSpace.sm),
+              _NoteCard(
+                icon: Icons.info_outline,
+                lines: const [
+                  ProgramCopy.adaptationNote,
+                  ProgramCopy.goalUnchangedNote,
+                ],
+              ),
+              const SizedBox(height: FitFlowSpace.xl),
+              if (plan == null)
+                _GenerationFailedCard(
+                  message:
+                      resolution.issue?.message ?? ProgramCopy.generationFailed,
+                )
+              else ...[
+                WorkoutPreviewSectionHeader(
+                  title: 'Warm-up',
+                  visualV2: true,
+                  exerciseCount: plan.warmup.exerciseCount,
+                  planned: plan.warmupEstimate,
+                  budget: plan.timeBudget.warmup,
+                ),
+                const SizedBox(height: FitFlowSpace.xs),
+                _exerciseList(plan.warmup.exercises),
+                const SizedBox(height: FitFlowSpace.xl),
+                WorkoutPreviewSectionHeader(
+                  title: 'Main workout',
+                  visualV2: true,
+                  exerciseCount: plan.main.exerciseCount,
+                  planned: plan.mainEstimate,
+                  budget: plan.timeBudget.main,
+                ),
+                const SizedBox(height: FitFlowSpace.xs),
+                _exerciseList(plan.main.exercises),
+                const SizedBox(height: FitFlowSpace.xl),
+                WorkoutPreviewSectionHeader(
+                  title: 'Cooldown',
+                  visualV2: true,
+                  exerciseCount: plan.cooldown.exerciseCount,
+                  planned: plan.cooldownEstimate,
+                  budget: plan.timeBudget.cooldown,
+                ),
+                const SizedBox(height: FitFlowSpace.xs),
+                _exerciseList(plan.cooldown.exercises),
+                const SizedBox(height: FitFlowSpace.xl),
+                // Part 2: Start opens the shared Player for this planned
+                // session. The Player generates its own frozen plan from
+                // the current profile/capability at open time.
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size(48, 56),
+                    ),
+                    onPressed: () => context.push(
+                      AppRoutes.programSessionPlayer(definition.id, session.id),
+                    ),
+                    icon: const Icon(Icons.play_arrow_rounded),
+                    label: const Text(ProgramCopy.startWorkout),
+                  ),
+                ),
+              ],
+              const SizedBox(height: FitFlowSpace.md),
+            ],
           ),
         ),
       ),
@@ -199,8 +233,11 @@ class ProgramSessionPreviewScreen extends ConsumerWidget {
       children: [
         for (final pres in prescriptions)
           Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: WorkoutPreviewExerciseRow(prescription: pres),
+            padding: const EdgeInsets.only(bottom: FitFlowSpace.xs),
+            child: WorkoutPreviewExerciseRow(
+              prescription: pres,
+              visualV2: true,
+            ),
           ),
       ],
     );
@@ -235,95 +272,72 @@ class _ProgramSessionSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
+    final fitFlowTheme = FitFlowTheme.of(context);
     final p = plan;
-    return Card(
-      elevation: 0,
-      color: colors.primaryContainer,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppDimens.cardRadius),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              definition.name,
-              style: theme.textTheme.labelSmall?.copyWith(
-                letterSpacing: 1.0,
-                fontWeight: FontWeight.w600,
-                color: colors.onPrimaryContainer,
-              ),
+    return FitFlowV2InfoSurface(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            definition.name,
+            style: theme.textTheme.labelMedium?.copyWith(
+              letterSpacing: 1.0,
+              fontWeight: FontWeight.w600,
+              color: FitFlowTheme.of(context).brand,
             ),
-            const SizedBox(height: 6),
-            Text(
+          ),
+          const SizedBox(height: FitFlowSpace.xs),
+          Semantics(
+            header: true,
+            child: Text(
               session.title,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: colors.onPrimaryContainer,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w600,
               ),
             ),
-            const SizedBox(height: 6),
-            Wrap(
-              spacing: 8,
-              runSpacing: 6,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                Text(
-                  'Focus: ${session.focus}',
-                  style: theme.textTheme.bodyMedium
-                      ?.copyWith(color: colors.onPrimaryContainer),
-                ),
-                ProgramSessionStatusChip(status: status),
+          ),
+          const SizedBox(height: FitFlowSpace.xs),
+          Wrap(
+            spacing: FitFlowSpace.sm,
+            runSpacing: FitFlowSpace.xs,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Text(
+                'Focus: ${session.focus}',
+                style: theme.textTheme.bodyMedium
+                    ?.copyWith(color: fitFlowTheme.textSecondary),
+              ),
+              ProgramSessionStatusChip(status: status),
+            ],
+          ),
+          const SizedBox(height: FitFlowSpace.xs),
+          Text(
+            'Session goal: ${session.generationGoal.label}',
+            style: theme.textTheme.bodySmall
+                ?.copyWith(color: fitFlowTheme.textSecondary),
+          ),
+          const SizedBox(height: FitFlowSpace.md),
+          Wrap(
+            spacing: FitFlowSpace.xs,
+            runSpacing: FitFlowSpace.xs,
+            children: [
+              _metric(Icons.timer_outlined, '$targetMinutes min target'),
+              if (p != null) ...[
+                _metric(Icons.timelapse_outlined,
+                    '~${_formatDuration(p.estimatedDuration)} planned'),
+                _metric(Icons.fitness_center_outlined,
+                    '${p.totalExerciseCount} exercises'),
+                _metric(Icons.repeat, '${_totalSets(p)} sets'),
               ],
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Session goal: ${session.generationGoal.label}',
-              style: theme.textTheme.bodyMedium
-                  ?.copyWith(color: colors.onPrimaryContainer),
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 12,
-              runSpacing: 8,
-              children: [
-                _metric(context, Icons.timer_outlined, '$targetMinutes min target'),
-                if (p != null) ...[
-                  _metric(context, Icons.timelapse_outlined,
-                      '~${_formatDuration(p.estimatedDuration)} planned'),
-                  _metric(context, Icons.fitness_center_outlined,
-                      '${p.totalExerciseCount} exercises'),
-                  _metric(context, Icons.repeat, '${_totalSets(p)} sets'),
-                ],
-              ],
-            ),
-          ],
-        ),
+            ],
+          ),
+        ],
       ),
     );
   }
 
-  Widget _metric(BuildContext context, IconData icon, String text) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: 16, color: colors.onPrimaryContainer),
-        const SizedBox(width: 6),
-        Flexible(
-          child: Text(
-            text,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colors.onPrimaryContainer,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
-      ],
-    );
+  Widget _metric(IconData icon, String text) {
+    return FitFlowV2Tag(text, icon: icon);
   }
 }
 
@@ -336,28 +350,26 @@ class _NoteCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerHighest.withValues(alpha: 0.6),
-        borderRadius: BorderRadius.circular(12),
-      ),
+    final fitFlowTheme = FitFlowTheme.of(context);
+    return FitFlowV2InfoSurface(
+      tonal: true,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 18, color: colors.onSurfaceVariant),
-          const SizedBox(width: 8),
+          ExcludeSemantics(
+            child: Icon(icon, size: 18, color: fitFlowTheme.textSecondary),
+          ),
+          const SizedBox(width: FitFlowSpace.sm),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 for (var i = 0; i < lines.length; i++) ...[
-                  if (i > 0) const SizedBox(height: 6),
+                  if (i > 0) const SizedBox(height: FitFlowSpace.xs),
                   Text(
                     lines[i],
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: colors.onSurfaceVariant,
+                      color: fitFlowTheme.textSecondary,
                       height: 1.35,
                     ),
                   ),
@@ -378,33 +390,10 @@ class _GenerationFailedCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Card(
-      elevation: 0,
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.warning_amber_outlined,
-                size: 40, color: theme.colorScheme.error),
-            const SizedBox(height: 12),
-            Text(
-              message,
-              style: theme.textTheme.bodyMedium
-                  ?.copyWith(fontWeight: FontWeight.w600),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Your current environment, equipment, or workout preferences leave too few compatible exercises for a complete session.',
-              style: theme.textTheme.bodySmall
-                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
+    return FitFlowErrorState(
+      title: message,
+      message:
+          'Your current environment, equipment, or workout preferences leave too few compatible exercises for a complete session.',
     );
   }
 }

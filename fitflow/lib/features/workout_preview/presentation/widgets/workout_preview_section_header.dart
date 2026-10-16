@@ -17,7 +17,7 @@ class WorkoutPreviewSectionHeader extends StatelessWidget {
   final int exerciseCount;
   final WorkoutTimeEstimate? planned;
   final Duration budget;
-  // Program Session Preview keeps the default presentation.
+  // V2 is opt-in so unchanged callers keep their existing presentation.
   final bool visualV2;
   @override
   Widget build(BuildContext context) {

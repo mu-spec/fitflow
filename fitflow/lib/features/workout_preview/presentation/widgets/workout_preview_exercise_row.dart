@@ -20,7 +20,7 @@ class WorkoutPreviewExerciseRow extends StatelessWidget {
   final WorkoutExercisePrescription prescription;
   final String? originalExerciseName;
 
-  // Explicit opt-in: Program Session Preview retains its existing row.
+  // V2 is opt-in so unchanged callers keep their existing presentation.
   final bool visualV2;
   final int? sequenceNumber;
   @override
