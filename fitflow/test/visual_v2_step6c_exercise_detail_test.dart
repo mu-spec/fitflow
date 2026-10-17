@@ -100,6 +100,11 @@ void main() {
       await _pumpDetail(tester, exerciseId: exercise.id);
 
       final title = find.byKey(const ValueKey('exercise_detail_title'));
+      expect(
+          find.descendant(
+              of: find.byType(AppBar),
+              matching: find.text(l10n.trainingDetails)),
+          findsOneWidget);
       expect(find.text(exercise.name), findsWidgets);
       expect(find.text(exercise.shortDescription!, skipOffstage: false),
           findsOneWidget);

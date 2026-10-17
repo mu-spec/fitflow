@@ -59,7 +59,7 @@ class ExerciseDetailScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: visual.page,
       appBar: AppBar(
-        title: Text(context.l10n.exerciseLibraryTitle,
+        title: Text(context.l10n.trainingDetails,
             style: Theme.of(context).textTheme.titleLarge),
         centerTitle: false,
         toolbarHeight: 56 +
@@ -85,29 +85,29 @@ class ExerciseDetailScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _HeroSection(exercise: exercise),
-                const SizedBox(height: FitFlowSpace.section),
+                const SizedBox(height: FitFlowSpace.sm),
                 _EquipmentSection(exercise: exercise),
-                const SizedBox(height: FitFlowSpace.section),
+                const SizedBox(height: FitFlowSpace.sm),
                 if (exercise.instructions.isNotEmpty)
                   _HowToSection(exercise: exercise),
-                const SizedBox(height: FitFlowSpace.section),
+                const SizedBox(height: FitFlowSpace.md),
                 _MusclesSection(exercise: exercise),
                 if (exercise.commonMistakes.isNotEmpty) ...[
-                  const SizedBox(height: FitFlowSpace.section),
+                  const SizedBox(height: FitFlowSpace.md),
                   _MistakesSection(exercise: exercise),
                 ],
                 if (exercise.breathingGuidance != null) ...[
-                  const SizedBox(height: FitFlowSpace.section),
+                  const SizedBox(height: FitFlowSpace.md),
                   _BreathingSection(exercise: exercise),
                 ],
                 if (progression != null) ...[
-                  const SizedBox(height: FitFlowSpace.section),
+                  const SizedBox(height: FitFlowSpace.md),
                   ExerciseProgressionSection(
                     progression: progression,
                     skillTreeFamilyId: skillTreeFamilyId,
                   ),
                 ],
-                const SizedBox(height: FitFlowSpace.section),
+                const SizedBox(height: FitFlowSpace.md),
                 TrainingDisclosure(
                   title: context.l10n.trainingDefaults,
                   children: [_PrescriptionSection(exercise: exercise)],
@@ -253,7 +253,7 @@ class _HeroSectionState extends State<_HeroSection> {
             style: theme.textTheme.headlineMedium,
           ),
         ),
-        const SizedBox(height: FitFlowSpace.sm),
+        const SizedBox(height: FitFlowSpace.xs),
         Wrap(
           spacing: FitFlowSpace.md,
           runSpacing: FitFlowSpace.xs,
@@ -277,7 +277,7 @@ class _HeroSectionState extends State<_HeroSection> {
           ],
         ),
         if (exercise.shortDescription != null) ...[
-          const SizedBox(height: FitFlowSpace.md),
+          const SizedBox(height: FitFlowSpace.xs),
           Text(
             exercise.shortDescription!,
             key: const ValueKey('exercise_detail_description'),
@@ -320,7 +320,7 @@ class _HeroSectionState extends State<_HeroSection> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     media,
-                    const SizedBox(height: FitFlowSpace.lg),
+                    const SizedBox(height: FitFlowSpace.sm),
                     identity,
                   ],
                 );
@@ -518,52 +518,34 @@ class _EquipmentSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final visual = FitFlowVisualV2.of(context);
+    final colors = FitFlowTheme.of(context);
     final equipment = exercise.requiredEquipment;
-
     final label = equipment.isEmpty || equipment.contains(WorkoutEquipment.none)
         ? context.l10n.trainingNoEquipment
         : equipment.map((e) => equipmentLabel(context.l10n, e)).join(' · ');
-    return FitFlowV2InfoSurface(
+    return Row(
       key: const ValueKey('exercise_detail_equipment'),
-      tonal: true,
-      padding: const EdgeInsets.all(FitFlowSpace.md),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ExcludeSemantics(
-            child: Container(
-              width: 40,
-              height: 40,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: visual.onTint.withValues(alpha: .08),
-                borderRadius: FitFlowRadius.smallBorder,
-              ),
-              child: Icon(
-                Icons.fitness_center_outlined,
-                color: FitFlowTheme.of(context).brand,
-              ),
-            ),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ExcludeSemantics(
+          child: Icon(Icons.fitness_center_outlined,
+              size: 20, color: colors.brand),
+        ),
+        const SizedBox(width: FitFlowSpace.xs),
+        Expanded(
+          child: Wrap(
+            spacing: FitFlowSpace.xs,
+            runSpacing: FitFlowSpace.xxs,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Text(context.l10n.trainingEquipment,
+                  style: theme.textTheme.bodyMedium
+                      ?.copyWith(color: colors.textSecondary)),
+              Text(label, style: theme.textTheme.bodyMedium),
+            ],
           ),
-          const SizedBox(width: FitFlowSpace.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TrainingHeading(context.l10n.trainingEquipment),
-                const SizedBox(height: FitFlowSpace.xs),
-                Text(
-                  label,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: visual.onTint,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
@@ -720,10 +702,10 @@ class _SectionCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Divider(height: 1, color: FitFlowTheme.of(context).divider),
-        const SizedBox(height: FitFlowSpace.lg),
+        const SizedBox(height: FitFlowSpace.sm),
         if (title.isNotEmpty) ...[
           TrainingHeading(title),
-          const SizedBox(height: FitFlowSpace.sm),
+          const SizedBox(height: FitFlowSpace.xs),
         ],
         child,
       ],

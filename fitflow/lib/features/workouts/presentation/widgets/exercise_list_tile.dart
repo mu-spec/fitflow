@@ -20,7 +20,7 @@ class ExerciseListTile extends StatelessWidget {
     final l = context.l10n;
     final theme = FitFlowTheme.of(context);
     final mediaSize =
-        MediaQuery.textScalerOf(context).scale(1) >= 1.6 ? 64.0 : 80.0;
+        MediaQuery.textScalerOf(context).scale(1) >= 1.6 ? 64.0 : 72.0;
     final equipment = exercise.requiredEquipment;
     final equipmentText =
         equipment.isEmpty || equipment.contains(WorkoutEquipment.none)
@@ -38,9 +38,9 @@ class ExerciseListTile extends StatelessWidget {
           borderRadius: FitFlowRadius.mediumBorder,
           onTap: onTap,
           child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 96),
+            constraints: const BoxConstraints(minHeight: 80),
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.sm),
+              padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.xs),
               child: Row(
                 children: [
                   FitFlowExerciseImage.thumbnail(
@@ -71,7 +71,6 @@ class ExerciseListTile extends StatelessWidget {
                                 ?.copyWith(color: theme.textSecondary),
                           ),
                         ],
-                        const SizedBox(height: 2),
                         RichText(
                           text: TextSpan(
                             text: equipmentText,

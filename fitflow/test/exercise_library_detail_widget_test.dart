@@ -1,5 +1,6 @@
 import 'package:fitflow/app/router/app_router.dart';
 import 'package:fitflow/app/router/app_routes.dart';
+import 'package:fitflow/app/config/app_theme.dart';
 import 'package:fitflow/features/workouts/data/exercise_catalog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,18 +22,20 @@ void main() {
     String location, {
     Size size = const Size(390, 844),
     double textScale = 1.0,
+    bool dark = false,
   }) async {
     tester.view.physicalSize = size;
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
 
     final router = AppRouter.create(initialLocation: location);
+    addTearDown(router.dispose);
     await tester.pumpWidget(
       ProviderScope(
         child: MediaQuery(
           data: MediaQueryData(textScaler: TextScaler.linear(textScale)),
           child: MaterialApp.router(
-            theme: ThemeData(useMaterial3: true),
+            theme: dark ? AppTheme.dark : AppTheme.light,
             routerConfig: router,
           ),
         ),
@@ -103,6 +106,31 @@ void main() {
   });
 
   group('Exercise Detail regression', () {
+    testWidgets('final detail content clears navigation in both themes at 2x',
+        (tester) async {
+      for (final dark in [false, true]) {
+        await pumpRoute(tester, AppRoutes.exerciseDetail('pushup_standard'),
+            size: const Size(320, 700), textScale: 2, dark: dark);
+        final disclosure =
+            find.widgetWithText(ExpansionTile, 'Exercise characteristics');
+        await tester.ensureVisible(disclosure);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Exercise characteristics'));
+        await tester.pumpAndSettle();
+        final scroll = tester.state<ScrollableState>(find.descendant(
+          of: find.byKey(const ValueKey('exercise_detail_scroll')),
+          matching: find.byType(Scrollable),
+        ));
+        scroll.position.jumpTo(scroll.position.maxScrollExtent);
+        await tester.pumpAndSettle();
+        final lastField = find.text('Knee load');
+        expect(lastField, findsOneWidget);
+        expect(tester.getBottomLeft(lastField).dy,
+            lessThan(tester.getTopLeft(find.byType(NavigationBar)).dy - 16));
+        expect(tester.takeException(), isNull);
+      }
+    });
+
     Future<void> pumpDetail(WidgetTester tester, String exerciseId) =>
         pumpRoute(tester, AppRoutes.exerciseDetail(exerciseId));
 

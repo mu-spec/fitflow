@@ -93,6 +93,12 @@ void main() {
       tester.getSize(find.byType(ExerciseListTile).first).height,
       greaterThanOrEqualTo(48),
     );
+    // The count shares the button's center line without an extra toolbar box.
+    expect(
+        tester.getCenter(find.text(_countText(88))).dy,
+        closeTo(
+            tester.getCenter(find.widgetWithText(OutlinedButton, 'Filters')).dy,
+            1));
 
     final forbiddenMetrics = RegExp(
       r'calories|kcal|fitness score|intensity score|popularity|effectiveness|rating|%+',

@@ -156,7 +156,7 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                 children: [
                   // Search field
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
                     child: TextField(
                       key: const ValueKey('exercise_library_search'),
                       controller: _searchController,
@@ -275,41 +275,47 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: FitFlowSpace.xs),
-                  // A single unboxed action line keeps the list hierarchy quiet.
+                  // Keep the count aligned with Filters; secondary clearing
+                  // actions wrap independently without squeezing this row.
                   Padding(
                     padding:
                         const EdgeInsets.symmetric(horizontal: FitFlowSpace.md),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: v.page,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: FitFlowSpace.xs,
-                          vertical: FitFlowSpace.xxs,
-                        ),
-                        // Wrap keeps controls reachable at compact widths and
-                        // larger text without changing their actions or ordering.
-                        child: Wrap(
-                          alignment: WrapAlignment.spaceBetween,
-                          crossAxisAlignment: WrapCrossAlignment.center,
-                          spacing: FitFlowSpace.xs,
-                          runSpacing: FitFlowSpace.xxs,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
                           children: [
-                            OutlinedButton.icon(
-                              style: OutlinedButton.styleFrom(
-                                minimumSize: const Size(48, 48),
-                                side: BorderSide.none,
-                                backgroundColor: v.tint,
+                            Flexible(
+                              child: OutlinedButton.icon(
+                                style: OutlinedButton.styleFrom(
+                                  minimumSize: const Size(48, 48),
+                                  side: BorderSide.none,
+                                  backgroundColor: v.tint,
+                                ),
+                                onPressed: _openFilterSheet,
+                                icon: const Icon(Icons.tune_rounded, size: 18),
+                                label: Text(hasActiveFilters
+                                    ? context.l10n.filtersWithCount(activeCount)
+                                    : context.l10n.filters),
                               ),
-                              onPressed: _openFilterSheet,
-                              icon: const Icon(Icons.tune_rounded, size: 18),
-                              label: Text(hasActiveFilters
-                                  ? context.l10n.filtersWithCount(activeCount)
-                                  : context.l10n.filters),
                             ),
-                            if (hasActiveFilters)
+                            const SizedBox(width: FitFlowSpace.xs),
+                            Expanded(
+                              child: Text(
+                                context.l10n
+                                    .trainingExerciseCount(filtered.length),
+                                textAlign: TextAlign.end,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: FitFlowTheme.of(context).textSecondary,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (hasActiveFilters)
+                          Wrap(
+                            spacing: FitFlowSpace.xs,
+                            children: [
                               TextButton(
                                 style: TextButton.styleFrom(
                                   minimumSize: const Size(48, 48),
@@ -317,34 +323,26 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                                 onPressed: _clearFilters,
                                 child: Text(context.l10n.trainingClearFilters),
                               ),
-                            if (hasActiveFilters && hasSearch)
-                              TextButton(
-                                style: TextButton.styleFrom(
-                                  minimumSize: const Size(48, 48),
+                              if (hasSearch)
+                                TextButton(
+                                  style: TextButton.styleFrom(
+                                    minimumSize: const Size(48, 48),
+                                  ),
+                                  onPressed: _clearAll,
+                                  child: Text(context.l10n.trainingClearAll),
                                 ),
-                                onPressed: _clearAll,
-                                child: Text(context.l10n.trainingClearAll),
-                              ),
-                            Text(
-                              context.l10n
-                                  .trainingExerciseCount(filtered.length),
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                color: FitFlowTheme.of(context).textSecondary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                            ],
+                          ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: FitFlowSpace.sm),
+                  const SizedBox(height: FitFlowSpace.xxs),
                   if (_filter.movementPatterns.isNotEmpty ||
                       _filter.difficulties.isNotEmpty ||
                       _filter.equipment.isNotEmpty ||
                       _filter.positions.isNotEmpty)
                     Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
                         child: Text(
                             [
                               ..._filter.movementPatterns.map(
