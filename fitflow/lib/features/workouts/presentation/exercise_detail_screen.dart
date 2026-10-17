@@ -4,7 +4,9 @@ import 'package:fitflow/core/design/fitflow_radius.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
-import 'package:fitflow/core/design/widgets/fitflow_v2_exercise_media.dart';
+import 'package:fitflow/core/design/media/exercise_media_registry.dart';
+import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
+import 'package:flutter/services.dart';
 import 'package:fitflow/features/onboarding/data/workout_equipment.dart';
 import 'package:fitflow/features/workouts/data/exercise_catalog.dart';
 import 'package:fitflow/features/workouts/domain/exercise.dart';
@@ -36,7 +38,8 @@ class ExerciseDetailScreen extends StatelessWidget {
         appBar: AppBar(
           title: Text(context.l10n.trainingNotFound),
           centerTitle: false,
-          toolbarHeight: 56,
+          toolbarHeight: 56 +
+              (MediaQuery.textScalerOf(context).scale(1) - 1).clamp(0, 3) * 48,
           backgroundColor: visual.page,
           surfaceTintColor: Colors.transparent,
           scrolledUnderElevation: 0,
@@ -56,9 +59,11 @@ class ExerciseDetailScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: visual.page,
       appBar: AppBar(
-        title: Text(exercise.name),
+        title: Text(context.l10n.exerciseLibraryTitle,
+            style: Theme.of(context).textTheme.titleLarge),
         centerTitle: false,
-        toolbarHeight: 56,
+        toolbarHeight: 56 +
+            (MediaQuery.textScalerOf(context).scale(1) - 1).clamp(0, 3) * 48,
         backgroundColor: visual.page,
         surfaceTintColor: Colors.transparent,
         scrolledUnderElevation: 0,
@@ -206,111 +211,120 @@ class _NotFoundBody extends StatelessWidget {
   }
 }
 
-class _HeroSection extends StatelessWidget {
+/// Resolve bundled availability once per asset bundle, never by display name.
+/// Missing photography keeps the detail text-first; decoding/error handling
+/// for supplied media stays in the existing production renderer.
+class _HeroSection extends StatefulWidget {
   const _HeroSection({required this.exercise});
-
   final Exercise exercise;
 
-  String _levelLabel(BuildContext context) =>
-      trainingDifficultyLabel(context.l10n, exercise.difficulty);
+  @override
+  State<_HeroSection> createState() => _HeroSectionState();
+}
+
+class _HeroSectionState extends State<_HeroSection> {
+  AssetBundle? _bundle;
+  late Future<AssetManifest> _manifest;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final bundle = DefaultAssetBundle.of(context);
+    if (!identical(bundle, _bundle)) {
+      _bundle = bundle;
+      _manifest = AssetManifest.loadFromAssetBundle(bundle);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final exercise = widget.exercise;
     final theme = Theme.of(context);
-    final visual = FitFlowVisualV2.of(context);
-    final viewport = MediaQuery.sizeOf(context);
-    final textScale = MediaQuery.textScalerOf(context).scale(1);
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final compactLayout = textScale >= 1.4 || viewport.height <= 400;
-        final sideBySide = constraints.maxWidth >= 620 && !compactLayout;
-        final mediaWidth = viewport.height <= 400
-            ? 120.0
-            : textScale >= 1.4
-                ? 128.0
-                : 164.0;
-        final mediaHeight = mediaWidth * 132 / 180;
-        final media = FitFlowV2ExerciseMedia.forExercise(
-          key: const ValueKey('exercise_detail_media'),
-          exercise: exercise,
-          width: sideBySide ? 196 : mediaWidth,
-          height: sideBySide ? 144 : mediaHeight,
-          onHero: true,
-          borderRadius: FitFlowRadius.mediumBorder,
-        );
-
-        final identity = Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    final colors = FitFlowTheme.of(context);
+    final path = ExerciseMediaRegistry.lookup(exercise.id)?.hero.path;
+    final identity = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Semantics(
+          header: true,
+          child: Text(
+            exercise.name,
+            key: const ValueKey('exercise_detail_title'),
+            style: theme.textTheme.headlineMedium,
+          ),
+        ),
+        const SizedBox(height: FitFlowSpace.sm),
+        Wrap(
+          spacing: FitFlowSpace.md,
+          runSpacing: FitFlowSpace.xs,
           children: [
-            Semantics(
-              header: true,
-              child: Text(
-                exercise.name,
-                key: const ValueKey('exercise_detail_title'),
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  color: visual.onHero,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: -0.35,
-                ),
+            if (exercise.movementPattern != null)
+              _MetaChip(
+                icon: Icons.category_outlined,
+                label: movementPatternLabel(
+                    context.l10n, exercise.movementPattern!),
               ),
+            _MetaChip(
+              icon: Icons.signal_cellular_alt_rounded,
+              label: trainingDifficultyLabel(context.l10n, exercise.difficulty),
             ),
-            if (exercise.shortDescription != null) ...[
-              const SizedBox(height: FitFlowSpace.xs),
-              Text(
-                exercise.shortDescription!,
-                key: const ValueKey('exercise_detail_description'),
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: visual.heroSecondary,
-                  height: 1.45,
-                ),
-              ),
-            ],
-            const SizedBox(height: FitFlowSpace.md),
-            Wrap(
-              spacing: FitFlowSpace.xs,
-              runSpacing: FitFlowSpace.xs,
-              children: [
-                if (exercise.movementPattern != null)
-                  _MetaChip(
-                    icon: Icons.category_outlined,
-                    label: movementPatternLabel(
-                        context.l10n, exercise.movementPattern!),
-                  ),
-                _MetaChip(
-                  icon: Icons.signal_cellular_alt_rounded,
-                  label: _levelLabel(context),
-                ),
-                _MetaChip(
-                  icon: exercise.exerciseType == ExerciseType.reps
-                      ? Icons.repeat_rounded
-                      : Icons.timer_outlined,
-                  label: exercise.exerciseType.label,
-                ),
-              ],
+            _MetaChip(
+              icon: exercise.exerciseType == ExerciseType.reps
+                  ? Icons.repeat_rounded
+                  : Icons.timer_outlined,
+              label: exercise.exerciseType.label,
             ),
           ],
-        );
+        ),
+        if (exercise.shortDescription != null) ...[
+          const SizedBox(height: FitFlowSpace.md),
+          Text(
+            exercise.shortDescription!,
+            key: const ValueKey('exercise_detail_description'),
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: colors.textSecondary,
+            ),
+          ),
+        ],
+      ],
+    );
 
-        return FitFlowV2HeroSurface(
-          child: sideBySide
+    return FutureBuilder<AssetManifest>(
+      future: _manifest,
+      builder: (context, snapshot) {
+        final available = path != null &&
+            (snapshot.data?.listAssets().contains(path) ?? false);
+        if (!available) return identity;
+        return LayoutBuilder(builder: (context, constraints) {
+          final sideBySide = constraints.maxWidth >= 600 &&
+              MediaQuery.textScalerOf(context).scale(1) < 1.6;
+          final width = sideBySide
+              ? (constraints.maxWidth - FitFlowSpace.xl) / 2
+              : constraints.maxWidth;
+          final media = FitFlowExerciseImage.hero(
+            key: const ValueKey('exercise_detail_media'),
+            exerciseId: exercise.id,
+            width: width,
+            height: width * 3 / 4,
+          );
+          return sideBySide
               ? Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     media,
-                    const SizedBox(width: FitFlowSpace.lg),
+                    const SizedBox(width: FitFlowSpace.xl),
                     Expanded(child: identity),
                   ],
                 )
               : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Align(alignment: Alignment.centerLeft, child: media),
-                    const SizedBox(height: FitFlowSpace.md),
+                    media,
+                    const SizedBox(height: FitFlowSpace.lg),
                     identity,
                   ],
-                ),
-        );
+                );
+        });
       },
     );
   }
@@ -318,44 +332,26 @@ class _HeroSection extends StatelessWidget {
 
 class _MetaChip extends StatelessWidget {
   const _MetaChip({required this.icon, required this.label});
-
   final IconData icon;
   final String label;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final visual = FitFlowVisualV2.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: visual.onHero.withValues(alpha: .10),
-        borderRadius: FitFlowRadius.pillBorder,
-        border: Border.all(color: visual.heroLine),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: FitFlowSpace.sm,
-          vertical: FitFlowSpace.xs,
+    final colors = FitFlowTheme.of(context);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ExcludeSemantics(
+          child: Icon(icon, size: 16, color: colors.brand),
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ExcludeSemantics(
-              child: Icon(icon, size: 16, color: visual.onHero),
-            ),
-            const SizedBox(width: FitFlowSpace.xs),
-            Flexible(
-              child: Text(
-                label,
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: visual.onHero,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
+        const SizedBox(width: FitFlowSpace.xxs),
+        Flexible(
+          child: Text(label,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                    color: colors.textSecondary,
+                  )),
         ),
-      ),
+      ],
     );
   }
 }
@@ -481,7 +477,7 @@ class _MusclesSection extends StatelessWidget {
                         visualDensity: VisualDensity.compact,
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         backgroundColor: visual.tint,
-                        side: BorderSide(color: visual.subtleBorder),
+                        side: BorderSide.none,
                       ))
                   .toList(),
             ),
@@ -503,7 +499,7 @@ class _MusclesSection extends StatelessWidget {
                         visualDensity: VisualDensity.compact,
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         backgroundColor: visual.support,
-                        side: BorderSide(color: visual.subtleBorder),
+                        side: BorderSide.none,
                       ))
                   .toList(),
             ),
@@ -529,6 +525,7 @@ class _EquipmentSection extends StatelessWidget {
         ? context.l10n.trainingNoEquipment
         : equipment.map((e) => equipmentLabel(context.l10n, e)).join(' · ');
     return FitFlowV2InfoSurface(
+      key: const ValueKey('exercise_detail_equipment'),
       tonal: true,
       padding: const EdgeInsets.all(FitFlowSpace.md),
       child: Row(
@@ -599,14 +596,14 @@ class _HowToSection extends StatelessWidget {
                         const BoxConstraints(minWidth: 28, minHeight: 28),
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
-                      color: visual.action,
-                      shape: BoxShape.circle,
+                      color: visual.tint,
+                      borderRadius: FitFlowRadius.smallBorder,
                     ),
                     alignment: Alignment.center,
                     child: Text(
                       '${i + 1}',
                       style: theme.textTheme.labelMedium?.copyWith(
-                        color: visual.onAction,
+                        color: FitFlowTheme.of(context).brand,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -719,18 +716,17 @@ class _SectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FitFlowV2InfoSurface(
-      padding: const EdgeInsets.all(FitFlowSpace.md),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (title.isNotEmpty) ...[
-            TrainingHeading(title),
-            const SizedBox(height: FitFlowSpace.sm),
-          ],
-          child,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Divider(height: 1, color: FitFlowTheme.of(context).divider),
+        const SizedBox(height: FitFlowSpace.lg),
+        if (title.isNotEmpty) ...[
+          TrainingHeading(title),
+          const SizedBox(height: FitFlowSpace.sm),
         ],
-      ),
+        child,
+      ],
     );
   }
 }

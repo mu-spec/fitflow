@@ -1,7 +1,7 @@
 import 'package:fitflow/core/design/fitflow_radius.dart';
 import 'package:fitflow/core/design/fitflow_theme_extension.dart';
-import 'package:fitflow/core/design/fitflow_visual_v2.dart';
-import 'package:fitflow/core/design/widgets/fitflow_v2_exercise_media.dart';
+import 'package:fitflow/core/design/fitflow_spacing.dart';
+import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
 import 'package:fitflow/features/onboarding/data/workout_equipment.dart';
 import 'package:fitflow/features/workouts/domain/exercise.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
@@ -18,8 +18,9 @@ class ExerciseListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final v = FitFlowVisualV2.of(context);
     final theme = FitFlowTheme.of(context);
+    final mediaSize =
+        MediaQuery.textScalerOf(context).scale(1) >= 1.6 ? 64.0 : 80.0;
     final equipment = exercise.requiredEquipment;
     final equipmentText =
         equipment.isEmpty || equipment.contains(WorkoutEquipment.none)
@@ -31,26 +32,21 @@ class ExerciseListTile extends StatelessWidget {
 
     return MergeSemantics(
       child: Material(
-        color: v.support,
-        shape: RoundedRectangleBorder(
-          borderRadius: FitFlowRadius.mediumBorder,
-          side: BorderSide(color: v.subtleBorder),
-        ),
+        color: Colors.transparent,
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           borderRadius: FitFlowRadius.mediumBorder,
           onTap: onTap,
           child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 76),
+            constraints: const BoxConstraints(minHeight: 96),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.sm),
               child: Row(
                 children: [
-                  FitFlowV2ExerciseMedia.forExercise(
-                    exercise: exercise,
-                    width: 56,
-                    height: 56,
-                    borderRadius: FitFlowRadius.smallBorder,
+                  FitFlowExerciseImage.thumbnail(
+                    exerciseId: exercise.id,
+                    width: mediaSize,
+                    height: mediaSize,
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -60,22 +56,18 @@ class ExerciseListTile extends StatelessWidget {
                       children: [
                         Text(
                           exercise.name,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
                           style: Theme.of(context)
                               .textTheme
-                              .titleSmall
+                              .titleMedium
                               ?.copyWith(fontWeight: FontWeight.w600),
                         ),
                         if (focus.isNotEmpty) ...[
                           const SizedBox(height: 2),
                           Text(
                             focus,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
                             style: Theme.of(context)
                                 .textTheme
-                                .bodySmall
+                                .bodyMedium
                                 ?.copyWith(color: theme.textSecondary),
                           ),
                         ],
@@ -91,8 +83,6 @@ class ExerciseListTile extends StatelessWidget {
                           ),
                           textDirection: Directionality.of(context),
                           textScaler: MediaQuery.textScalerOf(context),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),

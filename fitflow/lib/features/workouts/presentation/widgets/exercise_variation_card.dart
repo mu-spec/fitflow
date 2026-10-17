@@ -1,7 +1,7 @@
 import 'package:fitflow/core/design/fitflow_radius.dart';
 import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
-import 'package:fitflow/core/design/widgets/fitflow_v2_exercise_media.dart';
+import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
 import 'package:fitflow/features/workouts/domain/exercise.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
@@ -52,18 +52,13 @@ class ExerciseVariationCard extends StatelessWidget {
     final compact =
         viewport.width < 400 || viewport.height <= 400 || textScale >= 1.4;
     final mediaWidth = compact ? 56.0 : 68.0;
-    final mediaHeight = compact ? 46.0 : 56.0;
+    final mediaHeight = mediaWidth;
     final radius = BorderRadius.circular(FitFlowRadius.medium);
 
     return Material(
-      color: isCurrent ? visual.tint : visual.support,
+      color: isCurrent ? visual.tint : Colors.transparent,
       shape: RoundedRectangleBorder(
         borderRadius: radius,
-        side: BorderSide(
-          color:
-              isCurrent ? FitFlowTheme.of(context).brand : visual.subtleBorder,
-          width: isCurrent ? 1.5 : 1,
-        ),
       ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -76,33 +71,11 @@ class ExerciseVariationCard extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                FitFlowV2ExerciseMedia.forExercise(
+                FitFlowExerciseImage.thumbnail(
                   key: ValueKey('exercise_variation_media_${exercise.id}'),
-                  exercise: exercise,
+                  exerciseId: exercise.id,
                   width: mediaWidth,
                   height: mediaHeight,
-                  borderRadius: FitFlowRadius.smallBorder,
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  width: 32,
-                  height: 32,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: isCurrent
-                        ? FitFlowTheme.of(context).brand
-                        : visual.tint,
-                    borderRadius: FitFlowRadius.smallBorder,
-                  ),
-                  child: ExcludeSemantics(
-                    child: Icon(
-                      directionIcon,
-                      size: 17,
-                      color: isCurrent
-                          ? FitFlowTheme.of(context).onBrand
-                          : FitFlowTheme.of(context).textSecondary,
-                    ),
-                  ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(

@@ -89,9 +89,9 @@ void main() {
     await tester.pumpAndSettle();
 
     final fullTreeAction =
-        find.widgetWithText(OutlinedButton, 'View full skill tree');
+        find.widgetWithText(FilledButton, 'View full skill tree');
     await tester.scrollUntilVisible(fullTreeAction, 260, maxScrolls: 20);
-    expect(tester.widget<OutlinedButton>(fullTreeAction).onPressed, isNotNull);
+    expect(tester.widget<FilledButton>(fullTreeAction).onPressed, isNotNull);
     await tester.tap(fullTreeAction);
     await tester.pumpAndSettle();
 

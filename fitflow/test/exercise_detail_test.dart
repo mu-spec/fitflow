@@ -143,7 +143,13 @@ void main() {
       // Ensure tags are not dumped prominently - we omit raw tags UI
       // Check that generic placeholder does not pretend to be form demo
       expect(find.text('Illustration coming soon'), findsNothing);
-      expect(find.byIcon(Icons.fitness_center_outlined), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byKey(const ValueKey('exercise_detail_equipment')),
+          matching: find.byIcon(Icons.fitness_center_outlined),
+        ),
+        findsOneWidget,
+      );
     });
   });
 

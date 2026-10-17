@@ -224,6 +224,9 @@ void main() {
     expect(controller.text, 'Push-Up');
     await tester.scrollUntilVisible(find.byType(TextField), -200,
         scrollable: find.byType(Scrollable).first);
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byTooltip('Clear search'));
+    await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Clear search'));
     await tester.pumpAndSettle();
     expect(controller.text, isEmpty);

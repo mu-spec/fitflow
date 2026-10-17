@@ -113,9 +113,11 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
     final v = FitFlowVisualV2.of(context);
 
     final libraryAppBar = AppBar(
-      title: Text(context.l10n.exerciseLibraryTitle),
+      title: Text(context.l10n.exerciseLibraryTitle,
+          style: theme.textTheme.titleLarge),
       centerTitle: false,
-      toolbarHeight: 56,
+      toolbarHeight:
+          56 + (MediaQuery.textScalerOf(context).scale(1) - 1).clamp(0, 3) * 48,
       backgroundColor: v.page,
       surfaceTintColor: Colors.transparent,
       scrolledUnderElevation: 0,
@@ -174,7 +176,7 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                               )
                             : null,
                         filled: true,
-                        fillColor: v.support,
+                        fillColor: v.tint,
                         isDense: false,
                         constraints: const BoxConstraints(minHeight: 52),
                         contentPadding: const EdgeInsets.symmetric(
@@ -183,11 +185,11 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                         ),
                         border: OutlineInputBorder(
                           borderRadius: FitFlowRadius.mediumBorder,
-                          borderSide: BorderSide(color: v.subtleBorder),
+                          borderSide: BorderSide.none,
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: FitFlowRadius.mediumBorder,
-                          borderSide: BorderSide(color: v.subtleBorder),
+                          borderSide: BorderSide.none,
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: FitFlowRadius.mediumBorder,
@@ -207,6 +209,8 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                       child: Row(
                         children: [
                           FilterChip(
+                            side: BorderSide.none,
+                            backgroundColor: v.tint,
                             showCheckmark: true,
                             materialTapTargetSize: MaterialTapTargetSize.padded,
                             chipAnimationStyle: ChipAnimationStyle(
@@ -221,6 +225,8 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                           ),
                           const SizedBox(width: 8),
                           FilterChip(
+                            side: BorderSide.none,
+                            backgroundColor: v.tint,
                             showCheckmark: true,
                             materialTapTargetSize: MaterialTapTargetSize.padded,
                             chipAnimationStyle: ChipAnimationStyle(
@@ -235,6 +241,8 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                           ),
                           const SizedBox(width: 8),
                           FilterChip(
+                            side: BorderSide.none,
+                            backgroundColor: v.tint,
                             showCheckmark: true,
                             materialTapTargetSize: MaterialTapTargetSize.padded,
                             chipAnimationStyle: ChipAnimationStyle(
@@ -249,6 +257,8 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                           ),
                           const SizedBox(width: 8),
                           FilterChip(
+                            side: BorderSide.none,
+                            backgroundColor: v.tint,
                             showCheckmark: true,
                             materialTapTargetSize: MaterialTapTargetSize.padded,
                             chipAnimationStyle: ChipAnimationStyle(
@@ -266,15 +276,13 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                     ),
                   ),
                   const SizedBox(height: FitFlowSpace.xs),
-                  // Result count and existing filter actions share a quiet V2 surface.
+                  // A single unboxed action line keeps the list hierarchy quiet.
                   Padding(
                     padding:
                         const EdgeInsets.symmetric(horizontal: FitFlowSpace.md),
                     child: DecoratedBox(
                       decoration: BoxDecoration(
-                        color: v.support,
-                        borderRadius: FitFlowRadius.mediumBorder,
-                        border: Border.all(color: v.subtleBorder),
+                        color: v.page,
                       ),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
@@ -292,6 +300,8 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                             OutlinedButton.icon(
                               style: OutlinedButton.styleFrom(
                                 minimumSize: const Size(48, 48),
+                                side: BorderSide.none,
+                                backgroundColor: v.tint,
                               ),
                               onPressed: _openFilterSheet,
                               icon: const Icon(Icons.tune_rounded, size: 18),
@@ -329,7 +339,6 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
                     ),
                   ),
                   const SizedBox(height: FitFlowSpace.sm),
-                  const Divider(height: 1),
                   if (_filter.movementPatterns.isNotEmpty ||
                       _filter.difficulties.isNotEmpty ||
                       _filter.equipment.isNotEmpty ||
@@ -362,15 +371,17 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
               else
                 SliverPadding(
                   padding: const EdgeInsets.fromLTRB(
-                    FitFlowSpace.sm,
-                    FitFlowSpace.xs,
-                    FitFlowSpace.sm,
+                    FitFlowSpace.md,
+                    0,
+                    FitFlowSpace.md,
                     0,
                   ),
                   sliver: SliverList.separated(
                     itemCount: filtered.length,
-                    separatorBuilder: (_, __) =>
-                        const SizedBox(height: FitFlowSpace.xs),
+                    separatorBuilder: (_, __) => Divider(
+                      height: 1,
+                      color: FitFlowTheme.of(context).divider,
+                    ),
                     itemBuilder: (context, index) {
                       final exercise = filtered[index];
                       return ExerciseListTile(

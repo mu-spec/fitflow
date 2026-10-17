@@ -9,7 +9,7 @@ import 'package:fitflow/features/workouts/domain/movement_pattern.dart';
 import 'package:fitflow/features/workouts/presentation/exercise_library_filter.dart';
 import 'package:fitflow/features/workouts/presentation/exercise_library_screen.dart';
 import 'package:fitflow/features/workouts/presentation/widgets/exercise_list_tile.dart';
-import 'package:fitflow/core/design/widgets/fitflow_v2_exercise_media.dart';
+import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -50,7 +50,8 @@ String _countText(int count) =>
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
-  testWidgets('real catalog rows use Step 6A media and preserve count/order',
+  testWidgets(
+      'real catalog rows use canonical production media and preserve count/order',
       (tester) async {
     addTearDown(tester.view.reset);
     await _pumpLibrary(tester);
@@ -72,21 +73,15 @@ void main() {
       ],
     );
 
-    final mediaWidgets = tester.widgetList<FitFlowV2ExerciseMedia>(
-        find.byType(FitFlowV2ExerciseMedia));
+    final mediaWidgets = tester
+        .widgetList<FitFlowExerciseImage>(find.byType(FitFlowExerciseImage));
     expect(mediaWidgets.length, visibleRows.length);
     expect(
-      mediaWidgets.first.descriptor,
-      FitFlowV2ExerciseVisualDescriptor.fromExercise(
-          visibleRows.first.exercise),
+      mediaWidgets.map((media) => media.exerciseId),
+      visibleRows.map((row) => row.exercise.id),
     );
-    expect(
-      find.descendant(
-        of: find.byType(FitFlowV2ExerciseMedia).first,
-        matching: find.byType(ExcludeSemantics),
-      ),
-      findsOneWidget,
-    );
+    expect(mediaWidgets.every((media) => media.decorative), isTrue);
+    expect(mediaWidgets.every((media) => media.width == media.height), isTrue);
 
     expect(
       tester
@@ -300,7 +295,7 @@ void main() {
   testWidgets('Light and Dark themes render intentionally', (tester) async {
     addTearDown(tester.view.reset);
     await _pumpLibrary(tester, brightness: Brightness.light);
-    expect(find.byType(FitFlowV2ExerciseMedia), findsWidgets);
+    expect(find.byType(FitFlowExerciseImage), findsWidgets);
     expect(
       Theme.of(tester
               .element(find.byKey(const ValueKey('exercise_library_search'))))
@@ -316,7 +311,7 @@ void main() {
           .brightness,
       Brightness.dark,
     );
-    expect(find.byType(FitFlowV2ExerciseMedia), findsWidgets);
+    expect(find.byType(FitFlowExerciseImage), findsWidgets);
     expect(tester.takeException(), isNull);
   });
 

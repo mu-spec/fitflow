@@ -3,8 +3,7 @@ import 'dart:ui' show Tristate;
 import 'package:fitflow/app/config/app_theme.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
-import 'package:fitflow/core/design/fitflow_visual_v2.dart';
-import 'package:fitflow/core/design/widgets/fitflow_v2_exercise_media.dart';
+import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
 import 'package:fitflow/features/onboarding/data/workout_equipment.dart';
 import 'package:fitflow/features/workouts/data/exercise_catalog.dart';
 import 'package:fitflow/features/workouts/domain/exercise_progression.dart';
@@ -49,11 +48,49 @@ Future<void> _pumpDetail(
       ),
     ),
   );
-  await tester.pump();
+  await tester.runAsync(() => AssetManifest.loadFromAssetBundle(rootBundle));
+  await tester.pumpAndSettle();
 }
 
 void main() {
-  testWidgets('canonical detail preserves content and uses Step 6A media',
+  testWidgets('all eight pilot heroes decode their own bundled photography',
+      (tester) async {
+    addTearDown(tester.view.reset);
+    const ids = [
+      'arm_circles',
+      'hip_flexor_stretch',
+      'lunge_reverse',
+      'plank_forearm',
+      'pushup_standard',
+      'pushup_wall',
+      'row_bent_over_dumbbell',
+      'squat_bodyweight',
+    ];
+    for (final id in ids) {
+      await _pumpDetail(tester, exerciseId: id);
+      final hero = find.byKey(const ValueKey('exercise_detail_media'));
+      final imageFinder =
+          find.descendant(of: hero, matching: find.byType(Image));
+      final image = tester.widget<Image>(imageFinder);
+      final provider = image.image as ResizeImage;
+      expect((provider.imageProvider as AssetImage).assetName,
+          'assets/images/exercises/hero/$id.webp');
+      expect(image.fit, BoxFit.contain);
+      await tester
+          .runAsync(() => precacheImage(provider, tester.element(imageFinder)));
+      await tester.pumpAndSettle();
+      expect(
+          find.descendant(
+              of: hero,
+              matching:
+                  find.byKey(const ValueKey('fitflow_media_placeholder'))),
+          findsNothing,
+          reason: id);
+      expect(tester.takeException(), isNull, reason: id);
+    }
+  });
+
+  testWidgets('canonical detail preserves content and uses its production hero',
       (tester) async {
     addTearDown(tester.view.reset);
     final semantics = tester.ensureSemantics();
@@ -73,18 +110,13 @@ void main() {
 
       final heroMediaFinder =
           find.byKey(const ValueKey('exercise_detail_media'));
-      final heroMedia = tester.widget<FitFlowV2ExerciseMedia>(heroMediaFinder);
+      final heroMedia = tester.widget<FitFlowExerciseImage>(heroMediaFinder);
       expect(
-        heroMedia.descriptor,
-        FitFlowV2ExerciseVisualDescriptor.fromExercise(exercise),
+        heroMedia.exerciseId,
+        exercise.id,
       );
-      expect(
-        find.descendant(
-          of: heroMediaFinder,
-          matching: find.byType(ExcludeSemantics),
-        ),
-        findsOneWidget,
-      );
+      expect(heroMedia.decorative, isTrue);
+      expect(heroMedia.width / heroMedia.height, closeTo(4 / 3, .001));
       expect(
         find.descendant(
           of: heroMediaFinder,
@@ -181,8 +213,8 @@ void main() {
         ValueKey('exercise_variation_media_${variation.id}'),
       );
       expect(
-        tester.widget<FitFlowV2ExerciseMedia>(mediaFinder).descriptor,
-        FitFlowV2ExerciseVisualDescriptor.fromExercise(variation),
+        tester.widget<FitFlowExerciseImage>(mediaFinder).exerciseId,
+        variation.id,
       );
     }
 
@@ -401,7 +433,10 @@ void main() {
     expect(
         find.text(englishAppLocalizations().trainingProgression), findsNothing);
     expect(find.byType(ExerciseProgressionSection), findsNothing);
-    expect(find.byType(FitFlowV2ExerciseMedia), findsOneWidget);
+    expect(find.byKey(const ValueKey('exercise_detail_media')), findsNothing);
+    expect(find.byType(FitFlowExerciseImage), findsNothing);
+    expect(find.text(ExerciseCatalog.byId('pushup_pike')!.shortDescription!),
+        findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -416,7 +451,7 @@ void main() {
     expect(find.text(l10n.trainingBack), findsOneWidget);
     expect(find.text(l10n.trainingHowTo), findsNothing);
     expect(find.text(l10n.trainingMuscles), findsNothing);
-    expect(find.byType(FitFlowV2ExerciseMedia), findsNothing);
+    expect(find.byType(FitFlowExerciseImage), findsNothing);
     await tester.tap(find.text(l10n.trainingBack));
     await tester.pump();
     expect(tester.takeException(), isNull);
@@ -433,8 +468,9 @@ void main() {
             .brightness,
         brightness,
       );
-      expect(find.byType(FitFlowV2HeroSurface), findsWidgets);
-      expect(find.byType(FitFlowV2ExerciseMedia), findsWidgets);
+      expect(
+          find.byKey(const ValueKey('exercise_detail_media')), findsOneWidget);
+      expect(find.byType(FitFlowExerciseImage), findsWidgets);
       expect(tester.takeException(), isNull);
     }
 
@@ -487,9 +523,8 @@ void main() {
           reason: '$size',
         );
       }
-      if (size == const Size(900, 320)) {
-        expect(media.width, 120);
-      }
+      expect(media.width / media.height, closeTo(4 / 3, .001));
+      expect(media.width, lessThanOrEqualTo(size.width - 32));
       expect(tester.takeException(), isNull, reason: '$size');
     }
 
@@ -501,8 +536,8 @@ void main() {
     final scaledMedia = tester.getSize(
       find.byKey(const ValueKey('exercise_detail_media')),
     );
-    expect(scaledMedia.width, 128);
-    expect(scaledMedia.width, lessThan(164));
+    expect(scaledMedia.width, 288);
+    expect(scaledMedia.width / scaledMedia.height, closeTo(4 / 3, .001));
     expect(
       tester
           .widget<Text>(find.byKey(const ValueKey('exercise_detail_title')))
