@@ -113,12 +113,12 @@ class HomeScreen extends ConsumerWidget {
               child: FitFlowMaxWidth(
                   child: Padding(
             padding: EdgeInsets.symmetric(
-                horizontal: inset, vertical: FitFlowSpace.xl),
+                horizontal: inset, vertical: FitFlowSpace.md),
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const HomeHeader(),
-                  const SizedBox(height: FitFlowSpace.xl),
+                  const SizedBox(height: FitFlowSpace.md),
                   if (plan == null) ...[
                     HomeEmptyStates.noWorkoutAvailable(context,
                         userProfile: userProfile),
@@ -146,7 +146,10 @@ class HomeScreen extends ConsumerWidget {
                     const SizedBox(height: FitFlowSpace.xl),
                     HomeMovementFocus(plan: plan),
                   ],
-                  const SizedBox(height: FitFlowSpace.md),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: FitFlowSpace.sm),
+                    child: Divider(),
+                  ),
                   HomePersonalizationCard(userProfile: userProfile),
                   const SizedBox(height: FitFlowSpace.xs),
                   Align(

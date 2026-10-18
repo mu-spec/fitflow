@@ -195,9 +195,9 @@ void main() {
       expect(find.textContaining('20 min target'), findsOneWidget);
 
       // Section summary appears
-      expect(find.text('Warm-up'), findsOneWidget);
-      expect(find.text('Main'), findsOneWidget);
-      expect(find.text('Cooldown'), findsOneWidget);
+      expect(find.textContaining(' Warm-up'), findsOneWidget);
+      expect(find.textContaining(' Main'), findsOneWidget);
+      expect(find.textContaining(' Cooldown'), findsOneWidget);
 
       // No fake history/progress information
       expect(find.textContaining('streak'), findsNothing);
@@ -361,7 +361,9 @@ void main() {
       // Verify dashboard shows same total exercise count as expected plan
       expect(find.textContaining('${expectedPlan!.totalExerciseCount} exercises'), findsOneWidget);
       // Verify section counts match
-      expect(find.text('${expectedPlan.warmup.exerciseCount}'), findsWidgets);
+      expect(find.text('${expectedPlan.warmup.exerciseCount} Warm-up'), findsOneWidget);
+      expect(find.text('${expectedPlan.main.exerciseCount} Main'), findsOneWidget);
+      expect(find.text('${expectedPlan.cooldown.exerciseCount} Cooldown'), findsOneWidget);
     });
   });
 

@@ -1,7 +1,6 @@
 import 'package:fitflow/core/accessibility/system_motion.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_theme_extension.dart';
-import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/features/home/presentation/widgets/home_adaptive_explanation.dart';
 import 'package:fitflow/features/onboarding/data/user_fitness_profile.dart';
 import 'package:fitflow/features/onboarding/data/workout_equipment.dart';
@@ -27,29 +26,24 @@ class HomePersonalizationCard extends StatelessWidget {
     final prefs = userProfile.preferences.isEmpty
         ? l.homeNoPreferences
         : userProfile.preferences.map((p) => preferenceLabel(l, p)).join(' · ');
-    Widget fact(String label, String value, {IconData? icon}) =>
-        FitFlowV2InfoSurface(
-            tonal: true,
-            padding: const EdgeInsets.all(FitFlowSpace.sm),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Row(children: [
-                if (icon != null) ...[
-                  ExcludeSemantics(
-                      child: Icon(icon, size: 18, color: colors.brand)),
-                  const SizedBox(width: FitFlowSpace.xs),
-                ],
-                Expanded(
-                    child: Text(label,
-                        style: text.labelMedium
-                            ?.copyWith(color: colors.textSecondary))),
-              ]),
-              const SizedBox(height: FitFlowSpace.xs),
-              Text(value, style: text.titleSmall),
-            ]));
-    return FitFlowV2InfoSurface(
-        child:
-            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+    Widget fact(String label, String value, {IconData? icon}) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.xs),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            if (icon != null) ...[
+              ExcludeSemantics(
+                  child: Icon(icon, size: 18, color: colors.brand)),
+              const SizedBox(width: FitFlowSpace.xs),
+            ],
+            Expanded(
+                child: Text(label,
+                    style: text.labelMedium
+                        ?.copyWith(color: colors.textSecondary))),
+          ]),
+          const SizedBox(height: FitFlowSpace.xs),
+          Text(value, style: text.titleSmall),
+        ]));
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Semantics(
           header: true,
           child: Text(l.homeBuiltForYou, style: text.titleMedium)),
@@ -79,6 +73,8 @@ class HomePersonalizationCard extends StatelessWidget {
       ExpansionTile(
         key: const PageStorageKey('home_setup'),
         tilePadding: EdgeInsets.zero,
+        shape: const Border(),
+        collapsedShape: const Border(),
         childrenPadding: const EdgeInsets.only(bottom: FitFlowSpace.xs),
         expansionAnimationStyle: AnimationStyle(
             duration: SystemMotion.standard(context),
@@ -96,6 +92,6 @@ class HomePersonalizationCard extends StatelessWidget {
           const HomeAdaptiveExplanation(),
         ],
       ),
-    ]));
+    ]);
   }
 }

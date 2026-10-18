@@ -25,7 +25,7 @@ class HomeSessionModeControl extends ConsumerWidget {
     final ink = emphasized ? v.onHero : colors.textPrimary;
     final secondary = emphasized ? v.heroSecondary : colors.textSecondary;
     final accent = emphasized ? v.action : colors.brand;
-    return Row(children: [
+    final modeLabel = Row(children: [
       ExcludeSemantics(
           child: Icon(Icons.tune_outlined, color: accent, size: 20)),
       const SizedBox(width: FitFlowSpace.xs),
@@ -50,12 +50,24 @@ class HomeSessionModeControl extends ConsumerWidget {
           Text(context.l10n.homeTemporary,
               style: text.bodySmall?.copyWith(color: secondary)),
       ])),
-      TextButton(
-          style: TextButton.styleFrom(foregroundColor: accent),
-          onPressed: () => FitFlowSheet.show<void>(context,
-              child: const ChooseWorkoutModeSheet()),
-          child: Text(context.l10n.homeAdjust)),
     ]);
+    final adjust = TextButton(
+        style: TextButton.styleFrom(foregroundColor: accent),
+        onPressed: () => FitFlowSheet.show<void>(context,
+            child: const ChooseWorkoutModeSheet()),
+        child: Text(context.l10n.homeAdjust));
+    return LayoutBuilder(builder: (context, constraints) {
+      if (constraints.maxWidth < 280 ||
+          MediaQuery.textScalerOf(context).scale(16) > 22) {
+        return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              modeLabel,
+              Align(alignment: AlignmentDirectional.centerEnd, child: adjust),
+            ]);
+      }
+      return Row(children: [Expanded(child: modeLabel), adjust]);
+    });
   }
 }
 

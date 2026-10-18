@@ -2,8 +2,8 @@ import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_radius.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
+import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
 import 'package:fitflow/core/design/widgets/fitflow_buttons.dart';
-import 'package:fitflow/features/home/presentation/widgets/home_flow_motif.dart';
 import 'package:fitflow/features/home/presentation/widgets/home_session_mode_widgets.dart';
 import 'package:fitflow/features/onboarding/data/user_fitness_profile.dart';
 import 'package:fitflow/features/onboarding/data/workout_duration.dart';
@@ -13,7 +13,7 @@ import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-/// V2 emphasis, with exactly the existing generated plan and Preview action.
+/// A photo-led introduction to the actual generated workout, not a program.
 class HomeWorkoutHeroCard extends StatelessWidget {
   const HomeWorkoutHeroCard(
       {super.key,
@@ -38,93 +38,92 @@ class HomeWorkoutHeroCard extends StatelessWidget {
         : estimated.inSeconds < 60
             ? l.homePlannedShort
             : l.homePlanned((estimated.inSeconds / 60).ceil());
-    Widget count(String label, int count) => Semantics(
-          label: '$label: $count',
-          excludeSemantics: true,
-          child: Container(
-            padding: const EdgeInsets.symmetric(
-                horizontal: FitFlowSpace.sm, vertical: FitFlowSpace.xs),
-            decoration: BoxDecoration(
-                color: v.onHero.withValues(alpha: .07),
-                borderRadius: FitFlowRadius.mediumBorder),
-            child: Wrap(
-                spacing: FitFlowSpace.xs,
-                crossAxisAlignment: WrapCrossAlignment.center,
+    // The photo follows the current plan, including temporary mode changes.
+    final featured =
+        plan.main.exercises.isEmpty ? null : plan.main.exercises.first.exercise;
+
+    final introduction = Padding(
+      padding: const EdgeInsets.all(FitFlowSpace.md),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Text(l.homeToday, style: text.labelMedium?.copyWith(color: v.action)),
+        const SizedBox(height: FitFlowSpace.xxs),
+        Semantics(
+            header: true,
+            child: Text(l.homeSession,
+                style: text.titleLarge?.copyWith(color: v.onHero))),
+        const SizedBox(height: FitFlowSpace.sm),
+        Wrap(
+            spacing: FitFlowSpace.md,
+            runSpacing: FitFlowSpace.xxs,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              Text('$minutes ${l.v2HomeTargetUnit}',
+                  key: const Key('home_target'),
+                  semanticsLabel: l.homeDurationTarget(minutes),
+                  style: text.titleMedium?.copyWith(color: v.onHero)),
+              Text(l.homeExercises(plan.totalExerciseCount),
+                  style: text.bodyMedium?.copyWith(color: v.heroSecondary)),
+            ]),
+        const SizedBox(height: FitFlowSpace.xxs),
+        Text(planned, style: text.bodySmall?.copyWith(color: v.heroSecondary)),
+        const SizedBox(height: FitFlowSpace.md),
+        FitFlowPrimaryButton(
+            label: l.viewWorkout,
+            icon: Icons.arrow_forward_rounded,
+            semanticHint: l.viewWorkoutHint,
+            style: FilledButton.styleFrom(
+                backgroundColor: v.action,
+                foregroundColor: v.onAction,
+                minimumSize: const Size(64, 56),
+                overlayColor: v.onAction.withValues(alpha: .12)),
+            onPressed: () => context.push(AppRoutes.workoutPreview),
+            expand: true),
+      ]),
+    );
+    Widget photo(double width) => FitFlowExerciseImage.hero(
+        key: const ValueKey('home_workout_photo'),
+        exerciseId: featured!.id,
+        width: width,
+        height: width * 3 / 4,
+        decorative: false,
+        semanticLabel: featured.name);
+    Widget count(String label, int value) => Semantics(
+        label: '$label: $value',
+        excludeSemantics: true,
+        child: Text.rich(TextSpan(children: [
+          TextSpan(text: '$value ', style: text.titleSmall),
+          TextSpan(text: label, style: text.bodySmall),
+        ])));
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      DecoratedBox(
+          decoration: BoxDecoration(
+              color: v.heroStart, borderRadius: FitFlowRadius.cardBorder),
+          child: LayoutBuilder(builder: (context, constraints) {
+            final wide = constraints.maxWidth >= 560 &&
+                MediaQuery.textScalerOf(context).scale(16) <= 22;
+            if (wide && featured != null) {
+              return Row(children: [
+                photo(constraints.maxWidth * .46),
+                Expanded(child: introduction)
+              ]);
+            }
+            return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text('$count',
-                      style: text.titleMedium?.copyWith(color: v.onHero)),
-                  Text(label,
-                      style: text.bodySmall?.copyWith(color: v.heroSecondary)),
-                ]),
-          ),
-        );
-    final metric =
-        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Text.rich(
-          TextSpan(children: [
-            TextSpan(
-                text: '$minutes',
-                style: text.displaySmall?.copyWith(color: v.onHero)),
-            TextSpan(
-                text: ' ${l.v2HomeTargetUnit}',
-                style: text.labelLarge?.copyWith(color: v.heroSecondary)),
-          ]),
-          key: const Key('home_target'),
-          semanticsLabel: l.homeDurationTarget(minutes)),
+                  if (featured != null) photo(constraints.maxWidth),
+                  introduction
+                ]);
+          })),
       const SizedBox(height: FitFlowSpace.sm),
-      Text(l.homeExercises(plan.totalExerciseCount),
-          style: text.titleSmall?.copyWith(color: v.onHero)),
-      const SizedBox(height: FitFlowSpace.xxs),
-      Text(planned, style: text.bodyMedium?.copyWith(color: v.heroSecondary)),
-    ]);
-    return FitFlowV2HeroSurface(
-        child:
-            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      Text(l.homeToday,
-          style: text.labelMedium?.copyWith(color: v.action, letterSpacing: 1)),
-      const SizedBox(height: FitFlowSpace.xs),
-      Semantics(
-          header: true,
-          child: Text(l.homeSession,
-              style: text.headlineMedium?.copyWith(color: v.onHero))),
+      const HomeSessionModeControl(),
       const SizedBox(height: FitFlowSpace.sm),
-      LayoutBuilder(builder: (context, constraints) {
-        final largeText = MediaQuery.textScalerOf(context).scale(16) > 22;
-        // The artwork yields space to text; the user's text never shrinks.
-        return Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-          Expanded(child: metric),
-          const SizedBox(width: FitFlowSpace.xs),
-          SizedBox(
-              width: largeText ? 56 : 104,
-              height: largeText ? 76 : 112,
-              child: const FittedBox(child: HomeFlowMotif())),
-        ]);
-      }),
-      const SizedBox(height: FitFlowSpace.sm),
-      Text(l.homeAdaptation,
-          style: text.bodyMedium?.copyWith(color: v.heroSecondary)),
-      const SizedBox(height: FitFlowSpace.lg),
-      FitFlowPrimaryButton(
-          label: l.viewWorkout,
-          icon: Icons.arrow_forward_rounded,
-          semanticHint: l.viewWorkoutHint,
-          style: FilledButton.styleFrom(
-              backgroundColor: v.action,
-              foregroundColor: v.onAction,
-              minimumSize: const Size(64, 56),
-              overlayColor: v.onAction.withValues(alpha: .12)),
-          onPressed: () => context.push(AppRoutes.workoutPreview),
-          expand: true),
-      const SizedBox(height: FitFlowSpace.xs),
-      const HomeSessionModeControl(emphasized: true),
-      Padding(
-          padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.sm),
-          child: Divider(color: v.heroLine)),
-      Wrap(spacing: FitFlowSpace.xs, runSpacing: FitFlowSpace.xs, children: [
+      Wrap(spacing: FitFlowSpace.lg, runSpacing: FitFlowSpace.xs, children: [
         count(l.homeWarmup, plan.warmup.exerciseCount),
         count(l.homeMain, plan.main.exerciseCount),
         count(l.homeCooldown, plan.cooldown.exerciseCount),
       ]),
-    ]));
+      const SizedBox(height: FitFlowSpace.xs),
+      Text(l.homeAdaptation, style: text.bodySmall),
+    ]);
   }
 }

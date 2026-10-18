@@ -16,7 +16,7 @@ class HomeHeader extends StatelessWidget {
           Semantics(
               header: true,
               child: Text(context.l10n.homeTitle,
-                  style: Theme.of(context).textTheme.headlineSmall)),
+                  style: Theme.of(context).textTheme.titleLarge)),
         ],
       );
 }
