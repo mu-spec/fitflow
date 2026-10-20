@@ -585,6 +585,7 @@
       }
     }
   },
+  "flowPreviewDetails": "About this workout",
   "flowPreviewHelp": "Tap an exercise for details. Replace the current exercise in the player, before its first set is complete.",
   "flowRestBetween": "{seconds} sec rest",
   "@flowRestBetween": {

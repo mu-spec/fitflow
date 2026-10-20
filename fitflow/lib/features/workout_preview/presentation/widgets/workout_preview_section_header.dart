@@ -12,6 +12,7 @@ class WorkoutPreviewSectionHeader extends StatelessWidget {
       required this.exerciseCount,
       required this.planned,
       required this.budget,
+      this.compactPreview = false,
       this.visualV2 = false});
   final String title;
   final int exerciseCount;
@@ -19,6 +20,7 @@ class WorkoutPreviewSectionHeader extends StatelessWidget {
   final Duration budget;
   // V2 is opt-in so unchanged callers keep their existing presentation.
   final bool visualV2;
+  final bool compactPreview;
   @override
   Widget build(BuildContext context) {
     if (visualV2) {
@@ -30,8 +32,11 @@ class WorkoutPreviewSectionHeader extends StatelessWidget {
           Semantics(
               header: true,
               child: Text(title,
-                  style:
-                      text.titleLarge?.copyWith(fontWeight: FontWeight.w600))),
+                  style: (compactPreview ? text.titleMedium : text.titleLarge)
+                      ?.copyWith(
+                          fontWeight: compactPreview
+                              ? FontWeight.w500
+                              : FontWeight.w600))),
           const SizedBox(height: FitFlowSpace.xxs),
           Text(
               '${context.l10n.flowCount(exerciseCount)} · ${context.l10n.flowEstimate(plannedDuration(context.l10n, planned?.total))}',

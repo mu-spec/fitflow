@@ -1155,6 +1155,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get flowPreviewDetails => 'About this workout';
+
+  @override
   String get flowPreviewHelp =>
       'Tap an exercise for details. Replace the current exercise in the player, before its first set is complete.';
 

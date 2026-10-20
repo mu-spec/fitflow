@@ -98,7 +98,11 @@ class WorkoutPreviewScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: v.page,
       appBar: AppBar(
-        title: Text(context.l10n.flowPreview),
+        title: Text(context.l10n.flowPreview,
+            style: Theme.of(context)
+                .textTheme
+                .titleLarge
+                ?.copyWith(fontWeight: FontWeight.w500)),
         backgroundColor: v.page,
         scrolledUnderElevation: 0,
       ),
@@ -125,18 +129,13 @@ class WorkoutPreviewScreen extends ConsumerWidget {
                 effectiveDuration: generationContext.effectiveWorkoutDuration,
                 sessionMode: sessionMode),
             const SizedBox(height: FitFlowSpace.md),
-            Text(context.l10n.flowPreviewHelp,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(color: FitFlowTheme.of(context).textSecondary)),
-            const SizedBox(height: FitFlowSpace.xl),
             WorkoutPreviewSectionHeader(
                 title: context.l10n.flowWarmup,
                 exerciseCount: plan.warmup.exerciseCount,
                 planned: plan.warmupEstimate,
                 budget: plan.timeBudget.warmup,
-                visualV2: true),
+                visualV2: true,
+                compactPreview: true),
             _buildExerciseList(context, plan.warmup.exercises),
             const SizedBox(height: FitFlowSpace.xl),
             WorkoutPreviewSectionHeader(
@@ -144,7 +143,8 @@ class WorkoutPreviewScreen extends ConsumerWidget {
                 exerciseCount: plan.main.exerciseCount,
                 planned: plan.mainEstimate,
                 budget: plan.timeBudget.main,
-                visualV2: true),
+                visualV2: true,
+                compactPreview: true),
             _buildExerciseList(context, plan.main.exercises,
                 startIndex: plan.warmup.exerciseCount),
             const SizedBox(height: FitFlowSpace.xl),
@@ -153,12 +153,32 @@ class WorkoutPreviewScreen extends ConsumerWidget {
                 exerciseCount: plan.cooldown.exerciseCount,
                 planned: plan.cooldownEstimate,
                 budget: plan.timeBudget.cooldown,
-                visualV2: true),
+                visualV2: true,
+                compactPreview: true),
             _buildExerciseList(context, plan.cooldown.exercises,
                 startIndex:
                     plan.warmup.exerciseCount + plan.main.exerciseCount),
             const SizedBox(height: FitFlowSpace.xl),
-            const WorkoutPreviewAdaptiveNote(),
+            ExpansionTile(
+              key: const Key('preview_details'),
+              tilePadding: EdgeInsets.zero,
+              shape: const Border(),
+              collapsedShape: const Border(),
+              expandedCrossAxisAlignment: CrossAxisAlignment.start,
+              title: Text(context.l10n.flowPreviewDetails,
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleSmall
+                      ?.copyWith(fontWeight: FontWeight.w500)),
+              children: [
+                Text(context.l10n.flowPreviewHelp,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: FitFlowTheme.of(context).textSecondary)),
+                const SizedBox(height: FitFlowSpace.xs),
+                const WorkoutPreviewAdaptiveNote(),
+                const SizedBox(height: FitFlowSpace.md),
+              ],
+            ),
             const SizedBox(height: FitFlowSpace.md),
           ];
           if (constraints.maxHeight < 320) {
@@ -192,6 +212,7 @@ class WorkoutPreviewScreen extends ConsumerWidget {
           WorkoutPreviewExerciseRow(
             prescription: prescriptions[i],
             visualV2: true,
+            compactPreview: true,
             sequenceNumber: startIndex + i + 1,
           )
       ]);

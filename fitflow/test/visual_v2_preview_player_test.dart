@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 import 'package:fitflow/app/config/app_theme.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/core/design/fitflow_contrast.dart';
+import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
 import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/core/design/widgets/fitflow_v2_feature_art.dart';
@@ -334,8 +335,14 @@ void main() {
             expect(fact(_l.flowNoEquipment), findsOneWidget);
             expect(find.byKey(const ValueKey('v2_preview_summary')),
                 findsOneWidget);
-            expect(find.byType(FitFlowV2WorkoutMedia), findsOneWidget);
-            expect(find.byType(Image), findsNothing);
+            expect(find.byType(FitFlowV2WorkoutMedia), findsNothing);
+            expect(find.text('FITFLOW'), findsNothing);
+            expect(
+                tester
+                    .widgetList<FitFlowExerciseImage>(
+                        find.byType(FitFlowExerciseImage))
+                    .map((image) => image.exerciseId),
+                h.plan.allPrescriptions.map((p) => p.exercise.id));
             final rows = tester
                 .widgetList<WorkoutPreviewExerciseRow>(
                     find.byType(WorkoutPreviewExerciseRow))
@@ -371,9 +378,6 @@ void main() {
             ]);
             expect(MediaQuery.textScalerOf(tester.element(summary)).scale(16),
                 16 * scale);
-            final media = tester.widget<FitFlowV2WorkoutMedia>(
-                find.byType(FitFlowV2WorkoutMedia));
-            if (size.height < 400 || scale == 2) expect(media.height, 48);
             if (size == const Size(390, 844) && scale == 1) {
               await _capture(tester, 'preview_390_${dark ? 'dark' : 'light'}');
             }
@@ -569,6 +573,29 @@ void main() {
               .map((r) => r.prescription),
           h.plan.allPrescriptions);
       expect(find.byKey(const Key('preview_start')), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets(
+        'Preview disclosure keeps replacement rule and final rows clear of Start',
+        (tester) async {
+      await _pump(tester,
+          preview: true, size: const Size(320, 700), dark: true, scale: 2);
+      final start = find.byKey(const Key('preview_start'));
+      expect(find.text(_l.flowPreviewHelp), findsNothing);
+      final disclosure = find.byKey(const Key('preview_details'));
+      await tester.ensureVisible(disclosure);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(_l.flowPreviewDetails));
+      await tester.pumpAndSettle();
+      expect(find.text(_l.flowPreviewHelp), findsOneWidget);
+      expect(find.text(_l.flowAdaptiveNote), findsOneWidget);
+      final lastRow = find.byType(WorkoutPreviewExerciseRow).last;
+      await tester.ensureVisible(lastRow);
+      await tester.pumpAndSettle();
+      expect(tester.getBottomRight(lastRow).dy,
+          lessThanOrEqualTo(tester.getTopLeft(start).dy));
+      expect(start.hitTestable(), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 

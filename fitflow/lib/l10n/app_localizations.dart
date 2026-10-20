@@ -2020,6 +2020,12 @@ abstract class AppLocalizations {
   /// **'{mode} • Temporary for this workout'**
   String flowModeTemporary(String mode);
 
+  /// No description provided for @flowPreviewDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'About this workout'**
+  String get flowPreviewDetails;
+
   /// No description provided for @flowPreviewHelp.
   ///
   /// In en, this message translates to:
