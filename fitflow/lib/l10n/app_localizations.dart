@@ -2480,7 +2480,7 @@ abstract class AppLocalizations {
   /// No description provided for @trainingAdaptiveHome.
   ///
   /// In en, this message translates to:
-  /// **'Looking for today’s adaptive workout?'**
+  /// **'Today’s workout'**
   String get trainingAdaptiveHome;
 
   /// No description provided for @trainingAdaptiveAction.

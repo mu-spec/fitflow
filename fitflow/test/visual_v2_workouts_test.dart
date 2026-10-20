@@ -3,7 +3,11 @@ import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/core/design/fitflow_contrast.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/core/design/widgets/fitflow_v2_feature_art.dart';
-import 'package:fitflow/core/design/widgets/fitflow_v2_feature_card.dart';
+import 'package:fitflow/core/design/media/fitflow_program_image.dart';
+import 'package:fitflow/core/design/media/program_media_registry.dart';
+import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
+import 'package:fitflow/features/workouts/data/exercise_catalog.dart';
+import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:fitflow/features/onboarding/data/workout_duration.dart';
 import 'package:fitflow/features/programs/data/adaptive_programs_storage.dart';
 import 'package:fitflow/features/programs/domain/adaptive_program_progress.dart';
@@ -198,15 +202,6 @@ void main() {
 
   Finder programsCard() => find.byKey(const Key('v2_programs_feature'));
 
-  FitFlowV2ProgramsPainter heroArtPainter(WidgetTester tester) {
-    final paint = find
-        .descendant(
-            of: programsCard().first, matching: find.byType(CustomPaint))
-        .first;
-    return tester.widget<CustomPaint>(paint).painter
-        as FitFlowV2ProgramsPainter;
-  }
-
   group('Visual V2 Workouts hub', () {
     testWidgets('hierarchy: header, programs feature, custom, explore, note',
         (tester) async {
@@ -214,23 +209,24 @@ void main() {
       expect(find.text('Your workouts'), findsOneWidget);
       expect(find.text('FITFLOW'), findsOneWidget);
       expect(find.text('Follow a program or build a workout of your own.'),
-          findsOneWidget);
+          findsNothing);
 
       expect(programsCard(), findsOneWidget);
-      expect(find.widgetWithText(ListTile, 'Programs'), findsOneWidget);
+      expect(find.widgetWithText(TextButton, 'Programs'), findsOneWidget);
       expect(find.text('Structured plans that adapt to your level and setup.'),
           findsOneWidget);
-      expect(find.byType(FitFlowV2FeatureCard), findsNWidgets(2));
+      expect(find.byType(FitFlowProgramImage), findsOneWidget);
+      expect(find.byType(FitFlowV2FeatureArt), findsNothing);
 
       expect(find.text('Custom workouts'), findsOneWidget);
       expect(find.byKey(const Key('v2_custom_empty')), findsOneWidget);
       expect(find.text('No custom workouts yet'), findsOneWidget);
 
       expect(find.text('Explore'), findsOneWidget);
-      expect(find.byType(FitFlowV2ExploreTile), findsNWidgets(2));
+      expect(find.byIcon(Icons.fitness_center_outlined), findsWidgets);
+      expect(find.byIcon(Icons.account_tree_outlined), findsOneWidget);
 
-      expect(
-          find.text('Looking for today’s adaptive workout?'), findsOneWidget);
+      expect(find.text('Today’s workout'), findsOneWidget);
       expect(find.text('Go to Home'), findsOneWidget);
 
       // Vertical hierarchy: page title leads, then Programs, then Custom,
@@ -250,19 +246,17 @@ void main() {
       expect(scaffold.backgroundColor, FitFlowVisualV2.of(ctx).page);
     });
 
-    testWidgets('Programs is the primary feature: hero art + native tap',
+    testWidgets(
+        'Programs uses a decorative registered cover and collection route',
         (tester) async {
       await pumpHub(tester);
-      final card = programsCard();
-      final art = find
-          .descendant(of: card, matching: find.byType(FitFlowV2FeatureArt))
-          .first;
-      expect(tester.widget<FitFlowV2FeatureArt>(art).kind,
-          FitFlowV2FeatureArtKind.programs);
-      expect(tester.widget<FitFlowV2FeatureArt>(art).onHero, isTrue);
-      // Artwork is decorative-only.
-      expect(find.descendant(of: art, matching: find.byType(ExcludeSemantics)),
-          findsOneWidget);
+      final photo = tester.widget<FitFlowProgramImage>(find.descendant(
+          of: programsCard(), matching: find.byType(FitFlowProgramImage)));
+      expect(ProgramMediaRegistry.lookup(photo.programId), isNotNull);
+      expect(photo.decorative, isTrue);
+      expect(photo.width / photo.height, closeTo(4 / 3, .001));
+      expect(find.text('Active program'), findsNothing);
+      expect(find.text('Recommended'), findsNothing);
       await tester.tap(find.text('Programs'));
       await tester.pumpAndSettle();
       expect(find.byType(ProgramsOverviewScreen), findsOneWidget);
@@ -338,12 +332,9 @@ void main() {
       await pumpHub(tester);
       final card = find.byKey(const Key('v2_custom_empty'));
       expect(card, findsOneWidget);
-      final art = find
-          .descendant(of: card, matching: find.byType(FitFlowV2FeatureArt))
-          .first;
-      expect(tester.widget<FitFlowV2FeatureArt>(art).kind,
-          FitFlowV2FeatureArtKind.customWorkout);
-      expect(tester.widget<FitFlowV2FeatureArt>(art).onHero, isFalse);
+      expect(
+          find.descendant(of: card, matching: find.byType(FitFlowV2FeatureArt)),
+          findsNothing);
       expect(find.text('Create workout'), findsOneWidget);
       expect(find.text('Create custom workout'), findsNothing);
       final create = find.widgetWithText(FilledButton, 'Create workout');
@@ -371,14 +362,14 @@ void main() {
     testWidgets('explore tiles keep library and skill tree destinations',
         (tester) async {
       await pumpHub(tester);
-      final tiles = find.byType(FitFlowV2ExploreTile);
-      expect(tiles, findsNWidgets(2));
-      expect(find.text('Browse 88 exercises'), findsOneWidget);
+      final count =
+          ExerciseCatalog.all.where((exercise) => exercise.active).length;
+      expect(find.text('Browse $count exercises'), findsOneWidget);
       expect(
           tester
               .getSize(find.ancestor(
                   of: find.text('Exercise Library'),
-                  matching: find.byType(FitFlowV2ExploreTile)))
+                  matching: find.byType(TextButton)))
               .height,
           greaterThanOrEqualTo(64));
 
@@ -400,7 +391,16 @@ void main() {
     testWidgets('artwork is decorative-only across the hub', (tester) async {
       await pumpHub(tester, activeProgram: true, custom: true);
       final arts = find.byType(FitFlowV2FeatureArt);
-      expect(arts.evaluate().length, greaterThanOrEqualTo(4));
+      expect(arts, findsOneWidget); // Unchanged active-program continuation.
+      expect(
+          tester
+              .widget<FitFlowProgramImage>(find.byType(FitFlowProgramImage))
+              .decorative,
+          isTrue);
+      final exercisePhoto = tester
+          .widget<FitFlowExerciseImage>(find.byType(FitFlowExerciseImage));
+      expect(exercisePhoto.exerciseId, 'squat_bodyweight');
+      expect(exercisePhoto.decorative, isTrue);
       for (final element in arts.evaluate()) {
         expect(
           find.descendant(
@@ -414,33 +414,18 @@ void main() {
       expect(find.text('4 of 12 sessions'), findsOneWidget);
     });
 
-    testWidgets('art styled intentionally per brightness, not inverted',
+    testWidgets('navigation text stays readable in both themes',
         (tester) async {
-      await pumpHub(tester, dark: false);
-      final ctxLight = tester.element(programsCard());
-      final lightInk = heroArtPainter(tester).style.ink;
-      expect(lightInk, FitFlowVisualV2.of(ctxLight).action);
-      expect(fitflowContrast(lightInk, FitFlowVisualV2.of(ctxLight).heroStart),
-          greaterThanOrEqualTo(2.0));
-
-      await pumpHub(tester, dark: true);
-      final ctxDark = tester.element(programsCard());
-      final darkInk = heroArtPainter(tester).style.ink;
-      expect(darkInk, FitFlowVisualV2.of(ctxDark).action);
-      expect(lightInk, isNot(darkInk));
-      expect(fitflowContrast(darkInk, FitFlowVisualV2.of(ctxDark).heroStart),
-          greaterThanOrEqualTo(2.0));
-
-      // Standard (non-hero) artwork is tuned against its own tint panel.
-      final emptyCard = find.byKey(const Key('v2_custom_empty'));
-      final panelPaint = find
-          .descendant(of: emptyCard, matching: find.byType(CustomPaint))
-          .first;
-      final panelStyle = (tester.widget<CustomPaint>(panelPaint).painter
-              as FitFlowV2CustomWorkoutPainter)
-          .style;
-      expect(fitflowContrast(panelStyle.ink, panelStyle.panel),
-          greaterThanOrEqualTo(2.0));
+      for (final dark in [false, true]) {
+        await pumpHub(tester, dark: dark);
+        final context = tester.element(programsCard());
+        final colors = FitFlowTheme.of(context);
+        final page = FitFlowVisualV2.of(context).page;
+        expect(fitflowContrast(colors.textPrimary, page),
+            greaterThanOrEqualTo(4.5));
+        expect(fitflowContrast(colors.textSecondary, page),
+            greaterThanOrEqualTo(4.5));
+      }
     });
 
     testWidgets('native actions: tile/button semantics and 48dp targets',
@@ -459,12 +444,16 @@ void main() {
           tester
               .getSize(find.ancestor(
                   of: find.text('Exercise skill trees'),
-                  matching: find.byType(FitFlowV2ExploreTile)))
+                  matching: find.byType(TextButton)))
               .height,
           greaterThanOrEqualTo(48));
       final goHome = find.widgetWithText(TextButton, 'Go to Home');
       await tester.ensureVisible(goHome);
       expect(tester.getSize(goHome).height, greaterThanOrEqualTo(48));
+      await tester.pumpAndSettle();
+      await tester.tap(goHome);
+      await tester.pumpAndSettle();
+      expect(find.text('Home stub'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 
@@ -491,42 +480,32 @@ void main() {
       }
     });
 
-    testWidgets('artwork yields before text at 2x type scale', (tester) async {
-      await pumpHub(tester, size: const Size(390, 844), scale: 1);
-      final art = find
-          .descendant(
-              of: programsCard(), matching: find.byType(FitFlowV2FeatureArt))
-          .first;
-      final normal = tester.widget<FitFlowV2FeatureArt>(art).height;
-      expect(normal, 116);
-
+    testWidgets('program photo stays compact and yields to large text',
+        (tester) async {
+      await pumpHub(tester, size: const Size(390, 844));
+      final normal =
+          tester.widget<FitFlowProgramImage>(find.byType(FitFlowProgramImage));
+      expect(normal.width, lessThanOrEqualTo(104));
       await pumpHub(tester, size: const Size(390, 844), scale: 2);
-      final largeArt = find
-          .descendant(
-              of: programsCard(), matching: find.byType(FitFlowV2FeatureArt))
-          .first;
-      expect(tester.widget<FitFlowV2FeatureArt>(largeArt).height, 76);
+      final large =
+          tester.widget<FitFlowProgramImage>(find.byType(FitFlowProgramImage));
+      expect(large.width, lessThan(normal.width));
+      expect(large.width / large.height, closeTo(4 / 3, .001));
       expect(find.text('Programs'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('tablet uses a two-column explore row that yields to text',
+    testWidgets(
+        'tablet keeps ordered readable explore rows at both text scales',
         (tester) async {
-      await pumpHub(tester, size: const Size(840, 1000), scale: 1);
-      final library = tester.getCenter(find.text('Exercise Library')).dy;
-      final skills = tester.getCenter(find.text('Exercise skill trees')).dy;
-      expect((library - skills).abs(), lessThan(40),
-          reason: '840dp scale 1: two compact columns side by side');
-      // Feature cards stay inside the readable max width, not edge-to-edge.
-      expect(tester.getSize(programsCard()).width, lessThan(760));
-      expect(tester.takeException(), isNull);
-
-      await pumpHub(tester, size: const Size(840, 1000), scale: 2);
-      final library2 = tester.getCenter(find.text('Exercise Library')).dy;
-      final skills2 = tester.getCenter(find.text('Exercise skill trees')).dy;
-      expect((library2 - skills2).abs(), greaterThan(100),
-          reason: '2x text stacks tiles vertically for readable labels');
-      expect(tester.takeException(), isNull);
+      for (final scale in [1.0, 2.0]) {
+        await pumpHub(tester, size: const Size(840, 1000), scale: scale);
+        final library = tester.getCenter(find.text('Exercise Library')).dy;
+        final skills = tester.getCenter(find.text('Exercise skill trees')).dy;
+        expect(skills, greaterThan(library));
+        expect(tester.getSize(programsCard()).width, lessThan(760));
+        expect(tester.takeException(), isNull);
+      }
     });
 
     testWidgets('short landscape stays scrollable with reachable actions',
@@ -600,11 +579,12 @@ void main() {
             expect(find.text('Your workouts'), findsOneWidget);
             expect(find.text('Programs'), findsOneWidget);
             expect(find.text('Custom workouts'), findsOneWidget);
-            expect(find.byType(FitFlowV2FeatureCard), findsOneWidget,
-                reason: 'populated custom: one programs feature card');
+            expect(find.byType(FitFlowProgramImage), findsOneWidget,
+                reason: 'one compact programs collection entry');
             expect(find.text('Active program'), findsOneWidget);
             expect(find.text('TEST Step Three Lift'), findsOneWidget);
-            expect(find.byType(FitFlowV2ExploreTile), findsNWidgets(2));
+            expect(find.byIcon(Icons.fitness_center_outlined), findsWidgets);
+            expect(find.byIcon(Icons.account_tree_outlined), findsOneWidget);
             expect(programsCard(), findsOneWidget);
             expect(tester.takeException(), isNull,
                 reason: '$size dark=$dark scale=$scale');

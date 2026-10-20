@@ -1424,7 +1424,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Follow a program or build a workout of your own.';
 
   @override
-  String get trainingAdaptiveHome => 'Looking for today’s adaptive workout?';
+  String get trainingAdaptiveHome => 'Today’s workout';
 
   @override
   String get trainingAdaptiveAction => 'Go to Home';

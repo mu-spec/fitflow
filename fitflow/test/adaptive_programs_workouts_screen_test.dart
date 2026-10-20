@@ -40,7 +40,7 @@ void main() {
       expect(find.text('Structured plans that adapt to your level and setup.'),
           findsOneWidget);
       expect(find.text('Structured multi-week training plans.'), findsNothing);
-      expect(find.widgetWithText(ListTile, 'Programs'), findsOneWidget);
+      expect(find.widgetWithText(TextButton, 'Programs'), findsOneWidget);
     });
 
     testWidgets('Library, Custom and Skill Trees entries remain',

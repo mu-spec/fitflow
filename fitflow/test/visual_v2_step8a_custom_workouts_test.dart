@@ -2,6 +2,7 @@ import 'dart:ui' show SemanticsAction;
 
 import 'package:fitflow/app/config/app_theme.dart';
 import 'package:fitflow/app/router/app_routes.dart';
+import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
 import 'package:fitflow/core/accessibility/system_motion.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/core/design/widgets/fitflow_v2_exercise_media.dart';
@@ -199,8 +200,8 @@ void main() {
 
     expect(find.text(_workoutName), findsOneWidget);
     expect(find.text('No custom workouts yet'), findsNothing);
-    expect(find.byType(FitFlowV2ExerciseMedia), findsOneWidget);
-    final listArt = find.byType(FitFlowV2ExerciseMedia).first;
+    expect(find.byType(FitFlowExerciseImage), findsOneWidget);
+    final listArt = find.byType(FitFlowExerciseImage).first;
     expect(
       find.descendant(of: listArt, matching: find.byType(ExcludeSemantics)),
       findsOneWidget,
@@ -422,12 +423,7 @@ void main() {
       expect(tester.getSize(view).height, greaterThanOrEqualTo(48));
       expect(tester.takeException(), isNull, reason: 'overview $viewport');
 
-      final workoutCard = find
-          .ancestor(
-            of: find.text(_workoutName),
-            matching: find.byType(FitFlowV2InfoSurface),
-          )
-          .first;
+      final workoutCard = find.byKey(ValueKey('workouts_custom_${fixture.id}'));
       final overviewScaffold = tester.widget<Scaffold>(
         find.descendant(
           of: find.byType(WorkoutsScreen),

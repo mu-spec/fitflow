@@ -776,7 +776,7 @@
   "flowDecisionMinimum": "Already at the starting level; no level change.",
   "trainingWorkoutsTitle": "Your workouts",
   "trainingWorkoutsIntro": "Follow a program or build a workout of your own.",
-  "trainingAdaptiveHome": "Looking for today’s adaptive workout?",
+  "trainingAdaptiveHome": "Today’s workout",
   "trainingAdaptiveAction": "Go to Home",
   "trainingPrograms": "Programs",
   "trainingProgramsHelp": "Structured plans that adapt to your level and setup.",
