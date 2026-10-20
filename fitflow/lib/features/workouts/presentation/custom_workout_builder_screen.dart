@@ -6,7 +6,7 @@ import 'package:fitflow/features/workouts/presentation/widgets/training_presenta
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_radius.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
-import 'package:fitflow/core/design/widgets/fitflow_v2_exercise_media.dart';
+import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
 import 'package:fitflow/core/accessibility/system_motion.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/onboarding/data/user_fitness_profile.dart';
@@ -453,10 +453,15 @@ class _CustomWorkoutBuilderScreenState
       child: Scaffold(
         backgroundColor: visual.page,
         appBar: AppBar(
-          toolbarHeight: largeText ? (titleScale > 28 ? 120 : 104) : null,
+          backgroundColor: visual.page,
+          scrolledUnderElevation: 0,
+          toolbarHeight: largeText ? (titleScale > 28 ? 104 : 80) : null,
           title: Semantics(
             header: true,
-            child: Text(isEditing ? 'Edit workout' : 'Create workout'),
+            child: Text(
+                isEditing ? 'Edit workout' : context.l10n.trainingCreate,
+                style: theme.textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.w500)),
           ),
           actions: [
             if (_isSaving)
@@ -485,6 +490,7 @@ class _CustomWorkoutBuilderScreenState
         ),
         body: SafeArea(
           child: SingleChildScrollView(
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             padding: EdgeInsets.symmetric(
               horizontal: viewportWidth < 360
                   ? FitFlowSpace.md
@@ -497,56 +503,54 @@ class _CustomWorkoutBuilderScreenState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    FitFlowV2InfoSurface(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          TextField(
-                            controller: _nameController,
-                            decoration: InputDecoration(
-                              labelText: 'Workout name',
-                              hintText: 'e.g., Morning Strength',
-                              errorText: CustomWorkoutValidator.validateName(
-                                              _nameController.text) !=
-                                          null &&
-                                      _nameController.text.isNotEmpty
-                                  ? CustomWorkoutValidator.validateName(
-                                      _nameController.text)
-                                  : null,
-                              border: OutlineInputBorder(
-                                borderRadius: FitFlowRadius.mediumBorder,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TextField(
+                          controller: _nameController,
+                          decoration: InputDecoration(
+                            labelText: 'Workout name',
+                            hintText: 'e.g., Morning Strength',
+                            errorText: CustomWorkoutValidator.validateName(
+                                            _nameController.text) !=
+                                        null &&
+                                    _nameController.text.isNotEmpty
+                                ? CustomWorkoutValidator.validateName(
+                                    _nameController.text)
+                                : null,
+                            border: OutlineInputBorder(
+                              borderRadius: FitFlowRadius.mediumBorder,
+                            ),
+                          ),
+                          maxLength: CustomWorkoutLimits.nameMaxLength,
+                        ),
+                        const SizedBox(height: FitFlowSpace.sm),
+                        Semantics(
+                          header: true,
+                          child: Text(
+                            context.l10n.flowTargetLabel,
+                            style: theme.textTheme.titleSmall
+                                ?.copyWith(fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                        const SizedBox(height: FitFlowSpace.xs),
+                        Wrap(
+                          spacing: FitFlowSpace.xs,
+                          runSpacing: FitFlowSpace.xs,
+                          children: [
+                            for (final dur in WorkoutDuration.values)
+                              ChoiceChip(
+                                label: Text(dur.label),
+                                selected: _selectedDuration == dur,
+                                onSelected: (selected) {
+                                  if (selected) {
+                                    setState(() => _selectedDuration = dur);
+                                  }
+                                },
                               ),
-                            ),
-                            maxLength: CustomWorkoutLimits.nameMaxLength,
-                          ),
-                          const SizedBox(height: FitFlowSpace.sm),
-                          Semantics(
-                            header: true,
-                            child: Text(
-                              'Target duration',
-                              style: theme.textTheme.titleSmall
-                                  ?.copyWith(fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                          const SizedBox(height: FitFlowSpace.xs),
-                          Wrap(
-                            spacing: FitFlowSpace.xs,
-                            runSpacing: FitFlowSpace.xs,
-                            children: [
-                              for (final dur in WorkoutDuration.values)
-                                ChoiceChip(
-                                  label: Text(dur.label),
-                                  selected: _selectedDuration == dur,
-                                  onSelected: (selected) {
-                                    if (selected) {
-                                      setState(() => _selectedDuration = dur);
-                                    }
-                                  },
-                                ),
-                            ],
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
+                      ],
                     ),
                     const SizedBox(height: FitFlowSpace.md),
                     _SectionEditor(
@@ -644,8 +648,9 @@ class _SectionEditor extends StatelessWidget {
     final theme = Theme.of(context);
     final catalogById = ExerciseCatalog.byIdMap;
 
-    return FitFlowV2InfoSurface(
+    return Padding(
       key: Key('custom-workout-section-${type.name}'),
+      padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.sm),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -658,7 +663,7 @@ class _SectionEditor extends StatelessWidget {
                 child: Text(
                   title,
                   style: theme.textTheme.titleMedium
-                      ?.copyWith(fontWeight: FontWeight.w600),
+                      ?.copyWith(fontWeight: FontWeight.w500),
                 ),
               );
               final addButton = TextButton.icon(
@@ -690,21 +695,17 @@ class _SectionEditor extends StatelessWidget {
           ),
           const SizedBox(height: FitFlowSpace.sm),
           if (entries.isEmpty)
-            FitFlowV2InfoSurface(
-              tonal: true,
-              child: Text(
-                'No exercises yet. Tap Add exercise.',
-                style: theme.textTheme.bodySmall
-                    ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-              ),
+            Text(
+              'No exercises yet. Tap Add exercise.',
+              style: theme.textTheme.bodySmall
+                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
             )
           else
             ListView.separated(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: entries.length,
-              separatorBuilder: (_, __) =>
-                  const SizedBox(height: FitFlowSpace.xs),
+              separatorBuilder: (_, __) => const Divider(height: 1),
               itemBuilder: (context, index) {
                 final entry = entries[index];
                 final Exercise? exercise = catalogById[entry.exerciseId];
@@ -714,12 +715,12 @@ class _SectionEditor extends StatelessWidget {
                     : '${entry.sets} × ${entry.repsPerSet} reps';
                 final restText = '${entry.restBetweenSets.inSeconds}s rest';
 
-                return FitFlowV2InfoSurface(
+                return Padding(
                   key: ValueKey(
                     'custom-workout-entry-${type.name}-$index-${entry.exerciseId}',
                   ),
-                  tonal: true,
-                  padding: const EdgeInsets.all(FitFlowSpace.sm),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: FitFlowSpace.sm),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -727,10 +728,10 @@ class _SectionEditor extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           if (!isMissing) ...[
-                            FitFlowV2ExerciseMedia.forExercise(
-                              exercise: exercise,
-                              width: 52,
-                              height: 52,
+                            FitFlowExerciseImage.thumbnail(
+                              exerciseId: exercise.id,
+                              width: 64,
+                              height: 64,
                             ),
                             const SizedBox(width: FitFlowSpace.sm),
                           ],
@@ -742,7 +743,7 @@ class _SectionEditor extends StatelessWidget {
                                   Text(
                                     'Missing: ${entry.exerciseId}',
                                     style: theme.textTheme.titleSmall?.copyWith(
-                                      fontWeight: FontWeight.w600,
+                                      fontWeight: FontWeight.w500,
                                       color: theme.colorScheme.error,
                                     ),
                                   )
@@ -750,7 +751,7 @@ class _SectionEditor extends StatelessWidget {
                                   Text(
                                     exercise.name,
                                     style: theme.textTheme.titleSmall?.copyWith(
-                                      fontWeight: FontWeight.w600,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                 if (!isMissing) ...[
@@ -790,8 +791,8 @@ class _SectionEditor extends StatelessWidget {
                                 : null,
                             icon: const Icon(Icons.arrow_downward),
                           ),
-                          OutlinedButton(
-                            style: OutlinedButton.styleFrom(
+                          TextButton(
+                            style: TextButton.styleFrom(
                               minimumSize: const Size(
                                 64,
                                 SystemMotion.minTouchTarget,
@@ -914,16 +915,20 @@ class _AddExerciseSheetState extends State<_AddExerciseSheet> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    TrainingHeading(
-                      context.l10n.part6AddExercise(
-                        sectionLabel(context.l10n, widget.sectionType),
-                      ),
-                    ),
+                    Semantics(
+                        header: true,
+                        child: Text(
+                          context.l10n.part6AddExercise(
+                            sectionLabel(context.l10n, widget.sectionType),
+                          ),
+                          style: theme.textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.w500),
+                        )),
                     const SizedBox(height: FitFlowSpace.sm),
                     TextField(
                       controller: _searchController,
                       decoration: InputDecoration(
-                        labelText: 'Search',
+                        labelText: context.l10n.searchExercises,
                         hintText: 'Search by name',
                         prefixIcon: const Icon(Icons.search),
                         border: OutlineInputBorder(
@@ -963,8 +968,7 @@ class _AddExerciseSheetState extends State<_AddExerciseSheet> {
                     )
                   : SliverList.separated(
                       itemCount: filtered.length,
-                      separatorBuilder: (_, __) =>
-                          const SizedBox(height: FitFlowSpace.xs),
+                      separatorBuilder: (_, __) => const Divider(height: 1),
                       itemBuilder: (context, index) {
                         final ex = filtered[index];
                         final pres =
@@ -980,56 +984,53 @@ class _AddExerciseSheetState extends State<_AddExerciseSheet> {
                                 .map((e) => equipmentLabel(context.l10n, e))
                                 .join(', ');
 
-                        return FitFlowV2InfoSurface(
-                          padding: EdgeInsets.zero,
-                          child: ListTile(
-                            isThreeLine: true,
-                            minLeadingWidth: 52,
-                            horizontalTitleGap: FitFlowSpace.sm,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: FitFlowSpace.sm,
-                              vertical: FitFlowSpace.xs,
-                            ),
-                            leading: FitFlowV2ExerciseMedia.forExercise(
-                              exercise: ex,
-                              width: 52,
-                              height: 52,
-                            ),
-                            title: Text(
-                              ex.name,
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: FitFlowSpace.xxs),
-                                Text(
-                                  '${_customExerciseMetadata(context, ex)} · $equipment',
-                                  style: theme.textTheme.bodySmall,
-                                ),
-                                const SizedBox(height: FitFlowSpace.xxs),
-                                Text(
-                                  workload,
-                                  style: theme.textTheme.bodySmall,
-                                ),
-                              ],
-                            ),
-                            trailing: const ExcludeSemantics(
-                              child: Icon(Icons.add_circle_outline),
-                            ),
-                            onTap: () {
-                              final entry = CustomWorkoutExerciseEntry(
-                                exerciseId: ex.id,
-                                sets: pres.sets,
-                                repsPerSet: pres.repsPerSet,
-                                workDuration: pres.workDuration,
-                                restBetweenSets: pres.restBetweenSets,
-                              );
-                              Navigator.of(context).pop(entry);
-                            },
+                        return ListTile(
+                          isThreeLine: true,
+                          minLeadingWidth: 64,
+                          horizontalTitleGap: FitFlowSpace.sm,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 0,
+                            vertical: FitFlowSpace.sm,
                           ),
+                          leading: FitFlowExerciseImage.thumbnail(
+                            exerciseId: ex.id,
+                            width: 64,
+                            height: 64,
+                          ),
+                          title: Text(
+                            ex.name,
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: FitFlowSpace.xxs),
+                              Text(
+                                '${_customExerciseMetadata(context, ex)} · $equipment',
+                                style: theme.textTheme.bodySmall,
+                              ),
+                              const SizedBox(height: FitFlowSpace.xxs),
+                              Text(
+                                workload,
+                                style: theme.textTheme.bodySmall,
+                              ),
+                            ],
+                          ),
+                          trailing: const ExcludeSemantics(
+                            child: Icon(Icons.add_circle_outline),
+                          ),
+                          onTap: () {
+                            final entry = CustomWorkoutExerciseEntry(
+                              exerciseId: ex.id,
+                              sets: pres.sets,
+                              repsPerSet: pres.repsPerSet,
+                              workDuration: pres.workDuration,
+                              restBetweenSets: pres.restBetweenSets,
+                            );
+                            Navigator.of(context).pop(entry);
+                          },
                         );
                       },
                     ),
@@ -1119,97 +1120,96 @@ class _PrescriptionEditorDialogState extends State<_PrescriptionEditorDialog> {
     final error = _validate();
 
     return AlertDialog(
+      scrollable: true,
+      backgroundColor: theme.colorScheme.surface,
       shape: RoundedRectangleBorder(borderRadius: FitFlowRadius.cardBorder),
       title: Semantics(
         header: true,
-        child: Text('Edit ${widget.exercise.name}'),
+        child: Text('Edit ${widget.exercise.name}',
+            style: theme.textTheme.titleMedium
+                ?.copyWith(fontWeight: FontWeight.w500)),
       ),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            controller: _setsController,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+              labelText: 'Sets',
+              border: OutlineInputBorder(
+                borderRadius: FitFlowRadius.mediumBorder,
+              ),
+            ),
+            onChanged: (_) => setState(() {}),
+          ),
+          const SizedBox(height: 12),
+          if (_isTimed)
             TextField(
-              controller: _setsController,
+              controller: _workController,
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(
-                labelText: 'Sets',
+                labelText: 'Work seconds',
+                border: OutlineInputBorder(
+                  borderRadius: FitFlowRadius.mediumBorder,
+                ),
+              ),
+              onChanged: (_) => setState(() {}),
+            )
+          else
+            TextField(
+              controller: _repsController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Reps',
                 border: OutlineInputBorder(
                   borderRadius: FitFlowRadius.mediumBorder,
                 ),
               ),
               onChanged: (_) => setState(() {}),
             ),
-            const SizedBox(height: 12),
-            if (_isTimed)
-              TextField(
-                controller: _workController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Work seconds',
-                  border: OutlineInputBorder(
-                    borderRadius: FitFlowRadius.mediumBorder,
-                  ),
-                ),
-                onChanged: (_) => setState(() {}),
-              )
-            else
-              TextField(
-                controller: _repsController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Reps',
-                  border: OutlineInputBorder(
-                    borderRadius: FitFlowRadius.mediumBorder,
-                  ),
-                ),
-                onChanged: (_) => setState(() {}),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _restController,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+              labelText: 'Rest seconds',
+              border: OutlineInputBorder(
+                borderRadius: FitFlowRadius.mediumBorder,
               ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _restController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Rest seconds',
-                border: OutlineInputBorder(
-                  borderRadius: FitFlowRadius.mediumBorder,
-                ),
-              ),
-              onChanged: (_) => setState(() {}),
             ),
-            const SizedBox(height: 12),
-            Builder(
-              builder: (context) {
-                final sets = int.tryParse(_setsController.text.trim()) ??
-                    widget.entry.sets;
-                final rest = int.tryParse(_restController.text.trim()) ??
-                    widget.entry.restBetweenSets.inSeconds;
-                String preview;
-                if (_isTimed) {
-                  final work = int.tryParse(_workController.text.trim()) ??
-                      widget.entry.workDuration?.inSeconds ??
-                      0;
-                  preview = 'Preview: $sets × $work' 's, $rest' 's rest';
-                } else {
-                  final reps = int.tryParse(_repsController.text.trim()) ??
-                      widget.entry.repsPerSet ??
-                      0;
-                  preview = 'Preview: $sets × $reps reps, $rest' 's rest';
-                }
-                return FitFlowV2InfoSurface(
-                  tonal: true,
-                  child: Text(preview, style: theme.textTheme.bodySmall),
-                );
-              },
-            ),
-            if (error != null) ...[
-              const SizedBox(height: 8),
-              Text(error,
-                  style: theme.textTheme.bodySmall
-                      ?.copyWith(color: theme.colorScheme.error)),
-            ],
+            onChanged: (_) => setState(() {}),
+          ),
+          const SizedBox(height: 12),
+          Builder(
+            builder: (context) {
+              final sets = int.tryParse(_setsController.text.trim()) ??
+                  widget.entry.sets;
+              final rest = int.tryParse(_restController.text.trim()) ??
+                  widget.entry.restBetweenSets.inSeconds;
+              String preview;
+              if (_isTimed) {
+                final work = int.tryParse(_workController.text.trim()) ??
+                    widget.entry.workDuration?.inSeconds ??
+                    0;
+                preview = 'Preview: $sets × $work' 's, $rest' 's rest';
+              } else {
+                final reps = int.tryParse(_repsController.text.trim()) ??
+                    widget.entry.repsPerSet ??
+                    0;
+                preview = 'Preview: $sets × $reps reps, $rest' 's rest';
+              }
+              return Text(preview, style: theme.textTheme.bodySmall);
+            },
+          ),
+          if (error != null) ...[
+            const SizedBox(height: 8),
+            Text(error,
+                style: theme.textTheme.bodySmall
+                    ?.copyWith(color: theme.colorScheme.error)),
           ],
-        ),
+        ],
       ),
       actions: [
         TextButton(

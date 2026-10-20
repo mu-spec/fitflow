@@ -7,12 +7,15 @@ import 'package:fitflow/core/accessibility/system_motion.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/core/design/widgets/fitflow_v2_exercise_media.dart';
 import 'package:fitflow/features/onboarding/data/workout_duration.dart';
+import 'package:fitflow/features/onboarding/state/user_fitness_profile_controller.dart';
+import 'package:fitflow/features/workouts/data/exercise_catalog.dart';
 import 'package:fitflow/features/workouts/domain/custom/custom_workout_exercise_entry.dart';
 import 'package:fitflow/features/workouts/domain/custom/custom_workout_storage.dart';
 import 'package:fitflow/features/workouts/domain/custom/custom_workout_template.dart';
 import 'package:fitflow/features/workouts/presentation/custom_workout_builder_screen.dart';
 import 'package:fitflow/features/workouts/presentation/custom_workout_detail_screen.dart';
 import 'package:fitflow/features/workouts/presentation/workouts_screen.dart';
+import 'package:fitflow/features/workouts/state/capability_profile_controller.dart';
 import 'package:fitflow/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -259,7 +262,7 @@ void main() {
   });
 
   testWidgets(
-      'picker, artwork, prescription, order and remove controls stay clear',
+      'picker, photos, prescription, order and remove controls stay clear',
       (tester) async {
     await _pumpCustomFlow(
       tester,
@@ -297,9 +300,19 @@ void main() {
     final exerciseName = (tile.title! as Text).data!;
     final pickerArtwork = find.descendant(
       of: firstExerciseTile,
-      matching: find.byType(FitFlowV2ExerciseMedia),
+      matching: find.byType(FitFlowExerciseImage),
     );
     expect(pickerArtwork, findsOneWidget);
+    final photo = tester.widget<FitFlowExerciseImage>(pickerArtwork);
+    expect(ExerciseCatalog.byIdMap[photo.exerciseId]!.name, exerciseName);
+    expect(photo.width, photo.height);
+    final search = find.byType(TextField).last;
+    await tester.enterText(search, 'no matching exercise 123');
+    await tester.pumpAndSettle();
+    expect(find.text('No exercises found'), findsOneWidget);
+    await tester.tap(find.text('Clear search'));
+    await tester.pumpAndSettle();
+    expect(find.widgetWithText(ListTile, 'Bodyweight Squat'), findsNothing);
     expect(
       find.descendant(
         of: pickerArtwork,
@@ -350,7 +363,7 @@ void main() {
     // Edit the newly-added canonical exercise through its existing editor.
     final editButtons = find.descendant(
       of: mainSection,
-      matching: find.widgetWithText(OutlinedButton, 'Edit'),
+      matching: find.widgetWithText(TextButton, 'Edit'),
     );
     await tester.tap(editButtons.last);
     await tester.pumpAndSettle();
@@ -403,6 +416,140 @@ void main() {
     expect(tester.takeException(), isNull);
     semantics.dispose();
   });
+
+  testWidgets(
+      'narrow large-text picker adds exercise and preserves discard handling',
+      (tester) async {
+    await _pumpCustomFlow(tester,
+        initialLocation: AppRoutes.workouts,
+        size: const Size(320, 700),
+        textScale: 2,
+        dark: true);
+    final create = find.widgetWithText(FilledButton, 'Create workout');
+    await tester.ensureVisible(create);
+    await tester.tap(create);
+    await tester.pumpAndSettle();
+    // This isolated router bypasses onboarding, which normally loads both
+    // profiles before entering the builder.
+    final container = ProviderScope.containerOf(
+        tester.element(find.byType(CustomWorkoutBuilderScreen)));
+    await container.read(userFitnessProfileProvider.future);
+    await container.read(capabilityProfileProvider.future);
+    final mainSection = find.byKey(const Key('custom-workout-section-main'));
+    final add =
+        find.descendant(of: mainSection, matching: find.text('Add exercise'));
+    await tester.ensureVisible(add);
+    await tester.tap(add);
+    await tester.pumpAndSettle();
+    expect(find.byType(DraggableScrollableSheet), findsOneWidget);
+    tester.view.viewInsets = const FakeViewPadding(bottom: 180);
+    addTearDown(tester.view.resetViewInsets);
+    await tester.enterText(find.byType(TextField).last, 'Bodyweight Squat');
+    await tester.pumpAndSettle();
+    final tile = find.widgetWithText(ListTile, 'Bodyweight Squat');
+    await tester.scrollUntilVisible(tile, 150,
+        scrollable: find
+            .descendant(
+                of: find.byType(DraggableScrollableSheet),
+                matching: find.byType(Scrollable))
+            .first);
+    await tester.tap(tile);
+    await tester.pumpAndSettle();
+    tester.view.resetViewInsets();
+    await tester.pumpAndSettle();
+    expect(
+        find.descendant(
+            of: mainSection, matching: find.text('Bodyweight Squat')),
+        findsOneWidget);
+    final photo = tester.widget<FitFlowExerciseImage>(find.descendant(
+        of: mainSection, matching: find.byType(FitFlowExerciseImage)));
+    expect(photo.exerciseId, 'squat_bodyweight');
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(find.text('Discard changes?'), findsOneWidget);
+    await tester.tap(find.text('Keep editing'));
+    await tester.pumpAndSettle();
+    expect(find.byType(CustomWorkoutBuilderScreen), findsOneWidget);
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Discard'));
+    await tester.pumpAndSettle();
+    expect(find.byType(WorkoutsScreen), findsOneWidget);
+    expect(await const CustomWorkoutStorage().loadAll(), isEmpty);
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final timed in [false, true]) {
+    testWidgets(
+        'prescription validation and save retain IDs with keyboard timed=$timed',
+        (tester) async {
+      await _pumpCustomFlow(tester,
+          initialLocation: AppRoutes.customWorkoutEdit(_workoutId),
+          workouts: [_sampleWorkout()],
+          size: const Size(320, 700),
+          textScale: 2,
+          dark: timed);
+      final section = find
+          .byKey(Key('custom-workout-section-${timed ? 'warmup' : 'main'}'));
+      final edit = find.descendant(
+          of: section, matching: find.widgetWithText(TextButton, 'Edit'));
+      await tester.ensureVisible(edit);
+      await tester.tap(edit);
+      await tester.pumpAndSettle();
+      tester.view.viewInsets = const FakeViewPadding(bottom: 220);
+      addTearDown(tester.view.resetViewInsets);
+      await tester.pumpAndSettle();
+      final fields = find.descendant(
+          of: find.byType(AlertDialog), matching: find.byType(TextField));
+      final save = find.widgetWithText(FilledButton, 'Save');
+      Future<void> enter(int index, String value) async {
+        await tester.ensureVisible(fields.at(index));
+        await tester.enterText(fields.at(index), value);
+        await tester.pumpAndSettle();
+      }
+
+      expect(find.text(timed ? 'Work seconds' : 'Reps'), findsOneWidget);
+      expect(find.text(timed ? 'Reps' : 'Work seconds'), findsNothing);
+      await enter(0, '0');
+      expect(find.text('Sets must be 1..10'), findsOneWidget);
+      expect(tester.widget<FilledButton>(save).onPressed, isNull);
+      await enter(0, '3');
+      await enter(1, timed ? '4' : '0');
+      expect(
+          find.text(timed ? 'Work must be 5..300 sec' : 'Reps must be 1..100'),
+          findsOneWidget);
+      expect(tester.widget<FilledButton>(save).onPressed, isNull);
+      await enter(1, timed ? '45' : '12');
+      await enter(2, '301');
+      expect(find.text('Rest must be 0..300 sec'), findsOneWidget);
+      expect(tester.widget<FilledButton>(save).onPressed, isNull);
+      await enter(2, '25');
+      await tester.ensureVisible(save);
+      await tester.tap(save);
+      await tester.pumpAndSettle();
+      tester.view.resetViewInsets();
+      await tester.pumpAndSettle();
+      final saveChanges = find.widgetWithText(FilledButton, 'Save changes');
+      await tester.ensureVisible(saveChanges);
+      await tester.tap(saveChanges);
+      await tester.pumpAndSettle();
+      final stored = (await const CustomWorkoutStorage().loadAll()).single;
+      expect(stored.id, _workoutId);
+      expect(stored.createdAt, _sampleWorkout().createdAt);
+      expect(
+          stored.warmup.map((entry) => entry.exerciseId), ['march_in_place']);
+      expect(
+          stored.main.map((entry) => entry.exerciseId), ['squat_bodyweight']);
+      expect(
+          stored.cooldown.map((entry) => entry.exerciseId), ['cobra_stretch']);
+      final edited = timed ? stored.warmup.single : stored.main.single;
+      expect(edited.sets, 3);
+      expect(edited.restBetweenSets, const Duration(seconds: 25));
+      expect(edited.workDuration, timed ? const Duration(seconds: 45) : null);
+      expect(edited.repsPerSet, timed ? null : 12);
+      expect(tester.takeException(), isNull);
+    });
+  }
 
   testWidgets('overview, builder and detail handle target viewports and themes',
       (tester) async {
