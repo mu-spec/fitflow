@@ -1,3 +1,5 @@
+import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
+import 'package:fitflow/features/workouts/presentation/widgets/skill_tree_node_card.dart';
 import 'package:fitflow/app/config/app_theme.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/onboarding/data/workout_equipment.dart';
@@ -9,7 +11,6 @@ import 'package:fitflow/features/workouts/domain/exercise_skill_tree_resolver.da
 import 'package:fitflow/features/workouts/domain/movement_pattern.dart';
 import 'package:fitflow/features/workouts/presentation/exercise_detail_screen.dart';
 import 'package:fitflow/features/workouts/presentation/skill_tree_family_screen.dart';
-import 'package:fitflow/features/workouts/presentation/widgets/skill_tree_family_card.dart';
 import 'package:fitflow/features/workouts/presentation/skill_trees_screen.dart';
 import 'package:fitflow/features/workouts/state/exercise_skill_tree_provider.dart';
 import 'package:flutter/material.dart';
@@ -88,7 +89,8 @@ Widget _app({
 
 void main() {
   group('Skill trees overview widgets', () {
-    testWidgets('shows title, supporting copy, and truthful note',
+    testWidgets(
+        'shows compact title and introduction with explanations in details',
         (tester) async {
       final router = _router(initialLocation: AppRoutes.skillTrees);
       addTearDown(router.dispose);
@@ -102,16 +104,21 @@ void main() {
         findsOneWidget,
       );
       expect(
-        find.text(
-          'Your movement level helps show which exercises fit your current level. '
-          'It does not mean every easier exercise is mastered.',
-        ),
-        findsOneWidget,
-      );
+          find.textContaining(
+              'It does not mean every easier exercise is mastered.'),
+          findsNothing);
+      await tester.tap(find.text('Push-Up'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Progression'));
+      await tester.pumpAndSettle();
+      expect(
+          find.textContaining(
+              'It does not mean every easier exercise is mastered.'),
+          findsOneWidget);
     });
 
     testWidgets(
-        'cards show family, movement, steps, and easiest-to-hardest names',
+        'rows show actual family, steps, movement level and representative photo',
         (tester) async {
       final router = _router(initialLocation: AppRoutes.skillTrees);
       addTearDown(router.dispose);
@@ -121,44 +128,37 @@ void main() {
       expect(find.text('Push-Up'), findsOneWidget);
       expect(find.textContaining('Push'), findsWidgets);
       expect(find.textContaining('6 steps'), findsOneWidget);
-      expect(find.text('Wall Push-Up → Diamond Push-Up'), findsOneWidget);
+      final photos = tester
+          .widgetList<FitFlowExerciseImage>(find.byType(FitFlowExerciseImage))
+          .toList();
+      expect(photos.map((photo) => photo.exerciseId),
+          _catalog().trees.map((tree) => tree.easiest.exercise.id));
+      for (final photo in photos) {
+        expect(photo.width / photo.height, closeTo(4 / 3, .001));
+      }
       expect(find.text('Squat'), findsWidgets);
       expect(find.text('Glute Bridge'), findsWidgets);
     });
 
-    testWidgets('overview shows movement capability and independent fit counts',
+    testWidgets(
+        'detail disclosure retains endpoints and independent fit counts',
         (tester) async {
       final router = _router(initialLocation: AppRoutes.skillTrees);
       addTearDown(router.dispose);
       await tester.pumpWidget(_app(router: router, catalog: _catalog()));
       await tester.pumpAndSettle();
 
-      final pushCard = find.ancestor(
-        of: find.text('Your Push level: Basic'),
-        matching: find.byType(SkillTreeFamilyCard),
-      );
-      expect(pushCard, findsOneWidget);
-      expect(
-        find.descendant(
-          of: pushCard,
-          matching: find.text('3 fit your current level'),
-        ),
-        findsOneWidget,
-      );
-      expect(
-        find.descendant(
-          of: pushCard,
-          matching: find.text('3 above your current level'),
-        ),
-        findsOneWidget,
-      );
-      expect(
-        find.descendant(
-          of: pushCard,
-          matching: find.text('6 fit your current setup'),
-        ),
-        findsOneWidget,
-      );
+      expect(find.text('Your Push level: Basic'), findsOneWidget);
+      expect(find.text('3 fit your current level'), findsNothing);
+      await tester.tap(find.text('Push-Up'));
+      await tester.pumpAndSettle();
+      expect(find.text('3 fit your current level'), findsNothing);
+      await tester.tap(find.text('Progression'));
+      await tester.pumpAndSettle();
+      expect(find.text('Wall Push-Up \u2192 Diamond Push-Up'), findsOneWidget);
+      expect(find.text('3 fit your current level'), findsOneWidget);
+      expect(find.text('3 above your current level'), findsOneWidget);
+      expect(find.text('6 fit your current setup'), findsOneWidget);
     });
 
     testWidgets('tapping a family card opens its family detail route',
@@ -279,6 +279,60 @@ void main() {
   });
 
   group('Skill-tree family detail widgets', () {
+    testWidgets('explicit branches remain distinct from sorted step order',
+        (tester) async {
+      final catalog = ExerciseSkillTreeResolver.resolve(
+        exercises: [
+          skillTreeExercise(
+              id: 'pushup_wall',
+              name: 'Wall',
+              familyId: 'branch',
+              rank: 1,
+              harderId: 'pushup_knee'),
+          skillTreeExercise(
+              id: 'pushup_incline',
+              name: 'Incline',
+              familyId: 'branch',
+              rank: 2,
+              harderId: 'pushup_knee'),
+          skillTreeExercise(
+              id: 'pushup_knee',
+              name: 'Knee',
+              familyId: 'branch',
+              rank: 3,
+              easierId: 'pushup_wall'),
+        ],
+        userProfile: null,
+        capabilityProfile: null,
+      );
+      final router =
+          _router(initialLocation: AppRoutes.skillTreeFamily('branch'));
+      addTearDown(router.dispose);
+      await tester.pumpWidget(_app(router: router, catalog: catalog));
+      await tester.pumpAndSettle();
+
+      final cards = find.byType(SkillTreeNodeCard);
+      expect(
+          tester
+              .widgetList<SkillTreeNodeCard>(cards)
+              .map((card) => card.node.exercise.id),
+          ['pushup_wall', 'pushup_incline', 'pushup_knee']);
+      for (final index in [0, 1]) {
+        expect(
+            find.descendant(
+                of: cards.at(index),
+                matching: find.text('Harder variation: Knee')),
+            findsOneWidget);
+      }
+      expect(
+          find.descendant(
+              of: cards.at(2), matching: find.text('Easier variation: Wall')),
+          findsOneWidget);
+      expect(find.text('Harder variation: Incline'), findsNothing);
+      expect(find.text('Movement level unavailable'), findsNWidgets(4));
+      expect(find.text('Setup details unavailable'), findsNWidgets(3));
+    });
+
     testWidgets('shows ordered nodes with step numbering and difficulty levels',
         (tester) async {
       final router = _router(
@@ -291,6 +345,20 @@ void main() {
       for (var step = 1; step <= 6; step++) {
         expect(find.text('Step $step of 6'), findsOneWidget);
       }
+      final nodes =
+          tester.widgetList<SkillTreeNodeCard>(find.byType(SkillTreeNodeCard));
+      expect(
+          nodes.map((card) => card.node.exercise.id),
+          _catalog()
+              .treeForFamilyId('pushup')!
+              .nodes
+              .map((node) => node.exercise.id));
+      expect(
+          tester
+              .widgetList<FitFlowExerciseImage>(
+                  find.byType(FitFlowExerciseImage))
+              .map((image) => image.exerciseId),
+          nodes.map((card) => card.node.exercise.id));
       expect(find.text('Wall Push-Up'), findsOneWidget);
       expect(find.text('Incline Push-Up'), findsOneWidget);
       expect(find.text('Knee Push-Up'), findsOneWidget);
@@ -398,7 +466,8 @@ void main() {
       expect(find.text('Exercise skill trees'), findsOneWidget);
     });
 
-    testWidgets('family screen remains safe at narrow width and 1.5 text scale',
+    testWidgets(
+        'family screen remains safe at narrow width and 2x text scale in dark mode',
         (tester) async {
       tester.view.physicalSize = const Size(320, 900);
       tester.view.devicePixelRatio = 1;
@@ -413,7 +482,8 @@ void main() {
         _app(
           router: router,
           catalog: _catalog(),
-          textScaler: TextScaler.linear(1.5),
+          brightness: Brightness.dark,
+          textScaler: TextScaler.linear(2),
         ),
       );
       await tester.pumpAndSettle();

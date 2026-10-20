@@ -1,3 +1,4 @@
+import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
 import 'package:fitflow/features/workouts/presentation/widgets/training_presentation.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
@@ -11,11 +12,13 @@ class SkillTreeNodeCard extends StatelessWidget {
     super.key,
     required this.node,
     required this.totalSteps,
+    required this.familyNodes,
     required this.onViewExercise,
   });
 
   final ExerciseSkillTreeNode node;
   final int totalSteps;
+  final List<ExerciseSkillTreeNode> familyNodes;
   final VoidCallback onViewExercise;
 
   @override
@@ -32,104 +35,76 @@ class SkillTreeNodeCard extends StatelessWidget {
         ? context.l10n.trainingNoEquipment
         : equipment.join(', ');
 
-    return Card(
-      margin: EdgeInsets.zero,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              context.l10n.trainingStep(node.position, totalSteps),
-              style: theme.textTheme.labelLarge?.copyWith(
-                color: colors.primary,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              node.exercise.name,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Wrap(
-              spacing: 8,
-              runSpacing: 4,
-              children: [
-                _DetailChip(label: levelLabel),
-                _DetailChip(label: node.exercise.exerciseType.label),
-                if (node.exercise.movementPattern != null)
-                  _DetailChip(label: node.exercise.movementPattern!.label),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              context.l10n.trainingEquipmentFor(equipmentText),
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: colors.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                _StatusChip(
-                  label: _levelStatusLabel(context),
-                  background: node.fitsCurrentLevel == true
-                      ? colors.primaryContainer
-                      : colors.tertiaryContainer,
-                  foreground: node.fitsCurrentLevel == true
-                      ? colors.onPrimaryContainer
-                      : colors.onTertiaryContainer,
-                ),
-                _StatusChip(
-                  label: _setupStatusLabel(context),
-                  background: node.fitsSetup == false
-                      ? colors.errorContainer
-                      : colors.secondaryContainer,
-                  foreground: node.fitsSetup == false
-                      ? colors.onErrorContainer
-                      : colors.onSecondaryContainer,
-                ),
-              ],
-            ),
-            if (node.setupIssueLabels.isNotEmpty) ...[
-              const SizedBox(height: 10),
-              for (final issue in node.setupIssueLabels) ...[
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      Icons.info_outline,
-                      size: 18,
-                      color: colors.onSurfaceVariant,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        issue,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colors.onSurfaceVariant,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-              ],
+    // Resolve only explicit catalog links within this family. Display order
+    // alone is not evidence of an edge, especially for branching families.
+    final byId = {for (final member in familyNodes) member.exercise.id: member};
+    final easier = byId[node.exercise.easierVariationId];
+    final harder = byId[node.exercise.harderVariationId];
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          FitFlowExerciseImage.thumbnail(exerciseId: node.exercise.id),
+          const SizedBox(width: 12),
+          Expanded(
+              child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(context.l10n.trainingStep(node.position, totalSteps),
+                  style: theme.textTheme.bodySmall
+                      ?.copyWith(color: colors.primary)),
+              const SizedBox(height: 4),
+              Semantics(
+                  header: true,
+                  child: Text(node.exercise.name,
+                      style: theme.textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.w500))),
             ],
-            const SizedBox(height: 12),
-            OutlinedButton.icon(
-              onPressed: onViewExercise,
-              icon: const Icon(Icons.open_in_new, size: 18),
-              label: Text(context.l10n.trainingViewExercise),
-            ),
-          ],
+          )),
+        ]),
+        const SizedBox(height: 8),
+        Wrap(spacing: 12, runSpacing: 4, children: [
+          Text(levelLabel, style: theme.textTheme.bodySmall),
+          Text(node.exercise.exerciseType.label,
+              style: theme.textTheme.bodySmall),
+          if (node.exercise.movementPattern != null)
+            Text(node.exercise.movementPattern!.label,
+                style: theme.textTheme.bodySmall),
+        ]),
+        const SizedBox(height: 6),
+        Text(context.l10n.trainingEquipmentFor(equipmentText),
+            style: theme.textTheme.bodySmall
+                ?.copyWith(color: colors.onSurfaceVariant)),
+        const SizedBox(height: 8),
+        _SuitabilityLine(
+            icon: Icons.fitness_center_outlined,
+            label: _levelStatusLabel(context)),
+        const SizedBox(height: 4),
+        _SuitabilityLine(
+            icon: Icons.tune_rounded, label: _setupStatusLabel(context)),
+        for (final issue in node.setupIssueLabels)
+          Padding(
+            padding: const EdgeInsets.only(top: 4, left: 26),
+            child: Text(issue,
+                style: theme.textTheme.bodySmall
+                    ?.copyWith(color: colors.onSurfaceVariant)),
+          ),
+        if (easier != null || harder != null) ...[
+          const SizedBox(height: 8),
+          if (easier != null)
+            Text('${context.l10n.trainingEasier}: ${easier.exercise.name}',
+                style: theme.textTheme.bodySmall),
+          if (harder != null)
+            Text('${context.l10n.trainingHarder}: ${harder.exercise.name}',
+                style: theme.textTheme.bodySmall),
+        ],
+        TextButton.icon(
+          style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
+          onPressed: onViewExercise,
+          icon: const Icon(Icons.arrow_forward, size: 18),
+          label: Text(context.l10n.trainingViewExercise),
         ),
-      ),
+      ]),
     );
   }
 
@@ -156,30 +131,23 @@ class SkillTreeNodeCard extends StatelessWidget {
   }
 }
 
-class _DetailChip extends StatelessWidget {
-  const _DetailChip({required this.label});
-
+class _SuitabilityLine extends StatelessWidget {
+  const _SuitabilityLine({required this.icon, required this.label});
+  final IconData icon;
   final String label;
 
   @override
-  Widget build(BuildContext context) {
-    return TrainingFact(label);
-  }
-}
-
-class _StatusChip extends StatelessWidget {
-  const _StatusChip({
-    required this.label,
-    required this.background,
-    required this.foreground,
-  });
-
-  final String label;
-  final Color background;
-  final Color foreground;
-
-  @override
-  Widget build(BuildContext context) {
-    return TrainingFact(label, icon: Icons.info_outline);
-  }
+  Widget build(BuildContext context) => Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ExcludeSemantics(
+              child: Icon(icon,
+                  size: 18,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant)),
+          const SizedBox(width: 8),
+          Expanded(
+              child:
+                  Text(label, style: Theme.of(context).textTheme.bodyMedium)),
+        ],
+      );
 }
