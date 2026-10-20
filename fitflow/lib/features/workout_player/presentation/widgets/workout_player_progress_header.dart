@@ -1,4 +1,3 @@
-import 'package:fitflow/features/workout_player/domain/workout_player_phase.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/core/design/fitflow_radius.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
@@ -15,55 +14,35 @@ class WorkoutPlayerProgressHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = context.l10n;
     final text = Theme.of(context).textTheme;
-    if (state.phase == WorkoutPlayerPhase.work) {
-      final t = FitFlowTheme.of(context);
-      final v = FitFlowVisualV2.of(context);
-      return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        Wrap(
-          spacing: FitFlowSpace.sm,
-          runSpacing: FitFlowSpace.xxs,
-          crossAxisAlignment: WrapCrossAlignment.center,
-          children: [
-            Text(sectionLabel(l, state.sectionType),
-                style: text.labelLarge?.copyWith(fontWeight: FontWeight.w600)),
-            Text(
-                l.flowExercisePosition(state.exercisePositionInSection,
-                    state.exerciseCountInCurrentSection),
-                style: text.bodySmall?.copyWith(color: t.textSecondary)),
-          ],
-        ),
-        const SizedBox(height: FitFlowSpace.xs),
-        LinearProgressIndicator(
-          value: state.progressFraction,
-          minHeight: 6,
-          color: t.progress,
-          backgroundColor: v.tint,
-          borderRadius: FitFlowRadius.pillBorder,
-          semanticsLabel: l.flowOverall(state.completedSets, state.totalSets),
-        ),
-        const SizedBox(height: FitFlowSpace.xxs),
-        Text(l.flowSetsProgress(state.completedSets, state.totalSets),
-            style: text.bodySmall?.copyWith(color: t.textSecondary),
-            textAlign: TextAlign.end),
-      ]);
-    }
+    final t = FitFlowTheme.of(context);
+    final v = FitFlowVisualV2.of(context);
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      Text(sectionLabel(l, state.sectionType), style: text.labelLarge),
-      const SizedBox(height: FitFlowSpace.xxs),
-      Text(
-          l.flowExercisePosition(state.exercisePositionInSection,
-              state.exerciseCountInCurrentSection),
-          style: text.bodySmall),
-      const SizedBox(height: FitFlowSpace.sm),
+      Wrap(
+        spacing: FitFlowSpace.sm,
+        runSpacing: FitFlowSpace.xxs,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Text(sectionLabel(l, state.sectionType),
+              style: text.labelLarge?.copyWith(fontWeight: FontWeight.w500)),
+          Text(
+              l.flowExercisePosition(state.exercisePositionInSection,
+                  state.exerciseCountInCurrentSection),
+              style: text.bodySmall?.copyWith(color: t.textSecondary)),
+        ],
+      ),
+      const SizedBox(height: FitFlowSpace.xs),
       LinearProgressIndicator(
-          value: state.progressFraction,
-          minHeight: 4,
-          color: FitFlowTheme.of(context).progress,
-          borderRadius: FitFlowRadius.pillBorder,
-          semanticsLabel: l.flowOverall(state.completedSets, state.totalSets)),
+        value: state.progressFraction,
+        minHeight: 6,
+        color: t.progress,
+        backgroundColor: v.tint,
+        borderRadius: FitFlowRadius.pillBorder,
+        semanticsLabel: l.flowOverall(state.completedSets, state.totalSets),
+      ),
       const SizedBox(height: FitFlowSpace.xxs),
       Text(l.flowSetsProgress(state.completedSets, state.totalSets),
-          style: text.bodySmall, textAlign: TextAlign.end),
+          style: text.bodySmall?.copyWith(color: t.textSecondary),
+          textAlign: TextAlign.end),
     ]);
   }
 }

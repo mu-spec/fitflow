@@ -428,8 +428,7 @@ void main() {
                           find.byType(LinearProgressIndicator))
                       .value,
                   c.state.progressFraction);
-              expect(find.byType(FitFlowV2WorkoutMedia), findsOneWidget);
-              expect(find.byType(Image), findsNothing);
+              expect(find.byType(FitFlowExerciseImage), findsOneWidget);
               expect(find.text(_l.skipRest), findsNothing);
               expect(find.text(_l.skipTransition), findsNothing);
               expect(find.text(_l.flowDetails), findsNothing);
@@ -438,9 +437,10 @@ void main() {
                           .element(find.byType(WorkoutPlayerExerciseCenter)))
                       .scale(16),
                   16 * scale);
-              final media = tester.widget<FitFlowV2WorkoutMedia>(
-                  find.byType(FitFlowV2WorkoutMedia));
-              if (size.height < 400 || scale == 2) expect(media.height, 48);
+              final media = tester.widget<FitFlowExerciseImage>(
+                  find.byType(FitFlowExerciseImage));
+              expect(media.exerciseId, c.state.currentPrescription.exercise.id);
+              expect(media.width / media.height, closeTo(4 / 3, .001));
               if (timed) {
                 expect(find.byType(WorkoutCountdown), findsOneWidget);
                 expect(find.text(countdown(const Duration(seconds: 30))),
@@ -488,7 +488,7 @@ void main() {
                 expect(c.state.completedSets, 1);
                 expect(c.state.phase, WorkoutPlayerPhase.rest);
                 expect(find.byType(WorkoutPlayerRestView), findsOneWidget);
-                expect(find.byType(FitFlowV2WorkoutMedia), findsNothing);
+                expect(find.byType(FitFlowExerciseImage), findsNothing);
               }
               expect(h.history.saved, isEmpty);
               expect(h.completions, 0);
@@ -520,6 +520,83 @@ void main() {
       expect(find.byType(WorkoutCountdown), findsNothing);
       expect(tester.takeException(), isNull);
     });
+
+    testWidgets(
+        'empty replacement sheet retains prescription and Cancel at large text',
+        (tester) async {
+      tester.view.physicalSize = const Size(320, 700);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final scroll = ScrollController();
+      addTearDown(scroll.dispose);
+      final prescription = _plan().warmup.exercises.first;
+      await tester.pumpWidget(MaterialApp(
+        theme: AppTheme.dark,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: TextScaler.linear(2)),
+            child: child!),
+        home: Builder(
+            builder: (context) => Scaffold(
+                  body: TextButton(
+                    onPressed: () => showModalBottomSheet<void>(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (_) => SizedBox(
+                        height: 600,
+                        child: WorkoutReplacementPicker(
+                          currentPrescription: prescription,
+                          options: const [],
+                          scrollController: scroll,
+                          onSelect: (_) =>
+                              fail('Empty picker must not select a candidate'),
+                        ),
+                      ),
+                    ),
+                    child: Text(_l.flowReplace),
+                  ),
+                )),
+      ));
+      await tester.tap(find.text(_l.flowReplace));
+      await tester.pumpAndSettle();
+      expect(find.text(_l.flowCurrent(prescription.exercise.name)),
+          findsOneWidget);
+      expect(find.text(workloadLabel(_l, prescription)), findsOneWidget);
+      expect(find.text(_l.flowNoAlternatives), findsOneWidget);
+      expect(find.text(_l.flowNoAlternativesBody), findsOneWidget);
+      expect(find.byType(FitFlowExerciseImage), findsNothing);
+      await tester.tap(find.text(_l.cancel));
+      await tester.pumpAndSettle();
+      expect(find.byType(WorkoutReplacementPicker), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+
+    for (final dark in [false, true]) {
+      testWidgets(
+          'ready cover and paused work preserve current identity without transitions dark=$dark',
+          (tester) async {
+        final h = await _pump(tester,
+            size: const Size(320, 700), scale: 2, dark: dark);
+        final c = h.controller;
+        final ready = c.state;
+        final image = tester
+            .widget<FitFlowExerciseImage>(find.byType(FitFlowExerciseImage));
+        expect(image.exerciseId, ready.currentPrescription.exercise.id);
+        expect(image.width / image.height, closeTo(4 / 3, .001));
+        await tester.pump(const Duration(seconds: 2));
+        expect(c.state, same(ready));
+        await _tap(tester, _l.beginWorkout, const Size(320, 700));
+        await _tap(tester, _l.flowPause, const Size(320, 700));
+        expect(find.byType(FitFlowExerciseImage), findsNothing);
+        final paused = c.state;
+        await tester.pump(const Duration(seconds: 2));
+        expect(c.state, same(paused));
+        expect(tester.takeException(), isNull);
+      });
+    }
 
     testWidgets(
         'active Pause/Resume preserve native focus and keyboard activation',
@@ -677,7 +754,7 @@ void main() {
                     find.byType(WorkoutPlayerSessionView))
                 .plan,
             h.plan);
-        expect(find.byType(FitFlowV2WorkoutMedia), findsOneWidget);
+        expect(find.byType(FitFlowExerciseImage), findsOneWidget);
         expect(h.history.saved, isEmpty);
         expect(tester.takeException(), isNull);
       });
@@ -692,7 +769,7 @@ void main() {
       await tester.pumpAndSettle();
       await _tap(tester, _l.setComplete, const Size(390, 844));
       expect(c.state.phase, WorkoutPlayerPhase.rest);
-      expect(find.byType(FitFlowV2WorkoutMedia), findsNothing);
+      expect(find.byType(FitFlowExerciseImage), findsNothing);
       await _tap(tester, _l.skipRest, const Size(390, 844));
       expect(c.state.phase, WorkoutPlayerPhase.work);
       expect(find.text(_l.flowSet(2, 2)), findsOneWidget);
@@ -701,7 +778,7 @@ void main() {
       await _tap(tester, _l.setComplete, const Size(390, 844));
       expect(c.state.phase, WorkoutPlayerPhase.transition);
       expect(find.byType(WorkoutPlayerTransitionView), findsOneWidget);
-      expect(find.byType(FitFlowV2WorkoutMedia), findsNothing);
+      expect(find.byType(FitFlowExerciseImage), findsNothing);
       await _tap(tester, _l.skipTransition, const Size(390, 844));
       expect(c.state.phase, WorkoutPlayerPhase.work);
       expect(find.text(_l.flowExercisePosition(2, 2)), findsOneWidget);
@@ -724,6 +801,16 @@ void main() {
       await _tap(tester, _l.flowReplace, const Size(390, 844));
       expect(c.state.isPaused, isTrue);
       expect(find.byType(WorkoutReplacementPicker), findsOneWidget);
+      final candidatePhotos = tester.widgetList<FitFlowExerciseImage>(
+          find.descendant(
+              of: find.byType(WorkoutReplacementPicker),
+              matching: find.byType(FitFlowExerciseImage)));
+      expect(candidatePhotos, isNotEmpty);
+      for (final photo in candidatePhotos) {
+        expect(c.getReplacementOptions().map((o) => o.exercise.id),
+            contains(photo.exerciseId));
+        expect(photo.decorative, isTrue);
+      }
       expect(c.state.remaining, remaining);
       h.router.pop();
       await tester.pumpAndSettle();
@@ -849,14 +936,14 @@ void main() {
     });
 
     testWidgets(
-        'Completion stays original, history/hook fire once, media is work-only',
+        'Completion stays original, history/hook fire once, media is ready/work only',
         (tester) async {
       final h = await _pump(tester, timed: false);
       final c = h.controller;
-      expect(find.byType(FitFlowV2WorkoutMedia), findsNothing);
+      expect(find.byType(FitFlowExerciseImage), findsOneWidget);
       c.beginWorkout();
       await tester.pumpAndSettle();
-      expect(find.byType(FitFlowV2WorkoutMedia), findsOneWidget);
+      expect(find.byType(FitFlowExerciseImage), findsOneWidget);
       for (var i = 0;
           i < 200 && c.state.phase != WorkoutPlayerPhase.completed;
           i++) {
@@ -882,7 +969,7 @@ void main() {
       expect(c.state.phase, WorkoutPlayerPhase.completed);
       await tester.pumpAndSettle();
       expect(find.byType(WorkoutPlayerCompletedView), findsOneWidget);
-      expect(find.byType(FitFlowV2WorkoutMedia), findsNothing);
+      expect(find.byType(FitFlowExerciseImage), findsNothing);
       expect(h.history.saved, hasLength(1));
       expect(h.completions, 1);
       await tester.pump();
@@ -1046,8 +1133,9 @@ void main() {
           of: find.byType(WorkoutPhaseLabel),
           matching: find.byType(AnimatedContainer)));
       expect(chip.duration, Duration.zero);
-      final media = find.byType(FitFlowV2WorkoutMedia);
-      expect(tester.widget<FitFlowV2WorkoutMedia>(media).height, 48);
+      final media = find.byType(FitFlowExerciseImage);
+      final photo = tester.widget<FitFlowExerciseImage>(media);
+      expect(photo.width / photo.height, closeTo(4 / 3, .001));
       expect(
           find.descendant(
               of: media, matching: find.byType(TweenAnimationBuilder<double>)),

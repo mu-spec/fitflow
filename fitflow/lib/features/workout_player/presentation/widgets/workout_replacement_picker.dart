@@ -1,5 +1,6 @@
 import 'package:fitflow/core/design/fitflow_spacing.dart';
-import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
+import 'package:fitflow/core/design/fitflow_theme_extension.dart';
+import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
 import 'package:fitflow/features/workout_player/domain/workout_replacement_option.dart';
 import 'package:fitflow/features/workout_player/domain/workout_replacement_reason.dart';
 import 'package:fitflow/features/workout_player/presentation/workout_copy.dart';
@@ -41,15 +42,16 @@ class WorkoutReplacementPicker extends StatelessWidget {
                       Expanded(
                           child: Semantics(
                               header: true,
-                              child:
-                                  Text(l.flowReplace, style: text.titleLarge))),
+                              child: Text(l.flowReplace,
+                                  style: text.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.w500)))),
                       TextButton(
                           onPressed: () => Navigator.of(context).pop(),
                           child: Text(l.cancel))
                     ]),
                     const SizedBox(height: FitFlowSpace.xs),
                     Text(l.flowCurrent(currentPrescription.exercise.name),
-                        style: text.titleMedium),
+                        style: text.bodyMedium),
                     if (originalExerciseName != null)
                       Text(l.flowOriginal(originalExerciseName!),
                           style: text.bodySmall),
@@ -61,10 +63,20 @@ class WorkoutReplacementPicker extends StatelessWidget {
                   ]);
             }
             if (options.isEmpty) {
-              return FitFlowEmptyState(
-                  title: l.flowNoAlternatives,
-                  message: l.flowNoAlternativesBody,
-                  icon: Icons.swap_horiz_rounded);
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.md),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(l.flowNoAlternatives,
+                          style: text.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.w500)),
+                      const SizedBox(height: FitFlowSpace.xs),
+                      Text(l.flowNoAlternativesBody,
+                          style: text.bodyMedium?.copyWith(
+                              color: FitFlowTheme.of(context).textSecondary)),
+                    ]),
+              );
             }
             final option = options[index - 1];
             // Reorder only the explanation, never the engine's candidate ordering.
@@ -86,10 +98,22 @@ class WorkoutReplacementPicker extends StatelessWidget {
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(option.exercise.name, style: text.titleLarge),
+                      Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            FitFlowExerciseImage.thumbnail(
+                                exerciseId: option.exercise.id,
+                                width: 56,
+                                height: 56),
+                            const SizedBox(width: FitFlowSpace.sm),
+                            Expanded(
+                                child: Text(option.exercise.name,
+                                    style: text.titleMedium?.copyWith(
+                                        fontWeight: FontWeight.w500))),
+                          ]),
                       const SizedBox(height: FitFlowSpace.xs),
                       Text(workloadLabel(l, option.prescription),
-                          style: text.titleMedium),
+                          style: text.bodyMedium),
                       const SizedBox(height: FitFlowSpace.xxs),
                       Text(equipmentSummary(l, option.prescription),
                           style: text.bodySmall),

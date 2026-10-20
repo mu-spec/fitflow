@@ -1,4 +1,5 @@
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
+import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
 import 'package:fitflow/core/design/widgets/fitflow_v2_workout_media.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
@@ -284,9 +285,10 @@ class _WorkoutPlayerSessionViewState
             state.phase == WorkoutPlayerPhase.completed)
         : true;
 
-    // Visual V2 is confined to active work, including paused work. Ready,
-    // Rest, transition, section break and Completion retain their old tree.
-    final workPresentation = state.phase == WorkoutPlayerPhase.work;
+    // Ready and work share the responsive layout; other phases retain their
+    // existing state-specific content and controls.
+    final workPresentation = state.phase == WorkoutPlayerPhase.work ||
+        state.phase == WorkoutPlayerPhase.ready;
     final v = FitFlowVisualV2.of(context);
 
     return PopScope(
@@ -316,17 +318,18 @@ class _WorkoutPlayerSessionViewState
         }
       },
       child: Scaffold(
-        backgroundColor: workPresentation ? v.page : null,
+        backgroundColor: v.page,
         appBar: AppBar(
-          backgroundColor: workPresentation ? v.page : null,
-          scrolledUnderElevation: workPresentation ? 0 : null,
+          backgroundColor: v.page,
+          scrolledUnderElevation: 0,
           toolbarHeight: workPresentation && WorkoutV2Layout.largeText(context)
               ? 80
               : null,
           title: Text(_appBarTitle(context.l10n, _stableOrigin),
-              style: workPresentation
-                  ? Theme.of(context).textTheme.titleMedium
-                  : null,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w500),
               maxLines: workPresentation ? 2 : null),
           actions: [
             IconButton(
@@ -561,7 +564,7 @@ class _ReadyView extends StatelessWidget {
     final text = Theme.of(context).textTheme;
     final l = context.l10n;
     return Padding(
-        padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.xl),
+        padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.xs),
         child:
             Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           Text(l.flowReady,
@@ -570,7 +573,8 @@ class _ReadyView extends StatelessWidget {
           Semantics(
               header: true,
               child: Text(state.currentPrescription.exercise.name,
-                  style: text.headlineMedium, textAlign: TextAlign.center)),
+                  style: text.titleLarge?.copyWith(fontWeight: FontWeight.w500),
+                  textAlign: TextAlign.center)),
           if (state.isCurrentReplaced &&
               state.originalExerciseName != null) ...[
             const SizedBox(height: FitFlowSpace.xs),
@@ -579,7 +583,16 @@ class _ReadyView extends StatelessWidget {
           ],
           const SizedBox(height: FitFlowSpace.md),
           Text(workloadLabel(l, state.currentPrescription),
-              style: text.titleLarge, textAlign: TextAlign.center),
+              style: text.titleMedium, textAlign: TextAlign.center),
+          const SizedBox(height: FitFlowSpace.sm),
+          LayoutBuilder(builder: (context, constraints) {
+            final width = constraints.maxWidth.clamp(0.0, 320.0);
+            return Center(
+                child: FitFlowExerciseImage.hero(
+                    exerciseId: state.currentPrescription.exercise.id,
+                    width: width,
+                    height: width * 3 / 4));
+          }),
           const SizedBox(height: FitFlowSpace.xs),
           Text(equipmentSummary(l, state.currentPrescription),
               style: text.bodyMedium, textAlign: TextAlign.center),
