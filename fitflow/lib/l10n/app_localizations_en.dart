@@ -1946,8 +1946,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trainingProgramOverviewTitle => 'Adaptive programs';
 
   @override
+  String get trainingProgramAbout => 'About this program';
+
+  @override
   String get trainingProgramOverviewIntro =>
-      'Structured multi-week plans whose workouts adapt to your current movement levels and setup.';
+      'Multi-week plans that adapt to your level and setup.';
 
   @override
   String get trainingProgramStartProgram => 'Start program';

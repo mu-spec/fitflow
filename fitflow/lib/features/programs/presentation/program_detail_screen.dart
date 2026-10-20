@@ -3,7 +3,7 @@ import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
-import 'package:fitflow/core/design/widgets/fitflow_v2_program_cover.dart';
+import 'package:fitflow/core/design/media/fitflow_program_image.dart';
 import 'package:fitflow/features/onboarding/state/user_fitness_profile_controller.dart';
 import 'package:fitflow/features/programs/application/adaptive_programs_controller.dart';
 import 'package:fitflow/features/programs/domain/adaptive_program_catalog.dart';
@@ -72,7 +72,9 @@ class ProgramDetailScreen extends ConsumerWidget {
       appBar: AppBar(
         // The program's own heading lives in the content, once. This short
         // parent-section label also stays readable at 2x text in the app bar.
-        title: Text(context.l10n.trainingPrograms),
+        title: Text(context.l10n.trainingPrograms,
+            style: theme.textTheme.titleLarge
+                ?.copyWith(fontWeight: FontWeight.w500)),
         backgroundColor: v.page,
         scrolledUnderElevation: 0,
       ),
@@ -91,14 +93,9 @@ class ProgramDetailScreen extends ConsumerWidget {
                   definition: definition,
                   isRecommended: isRecommended,
                   isActive: isActive,
-                  compact: compact,
                 ),
                 const SizedBox(height: FitFlowSpace.sm),
-                FitFlowV2InfoSurface(
-                  padding: const EdgeInsets.all(FitFlowSpace.xs),
-                  child: ProgramV2ProgressSummary(
-                      status: status, compact: compact),
-                ),
+                ProgramV2ProgressSummary(status: status, compact: compact),
                 const SizedBox(height: FitFlowSpace.sm),
                 _ProgramActions(
                   definition: definition,
@@ -106,13 +103,34 @@ class ProgramDetailScreen extends ConsumerWidget {
                   isActive: isActive,
                   otherActive: otherActive,
                 ),
-                const SizedBox(height: FitFlowSpace.lg),
+                const SizedBox(height: FitFlowSpace.sm),
+                ExpansionTile(
+                  key: const Key('program_details_disclosure'),
+                  tilePadding: EdgeInsets.zero,
+                  childrenPadding:
+                      const EdgeInsets.only(bottom: FitFlowSpace.md),
+                  expandedCrossAxisAlignment: CrossAxisAlignment.start,
+                  shape: const Border(),
+                  collapsedShape: const Border(),
+                  title: Text(context.l10n.trainingProgramAbout,
+                      style: theme.textTheme.titleSmall
+                          ?.copyWith(fontWeight: FontWeight.w500)),
+                  children: [
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: Text(definition.description,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                              color: FitFlowTheme.of(context).textSecondary)),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: FitFlowSpace.md),
                 for (final week in definition.weeks) ...[
                   Semantics(
                     header: true,
                     child: Text(context.l10n.trainingProgramWeek(week.number),
                         style: theme.textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.w600)),
+                            ?.copyWith(fontWeight: FontWeight.w500)),
                   ),
                   const SizedBox(height: FitFlowSpace.xs),
                   for (var i = 0; i < week.sessions.length; i++)
@@ -144,85 +162,52 @@ class _ProgramDetailHeader extends StatelessWidget {
     required this.definition,
     required this.isRecommended,
     required this.isActive,
-    required this.compact,
   });
 
   final AdaptiveProgramDefinition definition;
   final bool isRecommended;
   final bool isActive;
-  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
     final t = FitFlowTheme.of(context);
-    final copy = Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Semantics(
-          header: true,
-          child: Text(definition.name,
-              style: text.headlineSmall?.copyWith(fontWeight: FontWeight.w600)),
-        ),
-        const SizedBox(height: FitFlowSpace.xxs),
-        Text(definition.description,
-            style: text.bodyMedium?.copyWith(color: t.textSecondary)),
-        const SizedBox(height: FitFlowSpace.xs),
-        Text(definition.focus,
-            style: text.labelLarge?.copyWith(color: t.brand)),
-      ],
-    );
-    final cover = FitFlowV2ProgramCover(
-        programId: definition.id,
-        height: ProgramV2Layout.coverHeight(context, detail: true));
     return Column(
       key: const Key('v2_program_detail_header'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (compact)
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(child: copy),
-              const SizedBox(width: FitFlowSpace.sm),
-              SizedBox(width: 128, child: cover),
-            ],
-          )
-        else ...[
-          cover,
-          const SizedBox(height: FitFlowSpace.sm),
-          copy,
-        ],
-        const SizedBox(height: FitFlowSpace.sm),
-        Wrap(
-          spacing: FitFlowSpace.xs,
-          runSpacing: FitFlowSpace.xs,
-          children: [
-            ProgramTag(
-                label: context.l10n.trainingProgramWeeks(definition.weekCount),
-                icon: Icons.calendar_view_week_outlined),
-            ProgramTag(
-                label: context.l10n
-                    .trainingProgramPerWeek(definition.sessionsPerWeek),
-                icon: Icons.repeat),
-            ProgramTag(
-                label: context.l10n
-                    .trainingProgramTotal(definition.totalSessionCount),
-                icon: Icons.fitness_center_outlined),
-            if (isRecommended)
-              ProgramTag(
-                label: context.l10n.trainingProgramRecommendedMatch,
-                icon: Icons.flag_outlined,
-                emphasized: true,
-              ),
-            if (isActive)
-              ProgramTag(
-                label: context.l10n.trainingProgramActiveTitle,
-                icon: Icons.play_circle_outline,
-                emphasized: true,
-              ),
-          ],
+        LayoutBuilder(
+            builder: (context, constraints) => FitFlowProgramImage(
+                  programId: definition.id,
+                  width: constraints.maxWidth,
+                  height: constraints.maxWidth * 3 / 4,
+                )),
+        const SizedBox(height: FitFlowSpace.md),
+        Semantics(
+          header: true,
+          child: Text(definition.name,
+              style: text.titleLarge?.copyWith(fontWeight: FontWeight.w500)),
         ),
+        const SizedBox(height: FitFlowSpace.xxs),
+        Text(definition.focus,
+            style: text.bodyMedium?.copyWith(color: t.textSecondary)),
+        const SizedBox(height: FitFlowSpace.xs),
+        ProgramStructureLine(definition: definition),
+        if (isRecommended || isActive) ...[
+          const SizedBox(height: FitFlowSpace.xs),
+          Wrap(
+            spacing: FitFlowSpace.sm,
+            runSpacing: FitFlowSpace.xxs,
+            children: [
+              if (isActive)
+                Text(context.l10n.trainingProgramActiveTitle,
+                    style: text.bodySmall?.copyWith(color: t.brand)),
+              if (isRecommended)
+                Text(context.l10n.trainingProgramRecommendedMatch,
+                    style: text.bodySmall?.copyWith(color: t.textSecondary)),
+            ],
+          ),
+        ],
       ],
     );
   }

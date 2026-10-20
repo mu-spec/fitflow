@@ -4,6 +4,9 @@ import 'dart:ui' as ui;
 import 'package:fitflow/app/config/app_theme.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/core/design/fitflow_contrast.dart';
+import 'package:fitflow/core/design/media/fitflow_program_image.dart';
+import 'package:fitflow/core/design/media/fitflow_media_image.dart';
+import 'package:fitflow/core/design/media/program_media_registry.dart';
 import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/core/design/widgets/fitflow_v2_feature_art.dart';
@@ -134,7 +137,7 @@ void main() {
   Finder cardFor(String id) => find.byKey(ValueKey('v2_program_card_$id'));
   Finder rowFor(String id) => find.byKey(ValueKey('v2_program_session_$id'));
   Finder coverIn(Finder parent) =>
-      find.descendant(of: parent, matching: find.byType(FitFlowV2ProgramCover));
+      find.descendant(of: parent, matching: find.byType(FitFlowProgramImage));
   Finder buttonIn(Finder parent, String label) => find.descendant(
       of: parent, matching: find.widgetWithText(TextButton, label));
 
@@ -227,38 +230,36 @@ void main() {
       });
     });
 
-    testWidgets('covers contain no text/images and are decoration-only',
+    testWidgets('approved covers map exact IDs into compact 4:3 rows',
         (tester) async {
       await pumpPrograms(tester, size: const Size(840, 1000));
       for (final definition in AdaptiveProgramCatalog.all) {
         await programScrollTo(tester, cardFor(definition.id));
-        final art = coverIn(cardFor(definition.id));
-        expect(art, findsOneWidget);
-        expect(
-            tester.widget<FitFlowV2ProgramCover>(art).programId, definition.id);
-        expect(
-            find.descendant(of: art, matching: find.byType(ExcludeSemantics)),
-            findsOneWidget);
-        expect(find.descendant(of: art, matching: find.byType(RepaintBoundary)),
-            findsOneWidget);
-        expect(find.descendant(of: art, matching: find.byType(Text)),
+        final cover = coverIn(cardFor(definition.id));
+        expect(cover, findsOneWidget);
+        final image = tester.widget<FitFlowProgramImage>(cover);
+        expect(image.programId, definition.id);
+        expect(image.decorative, isTrue);
+        expect(image.width / image.height, closeTo(4 / 3, .001));
+        expect(image.width, lessThanOrEqualTo(112));
+        final media = tester.widget<FitFlowMediaImage>(find.descendant(
+            of: cover, matching: find.byType(FitFlowMediaImage)));
+        expect(media.asset, ProgramMediaRegistry.lookup(definition.id)!.cover);
+        expect(find.descendant(of: cover, matching: find.byType(Text)),
             findsNothing);
-        expect(find.descendant(of: art, matching: find.byType(Image)),
-            findsNothing);
-        final paint = tester.widget<CustomPaint>(
-            find.descendant(of: art, matching: find.byType(CustomPaint)));
-        expect(paint.isComplex, isFalse);
-        expect(paint.willChange, isFalse);
       }
+      expect(find.byType(FitFlowV2ProgramCover), findsNothing);
     });
   });
 
   group('Visual V2 Programs overview', () {
-    testWidgets('brand, media-led cards and canonical facts appear once',
+    testWidgets(
+        'compact header, photographic rows and canonical facts appear once',
         (tester) async {
       await pumpPrograms(tester);
-      expect(find.text('FITFLOW'), findsOneWidget);
-      expect(find.text('Adaptive programs'), findsOneWidget);
+      expect(find.text('FITFLOW'), findsNothing);
+      expect(find.text('Adaptive programs'), findsNothing);
+      expect(find.text('Programs'), findsOneWidget);
       final context = tester.element(find.byType(ProgramsOverviewScreen));
       final scaffold = tester.widget<Scaffold>(find.descendant(
           of: find.byType(ProgramsOverviewScreen),
@@ -292,8 +293,8 @@ void main() {
       expect(find.text('Active program'), findsOneWidget);
       expect(find.text('2 of 12 sessions'), findsOneWidget);
       expect(find.text('Week 1 • Next: Session 2'), findsOneWidget);
-      expect(
-          tester.widget<FitFlowV2ProgramCover>(coverIn(active)).onHero, isTrue);
+      expect(tester.widget<FitFlowProgramImage>(coverIn(active)).programId,
+          balanced.id);
       for (final definition in AdaptiveProgramCatalog.all) {
         await programScrollTo(tester, cardFor(definition.id));
         expect(cardFor(definition.id), findsOneWidget);
@@ -350,8 +351,8 @@ void main() {
       expect(find.text(definition.name), findsOneWidget);
       expect(find.text('Program complete'), findsOneWidget);
       expect(find.text('12 of 12 sessions'), findsOneWidget);
-      expect(
-          tester.widget<FitFlowV2ProgramCover>(coverIn(card)).onHero, isFalse);
+      expect(tester.widget<FitFlowProgramImage>(coverIn(card)).programId,
+          definition.id);
       expect(
           find.descendant(
               of: card, matching: find.byIcon(Icons.check_circle_outline)),
@@ -365,29 +366,18 @@ void main() {
       expect(find.text('Next'), findsNothing);
     });
 
-    testWidgets('two readable columns only at expanded width and normal text',
+    testWidgets('readable rows stay ordered in wide and constrained panes',
         (tester) async {
-      await pumpPrograms(tester, size: const Size(840, 1000));
-      final first = tester.getTopLeft(cardFor(balanced.id));
-      final second = tester.getTopLeft(cardFor(strength.id));
-      expect(first.dy, second.dy);
-      expect(first.dx, lessThan(second.dx));
-      expect(tester.getSize(cardFor(balanced.id)).width,
-          greaterThanOrEqualTo(340));
-      for (final size in [const Size(320, 700), const Size(600, 900)]) {
-        await pumpPrograms(tester, size: size);
-        await programScrollTo(tester, cardFor(strength.id));
-        expect(find.byKey(const ValueKey('v2_programs_pair_0')), findsNothing);
+      for (final width in [840.0, 650.0]) {
+        await pumpPrograms(tester,
+            size: const Size(840, 1000), pageWidth: width);
+        final first = tester.getTopLeft(cardFor(balanced.id));
+        final second = tester.getTopLeft(cardFor(strength.id));
+        expect(first.dx, second.dx);
+        expect(first.dy, lessThan(second.dy));
+        expect(tester.getSize(cardFor(balanced.id)).width, greaterThan(500));
+        expect(tester.takeException(), isNull);
       }
-      await pumpPrograms(tester, size: const Size(840, 1000), scale: 2);
-      expect(find.byKey(const ValueKey('v2_programs_pair_0')), findsNothing);
-      expect(tester.getSize(cardFor(balanced.id)).width, greaterThan(600));
-      await pumpPrograms(tester, size: const Size(840, 1000), pageWidth: 650);
-      expect(find.byKey(const ValueKey('v2_programs_pair_0')), findsNothing,
-          reason:
-              'actual narrow pane wins over expanded window classification');
-      expect(tester.getSize(cardFor(balanced.id)).width, greaterThan(500));
-      expect(tester.takeException(), isNull);
     });
 
     testWidgets('loading/error/retry preserve the existing state surfaces',
@@ -398,7 +388,7 @@ void main() {
           isolateOverview: true,
           extra: [adaptiveProgramsStorageProvider.overrideWithValue(delayed)]);
       expect(find.text('Loading program progress…'), findsOneWidget);
-      expect(find.byType(FitFlowV2ProgramCover), findsNothing);
+      expect(find.byType(FitFlowProgramImage), findsNothing);
       delayed.result.complete(AdaptiveProgramsState.empty);
       await tester.pumpAndSettle();
       expect(find.text(balanced.name), findsOneWidget);
@@ -408,7 +398,7 @@ void main() {
           isolateOverview: true,
           extra: [adaptiveProgramsStorageProvider.overrideWithValue(failing)]);
       expect(find.byType(ProgramProgressState), findsOneWidget);
-      expect(find.byType(FitFlowV2ProgramCover), findsNothing);
+      expect(find.byType(FitFlowProgramImage), findsNothing);
       await tester.tap(find.text('Retry'));
       await tester.pumpAndSettle();
       expect(find.text(balanced.name), findsOneWidget);
@@ -421,17 +411,21 @@ void main() {
       for (final definition in AdaptiveProgramCatalog.all) {
         await pumpPrograms(tester,
             location: AppRoutes.programDetail(definition.id));
-        final art = find.byType(FitFlowV2ProgramCover);
+        final art = find.byType(FitFlowProgramImage);
         expect(art, findsOneWidget);
         expect(
-            tester.widget<FitFlowV2ProgramCover>(art).programId, definition.id);
+            tester.widget<FitFlowProgramImage>(art).programId, definition.id);
         expect(find.text(definition.name), findsOneWidget);
-        expect(find.text(definition.description), findsOneWidget);
+        expect(find.text(definition.description), findsNothing);
+        final imageSize = tester.getSize(art);
+        expect(imageSize.width / imageSize.height, closeTo(4 / 3, .001));
         expect(find.text(definition.focus), findsOneWidget);
-        expect(find.text('${definition.weekCount} weeks'), findsOneWidget);
-        expect(find.text('${definition.sessionsPerWeek} sessions/week'),
+        expect(find.textContaining('${definition.weekCount} weeks'),
             findsOneWidget);
-        expect(find.text('${definition.totalSessionCount} workouts'),
+        expect(
+            find.textContaining('${definition.sessionsPerWeek} sessions/week'),
+            findsOneWidget);
+        expect(find.textContaining('${definition.totalSessionCount} workouts'),
             findsOneWidget);
         await programScrollTo(tester, find.text('Start program'));
         expect(
@@ -439,6 +433,10 @@ void main() {
                 .getSize(find.widgetWithText(FilledButton, 'Start program'))
                 .height,
             greaterThanOrEqualTo(48));
+        await programScrollTo(tester, find.text('About this program'));
+        await tester.tap(find.text('About this program'));
+        await tester.pumpAndSettle();
+        expect(find.text(definition.description), findsOneWidget);
         final scaffold = tester.widget<Scaffold>(find.descendant(
             of: find.byType(ProgramDetailScreen),
             matching: find.byType(Scaffold)));
@@ -533,7 +531,7 @@ void main() {
       final handle = tester.ensureSemantics();
       try {
         await pumpPrograms(tester, size: const Size(840, 1000));
-        final heading = tester.getSemantics(find.text('Adaptive programs'));
+        final heading = tester.getSemantics(find.text('Programs'));
         expect(heading.flagsCollection.isHeader, isTrue);
         final link = find.byKey(ValueKey('v2_program_link_${balanced.id}'));
         expect(tester.getSize(link).height, greaterThanOrEqualTo(48));
@@ -573,55 +571,62 @@ void main() {
     });
 
     testWidgets(
-        'light/dark roles have readable contrast and intentional covers',
+        'program explanation disclosure announces expanded and collapsed state',
         (tester) async {
-      Color? lightInk;
-      for (final dark in [false, true]) {
+      final semantics = tester.ensureSemantics();
+      try {
         await pumpPrograms(tester,
-            dark: dark, state: stateFor(balanced), size: const Size(840, 1000));
+            location: AppRoutes.programDetail(balanced.id));
+        final title = find.text('About this program');
+        await programScrollTo(tester, title);
+        expect(find.text(balanced.description), findsNothing);
+        expect(tester.getSemantics(title).getSemanticsData().hint,
+            contains('Collapsed'));
+        await tester.tap(title);
+        await tester.pumpAndSettle();
+        expect(find.text(balanced.description), findsOneWidget);
+        expect(tester.getSemantics(title).getSemanticsData().hint,
+            contains('Expanded'));
+        await tester.tap(title);
+        await tester.pumpAndSettle();
+        expect(find.text(balanced.description), findsNothing);
+        await programScrollTo(tester, find.text('Start program'), step: -150);
+        expect(
+            tester
+                .widget<FilledButton>(
+                    find.widgetWithText(FilledButton, 'Start program'))
+                .onPressed,
+            isNotNull);
+      } finally {
+        semantics.dispose();
+      }
+    });
+
+    testWidgets('light/dark text and action roles have readable contrast',
+        (tester) async {
+      for (final dark in [false, true]) {
+        await pumpPrograms(tester, dark: dark, state: stateFor(balanced));
         final context = tester.element(cardFor(balanced.id));
         final v = FitFlowVisualV2.of(context);
         final t = FitFlowTheme.of(context);
         for (final pair in [
-          [v.onHero, v.heroStart],
-          [v.heroSecondary, v.heroStart],
           [v.onAction, v.action],
-          [t.textPrimary, v.support],
+          [t.textPrimary, v.page],
           [t.textSecondary, v.page],
+          [t.brand, v.page],
         ]) {
           expect(fitflowContrast(pair[0], pair[1]), greaterThanOrEqualTo(4.5));
         }
-        final paint = tester.widget<CustomPaint>(find.descendant(
-            of: coverIn(cardFor(balanced.id)),
-            matching: find.byType(CustomPaint)));
-        final painter = paint.painter! as FitFlowV2ProgramCoverPainter;
-        expect(painter.style.ink, v.action);
-        expect(
-            fitflowContrast(painter.style.ink,
-                Color.alphaBlend(painter.style.panel, v.heroStart)),
-            greaterThanOrEqualTo(2));
-        if (!dark) {
-          lightInk = painter.style.ink;
-        } else {
-          expect(painter.style.ink, isNot(lightInk));
-        }
-        final secondary = cardFor(strength.id);
-        final standardPaint = tester.widget<CustomPaint>(find.descendant(
-            of: coverIn(secondary), matching: find.byType(CustomPaint)));
-        final style =
-            (standardPaint.painter! as FitFlowV2ProgramCoverPainter).style;
-        expect(style.ink, t.brand);
-        expect(
-            fitflowContrast(style.ink, style.panel), greaterThanOrEqualTo(2));
       }
     });
 
-    testWidgets('art yields before text; neither motion setting adds a loop',
+    testWidgets(
+        'row images stay 4:3 at large text without continuous animation',
         (tester) async {
       await pumpPrograms(tester, state: stateFor(balanced), scale: 1);
       await programScrollTo(tester, cardFor(balanced.id));
       final normal = tester
-          .widget<FitFlowV2ProgramCover>(coverIn(cardFor(balanced.id)))
+          .widget<FitFlowProgramImage>(coverIn(cardFor(balanced.id)))
           .height;
       for (final reduced in [false, true]) {
         await pumpPrograms(tester,
@@ -629,7 +634,9 @@ void main() {
         await programScrollTo(tester, cardFor(balanced.id));
         final art = coverIn(cardFor(balanced.id));
         expect(
-            tester.widget<FitFlowV2ProgramCover>(art).height, lessThan(normal));
+            tester.widget<FitFlowProgramImage>(art).height, lessThan(normal));
+        final image = tester.widget<FitFlowProgramImage>(art);
+        expect(image.width / image.height, closeTo(4 / 3, .001));
         expect(MediaQuery.textScalerOf(tester.element(art)).scale(16), 32);
         await tester.pump(const Duration(seconds: 2));
         expect(tester.binding.transientCallbackCount, 0);
@@ -675,6 +682,7 @@ void main() {
               size: size,
               dark: dark,
               scale: scale);
+          await programScrollTo(tester, find.text(strength.name));
           expect(find.text(strength.name), findsOneWidget);
           expect(
               MediaQuery.textScalerOf(

@@ -3317,10 +3317,16 @@ abstract class AppLocalizations {
   /// **'Adaptive programs'**
   String get trainingProgramOverviewTitle;
 
+  /// No description provided for @trainingProgramAbout.
+  ///
+  /// In en, this message translates to:
+  /// **'About this program'**
+  String get trainingProgramAbout;
+
   /// No description provided for @trainingProgramOverviewIntro.
   ///
   /// In en, this message translates to:
-  /// **'Structured multi-week plans whose workouts adapt to your current movement levels and setup.'**
+  /// **'Multi-week plans that adapt to your level and setup.'**
   String get trainingProgramOverviewIntro;
 
   /// No description provided for @trainingProgramStartProgram.

@@ -3,6 +3,7 @@ import 'package:fitflow/features/onboarding/data/fitness_goal.dart';
 import 'package:fitflow/features/programs/application/adaptive_programs_controller.dart';
 import 'package:fitflow/features/programs/data/adaptive_programs_storage.dart';
 import 'package:fitflow/features/programs/domain/adaptive_program_progress.dart';
+import 'package:fitflow/features/programs/domain/adaptive_program_catalog.dart';
 import 'package:fitflow/features/programs/domain/adaptive_programs_state.dart';
 import 'package:fitflow/features/programs/presentation/program_detail_screen.dart';
 import 'package:fitflow/features/programs/presentation/program_session_preview_screen.dart';
@@ -78,8 +79,10 @@ void main() {
         await programScrollTo(tester, find.text(entry.value));
         expect(find.text(entry.value), findsOneWidget, reason: entry.key.name);
         expect(find.text('Matches your selected goal'), findsOneWidget);
-        final matchedCard = find.ancestor(
-            of: find.text(entry.value), matching: find.byType(Card));
+        final definition = AdaptiveProgramCatalog.all
+            .singleWhere((d) => d.name == entry.value);
+        final matchedCard =
+            find.byKey(ValueKey('v2_program_card_${definition.id}'));
         expect(
             find.descendant(
                 of: matchedCard,
@@ -115,8 +118,8 @@ void main() {
       await tester.tap(find.text('Programs'));
       await tester.pumpAndSettle();
       await programScrollTo(tester, find.text('Mobility & Movement'));
-      final matched = find.ancestor(
-          of: find.text('Mobility & Movement'), matching: find.byType(Card));
+      final matched =
+          find.byKey(const ValueKey('v2_program_card_mobility_movement'));
       expect(
           find.descendant(
               of: matched, matching: find.text('Matches your selected goal')),
@@ -133,7 +136,7 @@ void main() {
       await tester.tap(find.text('Programs'));
       await tester.pumpAndSettle();
       expect(find.byType(ProgramsOverviewScreen), findsOneWidget);
-      expect(find.text('Adaptive programs'), findsOneWidget);
+      expect(find.text('Programs'), findsOneWidget);
     });
 
     testWidgets('no active card when nothing is active', (tester) async {
@@ -176,8 +179,7 @@ void main() {
       expect(find.text('Active program'), findsOneWidget);
       expect(find.text('Balanced Foundations'), findsWidgets);
       expect(find.text('4 of 12 sessions'), findsOneWidget);
-      expect(find.textContaining('Week 2 • Next: Session 2'),
-          findsOneWidget);
+      expect(find.textContaining('Week 2 • Next: Session 2'), findsOneWidget);
       expect(find.text('Continue'), findsOneWidget);
 
       await tester.tap(find.text('Continue'));

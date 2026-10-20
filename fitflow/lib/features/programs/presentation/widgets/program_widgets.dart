@@ -142,7 +142,7 @@ class ProgramCompletionBar extends StatelessWidget {
               .trainingSessions(status.completedCount, status.totalCount),
           style: theme.textTheme.bodyMedium?.copyWith(
             color: onHero ? v.onHero : null,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w500,
           ),
         ),
         const SizedBox(height: FitFlowSpace.xs),
@@ -184,7 +184,7 @@ class ProgramStructureLine extends StatelessWidget {
   }
 }
 
-/// Compact V2 timeline row; state and navigation are supplied by the same
+/// Compact program session row; state and navigation are supplied by the same
 /// canonical status calculator and caller as before. No locking or selection.
 class ProgramSessionRow extends StatelessWidget {
   const ProgramSessionRow({
@@ -207,17 +207,6 @@ class ProgramSessionRow extends StatelessWidget {
     final theme = Theme.of(context);
     final t = FitFlowTheme.of(context);
     final v = FitFlowVisualV2.of(context);
-    final next = status == AdaptiveProgramSessionStatus.next;
-    final nodeColor = switch (status) {
-      AdaptiveProgramSessionStatus.completed => t.success,
-      AdaptiveProgramSessionStatus.next => t.brand,
-      AdaptiveProgramSessionStatus.planned => t.textMuted,
-    };
-    final nodeIcon = switch (status) {
-      AdaptiveProgramSessionStatus.completed => Icons.check_rounded,
-      AdaptiveProgramSessionStatus.next => Icons.play_arrow_rounded,
-      AdaptiveProgramSessionStatus.planned => Icons.circle_outlined,
-    };
     final copy = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -228,7 +217,7 @@ class ProgramSessionRow extends StatelessWidget {
           children: [
             Text(context.l10n.trainingSession(session.session),
                 style: theme.textTheme.titleSmall
-                    ?.copyWith(fontWeight: FontWeight.w600)),
+                    ?.copyWith(fontWeight: FontWeight.w500)),
             // This shared chip is intentionally unchanged: Preview uses it too.
             ProgramSessionStatusChip(status: status),
           ],
@@ -248,76 +237,30 @@ class ProgramSessionRow extends StatelessWidget {
       ),
     );
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: FitFlowSpace.xs),
-      child: Stack(
-        children: [
-          if (!(isFirst && isLast))
-            PositionedDirectional(
-              start: 13,
-              top: isFirst ? 26 : 0,
-              bottom: isLast ? null : 0,
-              height: isLast ? 26 : null,
-              child: ExcludeSemantics(
-                child: SizedBox(
-                    width: 2, child: ColoredBox(color: v.subtleBorder)),
-              ),
-            ),
-          Padding(
-            padding: const EdgeInsetsDirectional.only(start: FitFlowSpace.xxxl),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: next ? v.tint : v.support,
-                borderRadius: FitFlowRadius.mediumBorder,
-                border: Border.all(color: next ? t.brand : v.subtleBorder),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(FitFlowSpace.xs),
-                child: LayoutBuilder(builder: (context, c) {
-                  final inline =
-                      c.maxWidth >= 420 && !ProgramV2Layout.largeText(context);
-                  if (inline) {
-                    return ConstrainedBox(
-                      constraints: const BoxConstraints(minHeight: 56),
-                      child: Row(
-                        children: [
-                          Expanded(child: copy),
-                          const SizedBox(width: FitFlowSpace.xs),
-                          action,
-                        ],
-                      ),
-                    );
-                  }
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      copy,
-                      const SizedBox(height: FitFlowSpace.xxs),
-                      action,
-                    ],
-                  );
-                }),
-              ),
-            ),
-          ),
-          PositionedDirectional(
-            start: 0,
-            top: FitFlowSpace.sm,
-            child: ExcludeSemantics(
-              child: Container(
-                width: 28,
-                height: 28,
-                decoration: BoxDecoration(
-                  color: v.page,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: nodeColor),
-                ),
-                child: Icon(nodeIcon, color: nodeColor, size: 18),
-              ),
-            ),
-          ),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.xs),
+          child: LayoutBuilder(builder: (context, constraints) {
+            if (constraints.maxWidth >= 420 &&
+                !ProgramV2Layout.largeText(context)) {
+              return Row(
+                children: [
+                  Expanded(child: copy),
+                  const SizedBox(width: FitFlowSpace.xs),
+                  action,
+                ],
+              );
+            }
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [copy, action],
+            );
+          }),
+        ),
+        if (!isLast) Divider(height: 1, color: v.subtleBorder),
+      ],
     );
   }
 }

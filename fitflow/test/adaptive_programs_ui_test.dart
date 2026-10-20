@@ -75,10 +75,8 @@ void main() {
     testWidgets('shows header, copy and all five programs', (tester) async {
       SharedPreferences.setMockInitialValues({});
       await pumpAt(tester, AppRoutes.programs);
-      expect(find.text('Adaptive programs'), findsOneWidget);
-      expect(
-          find.text(
-              'Structured multi-week plans whose workouts adapt to your current movement levels and setup.'),
+      expect(find.text('Programs'), findsOneWidget);
+      expect(find.text('Multi-week plans that adapt to your level and setup.'),
           findsOneWidget);
       for (final def in AdaptiveProgramCatalog.all) {
         await programScrollTo(tester, find.text(def.name));
@@ -96,8 +94,9 @@ void main() {
       };
       for (final entry in facts.entries) {
         await programScrollTo(tester, find.text(entry.key));
-        final card = find.ancestor(
-            of: find.text(entry.key), matching: find.byType(Card));
+        final definition =
+            AdaptiveProgramCatalog.all.singleWhere((d) => d.name == entry.key);
+        final card = find.byKey(ValueKey('v2_program_card_${definition.id}'));
         expect(find.descendant(of: card, matching: find.text(entry.value)),
             findsOneWidget,
             reason: entry.key);
@@ -110,10 +109,8 @@ void main() {
           overrides: programOverrides(
               profile: programTestProfile(goal: FitnessGoal.buildMuscle)));
       expect(find.text('Matches your selected goal'), findsOneWidget);
-      final tag = find.ancestor(
-        of: find.text('Matches your selected goal'),
-        matching: find.byType(Card),
-      );
+      final tag =
+          find.byKey(const ValueKey('v2_program_card_strength_foundations'));
       expect(
           find.descendant(of: tag, matching: find.text('Strength Foundations')),
           findsOneWidget);
@@ -164,12 +161,12 @@ void main() {
         tester.view.resetDevicePixelRatio();
       });
       await pumpAt(tester, AppRoutes.programs, textScale: 1.5);
-      expect(find.text('Adaptive programs'), findsOneWidget);
+      expect(find.text('Programs'), findsOneWidget);
       expect(tester.takeException(), isNull);
 
       tester.view.physicalSize = const Size(1024, 1366);
       await pumpAt(tester, AppRoutes.programs);
-      expect(find.text('Adaptive programs'), findsOneWidget);
+      expect(find.text('Programs'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   });
@@ -180,16 +177,22 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       await pumpAt(tester, AppRoutes.programDetail('strength_foundations'));
       expect(find.text('Strength Foundations'), findsOneWidget);
-      expect(find.textContaining('Six weeks of strength'), findsOneWidget);
-      expect(find.text('6 weeks'), findsOneWidget);
-      expect(find.text('3 sessions/week'), findsOneWidget);
-      expect(find.text('18 workouts'), findsOneWidget);
+      expect(find.textContaining('Six weeks of strength'), findsNothing);
+      expect(find.textContaining('6 weeks'), findsOneWidget);
+      expect(find.textContaining('3 sessions/week'), findsOneWidget);
+      expect(find.textContaining('18 workouts'), findsOneWidget);
+      await programScrollTo(tester, find.text('Start program'));
       expect(find.text('Start program'), findsOneWidget);
       expect(find.text('Resume program'), findsNothing);
       expect(find.text('Restart program'), findsNothing);
       expect(find.text('Switch to this program'), findsNothing);
       expect(find.textContaining('workouts completed'), findsNothing);
+      await programScrollTo(tester, find.text('About this program'));
+      await tester.tap(find.text('About this program'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Six weeks of strength'), findsOneWidget);
       // Week groups and sessions. First session is Next even with no progress.
+      await programScrollTo(tester, find.text('Week 1'));
       expect(find.text('Week 1'), findsOneWidget);
       expect(find.text('Next'), findsOneWidget);
       await programScrollTo(tester, find.text('Week 6'), step: 400);
@@ -205,6 +208,7 @@ void main() {
         (tester) async {
       SharedPreferences.setMockInitialValues({});
       await pumpAt(tester, AppRoutes.programDetail('balanced_foundations'));
+      await programScrollTo(tester, find.text('Session 1'));
       expect(
           find.text('Full-body basics • Goal: General fitness'), findsWidgets);
       await programScrollTo(
@@ -214,6 +218,7 @@ void main() {
           tester, find.text('Endurance • Goal: Improve endurance'));
       expect(find.text('Endurance • Goal: Improve endurance'), findsWidgets);
       await programScrollToTop(tester);
+      await programScrollTo(tester, find.text('View workout'));
       expect(find.text('View workout'), findsWidgets);
       await tester.tap(find.text('View workout').first);
       await tester.pumpAndSettle();
@@ -225,9 +230,12 @@ void main() {
         (tester) async {
       SharedPreferences.setMockInitialValues({});
       await pumpAt(tester, AppRoutes.programDetail('mobility_movement'));
+      await programScrollTo(tester, find.text('Start program'));
       await tester.tap(find.text('Start program'));
       await tester.pumpAndSettle();
+      await programScrollTo(tester, find.text('Active program'), step: -150);
       expect(find.text('Active program'), findsOneWidget);
+      await programScrollTo(tester, find.text('0 of 12 sessions'), step: -150);
       expect(find.text('0 of 12 sessions'), findsOneWidget);
       expect(find.text('Continue'), findsOneWidget);
       expect(find.text('Restart program'), findsOneWidget);
@@ -240,9 +248,11 @@ void main() {
         (tester) async {
       seed(balancedWithTwoDone());
       await pumpAt(tester, AppRoutes.programDetail('balanced_foundations'));
+      await programScrollTo(tester, find.text('2 of 12 sessions'));
       expect(find.text('2 of 12 sessions'), findsOneWidget);
       expect(find.byType(LinearProgressIndicator), findsOneWidget);
       expect(find.text('Week 1 • Next: Session 2'), findsOneWidget);
+      await programScrollTo(tester, find.text('Session 1'));
       // Sessions 1 and 3 of week 1 completed, session 2 is next.
       Finder rowOf(String sessionLabel) => find.ancestor(
             of: find.text(sessionLabel).first,
@@ -274,17 +284,21 @@ void main() {
     testWidgets('non-active with progress shows Resume', (tester) async {
       seed(balancedWithTwoDone(active: null));
       await pumpAt(tester, AppRoutes.programDetail('balanced_foundations'));
+      await programScrollTo(tester, find.text('Resume program'));
       expect(find.text('Resume program'), findsOneWidget);
       expect(find.text('Restart program'), findsOneWidget);
       await tester.tap(find.text('Resume program'));
       await tester.pumpAndSettle();
+      await programScrollTo(tester, find.text('Active program'), step: -150);
       expect(find.text('Active program'), findsOneWidget);
+      await programScrollTo(tester, find.text('2 of 12 sessions'));
       expect(find.text('2 of 12 sessions'), findsOneWidget);
     });
 
     testWidgets('Switch asks confirmation, keeps old progress', (tester) async {
       seed(balancedWithTwoDone());
       await pumpAt(tester, AppRoutes.programDetail('endurance_builder'));
+      await programScrollTo(tester, find.text('Switch to this program'));
       expect(find.text('Switch to this program'), findsOneWidget);
       await tester.tap(find.text('Switch to this program'));
       await tester.pumpAndSettle();
@@ -294,12 +308,14 @@ void main() {
       // Cancel first.
       await tester.tap(find.text('Cancel'));
       await tester.pumpAndSettle();
+      await programScrollTo(tester, find.text('Switch to this program'));
       expect(find.text('Switch to this program'), findsOneWidget);
       // Confirm.
       await tester.tap(find.text('Switch to this program'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Switch'));
       await tester.pumpAndSettle();
+      await programScrollTo(tester, find.text('Active program'), step: -150);
       expect(find.text('Active program'), findsOneWidget);
       expect(find.text('0 of 16 sessions'), findsOneWidget);
 
@@ -318,12 +334,15 @@ void main() {
         },
       ));
       await pumpAt(tester, AppRoutes.programDetail('balanced_foundations'));
+      await programScrollTo(tester, find.text('2 of 12 sessions'));
       expect(find.text('2 of 12 sessions'), findsOneWidget);
       await tester.tap(find.text('Switch to this program'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Switch'));
       await tester.pumpAndSettle();
+      await programScrollTo(tester, find.text('Active program'), step: -150);
       expect(find.text('Active program'), findsOneWidget);
+      await programScrollTo(tester, find.text('2 of 12 sessions'));
       expect(find.text('2 of 12 sessions'), findsOneWidget);
     });
 
@@ -331,6 +350,7 @@ void main() {
         (tester) async {
       seed(balancedWithTwoDone());
       await pumpAt(tester, AppRoutes.programDetail('balanced_foundations'));
+      await programScrollTo(tester, find.text('Restart program'));
       await tester.tap(find.text('Restart program'));
       await tester.pumpAndSettle();
       expect(find.text('Restart this program?'), findsOneWidget);
@@ -340,7 +360,9 @@ void main() {
           findsOneWidget);
       await tester.tap(find.text('Restart'));
       await tester.pumpAndSettle();
+      await programScrollTo(tester, find.text('0 of 12 sessions'), step: -150);
       expect(find.text('0 of 12 sessions'), findsOneWidget);
+      await programScrollTo(tester, find.text('Active program'), step: -150);
       expect(find.text('Active program'), findsOneWidget);
       expect(find.text('Completed'), findsNothing);
     });
@@ -367,6 +389,7 @@ void main() {
         },
       ));
       await pumpAt(tester, AppRoutes.programDetail('mobility_movement'));
+      await programScrollTo(tester, find.text('Program complete'));
       expect(find.text('Program complete'), findsOneWidget);
       expect(find.text('12 of 12 sessions'), findsOneWidget);
       expect(find.text('Continue'), findsNothing);
@@ -410,10 +433,12 @@ void main() {
           adaptiveProgramsStorageProvider.overrideWithValue(failing),
         ],
       );
+      await programScrollTo(tester, find.text('Start program'));
       await tester.tap(find.text('Start program'));
       await tester.pumpAndSettle();
       expect(find.text("Couldn't save program changes. Try again."),
           findsOneWidget);
+      await programScrollTo(tester, find.text('Start program'));
       expect(find.text('Start program'), findsOneWidget);
       expect(find.text('Active program'), findsNothing);
     });

@@ -1,10 +1,9 @@
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
-import 'package:fitflow/core/design/fitflow_radius.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
-import 'package:fitflow/core/design/widgets/fitflow_v2_program_cover.dart';
+import 'package:fitflow/core/design/media/fitflow_program_image.dart';
 import 'package:fitflow/features/onboarding/state/user_fitness_profile_controller.dart';
 import 'package:fitflow/features/programs/application/adaptive_programs_controller.dart';
 import 'package:fitflow/features/programs/domain/adaptive_program_catalog.dart';
@@ -34,7 +33,7 @@ class ProgramsOverviewScreen extends ConsumerWidget {
     if (programsAsync.isLoading || programsAsync.hasError) {
       return Scaffold(
         backgroundColor: v.page,
-        appBar: AppBar(title: Text(l.trainingProgramOverviewTitle)),
+        appBar: AppBar(title: Text(l.trainingPrograms)),
         body: ProgramProgressState(
           loading: programsAsync.isLoading,
           onRetry: () =>
@@ -47,7 +46,6 @@ class ProgramsOverviewScreen extends ConsumerWidget {
     final remaining = AdaptiveProgramCatalog.all
         .where((definition) => definition.id != active?.id)
         .toList(growable: false);
-    final two = ProgramV2Layout.twoColumns(context);
 
     Widget card(AdaptiveProgramDefinition definition) {
       final status = AdaptiveProgramStatus(
@@ -75,7 +73,8 @@ class ProgramsOverviewScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: v.page,
       appBar: AppBar(
-        title: Text(l.trainingPrograms),
+        title: Text(l.trainingPrograms,
+            style: text.titleLarge?.copyWith(fontWeight: FontWeight.w500)),
         backgroundColor: v.page,
         scrolledUnderElevation: 0,
       ),
@@ -87,69 +86,17 @@ class ProgramsOverviewScreen extends ConsumerWidget {
             child: ListView(
               padding: EdgeInsets.all(ProgramV2Layout.inset(context)),
               children: [
-                Column(
-                  key: const Key('v2_programs_header'),
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(l.homeBrand,
-                        style: text.labelMedium
-                            ?.copyWith(color: t.brand, letterSpacing: 1.2)),
-                    const SizedBox(height: FitFlowSpace.xs),
-                    Semantics(
-                      header: true,
-                      child: Text(l.trainingProgramOverviewTitle,
-                          style: text.headlineMedium),
-                    ),
-                    const SizedBox(height: FitFlowSpace.sm),
-                    Text(l.trainingProgramOverviewIntro,
-                        style:
-                            text.bodyLarge?.copyWith(color: t.textSecondary)),
-                  ],
-                ),
-                const SizedBox(height: FitFlowSpace.lg),
-                if (active != null) ...[
-                  card(active),
-                  const SizedBox(height: FitFlowSpace.lg),
+                Text(l.trainingProgramOverviewIntro,
+                    key: const Key('v2_programs_header'),
+                    style: text.bodyMedium?.copyWith(color: t.textSecondary)),
+                const SizedBox(height: FitFlowSpace.sm),
+                for (final definition in [
+                  if (active != null) active,
+                  ...remaining
+                ]) ...[
+                  card(definition),
+                  Divider(height: 1, color: v.subtleBorder),
                 ],
-                for (var i = 0; i < remaining.length; i += two ? 2 : 1)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: FitFlowSpace.md),
-                    child: two
-                        ? LayoutBuilder(builder: (context, c) {
-                            // A wide window may still host a narrower route
-                            // pane. This is a local row builder, not a root
-                            // route LayoutBuilder that could disturb dialogs.
-                            final readable = c.maxWidth >=
-                                2 * ProgramV2Layout.minimumCardWidth +
-                                    FitFlowSpace.md;
-                            if (!readable) {
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  card(remaining[i]),
-                                  if (i + 1 < remaining.length) ...[
-                                    const SizedBox(height: FitFlowSpace.md),
-                                    card(remaining[i + 1]),
-                                  ],
-                                ],
-                              );
-                            }
-                            return Row(
-                              key: ValueKey('v2_programs_pair_$i'),
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(child: card(remaining[i])),
-                                const SizedBox(width: FitFlowSpace.md),
-                                Expanded(
-                                  child: i + 1 < remaining.length
-                                      ? card(remaining[i + 1])
-                                      : const SizedBox.shrink(),
-                                ),
-                              ],
-                            );
-                          })
-                        : card(remaining[i]),
-                  ),
               ],
             ),
           ),
@@ -182,20 +129,12 @@ class _ProgramOverviewCard extends StatelessWidget {
     final text = Theme.of(context).textTheme;
     final t = FitFlowTheme.of(context);
     final v = FitFlowVisualV2.of(context);
-    // Completed programs return to a restrained supporting surface, even
-    // when still active. The completion label/check carry the success state.
-    final hero = isActive && !status.isComplete;
-    final foreground = hero ? v.onHero : t.textPrimary;
-    final secondary = hero ? v.heroSecondary : t.textSecondary;
-    return Card(
-      margin: EdgeInsets.zero,
-      elevation: 0,
-      color: hero ? v.heroStart : v.support,
-      shape: RoundedRectangleBorder(
-        borderRadius: FitFlowRadius.cardBorder,
-        side: BorderSide(color: hero ? v.heroLine : v.subtleBorder),
-      ),
-      clipBehavior: Clip.antiAlias,
+    final imageWidth = ProgramV2Layout.viewport(context).width < 360 ||
+            ProgramV2Layout.largeText(context)
+        ? 80.0
+        : 112.0;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -204,91 +143,85 @@ class _ProgramOverviewCard extends StatelessWidget {
             child: InkWell(
               key: ValueKey('v2_program_link_${definition.id}'),
               onTap: onTap,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  FitFlowV2ProgramCover(
-                    programId: definition.id,
-                    height: ProgramV2Layout.coverHeight(context),
-                    onHero: hero,
-                    borderRadius: BorderRadius.zero,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(FitFlowSpace.md),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (isActive || isRecommended) ...[
-                          Wrap(
-                            spacing: FitFlowSpace.xs,
-                            runSpacing: FitFlowSpace.xs,
-                            children: [
-                              if (isActive)
-                                FitFlowV2Tag(
-                                    context.l10n.trainingProgramActiveTitle,
-                                    icon: Icons.play_circle_outline),
-                              if (isRecommended)
-                                FitFlowV2Tag(
-                                    context
-                                        .l10n.trainingProgramRecommendedMatch,
-                                    icon: Icons.flag_outlined),
-                            ],
-                          ),
-                          const SizedBox(height: FitFlowSpace.sm),
-                        ],
-                        Semantics(
-                          header: true,
-                          child: Text(definition.name,
-                              style: text.titleLarge?.copyWith(
-                                  color: foreground,
-                                  fontWeight: FontWeight.w600)),
-                        ),
-                        const SizedBox(height: FitFlowSpace.xxs),
-                        Text(definition.focus,
-                            style: text.bodyMedium?.copyWith(color: secondary)),
-                        const SizedBox(height: FitFlowSpace.xs),
-                        ProgramStructureLine(
-                            definition: definition, color: secondary),
-                        const SizedBox(height: FitFlowSpace.sm),
-                        if (isActive || status.hasProgress)
-                          ProgramV2ProgressSummary(
-                              status: status, onHero: hero, showNext: isActive)
-                        else
-                          Text(programStatusLabel(context, status),
-                              style:
-                                  text.labelLarge?.copyWith(color: secondary)),
-                        const SizedBox(height: FitFlowSpace.xs),
-                        Align(
-                          alignment: AlignmentDirectional.centerEnd,
-                          child: ExcludeSemantics(
-                              child:
-                                  Icon(Icons.chevron_right, color: secondary)),
-                        ),
-                      ],
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.xxs),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    FitFlowProgramImage(
+                      programId: definition.id,
+                      width: imageWidth,
+                      height: imageWidth * 3 / 4,
                     ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          if (onContinue != null)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                  FitFlowSpace.md, 0, FitFlowSpace.md, FitFlowSpace.md),
-              child: Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: FilledButton.icon(
-                  onPressed: onContinue,
-                  style: FilledButton.styleFrom(
-                    backgroundColor: v.action,
-                    foregroundColor: v.onAction,
-                    minimumSize: const Size(64, 48),
-                  ),
-                  icon: const Icon(Icons.arrow_forward_rounded),
-                  label: Text(context.l10n.trainingProgramContinueLabel),
+                    const SizedBox(width: FitFlowSpace.sm),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Semantics(
+                            header: true,
+                            child: Text(definition.name,
+                                style: text.titleMedium?.copyWith(
+                                    color: t.textPrimary,
+                                    fontWeight: FontWeight.w500)),
+                          ),
+                          const SizedBox(height: FitFlowSpace.xxs),
+                          Text(definition.focus,
+                              style: text.bodyMedium
+                                  ?.copyWith(color: t.textSecondary)),
+                          const SizedBox(height: FitFlowSpace.xs),
+                          ProgramStructureLine(definition: definition),
+                          if (isActive) ...[
+                            const SizedBox(height: FitFlowSpace.xs),
+                            Text(context.l10n.trainingProgramActiveTitle,
+                                style:
+                                    text.bodySmall?.copyWith(color: t.brand)),
+                          ],
+                          if (isRecommended) ...[
+                            const SizedBox(height: FitFlowSpace.xxs),
+                            Text(context.l10n.trainingProgramRecommendedMatch,
+                                style: text.bodySmall
+                                    ?.copyWith(color: t.textSecondary)),
+                          ],
+                          if (!isActive && !status.hasProgress) ...[
+                            const SizedBox(height: FitFlowSpace.xs),
+                            Text(programStatusLabel(context, status),
+                                style: text.bodySmall
+                                    ?.copyWith(color: t.textSecondary)),
+                          ],
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: FitFlowSpace.xxs),
+                    ExcludeSemantics(
+                        child: Icon(Icons.chevron_right,
+                            color: t.textSecondary, size: 20)),
+                  ],
                 ),
               ),
             ),
+          ),
+          if (isActive || status.hasProgress) ...[
+            const SizedBox(height: FitFlowSpace.sm),
+            ProgramV2ProgressSummary(
+                status: status, showNext: isActive, compact: true),
+          ],
+          if (onContinue != null) ...[
+            const SizedBox(height: FitFlowSpace.xs),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: FilledButton.icon(
+                onPressed: onContinue,
+                style: FilledButton.styleFrom(
+                  backgroundColor: v.action,
+                  foregroundColor: v.onAction,
+                  minimumSize: const Size(64, 48),
+                ),
+                icon: const Icon(Icons.arrow_forward_rounded),
+                label: Text(context.l10n.trainingProgramContinueLabel),
+              ),
+            ),
+          ],
         ],
       ),
     );
