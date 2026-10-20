@@ -171,7 +171,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-          find.text('Your adaptive workout').evaluate().isNotEmpty ||
+          find.text('Your workout').evaluate().isNotEmpty ||
               find.text('FITFLOW').evaluate().isNotEmpty,
           true);
     });

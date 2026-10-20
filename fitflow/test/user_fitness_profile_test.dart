@@ -164,7 +164,7 @@ void main() {
       );
       await completeOnboardingToHome(tester);
 
-      expect(find.text('Your adaptive workout'), findsOneWidget);
+      expect(find.text('Your workout'), findsOneWidget);
 
       final context = tester.element(find.byType(Scaffold).first);
       final container = ProviderScope.containerOf(context);

@@ -717,7 +717,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeBrand => 'FITFLOW';
 
   @override
-  String get homeTitle => 'Your adaptive workout';
+  String get homeTitle => 'Your workout';
 
   @override
   String get homeToday => 'TODAY’S WORKOUT';
@@ -733,7 +733,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeBuiltForYou => 'Built for you';
 
   @override
-  String get homeSetupHint => 'Your setup and workout preferences';
+  String get homeSetupHint => 'Workout details & preferences';
 
   @override
   String get homeAdaptationDetail =>

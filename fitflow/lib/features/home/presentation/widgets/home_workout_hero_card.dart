@@ -45,13 +45,12 @@ class HomeWorkoutHeroCard extends StatelessWidget {
     final introduction = Padding(
       padding: const EdgeInsets.all(FitFlowSpace.md),
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        Text(l.homeToday, style: text.labelMedium?.copyWith(color: v.action)),
-        const SizedBox(height: FitFlowSpace.xxs),
         Semantics(
             header: true,
             child: Text(l.homeSession,
-                style: text.titleLarge?.copyWith(color: v.onHero))),
-        const SizedBox(height: FitFlowSpace.sm),
+                style: text.titleLarge
+                    ?.copyWith(color: v.onHero, fontWeight: FontWeight.w500))),
+        const SizedBox(height: FitFlowSpace.xs),
         Wrap(
             spacing: FitFlowSpace.md,
             runSpacing: FitFlowSpace.xxs,
@@ -60,13 +59,16 @@ class HomeWorkoutHeroCard extends StatelessWidget {
               Text('$minutes ${l.v2HomeTargetUnit}',
                   key: const Key('home_target'),
                   semanticsLabel: l.homeDurationTarget(minutes),
-                  style: text.titleMedium?.copyWith(color: v.onHero)),
+                  style: text.bodyMedium?.copyWith(color: v.heroSecondary)),
               Text(l.homeExercises(plan.totalExerciseCount),
                   style: text.bodyMedium?.copyWith(color: v.heroSecondary)),
             ]),
-        const SizedBox(height: FitFlowSpace.xxs),
-        Text(planned, style: text.bodySmall?.copyWith(color: v.heroSecondary)),
-        const SizedBox(height: FitFlowSpace.md),
+        if (estimated != Duration(minutes: minutes)) ...[
+          const SizedBox(height: FitFlowSpace.xxs),
+          Text(planned,
+              style: text.bodySmall?.copyWith(color: v.heroSecondary)),
+        ],
+        const SizedBox(height: FitFlowSpace.sm),
         FitFlowPrimaryButton(
             label: l.viewWorkout,
             icon: Icons.arrow_forward_rounded,
@@ -74,7 +76,11 @@ class HomeWorkoutHeroCard extends StatelessWidget {
             style: FilledButton.styleFrom(
                 backgroundColor: v.action,
                 foregroundColor: v.onAction,
-                minimumSize: const Size(64, 56),
+                textStyle:
+                    text.labelLarge?.copyWith(fontWeight: FontWeight.w500),
+                minimumSize: const Size(64, 52),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: FitFlowSpace.md, vertical: FitFlowSpace.sm),
                 overlayColor: v.onAction.withValues(alpha: .12)),
             onPressed: () => context.push(AppRoutes.workoutPreview),
             expand: true),
@@ -87,13 +93,6 @@ class HomeWorkoutHeroCard extends StatelessWidget {
         height: width * 3 / 4,
         decorative: false,
         semanticLabel: featured.name);
-    Widget count(String label, int value) => Semantics(
-        label: '$label: $value',
-        excludeSemantics: true,
-        child: Text.rich(TextSpan(children: [
-          TextSpan(text: '$value ', style: text.titleSmall),
-          TextSpan(text: label, style: text.bodySmall),
-        ])));
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       DecoratedBox(
           decoration: BoxDecoration(
@@ -116,14 +115,6 @@ class HomeWorkoutHeroCard extends StatelessWidget {
           })),
       const SizedBox(height: FitFlowSpace.sm),
       const HomeSessionModeControl(),
-      const SizedBox(height: FitFlowSpace.sm),
-      Wrap(spacing: FitFlowSpace.lg, runSpacing: FitFlowSpace.xs, children: [
-        count(l.homeWarmup, plan.warmup.exerciseCount),
-        count(l.homeMain, plan.main.exerciseCount),
-        count(l.homeCooldown, plan.cooldown.exerciseCount),
-      ]),
-      const SizedBox(height: FitFlowSpace.xs),
-      Text(l.homeAdaptation, style: text.bodySmall),
     ]);
   }
 }

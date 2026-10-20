@@ -128,15 +128,20 @@ void main() {
     });
 
     testWidgets('shows Adjust control', (tester) async {
-      final overrides = [
-        userFitnessProfileProvider.overrideWith(() => FakeUserProfileController(createUserProfile())),
-        capabilityProfileProvider.overrideWith(() => FakeCapabilityController(createFullProfile(CapabilityLevel.level3))),
-        workoutHistoryProvider.overrideWith(() => FakeHistoryController([])),
-      ];
-      await tester.pumpWidget(buildHome(overrides: overrides));
-      await tester.pumpAndSettle();
-      expect(find.text('Workout mode'), findsWidgets);
-      expect(find.text('Adjust'), findsOneWidget);
+      final semantics = tester.ensureSemantics();
+      try {
+        final overrides = [
+          userFitnessProfileProvider.overrideWith(() => FakeUserProfileController(createUserProfile())),
+          capabilityProfileProvider.overrideWith(() => FakeCapabilityController(createFullProfile(CapabilityLevel.level3))),
+          workoutHistoryProvider.overrideWith(() => FakeHistoryController([])),
+        ];
+        await tester.pumpWidget(buildHome(overrides: overrides));
+        await tester.pumpAndSettle();
+        expect(find.bySemanticsLabel(RegExp('Workout mode')), findsOneWidget);
+        expect(find.text('Adjust'), findsOneWidget);
+      } finally {
+        semantics.dispose();
+      }
     });
 
     testWidgets('tapping Adjust opens bottom sheet with options', (tester) async {

@@ -1333,7 +1333,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeTitle.
   ///
   /// In en, this message translates to:
-  /// **'Your adaptive workout'**
+  /// **'Your workout'**
   String get homeTitle;
 
   /// No description provided for @homeToday.
@@ -1363,7 +1363,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeSetupHint.
   ///
   /// In en, this message translates to:
-  /// **'Your setup and workout preferences'**
+  /// **'Workout details & preferences'**
   String get homeSetupHint;
 
   /// No description provided for @homeAdaptationDetail.

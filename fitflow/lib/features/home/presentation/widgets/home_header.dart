@@ -11,12 +11,17 @@ class HomeHeader extends StatelessWidget {
         children: [
           Text(context.l10n.homeBrand,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: FitFlowTheme.of(context).brand, letterSpacing: 1.2)),
+                  color: FitFlowTheme.of(context).brand,
+                  fontWeight: FontWeight.w500,
+                  letterSpacing: .8)),
           const SizedBox(height: FitFlowSpace.xs),
           Semantics(
               header: true,
               child: Text(context.l10n.homeTitle,
-                  style: Theme.of(context).textTheme.titleLarge)),
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(fontSize: 21, fontWeight: FontWeight.w500))),
         ],
       );
 }

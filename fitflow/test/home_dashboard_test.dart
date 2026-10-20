@@ -184,17 +184,23 @@ void main() {
 
       // Header
       expect(find.text('FITFLOW'), findsOneWidget);
-      expect(find.text('Your adaptive workout'), findsOneWidget);
-      expect(find.text('Built around your goal, space, equipment, and current ability.'), findsOneWidget);
+      expect(find.text('Your workout'), findsOneWidget);
+      expect(find.text('Built around your goal, space, equipment, and current ability.'), findsNothing);
 
       // Hero card should appear
-      expect(find.textContaining("TODAY’S WORKOUT"), findsOneWidget);
+      expect(find.textContaining("TODAY’S WORKOUT"), findsNothing);
       expect(find.text('Adaptive Full Session'), findsOneWidget);
 
       // Target duration from user profile
       expect(find.textContaining('20 min target'), findsOneWidget);
 
-      // Section summary appears
+      // Supporting data is initially collapsed, then available in one disclosure.
+      expect(find.textContaining(' Warm-up'), findsNothing);
+      expect(find.text('Built for you'), findsNothing);
+      await tester.ensureVisible(find.text('Workout details & preferences'));
+      await tester.tap(find.text('Workout details & preferences'));
+      await tester.pumpAndSettle();
+      expect(find.text('Built around your goal, space, equipment, and current ability.'), findsOneWidget);
       expect(find.textContaining(' Warm-up'), findsOneWidget);
       expect(find.textContaining(' Main'), findsOneWidget);
       expect(find.textContaining(' Cooldown'), findsOneWidget);
@@ -227,8 +233,8 @@ void main() {
 
       await tester.pumpWidget(buildHomeScreen(overrides: overrides));
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('Your setup and workout preferences'));
-      await tester.tap(find.text('Your setup and workout preferences'));
+      await tester.ensureVisible(find.text('Workout details & preferences'));
+      await tester.tap(find.text('Workout details & preferences'));
       await tester.pumpAndSettle();
 
       expect(find.text('Built for you'), findsOneWidget);
@@ -256,8 +262,8 @@ void main() {
 
       await tester.pumpWidget(buildHomeScreen(overrides: overrides));
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('Your setup and workout preferences'));
-      await tester.tap(find.text('Your setup and workout preferences'));
+      await tester.ensureVisible(find.text('Workout details & preferences'));
+      await tester.tap(find.text('Workout details & preferences'));
       await tester.pumpAndSettle();
       expect(find.text('No equipment'), findsOneWidget);
       expect(find.textContaining('None, No equipment'), findsNothing);
@@ -280,8 +286,8 @@ void main() {
 
       await tester.pumpWidget(buildHomeScreen(overrides: overrides));
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('Your setup and workout preferences'));
-      await tester.tap(find.text('Your setup and workout preferences'));
+      await tester.ensureVisible(find.text('Workout details & preferences'));
+      await tester.tap(find.text('Workout details & preferences'));
       await tester.pumpAndSettle();
       expect(find.textContaining('Dumbbells'), findsOneWidget);
       expect(find.textContaining('Exercise mat'), findsOneWidget);
@@ -302,8 +308,8 @@ void main() {
 
       await tester.pumpWidget(buildHomeScreen(overrides: overrides));
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('Your setup and workout preferences'));
-      await tester.tap(find.text('Your setup and workout preferences'));
+      await tester.ensureVisible(find.text('Workout details & preferences'));
+      await tester.tap(find.text('Workout details & preferences'));
       await tester.pumpAndSettle();
       expect(find.text('No special restrictions'), findsOneWidget);
     });
@@ -323,8 +329,8 @@ void main() {
 
       await tester.pumpWidget(buildHomeScreen(overrides: overrides));
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('Your setup and workout preferences'));
-      await tester.tap(find.text('Your setup and workout preferences'));
+      await tester.ensureVisible(find.text('Workout details & preferences'));
+      await tester.tap(find.text('Workout details & preferences'));
       await tester.pumpAndSettle();
       expect(find.textContaining('Standing only'), findsOneWidget);
     });
@@ -361,6 +367,9 @@ void main() {
       // Verify dashboard shows same total exercise count as expected plan
       expect(find.textContaining('${expectedPlan!.totalExerciseCount} exercises'), findsOneWidget);
       // Verify section counts match
+      await tester.ensureVisible(find.text('Workout details & preferences'));
+      await tester.tap(find.text('Workout details & preferences'));
+      await tester.pumpAndSettle();
       expect(find.text('${expectedPlan.warmup.exerciseCount} Warm-up'), findsOneWidget);
       expect(find.text('${expectedPlan.main.exerciseCount} Main'), findsOneWidget);
       expect(find.text('${expectedPlan.cooldown.exerciseCount} Cooldown'), findsOneWidget);

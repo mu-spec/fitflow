@@ -165,7 +165,7 @@ void main() {
       await tester.pumpWidget(buildWithRouter(overrides: overrides, router: router));
       await tester.pumpAndSettle();
 
-      expect(find.text('Your adaptive workout'), findsOneWidget);
+      expect(find.text('Your workout'), findsOneWidget);
       expect(find.text('View workout'), findsOneWidget);
 
       await tester.tap(find.text('View workout'));
@@ -186,7 +186,7 @@ void main() {
       }
       await tester.pumpAndSettle();
 
-      expect(find.text('Your adaptive workout'), findsOneWidget);
+      expect(find.text('Your workout'), findsOneWidget);
     });
   });
 

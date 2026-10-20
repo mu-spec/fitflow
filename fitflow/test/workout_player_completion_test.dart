@@ -348,8 +348,8 @@ void main() {
       await tester.pump(const Duration(seconds: 2));
       await tester.pumpAndSettle();
 
-      // Should be back on home, which shows "Your adaptive workout" or "FITFLOW"
-      expect(find.text('Your adaptive workout').evaluate().isNotEmpty || find.text('FITFLOW').evaluate().isNotEmpty, true);
+      // Should be back on home, which shows "Your workout" or "FITFLOW"
+      expect(find.text('Your workout').evaluate().isNotEmpty || find.text('FITFLOW').evaluate().isNotEmpty, true);
     });
   });
 }

@@ -3,14 +3,12 @@ import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/core/design/fitflow_motion.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
-import 'package:fitflow/core/design/widgets/fitflow_buttons.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/home/presentation/widgets/home_empty_states.dart';
 import 'package:fitflow/features/home/presentation/widgets/home_error_state.dart';
 import 'package:fitflow/features/home/presentation/widgets/home_header.dart';
 import 'package:fitflow/features/home/presentation/widgets/home_loading_state.dart';
-import 'package:fitflow/features/home/presentation/widgets/home_movement_focus.dart';
 import 'package:fitflow/features/home/presentation/widgets/home_personalization_card.dart';
 import 'package:fitflow/features/home/presentation/widgets/home_session_mode_widgets.dart';
 import 'package:fitflow/features/home/presentation/widgets/home_workout_hero_card.dart';
@@ -142,20 +140,22 @@ class HomeScreen extends ConsumerWidget {
                     const SizedBox(height: FitFlowSpace.lg),
                     const ComebackSuggestionCard(),
                   ],
-                  if (plan != null) ...[
-                    const SizedBox(height: FitFlowSpace.xl),
-                    HomeMovementFocus(plan: plan),
-                  ],
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: FitFlowSpace.sm),
                     child: Divider(),
                   ),
-                  HomePersonalizationCard(userProfile: userProfile),
+                  HomePersonalizationCard(userProfile: userProfile, plan: plan),
                   const SizedBox(height: FitFlowSpace.xs),
                   Align(
                       alignment: AlignmentDirectional.centerStart,
-                      child: FitFlowTertiaryButton(
-                          label: context.l10n.homeBrowse,
+                      child: TextButton.icon(
+                          style: TextButton.styleFrom(
+                              textStyle: Theme.of(context)
+                                  .textTheme
+                                  .labelLarge
+                                  ?.copyWith(fontWeight: FontWeight.w500)),
+                          icon: const Icon(Icons.arrow_forward_rounded),
+                          label: Text(context.l10n.homeBrowse),
                           onPressed: () =>
                               context.go(AppRoutes.exerciseLibrary))),
                 ]),

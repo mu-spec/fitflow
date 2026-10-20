@@ -142,11 +142,11 @@ void main() {
 
       final ms = await pumpUntil(
         tester,
-        find.text('Your adaptive workout'),
+        find.text('Your workout'),
         maxCumulative: 600,
       );
 
-      expect(find.text('Your adaptive workout'), findsOneWidget,
+      expect(find.text('Your workout'), findsOneWidget,
           reason: 'startup must reach Home within ${ms}ms — the fixed '
               '1500ms delay must be gone');
       expect(ms, lessThan(1500));
@@ -188,13 +188,13 @@ void main() {
         (tester) async {
       await seedBothProfiles();
       await tester.pumpWidget(const ProviderScope(child: FitFlowApp()));
-      await pumpUntil(tester, find.text('Your adaptive workout'));
-      expect(find.text('Your adaptive workout'), findsOneWidget);
+      await pumpUntil(tester, find.text('Your workout'));
+      expect(find.text('Your workout'), findsOneWidget);
 
       // Extra settling time must not re-route or throw.
       await tester.pump(const Duration(milliseconds: 1500));
       await tester.pump(const Duration(milliseconds: 1500));
-      expect(find.text('Your adaptive workout'), findsOneWidget);
+      expect(find.text('Your workout'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   });
@@ -222,7 +222,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
       expect(find.text('FitFlow'), findsWidgets);
       expect(find.text('Movement Check'), findsNothing);
-      expect(find.text('Your adaptive workout'), findsNothing);
+      expect(find.text('Your workout'), findsNothing);
 
       // Capability resolves (missing) -> assessment, proving both loads were
       // awaited concurrently and routing happened as soon as both completed.

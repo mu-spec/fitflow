@@ -32,9 +32,8 @@ class HomeSessionModeControl extends ConsumerWidget {
       Expanded(
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(context.l10n.homeMode,
-            style: text.bodySmall?.copyWith(color: secondary)),
         Semantics(
+            label: context.l10n.homeMode,
             liveRegion: true,
             child: TweenAnimationBuilder<double>(
               key: ValueKey(mode),
@@ -44,7 +43,8 @@ class HomeSessionModeControl extends ConsumerWidget {
               builder: (_, value, child) =>
                   Opacity(opacity: value, child: child),
               child: Text(sessionModeLabel(context.l10n, mode),
-                  style: text.titleSmall?.copyWith(color: ink)),
+                  style: text.bodyMedium
+                      ?.copyWith(color: ink, fontWeight: FontWeight.w500)),
             )),
         if (mode != WorkoutSessionMode.standard)
           Text(context.l10n.homeTemporary,
@@ -52,7 +52,9 @@ class HomeSessionModeControl extends ConsumerWidget {
       ])),
     ]);
     final adjust = TextButton(
-        style: TextButton.styleFrom(foregroundColor: accent),
+        style: TextButton.styleFrom(
+            foregroundColor: accent,
+            textStyle: text.labelLarge?.copyWith(fontWeight: FontWeight.w500)),
         onPressed: () => FitFlowSheet.show<void>(context,
             child: const ChooseWorkoutModeSheet()),
         child: Text(context.l10n.homeAdjust));

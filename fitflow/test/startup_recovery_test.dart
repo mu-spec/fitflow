@@ -67,7 +67,7 @@ void main() {
     expect(find.text(SplashScreen.recoveryAction), findsOneWidget);
     expect(find.text('Welcome to FitFlow'), findsNothing);
     expect(find.text('Movement Check'), findsNothing);
-    expect(find.text('Your adaptive workout'), findsNothing);
+    expect(find.text('Your workout'), findsNothing);
     expect(await snapshot(), before);
     expect(tester.takeException(), isNull);
   });
@@ -92,13 +92,13 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
     expect(find.text(SplashScreen.recoveryTitle), findsOneWidget);
-    expect(find.text('Your adaptive workout'), findsNothing);
+    expect(find.text('Your workout'), findsNothing);
 
     await tester.tap(find.text(SplashScreen.recoveryAction));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
 
-    expect(find.text('Your adaptive workout'), findsOneWidget);
+    expect(find.text('Your workout'), findsOneWidget);
     expect(find.text(SplashScreen.recoveryTitle), findsNothing);
     expect(_FlakyProfileController.loads, greaterThanOrEqualTo(2));
     expect(_ReadingCapabilityController.loads, greaterThanOrEqualTo(2));
@@ -140,7 +140,7 @@ void main() {
     _GatedProfileController.gate.complete(userProfile);
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 100));
-    expect(find.text('Your adaptive workout'), findsOneWidget);
+    expect(find.text('Your workout'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -171,7 +171,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200));
 
     expect(find.text('gone'), findsOneWidget);
-    expect(find.text('Your adaptive workout'), findsNothing);
+    expect(find.text('Your workout'), findsNothing);
     expect(tester.takeException(), isNull);
   });
 
