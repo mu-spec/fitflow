@@ -156,6 +156,7 @@ void main() {
     bool reduced = true,
     Size? size,
     bool activeProgram = false,
+    String activeProgramId = 'balanced_foundations',
     bool custom = false,
   }) async {
     await tester.pumpWidget(const SizedBox.shrink());
@@ -165,8 +166,11 @@ void main() {
     }
     final prefs = <String, Object>{};
     if (activeProgram) {
-      prefs[AdaptiveProgramsStorage.key] =
-          AdaptiveProgramsStorage.encode(activeState());
+      prefs[AdaptiveProgramsStorage.key] = AdaptiveProgramsStorage.encode(
+          activeState(
+              programId: activeProgramId,
+              done:
+                  activeProgramId == 'balanced_foundations' ? null : const []));
     }
     SharedPreferences.setMockInitialValues(prefs);
     if (custom) {
@@ -278,7 +282,11 @@ void main() {
           findsOneWidget);
       expect(
           find.descendant(of: card, matching: find.byType(FitFlowV2FeatureArt)),
-          findsOneWidget);
+          findsNothing);
+      final cover = tester.widget<FitFlowProgramImage>(find.descendant(
+          of: card, matching: find.byType(FitFlowProgramImage)));
+      expect(cover.programId, 'balanced_foundations');
+      expect(cover.width / cover.height, closeTo(4 / 3, .001));
 
       // Continuation sits above the Programs discovery feature.
       final activeY = tester.getCenter(card).dy;
@@ -294,6 +302,30 @@ void main() {
       await pumpHub(tester, activeProgram: false, custom: true);
       expect(find.text('Active program'), findsNothing);
       expect(find.byType(FitFlowV2HeroSurface), findsNothing);
+    });
+
+    testWidgets(
+        'active cover follows every canonical ID without changing state',
+        (tester) async {
+      for (final dark in [false, true]) {
+        for (final entry in ProgramMediaRegistry.entries) {
+          await pumpHub(tester,
+              activeProgram: true,
+              activeProgramId: entry.programId,
+              dark: dark,
+              scale: 2,
+              size: const Size(320, 700));
+          final photo = tester.widget<FitFlowProgramImage>(find.descendant(
+              of: find.byType(ActiveProgramCard),
+              matching: find.byType(FitFlowProgramImage)));
+          expect(photo.programId, entry.programId);
+          expect(photo.width / photo.height, closeTo(4 / 3, .001));
+          final saved = await const AdaptiveProgramsStorage().load();
+          expect(saved.activeProgramId, entry.programId);
+          expect(find.text('Continue'), findsOneWidget);
+          expect(tester.takeException(), isNull);
+        }
+      }
     });
 
     testWidgets('complete program keeps factual completion and detail route',
@@ -390,26 +422,15 @@ void main() {
 
     testWidgets('artwork is decorative-only across the hub', (tester) async {
       await pumpHub(tester, activeProgram: true, custom: true);
-      final arts = find.byType(FitFlowV2FeatureArt);
-      expect(arts, findsOneWidget); // Unchanged active-program continuation.
-      expect(
-          tester
-              .widget<FitFlowProgramImage>(find.byType(FitFlowProgramImage))
-              .decorative,
-          isTrue);
+      expect(find.byType(FitFlowV2FeatureArt), findsNothing);
+      final photos = tester
+          .widgetList<FitFlowProgramImage>(find.byType(FitFlowProgramImage));
+      expect(photos, hasLength(2));
+      expect(photos.every((photo) => photo.decorative), isTrue);
       final exercisePhoto = tester
           .widget<FitFlowExerciseImage>(find.byType(FitFlowExerciseImage));
       expect(exercisePhoto.exerciseId, 'squat_bodyweight');
       expect(exercisePhoto.decorative, isTrue);
-      for (final element in arts.evaluate()) {
-        expect(
-          find.descendant(
-              of: find.byWidget(element.widget),
-              matching: find.byType(ExcludeSemantics)),
-          findsOneWidget,
-          reason: '${element.widget.runtimeType} must stay decoration-only',
-        );
-      }
       // Status is never image/color alone: active state is text-labelled.
       expect(find.text('4 of 12 sessions'), findsOneWidget);
     });
@@ -579,8 +600,8 @@ void main() {
             expect(find.text('Your workouts'), findsOneWidget);
             expect(find.text('Programs'), findsOneWidget);
             expect(find.text('Custom workouts'), findsOneWidget);
-            expect(find.byType(FitFlowProgramImage), findsOneWidget,
-                reason: 'one compact programs collection entry');
+            expect(find.byType(FitFlowProgramImage), findsNWidgets(2),
+                reason: 'active program cover and compact collection entry');
             expect(find.text('Active program'), findsOneWidget);
             expect(find.text('TEST Step Three Lift'), findsOneWidget);
             expect(find.byIcon(Icons.fitness_center_outlined), findsWidgets);

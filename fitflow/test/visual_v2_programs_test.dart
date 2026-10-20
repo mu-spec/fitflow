@@ -25,6 +25,7 @@ import 'package:fitflow/features/programs/presentation/program_session_preview_s
 import 'package:fitflow/features/programs/presentation/programs_overview_screen.dart';
 import 'package:fitflow/features/programs/presentation/widgets/program_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -282,6 +283,41 @@ void main() {
       }
       expect(find.text('Active program'), findsNothing);
       expect(find.text('Continue'), findsNothing);
+    });
+
+    testWidgets('Balanced schedule wraps fully below focus without clipping',
+        (tester) async {
+      for (final width in [320.0, 360.0]) {
+        for (final scale in [1.0, 2.0]) {
+          for (final dark in [false, true]) {
+            await pumpPrograms(tester,
+                size: Size(width, 700), scale: scale, dark: dark);
+            final row = cardFor(balanced.id);
+            final schedule = find.descendant(
+                of: row, matching: find.byType(ProgramStructureLine));
+            final copy =
+                find.descendant(of: schedule, matching: find.byType(Text));
+            final paragraph = tester.renderObject<RenderParagraph>(copy);
+            expect(tester.widget<Text>(copy).data,
+                '4 weeks \u2022 3 sessions/week \u2022 12 workouts');
+            expect(paragraph.didExceedMaxLines, isFalse);
+            expect(
+                tester.getTopLeft(schedule).dy,
+                greaterThan(
+                    tester.getBottomLeft(find.text(balanced.focus)).dy));
+            expect(tester.getBottomRight(schedule).dy,
+                lessThan(tester.getBottomRight(row).dy));
+            expect(tester.getBottomRight(schedule).dx,
+                lessThanOrEqualTo(tester.getBottomRight(row).dx));
+            await programScrollTo(tester, schedule);
+            expect(
+                tester.getTopLeft(schedule).dy,
+                greaterThanOrEqualTo(
+                    tester.getBottomLeft(find.byType(AppBar)).dy));
+            expect(tester.takeException(), isNull);
+          }
+        }
+      }
     });
 
     testWidgets('active program leads once and Continue uses the real next ID',

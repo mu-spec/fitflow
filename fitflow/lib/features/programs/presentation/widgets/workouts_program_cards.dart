@@ -1,6 +1,6 @@
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
-import 'package:fitflow/core/design/widgets/fitflow_v2_feature_art.dart';
+import 'package:fitflow/core/design/media/fitflow_program_image.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/app/router/app_routes.dart';
@@ -121,7 +121,7 @@ class RecommendedProgramCard extends ConsumerWidget {
 
 /// Active program card (Visual V2): same factual completion, next planned
 /// session and exact navigation as before — promoted to first-class emphasis
-/// on the V2 hero surface, with decorative programs artwork that yields to
+/// on the V2 hero surface, with the registered active-program cover that yields to
 /// large text. Renders nothing when no program is active.
 class ActiveProgramCard extends ConsumerWidget {
   const ActiveProgramCard({super.key});
@@ -193,9 +193,12 @@ class ActiveProgramCard extends ConsumerWidget {
                   SizedBox(
                     width: artSize,
                     height: artSize,
-                    child: const FitFlowV2FeatureArt(
-                      kind: FitFlowV2FeatureArtKind.programs,
-                      onHero: true,
+                    child: Center(
+                      child: FitFlowProgramImage(
+                        programId: def.id,
+                        width: artSize,
+                        height: artSize * 3 / 4,
+                      ),
                     ),
                   ),
                 ],
