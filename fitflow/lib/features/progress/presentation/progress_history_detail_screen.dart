@@ -1,6 +1,7 @@
+import 'package:fitflow/core/design/media/exercise_media_registry.dart';
+import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
 import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
-import 'package:fitflow/core/design/fitflow_radius.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
@@ -38,7 +39,12 @@ class ProgressHistoryDetailScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: visual.page,
       appBar: AppBar(
-        title: Text(context.l10n.workoutDetail),
+        title: Text(context.l10n.workoutDetail,
+            style: Theme.of(context)
+                .textTheme
+                .titleMedium
+                ?.copyWith(fontWeight: FontWeight.w500)),
+        scrolledUnderElevation: 0,
         backgroundColor: visual.page,
         surfaceTintColor: Colors.transparent,
       ),
@@ -87,20 +93,9 @@ class ProgressHistoryDetailScreen extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ExcludeSemantics(
-                          child: Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: visual.tint,
-                              borderRadius: FitFlowRadius.mediumBorder,
-                            ),
-                            child: Icon(
-                              Icons.check_circle_outline_rounded,
-                              color: FitFlowTheme.of(context).brand,
-                              size: 24,
-                            ),
-                          ),
-                        ),
+                            child: Icon(Icons.check_circle_outline_rounded,
+                                color: FitFlowTheme.of(context).brand,
+                                size: 28)),
                         const SizedBox(width: FitFlowSpace.md),
                         Expanded(
                           child: Column(
@@ -112,14 +107,14 @@ class ProgressHistoryDetailScreen extends ConsumerWidget {
                                   context.l10n.trainingHistoryCompleted,
                                   style: Theme.of(context)
                                       .textTheme
-                                      .titleLarge
-                                      ?.copyWith(fontWeight: FontWeight.w700),
+                                      .titleMedium
+                                      ?.copyWith(fontWeight: FontWeight.w500),
                                 ),
                               ),
                               const SizedBox(height: FitFlowSpace.xs),
                               Text(
                                 _formatDateTime(context, workout.completedAt),
-                                style: Theme.of(context).textTheme.bodyLarge,
+                                style: Theme.of(context).textTheme.bodyMedium,
                               ),
                             ],
                           ),
@@ -127,49 +122,46 @@ class ProgressHistoryDetailScreen extends ConsumerWidget {
                       ],
                     ),
                     const SizedBox(height: FitFlowSpace.xl),
-                    FitFlowV2InfoSurface(
-                      padding: const EdgeInsets.all(FitFlowSpace.md),
-                      child: Column(
-                        children: [
-                          _DetailRow(
-                            label: context.l10n.trainingPlannedDuration,
-                            value: _formatDuration(
-                              context,
-                              workout.targetDuration,
-                            ),
+                    Column(
+                      children: [
+                        _DetailRow(
+                          label: context.l10n.trainingPlannedDuration,
+                          value: _formatDuration(
+                            context,
+                            workout.targetDuration,
                           ),
-                          const Divider(height: FitFlowSpace.md),
-                          _DetailRow(
-                            label: context.l10n.trainingEstimatedDuration,
-                            value: _formatDuration(
-                              context,
-                              workout.estimatedDuration,
-                            ),
+                        ),
+                        const Divider(height: FitFlowSpace.md),
+                        _DetailRow(
+                          label: context.l10n.trainingEstimatedDuration,
+                          value: _formatDuration(
+                            context,
+                            workout.estimatedDuration,
                           ),
-                          const Divider(height: FitFlowSpace.md),
-                          _DetailRow(
-                            label: context.l10n.trainingTotalExercises,
-                            value: '${workout.totalExerciseCount}',
-                          ),
-                          const Divider(height: FitFlowSpace.md),
-                          _DetailRow(
-                            label: context.l10n.trainingTotalSets,
-                            value: '${workout.totalSetCount}',
-                          ),
-                        ],
-                      ),
+                        ),
+                        const Divider(height: FitFlowSpace.md),
+                        _DetailRow(
+                          label: context.l10n.trainingTotalExercises,
+                          value: '${workout.totalExerciseCount}',
+                        ),
+                        const Divider(height: FitFlowSpace.md),
+                        _DetailRow(
+                          label: context.l10n.trainingTotalSets,
+                          value: '${workout.totalSetCount}',
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: FitFlowSpace.section),
+                    const SizedBox(height: FitFlowSpace.lg),
                     _SectionBlock(
                       title: context.l10n.flowWarmup,
                       exercises: workout.warmup,
                     ),
-                    const SizedBox(height: FitFlowSpace.section),
+                    const SizedBox(height: FitFlowSpace.lg),
                     _SectionBlock(
                       title: context.l10n.flowMain,
                       exercises: workout.main,
                     ),
-                    const SizedBox(height: FitFlowSpace.section),
+                    const SizedBox(height: FitFlowSpace.lg),
                     _SectionBlock(
                       title: context.l10n.flowCooldown,
                       exercises: workout.cooldown,
@@ -264,7 +256,7 @@ class _DetailRow extends StatelessWidget {
               value,
               textAlign: TextAlign.end,
               style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
@@ -293,37 +285,34 @@ class _SectionBlock extends StatelessWidget {
           child: Text(
             title,
             style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ),
         const SizedBox(height: FitFlowSpace.sm),
-        FitFlowV2InfoSurface(
-          padding: EdgeInsets.zero,
-          child: exercises.isEmpty
-              ? Padding(
-                  padding: const EdgeInsets.all(FitFlowSpace.md),
-                  child: Text(
-                    context.l10n.trainingNoExercises,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colors.textSecondary,
-                    ),
+        exercises.isEmpty
+            ? Padding(
+                padding: const EdgeInsets.all(FitFlowSpace.md),
+                child: Text(
+                  context.l10n.trainingNoExercises,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colors.textSecondary,
                   ),
-                )
-              : Column(
-                  children: [
-                    for (var i = 0; i < exercises.length; i++) ...[
-                      _ExerciseRecord(exercise: exercises[i]),
-                      if (i < exercises.length - 1)
-                        const Divider(
-                          height: 1,
-                          indent: FitFlowSpace.md,
-                          endIndent: FitFlowSpace.md,
-                        ),
-                    ],
-                  ],
                 ),
-        ),
+              )
+            : Column(
+                children: [
+                  for (var i = 0; i < exercises.length; i++) ...[
+                    _ExerciseRecord(exercise: exercises[i]),
+                    if (i < exercises.length - 1)
+                      const Divider(
+                        height: 1,
+                        indent: FitFlowSpace.md,
+                        endIndent: FitFlowSpace.md,
+                      ),
+                  ],
+                ],
+              ),
       ],
     );
   }
@@ -355,41 +344,55 @@ class _ExerciseRecord extends StatelessWidget {
         : movementPatternLabel(l, exercise.movementPattern!);
 
     return Padding(
-      padding: const EdgeInsets.all(FitFlowSpace.md),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            exercise.exerciseName,
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w600,
+      padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.sm),
+      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        if (ExerciseMediaRegistry.lookup(exercise.exerciseId) != null)
+          FitFlowExerciseImage.thumbnail(
+              exerciseId: exercise.exerciseId, width: 64, height: 64)
+        else
+          ExcludeSemantics(
+              child: SizedBox(
+                  width: 64,
+                  height: 64,
+                  child: Icon(Icons.fitness_center_outlined,
+                      color: colors.textSecondary, size: 24))),
+        const SizedBox(width: FitFlowSpace.sm),
+        Expanded(
+            child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              exercise.exerciseName,
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          ),
-          const SizedBox(height: FitFlowSpace.xxs),
-          Text(
-            '$movementLabel • ${trainingDifficultyLabel(l, exercise.difficulty)}',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colors.textSecondary,
+            const SizedBox(height: FitFlowSpace.xxs),
+            Text(
+              '$movementLabel • ${trainingDifficultyLabel(l, exercise.difficulty)}',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colors.textSecondary,
+              ),
             ),
-          ),
-          const SizedBox(height: FitFlowSpace.xs),
-          Text(
-            workload,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w600,
+            const SizedBox(height: FitFlowSpace.xs),
+            Text(
+              workload,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          ),
-          const SizedBox(height: FitFlowSpace.xxs),
-          Text(
-            l.trainingRest(
-              FitFlowLocaleFormat.formatDuration(l, exercise.restBetweenSets),
+            const SizedBox(height: FitFlowSpace.xxs),
+            Text(
+              l.trainingRest(
+                FitFlowLocaleFormat.formatDuration(l, exercise.restBetweenSets),
+              ),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colors.textSecondary,
+              ),
             ),
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: colors.textSecondary,
-            ),
-          ),
-        ],
-      ),
+          ],
+        )),
+      ]),
     );
   }
 }

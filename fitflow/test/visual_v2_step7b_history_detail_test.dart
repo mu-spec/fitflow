@@ -1,3 +1,4 @@
+import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
 import 'package:fitflow/app/config/app_theme.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/progress/presentation/progress_history_detail_screen.dart';
@@ -267,6 +268,57 @@ void main() {
       } finally {
         semantics.dispose();
       }
+    });
+
+    testWidgets(
+        'registered IDs select photos without replacing historical facts',
+        (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final workout = _storedWorkout(main: [
+        _exercise(
+            id: 'squat_chair',
+            name: 'Historical squat name',
+            movementPattern: null,
+            sectionType: WorkoutSectionType.main,
+            sets: 3,
+            repsPerSet: 7,
+            workDuration: null,
+            restBetweenSets: const Duration(seconds: 17),
+            difficulty: ExerciseDifficulty.level2),
+      ]);
+      await _saveHistory([workout]);
+      tester.view.physicalSize = const Size(320, 700);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpWidget(
+          _detailApp(workout.id, theme: AppTheme.dark, textScale: 2));
+      await tester.pumpAndSettle();
+      final photos = tester
+          .widgetList<FitFlowExerciseImage>(find.byType(FitFlowExerciseImage));
+      expect(photos.map((image) => image.exerciseId), ['squat_chair']);
+      expect(photos.single.decorative, isTrue);
+      for (final name in ['Stored March in Place', 'Stored Seated Stretch']) {
+        final row = find
+            .ancestor(of: find.text(name), matching: find.byType(Row))
+            .first;
+        expect(
+            find.descendant(
+                of: row, matching: find.byType(FitFlowExerciseImage)),
+            findsNothing);
+        expect(
+            find.descendant(
+                of: row, matching: find.byIcon(Icons.fitness_center_outlined)),
+            findsOneWidget);
+      }
+      expect(find.text('Historical squat name'), findsOneWidget);
+      expect(find.text('Chair Squat'), findsNothing);
+      expect(find.text(l.trainingWorkloadReps(3, 7)), findsOneWidget);
+      expect(find.text(l.trainingRest(l.seconds(17))), findsOneWidget);
+      expect(
+          find.text('${l.trainingUnclassified} \u2022 ${l.assessmentChoice2}'),
+          findsOneWidget);
+      expect(tester.takeException(), isNull);
     });
 
     testWidgets('null duration fallbacks and not-found state stay unchanged',

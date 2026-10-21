@@ -1,10 +1,6 @@
-import 'package:fitflow/core/design/fitflow_radius.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_theme_extension.dart';
-import 'package:fitflow/core/design/fitflow_visual_v2.dart';
-import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
 import 'package:fitflow/features/progress/domain/training_analytics.dart';
-import 'package:fitflow/features/workouts/presentation/widgets/training_presentation.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/l10n/locale_format.dart';
 import 'package:flutter/material.dart';
@@ -17,43 +13,19 @@ class ProgressOverviewHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = context.l10n;
     final theme = Theme.of(context);
-    final visual = FitFlowVisualV2.of(context);
     final colors = FitFlowTheme.of(context);
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ExcludeSemantics(
-          child: Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: visual.tint,
-              borderRadius: FitFlowRadius.mediumBorder,
-            ),
-            child: Icon(
-              Icons.insights_outlined,
-              color: colors.brand,
-              size: 24,
-            ),
-          ),
-        ),
-        const SizedBox(width: FitFlowSpace.md),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TrainingHeading(l.yourProgress),
-              const SizedBox(height: FitFlowSpace.xxs),
-              Text(
-                l.progressDeviceNote,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colors.textSecondary,
-                ),
-              ),
-            ],
-          ),
-        ),
+        Semantics(
+            header: true,
+            child: Text(l.yourProgress,
+                style: theme.textTheme.titleLarge
+                    ?.copyWith(fontSize: 22, fontWeight: FontWeight.w500))),
+        const SizedBox(height: FitFlowSpace.xs),
+        Text(l.progressDeviceNote,
+            style: theme.textTheme.bodySmall
+                ?.copyWith(color: colors.textSecondary)),
       ],
     );
   }
@@ -89,74 +61,68 @@ class ProgressSummaryCards extends StatelessWidget {
       ),
     ];
 
-    return FitFlowV2InfoSurface(
-      padding: const EdgeInsets.all(FitFlowSpace.lg),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final textScale = MediaQuery.textScalerOf(context).scale(1);
-              final useColumns =
-                  constraints.maxWidth >= 560 && textScale <= 1.25;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final textScale = MediaQuery.textScalerOf(context).scale(1);
+            final useColumns = constraints.maxWidth >= 560 && textScale <= 1.25;
 
-              if (useColumns) {
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    for (var i = 0; i < stats.length; i++) ...[
-                      if (i > 0) const SizedBox(width: FitFlowSpace.md),
-                      Expanded(child: _ProgressMetric(stat: stats[i])),
-                    ],
-                  ],
-                );
-              }
-
-              return Column(
+            if (useColumns) {
+              return Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   for (var i = 0; i < stats.length; i++) ...[
-                    if (i > 0)
-                      const Padding(
-                        padding:
-                            EdgeInsets.symmetric(vertical: FitFlowSpace.md),
-                        child: Divider(height: 1),
-                      ),
-                    _ProgressMetric(stat: stats[i]),
+                    if (i > 0) const SizedBox(width: FitFlowSpace.md),
+                    Expanded(
+                        child: _ProgressMetric(stat: stats[i], stacked: true)),
                   ],
                 ],
               );
-            },
-          ),
-          const SizedBox(height: FitFlowSpace.md),
-          Divider(height: 1, color: colors.divider),
-          const SizedBox(height: FitFlowSpace.md),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ExcludeSemantics(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 1),
-                  child: Icon(
-                    Icons.info_outline_rounded,
-                    size: 18,
-                    color: colors.textSecondary,
-                  ),
+            }
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (var i = 0; i < stats.length; i++) ...[
+                  if (i > 0)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: FitFlowSpace.xs),
+                      child: Divider(height: 1),
+                    ),
+                  _ProgressMetric(stat: stats[i]),
+                ],
+              ],
+            );
+          },
+        ),
+        const SizedBox(height: FitFlowSpace.sm),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ExcludeSemantics(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 1),
+                child: Icon(
+                  Icons.info_outline_rounded,
+                  size: 18,
+                  color: colors.textSecondary,
                 ),
               ),
-              const SizedBox(width: FitFlowSpace.xs),
-              Expanded(
-                child: Text(
-                  l.trainingPlannedNote,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colors.textSecondary,
-                  ),
+            ),
+            const SizedBox(width: FitFlowSpace.xs),
+            Expanded(
+              child: Text(
+                l.trainingPlannedNote,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colors.textSecondary,
                 ),
               ),
-            ],
-          ),
-        ],
-      ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
@@ -169,13 +135,42 @@ class _ProgressSummaryStat {
 }
 
 class _ProgressMetric extends StatelessWidget {
-  const _ProgressMetric({required this.stat});
+  const _ProgressMetric({required this.stat, this.stacked = false});
 
   final _ProgressSummaryStat stat;
+  final bool stacked;
 
   @override
-  Widget build(BuildContext context) => FitFlowStat(
-        label: stat.label,
-        value: stat.value,
-      );
+  Widget build(BuildContext context) {
+    final text = Theme.of(context).textTheme;
+    return Semantics(
+      label: '${stat.label} ${stat.value}',
+      excludeSemantics: true,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.xs),
+        child: stacked
+            ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(stat.value,
+                    style:
+                        text.titleLarge?.copyWith(fontWeight: FontWeight.w500)),
+                const SizedBox(height: FitFlowSpace.xxs),
+                Text(stat.label,
+                    style: text.bodyMedium?.copyWith(
+                        color: FitFlowTheme.of(context).textSecondary)),
+              ])
+            : Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Expanded(
+                    child: Text(stat.label,
+                        style: text.bodyMedium?.copyWith(
+                            color: FitFlowTheme.of(context).textSecondary))),
+                const SizedBox(width: FitFlowSpace.sm),
+                Flexible(
+                    child: Text(stat.value,
+                        textAlign: TextAlign.end,
+                        style: text.titleLarge
+                            ?.copyWith(fontWeight: FontWeight.w500))),
+              ]),
+      ),
+    );
+  }
 }

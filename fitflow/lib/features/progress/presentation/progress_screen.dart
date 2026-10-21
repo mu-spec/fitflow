@@ -1,6 +1,5 @@
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
-import 'package:fitflow/core/design/fitflow_radius.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
@@ -33,120 +32,110 @@ class ProgressScreen extends ConsumerWidget {
     final visual = FitFlowVisualV2.of(context);
 
     return Material(
-      type: MaterialType.transparency,
-      child: ColoredBox(
-        color: visual.page,
-        child: SafeArea(
-          child: historyAsync.when(
-            loading: () => SingleChildScrollView(
+      color: visual.page,
+      child: SafeArea(
+        child: historyAsync.when(
+          loading: () => SingleChildScrollView(
+            padding: const EdgeInsets.all(FitFlowSpace.xl),
+            child: FitFlowLoading(
+              label: context.l10n.trainingHistoryLoading,
+            ),
+          ),
+          error: (e, _) => Center(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.all(FitFlowSpace.xl),
-              child: FitFlowLoading(
-                label: context.l10n.trainingHistoryLoading,
-              ),
-            ),
-            error: (e, _) => Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(FitFlowSpace.xl),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(context.l10n.trainingHistoryError),
-                    TextButton(
-                      onPressed: () =>
-                          ref.read(workoutHistoryProvider.notifier).refresh(),
-                      child: Text(context.l10n.trainingRetry),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            data: (history) {
-              final now = DateTime.now().toUtc();
-              final analytics =
-                  TrainingAnalyticsEngine.calculate(history: history, now: now);
-              final recoveryStatuses = TrainingRecoveryEngine.calculate(
-                history: analytics.validWorkouts,
-                now: now,
-              );
-
-              if (analytics.isEmpty) {
-                return _progressOverviewScroll(
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const ProgressOverviewHeader(),
-                      const SizedBox(height: FitFlowSpace.xl),
-                      FitFlowV2InfoSurface(
-                        tonal: true,
-                        padding: const EdgeInsets.all(FitFlowSpace.xl),
-                        child: const _ProgressEmptyState(),
-                      ),
-                    ],
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(context.l10n.trainingHistoryError),
+                  TextButton(
+                    onPressed: () =>
+                        ref.read(workoutHistoryProvider.notifier).refresh(),
+                    child: Text(context.l10n.trainingRetry),
                   ),
-                );
-              }
+                ],
+              ),
+            ),
+          ),
+          data: (history) {
+            final now = DateTime.now().toUtc();
+            final analytics =
+                TrainingAnalyticsEngine.calculate(history: history, now: now);
+            final recoveryStatuses = TrainingRecoveryEngine.calculate(
+              history: analytics.validWorkouts,
+              now: now,
+            );
 
+            if (analytics.isEmpty) {
               return _progressOverviewScroll(
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     const ProgressOverviewHeader(),
-                    const SizedBox(height: FitFlowSpace.md),
-                    ProgressSummaryCards(analytics: analytics),
-                    const SizedBox(height: FitFlowSpace.xxl),
-                    ProgressRecentWorkouts(
-                      history: analytics.validWorkouts,
-                    ),
-                    const SizedBox(height: FitFlowSpace.section),
-                    FitFlowV2InfoSurface(
-                      padding: EdgeInsets.zero,
-                      child: Column(
-                        children: [
-                          TrainingDisclosure(
-                            title: context.l10n.trainingTrends,
-                            subtitle: context.l10n.trainingTrendsHelp,
-                            children: [
-                              ProgressActivityChart(analytics: analytics),
-                              const SizedBox(height: FitFlowSpace.section),
-                              ProgressPeriodComparison(analytics: analytics),
-                              const SizedBox(height: FitFlowSpace.section),
-                              ProgressConsistency(analytics: analytics),
-                              const SizedBox(height: FitFlowSpace.section),
-                              ProgressMovementTraining(analytics: analytics),
-                            ],
-                          ),
-                          const Divider(
-                            height: 1,
-                            indent: FitFlowSpace.md,
-                            endIndent: FitFlowSpace.md,
-                          ),
-                          TrainingDisclosure(
-                            title: context.l10n.trainingMovementSnapshot,
-                            children: const [ProgressCapabilitySnapshot()],
-                          ),
-                          const Divider(
-                            height: 1,
-                            indent: FitFlowSpace.md,
-                            endIndent: FitFlowSpace.md,
-                          ),
-                          TrainingDisclosure(
-                            title: context.l10n.trainingRecoveryDetails,
-                            children: [
-                              ProgressRecoverySection(
-                                recoveryStatuses: recoveryStatuses,
-                                now: now,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
                     const SizedBox(height: FitFlowSpace.xl),
+                    const _ProgressEmptyState(),
                   ],
                 ),
               );
-            },
-          ),
+            }
+
+            return _progressOverviewScroll(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const ProgressOverviewHeader(),
+                  const SizedBox(height: FitFlowSpace.md),
+                  ProgressSummaryCards(analytics: analytics),
+                  const SizedBox(height: FitFlowSpace.lg),
+                  ProgressRecentWorkouts(
+                    history: analytics.validWorkouts,
+                  ),
+                  const SizedBox(height: FitFlowSpace.section),
+                  Column(
+                    children: [
+                      TrainingDisclosure(
+                        title: context.l10n.trainingTrends,
+                        subtitle: context.l10n.trainingTrendsHelp,
+                        children: [
+                          ProgressActivityChart(analytics: analytics),
+                          const SizedBox(height: FitFlowSpace.section),
+                          ProgressPeriodComparison(analytics: analytics),
+                          const SizedBox(height: FitFlowSpace.section),
+                          ProgressConsistency(analytics: analytics),
+                          const SizedBox(height: FitFlowSpace.section),
+                          ProgressMovementTraining(analytics: analytics),
+                        ],
+                      ),
+                      const Divider(
+                        height: 1,
+                        indent: FitFlowSpace.md,
+                        endIndent: FitFlowSpace.md,
+                      ),
+                      TrainingDisclosure(
+                        title: context.l10n.trainingMovementSnapshot,
+                        children: const [ProgressCapabilitySnapshot()],
+                      ),
+                      const Divider(
+                        height: 1,
+                        indent: FitFlowSpace.md,
+                        endIndent: FitFlowSpace.md,
+                      ),
+                      TrainingDisclosure(
+                        title: context.l10n.trainingRecoveryDetails,
+                        children: [
+                          ProgressRecoverySection(
+                            recoveryStatuses: recoveryStatuses,
+                            now: now,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: FitFlowSpace.xl),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
@@ -172,36 +161,20 @@ class _ProgressEmptyState extends StatelessWidget {
     final l = context.l10n;
     final theme = Theme.of(context);
     final colors = FitFlowTheme.of(context);
-    final visual = FitFlowVisualV2.of(context);
-
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Center(
-          child: ExcludeSemantics(
-            child: Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
-                color: visual.tint,
-                borderRadius: FitFlowRadius.cardBorder,
-              ),
-              child: Icon(
-                Icons.insights_outlined,
-                size: 28,
-                color: colors.brand,
-              ),
-            ),
-          ),
-        ),
+        ExcludeSemantics(
+            child:
+                Icon(Icons.insights_outlined, size: 32, color: colors.brand)),
         const SizedBox(height: FitFlowSpace.md),
         Semantics(
           header: true,
           child: Text(
             l.noCompletedWorkouts,
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w600,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.center,
           ),

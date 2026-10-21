@@ -1,9 +1,6 @@
 import 'package:fitflow/app/router/app_routes.dart';
-import 'package:fitflow/core/design/fitflow_radius.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
-import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/features/workouts/domain/history/completed_workout.dart';
-import 'package:fitflow/features/workouts/presentation/widgets/training_presentation.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/l10n/locale_format.dart';
 import 'package:flutter/material.dart';
@@ -30,48 +27,51 @@ class _ProgressRecentWorkoutsState extends State<ProgressRecentWorkouts> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        TrainingHeading(l.recentWorkouts),
+        Semantics(
+            header: true,
+            child: Text(l.recentWorkouts,
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium
+                    ?.copyWith(fontWeight: FontWeight.w500))),
         const SizedBox(height: FitFlowSpace.sm),
-        FitFlowV2InfoSurface(
-          padding: EdgeInsets.zero,
-          child: Column(
-            children: [
-              for (var i = 0; i < visibleCount; i++) ...[
-                _RecentWorkoutTile(
-                  rowKey: ValueKey<String>(
-                    'progress_recent_workout_${widget.history[i].id}',
-                  ),
-                  workout: widget.history[i],
+        Column(
+          children: [
+            for (var i = 0; i < visibleCount; i++) ...[
+              _RecentWorkoutTile(
+                rowKey: ValueKey<String>(
+                  'progress_recent_workout_${widget.history[i].id}',
                 ),
-                if (i < visibleCount - 1 || widget.history.length > _visible)
-                  const Divider(
-                    height: 1,
-                    indent: 72,
-                    endIndent: FitFlowSpace.md,
-                  ),
-              ],
-              if (widget.history.length > _visible)
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: FitFlowSpace.md,
-                    vertical: FitFlowSpace.xs,
-                  ),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: TextButton(
-                      style: TextButton.styleFrom(
-                        minimumSize: const Size(48, 48),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: FitFlowSpace.sm,
-                        ),
-                      ),
-                      onPressed: () => setState(() => _visible += 10),
-                      child: Text(l.trainingHistoryMore),
-                    ),
-                  ),
+                workout: widget.history[i],
+              ),
+              if (i < visibleCount - 1 || widget.history.length > _visible)
+                const Divider(
+                  height: 1,
+                  indent: 0,
+                  endIndent: FitFlowSpace.md,
                 ),
             ],
-          ),
+            if (widget.history.length > _visible)
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: FitFlowSpace.md,
+                  vertical: FitFlowSpace.xs,
+                ),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      minimumSize: const Size(48, 48),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: FitFlowSpace.sm,
+                      ),
+                    ),
+                    onPressed: () => setState(() => _visible += 10),
+                    child: Text(l.trainingHistoryMore),
+                  ),
+                ),
+              ),
+          ],
         ),
       ],
     );
@@ -92,30 +92,20 @@ class _RecentWorkoutTile extends StatelessWidget {
     return ListTile(
       key: rowKey,
       contentPadding: const EdgeInsets.symmetric(
-        horizontal: FitFlowSpace.md,
+        horizontal: 0,
         vertical: FitFlowSpace.xs,
       ),
       minVerticalPadding: FitFlowSpace.xs,
       leading: ExcludeSemantics(
-        child: SizedBox.square(
-          dimension: 40,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: FitFlowVisualV2.of(context).tint,
-              borderRadius: FitFlowRadius.smallBorder,
-            ),
-            child: Icon(
-              Icons.check_circle_outline_rounded,
-              size: 21,
-              color: theme.colorScheme.primary,
-            ),
-          ),
-        ),
-      ),
+          child: Icon(Icons.check_circle_outline_rounded,
+              size: 24, color: theme.colorScheme.primary)),
       title: Text(
         FitFlowLocaleFormat.formatDateTime(context, workout.completedAt),
-        style: theme.textTheme.titleMedium,
+        style:
+            theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
       ),
+      subtitleTextStyle: theme.textTheme.bodySmall
+          ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
       subtitle: Padding(
         padding: const EdgeInsets.only(top: FitFlowSpace.xs),
         child: Column(

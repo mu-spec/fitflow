@@ -1,3 +1,4 @@
+import 'package:fitflow/features/progress/presentation/widgets/progress_activity_chart.dart';
 import 'package:fitflow/app/config/app_theme.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/progress/presentation/progress_screen.dart';
@@ -346,6 +347,27 @@ void main() {
       await tester.tap(trends);
       await tester.pump();
       expect(find.text('8-week activity'), findsOneWidget);
+      final chart = find.byType(ProgressActivityChart);
+      final bars = find.descendant(
+          of: chart, matching: find.byType(LinearProgressIndicator));
+      expect(
+          tester
+              .widgetList<LinearProgressIndicator>(bars)
+              .map((bar) => bar.value),
+          contains(1.0));
+      final sets = find.descendant(
+          of: chart, matching: find.widgetWithText(ChoiceChip, l.trainingSets));
+      await tester.ensureVisible(sets);
+      await tester.tap(sets);
+      await tester.pumpAndSettle();
+      expect(tester.widget<ChoiceChip>(sets).selected, isTrue);
+      // This record has no main exercise snapshots: session counts must not
+      // become fabricated main-set activity when the unit changes.
+      expect(
+          tester
+              .widgetList<LinearProgressIndicator>(bars)
+              .map((bar) => bar.value),
+          everyElement(0.0));
       expect(tester.takeException(), isNull);
     });
   });
