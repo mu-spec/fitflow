@@ -1,3 +1,4 @@
+import 'package:fitflow/features/home/presentation/home_theme.dart';
 import 'package:fitflow/core/accessibility/system_motion.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/core/design/fitflow_motion.dart';
@@ -27,8 +28,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 /// Real Home dashboard powered by profile, capability, and adaptive generator + M12 session modes.
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) => const HomeTheme(child: _HomeContent());
+}
+
+class _HomeContent extends ConsumerWidget {
+  const _HomeContent();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -104,9 +112,7 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
         backgroundColor: FitFlowVisualV2.of(context).page,
         body: SafeArea(child: LayoutBuilder(builder: (context, constraints) {
-          final inset = constraints.maxWidth < 360
-              ? FitFlowSpace.md
-              : FitFlowSpace.screenHorizontal;
+          const inset = FitFlowSpace.md;
           return SingleChildScrollView(
               child: FitFlowMaxWidth(
                   child: Padding(
@@ -134,7 +140,12 @@ class HomeScreen extends ConsumerWidget {
                           userProfile: userProfile,
                           effectiveDuration:
                               generationContext.effectiveWorkoutDuration,
-                          sessionMode: sessionMode),
+                          sessionMode: sessionMode,
+                          maxPhotoHeight:
+                              MediaQuery.textScalerOf(context).scale(16) > 24
+                                  ? 330
+                                  : (constraints.maxHeight - 260)
+                                      .clamp(160.0, 330.0)),
                     ),
                   if (showComebackSuggestion) ...[
                     const SizedBox(height: FitFlowSpace.lg),
@@ -146,18 +157,12 @@ class HomeScreen extends ConsumerWidget {
                   ),
                   HomePersonalizationCard(userProfile: userProfile, plan: plan),
                   const SizedBox(height: FitFlowSpace.xs),
-                  Align(
-                      alignment: AlignmentDirectional.centerStart,
-                      child: TextButton.icon(
-                          style: TextButton.styleFrom(
-                              textStyle: Theme.of(context)
-                                  .textTheme
-                                  .labelLarge
-                                  ?.copyWith(fontWeight: FontWeight.w500)),
-                          icon: const Icon(Icons.arrow_forward_rounded),
-                          label: Text(context.l10n.homeBrowse),
-                          onPressed: () =>
-                              context.go(AppRoutes.exerciseLibrary))),
+                  TextButton(
+                      onPressed: () => context.go(AppRoutes.exerciseLibrary),
+                      child: Row(children: [
+                        Expanded(child: Text(context.l10n.homeBrowse)),
+                        const Icon(Icons.arrow_forward_rounded, size: 20),
+                      ])),
                 ]),
           )));
         })));

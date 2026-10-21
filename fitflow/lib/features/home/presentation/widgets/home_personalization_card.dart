@@ -30,23 +30,28 @@ class HomePersonalizationCard extends StatelessWidget {
     final prefs = userProfile.preferences.isEmpty
         ? l.homeNoPreferences
         : userProfile.preferences.map((p) => preferenceLabel(l, p)).join(' · ');
-    Widget fact(String label, String value, {IconData? icon}) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.xs),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [
-            if (icon != null) ...[
-              ExcludeSemantics(
-                  child: Icon(icon, size: 18, color: colors.brand)),
-              const SizedBox(width: FitFlowSpace.xs),
-            ],
-            Expanded(
-                child: Text(label,
-                    style: text.labelMedium
-                        ?.copyWith(color: colors.textSecondary))),
-          ]),
-          const SizedBox(height: FitFlowSpace.xs),
-          Text(value, style: text.bodyMedium),
-        ]));
+    Widget fact(String label, String value) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.sm),
+        child: LayoutBuilder(builder: (context, constraints) {
+          final labelWidget = Text(label,
+              style: text.bodySmall?.copyWith(color: colors.textSecondary));
+          final valueWidget = Text(value, style: text.bodyMedium);
+          if (constraints.maxWidth < 300 ||
+              MediaQuery.textScalerOf(context).scale(16) > 22) {
+            return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  labelWidget,
+                  const SizedBox(height: FitFlowSpace.xxs),
+                  valueWidget,
+                ]);
+          }
+          return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            SizedBox(width: 104, child: labelWidget),
+            const SizedBox(width: FitFlowSpace.sm),
+            Expanded(child: valueWidget),
+          ]);
+        }));
     Widget count(String label, int value) => Semantics(
         label: '$label: $value',
         excludeSemantics: true,
@@ -84,36 +89,13 @@ class HomePersonalizationCard extends StatelessWidget {
             header: true,
             child: Text(l.homeBuiltForYou, style: text.titleMedium)),
         const SizedBox(height: FitFlowSpace.md),
-        LayoutBuilder(builder: (context, constraints) {
-          final columns = constraints.maxWidth >= 300 &&
-              MediaQuery.textScalerOf(context).scale(16) <= 22;
-          final width = columns
-              ? (constraints.maxWidth - FitFlowSpace.sm) / 2
-              : constraints.maxWidth;
-          return Wrap(
-              spacing: FitFlowSpace.sm,
-              runSpacing: FitFlowSpace.sm,
-              children: [
-                SizedBox(
-                    width: width,
-                    child: fact(
-                        l.homeGoal, fitnessGoalLabel(l, userProfile.goal),
-                        icon: Icons.flag_outlined)),
-                SizedBox(
-                    width: width,
-                    child: fact(l.homeEnvironment,
-                        environmentLabel(l, userProfile.environment),
-                        icon: Icons.home_outlined)),
-              ]);
-        }),
-        const SizedBox(height: FitFlowSpace.xs),
+        fact(l.homeGoal, fitnessGoalLabel(l, userProfile.goal)),
+        fact(l.homeEnvironment, environmentLabel(l, userProfile.environment)),
         fact(l.homeUsualTime,
             workoutDurationLabel(l, userProfile.workoutDuration)),
-        const SizedBox(height: FitFlowSpace.xs),
         fact(l.homeEquipment, equipment),
-        const SizedBox(height: FitFlowSpace.xs),
         fact(l.homePreferences, prefs),
-        const SizedBox(height: FitFlowSpace.md),
+        const SizedBox(height: FitFlowSpace.sm),
         const HomeAdaptiveExplanation(),
       ],
     );
