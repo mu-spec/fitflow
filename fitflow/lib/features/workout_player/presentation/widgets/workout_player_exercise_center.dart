@@ -1,4 +1,7 @@
+import 'dart:math' as math;
+
 import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
+import 'package:fitflow/features/workouts/domain/workout/workout_time_estimator.dart';
 import 'package:fitflow/features/workout_player/application/workout_player_state.dart';
 import 'package:fitflow/features/workout_player/domain/workout_player_phase.dart';
 import 'package:fitflow/features/workout_player/presentation/widgets/workout_phase_focus.dart';
@@ -33,6 +36,17 @@ class WorkoutPlayerExerciseCenter extends StatelessWidget {
             : transition
                 ? l.flowNext
                 : l.flowWork;
+    final target = prescription.repsPerSet != null
+        ? l.flowReps(prescription.repsPerSet!)
+        : '${prescription.workDuration!.inSeconds} ${l.flowSeconds}';
+    final setLabel = rest
+        ? l.flowNextSet(state.setNumber + 1, prescription.sets)
+        : l.flowSet(transition ? 1 : state.setNumber, prescription.sets);
+    final phaseDuration = rest
+        ? state.currentPrescription.restBetweenSets
+        : transition
+            ? WorkoutTimeEstimator.transitionBetweenExercises
+            : prescription.workDuration ?? Duration.zero;
     return Column(
       key: const ValueKey('v2_player_focus'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -43,17 +57,8 @@ class WorkoutPlayerExerciseCenter extends StatelessWidget {
                 style: text.titleLarge
                     ?.copyWith(fontSize: 20, fontWeight: FontWeight.w500))),
         const SizedBox(height: 2),
-        Wrap(spacing: 8, runSpacing: 2, children: [
-          if (!ready && !transition)
-            Text(
-                rest
-                    ? l.flowNextSet(
-                        state.setNumber + 1, state.totalSetsForCurrentExercise)
-                    : l.flowSet(
-                        state.setNumber, state.totalSetsForCurrentExercise),
-                style: text.bodySmall),
-          Text(workloadLabel(l, prescription), style: text.bodySmall),
-        ]),
+        Text(ready ? workloadLabel(l, prescription) : '$setLabel · $target',
+            key: const ValueKey('player_prescription'), style: text.bodySmall),
         if (!transition &&
             state.isCurrentReplaced &&
             state.originalExerciseName != null)
@@ -73,14 +78,20 @@ class WorkoutPlayerExerciseCenter extends StatelessWidget {
             ),
           ));
         }),
-        const SizedBox(height: 6),
-        Text(equipmentSummary(l, prescription),
-            style: text.bodySmall, textAlign: TextAlign.center),
-        const SizedBox(height: 4),
-        // The same counter zone is retained on pause; only its state label changes.
+        const SizedBox(height: 8),
+        // Purely reflects controller state; pause leaves remaining and progress frozen.
         if (timed)
-          WorkoutCountdown(
+          _CountdownRing(
               remaining: remaining,
+              duration: phaseDuration,
+              sizeSample: countdown(Duration(
+                      seconds: [
+                prescription.workDuration?.inSeconds ?? 0,
+                prescription.restBetweenSets.inSeconds,
+                WorkoutTimeEstimator.transitionBetweenExercises.inSeconds,
+              ].reduce(math.max)))
+                  .replaceAll(RegExp(r'\d'), '8'),
+              ready: ready,
               semanticLabel: rest
                   ? l.flowRestRemaining(remaining.inSeconds)
                   : transition
@@ -91,19 +102,72 @@ class WorkoutPlayerExerciseCenter extends StatelessWidget {
               key: const ValueKey('player_rep_target'),
               style: text.displayMedium?.copyWith(fontSize: 40),
               textAlign: TextAlign.center),
-        Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 8,
-            runSpacing: 2,
-            children: [
-              if (timed)
-                Text(rest ? l.flowRestSeconds : l.flowSeconds,
-                    style: text.bodySmall),
-              Text(state.isPaused ? l.flowPaused : phaseLabel,
-                  style: text.labelMedium),
-              if (state.isPaused) Text(phaseLabel, style: text.bodySmall),
-            ]),
+        const SizedBox(height: 4),
+        Text(state.isPaused ? l.flowPaused : phaseLabel,
+            style: text.labelMedium, textAlign: TextAlign.center),
       ],
     );
+  }
+}
+
+class _CountdownRing extends StatelessWidget {
+  const _CountdownRing(
+      {required this.remaining,
+      required this.duration,
+      required this.ready,
+      required this.semanticLabel,
+      required this.sizeSample});
+  final Duration remaining;
+  final Duration duration;
+  final bool ready;
+  final String semanticLabel;
+  final String sizeSample;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scaler = MediaQuery.textScalerOf(context);
+    final valueSize = TextPainter(
+        text: TextSpan(text: sizeSample, style: theme.textTheme.displayMedium),
+        textDirection: Directionality.of(context),
+        textScaler: scaler)
+      ..layout();
+    final unitSize = TextPainter(
+        text: TextSpan(
+            text: context.l10n.flowSeconds, style: theme.textTheme.bodySmall),
+        textDirection: Directionality.of(context),
+        textScaler: scaler)
+      ..layout();
+    // Equal sides always: text scaling enlarges the circle, never flattens it.
+    final diameter = math.max(
+        100.0,
+        math.max(math.max(valueSize.width, unitSize.width) + 32,
+            valueSize.height + unitSize.height + 28));
+    valueSize.dispose();
+    unitSize.dispose();
+    final progress = ready || duration.inMicroseconds <= 0
+        ? 0.0
+        : (1 - remaining.inMicroseconds / duration.inMicroseconds)
+            .clamp(0.0, 1.0);
+    return Center(
+        child: SizedBox.square(
+      key: const ValueKey('player_countdown_ring'),
+      dimension: diameter,
+      child: Stack(alignment: Alignment.center, children: [
+        Positioned.fill(
+            child: ExcludeSemantics(
+                child: CircularProgressIndicator(
+          value: progress,
+          strokeWidth: 4,
+          strokeCap: StrokeCap.round,
+          color: theme.colorScheme.primary,
+          backgroundColor: theme.colorScheme.surfaceContainer,
+        ))),
+        Column(mainAxisSize: MainAxisSize.min, children: [
+          WorkoutCountdown(remaining: remaining, semanticLabel: semanticLabel),
+          Text(context.l10n.flowSeconds, style: theme.textTheme.bodySmall),
+        ]),
+      ]),
+    ));
   }
 }

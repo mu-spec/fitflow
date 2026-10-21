@@ -3,7 +3,6 @@ import 'package:fitflow/core/design/fitflow_radius.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:fitflow/features/workout_player/application/workout_player_state.dart';
-import 'package:fitflow/features/workout_player/presentation/workout_copy.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:flutter/material.dart';
 
@@ -17,19 +16,10 @@ class WorkoutPlayerProgressHeader extends StatelessWidget {
     final t = FitFlowTheme.of(context);
     final v = FitFlowVisualV2.of(context);
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      Wrap(
-        spacing: FitFlowSpace.sm,
-        runSpacing: FitFlowSpace.xxs,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          Text(sectionLabel(l, state.sectionType),
-              style: text.labelLarge?.copyWith(fontWeight: FontWeight.w500)),
-          Text(
-              l.flowExercisePosition(state.exercisePositionInSection,
-                  state.exerciseCountInCurrentSection),
-              style: text.bodySmall?.copyWith(color: t.textSecondary)),
-        ],
-      ),
+      Text(
+          l.flowExercisePosition(state.exercisePositionInSection,
+              state.exerciseCountInCurrentSection),
+          style: text.bodySmall?.copyWith(color: t.textSecondary)),
       const SizedBox(height: FitFlowSpace.xs),
       Row(children: [
         Expanded(

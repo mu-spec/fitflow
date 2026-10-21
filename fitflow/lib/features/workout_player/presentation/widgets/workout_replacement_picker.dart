@@ -14,12 +14,12 @@ class WorkoutReplacementPicker extends StatelessWidget {
       {super.key,
       required this.currentPrescription,
       required this.options,
-      required this.scrollController,
+      this.scrollController,
       required this.onSelect,
       this.originalExerciseName});
   final WorkoutExercisePrescription currentPrescription;
   final List<WorkoutReplacementOption> options;
-  final ScrollController scrollController;
+  final ScrollController? scrollController;
   final ValueChanged<WorkoutReplacementOption> onSelect;
   final String? originalExerciseName;
   @override
@@ -30,6 +30,7 @@ class WorkoutReplacementPicker extends StatelessWidget {
         top: false,
         child: ListView.builder(
           controller: scrollController,
+          shrinkWrap: options.isEmpty,
           padding: const EdgeInsets.fromLTRB(
               FitFlowSpace.xl, 0, FitFlowSpace.xl, FitFlowSpace.xl),
           itemCount: options.isEmpty ? 2 : options.length + 1,

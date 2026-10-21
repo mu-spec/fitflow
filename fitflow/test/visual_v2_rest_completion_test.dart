@@ -307,11 +307,15 @@ void main() {
             expect(find.text(_l.flowRest), findsOneWidget);
             expect(find.text(countdown(const Duration(seconds: 90))),
                 findsOneWidget);
-            expect(find.text(_l.flowNextSet(2, 2)), findsOneWidget);
+            expect(find.textContaining(_l.flowNextSet(2, 2)), findsOneWidget);
             expect(find.text(c.state.currentPrescription.exercise.name),
                 findsOneWidget);
-            expect(find.text(workloadLabel(_l, c.state.currentPrescription)),
-                findsOneWidget);
+            final p = c.state.currentPrescription;
+            final target = p.repsPerSet != null
+                ? _l.flowReps(p.repsPerSet!)
+                : '${p.workDuration!.inSeconds} ${_l.flowSeconds}';
+            expect(
+                find.text('${_l.flowNextSet(2, 2)} · $target'), findsOneWidget);
             expect(find.text(_l.skipTransition), findsNothing);
             expect(find.text(_l.flowReplace), findsNothing);
             expect(
@@ -327,7 +331,7 @@ void main() {
             c.tick();
             expect(c.state.remaining, remaining);
             expect(c.state.currentPrescription, prescription);
-            expect(find.text(_l.flowRest), findsOneWidget);
+            expect(find.text(_l.flowRest), findsNothing);
             expect(find.text(_l.flowPaused), findsOneWidget);
             expect(find.text(_l.skipRest), findsNothing);
             await _reachable(tester, _button(_l.flowDetails), size);
@@ -790,7 +794,9 @@ void main() {
         final h = await _pump(tester);
         await _rest(tester, h);
         expect(find.bySemanticsLabel(_l.flowRestRemaining(90)), findsOneWidget);
-        expect(find.bySemanticsLabel(_l.flowNextSet(2, 2)), findsOneWidget);
+        expect(
+            find.bySemanticsLabel(RegExp(RegExp.escape(_l.flowNextSet(2, 2)))),
+            findsOneWidget);
         final timer = tester
             .getSemantics(find.bySemanticsLabel(_l.flowRestRemaining(90)));
         expect(timer.flagsCollection.isLiveRegion, isFalse);

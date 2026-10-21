@@ -93,7 +93,7 @@ class _Harness {
       container.read(workoutPlayerControllerProvider(plan).notifier);
 }
 
-WorkoutPlan _plan({bool timed = true}) {
+WorkoutPlan _plan({bool timed = true, String timedExerciseId = 'plank_knee'}) {
   WorkoutExercisePrescription reps(String id, {int sets = 1}) =>
       WorkoutExercisePrescription(
         exercise: ExerciseCatalog.byId(id)!,
@@ -103,7 +103,7 @@ WorkoutPlan _plan({bool timed = true}) {
       );
   WorkoutExercisePrescription timer({int sets = 1}) =>
       WorkoutExercisePrescription(
-        exercise: ExerciseCatalog.byId('plank_knee')!,
+        exercise: ExerciseCatalog.byId(timedExerciseId)!,
         sets: sets,
         workDuration: const Duration(seconds: 30),
         restBetweenSets: const Duration(seconds: 10),
@@ -175,6 +175,7 @@ Future<_Harness> _pump(
   bool preview = false,
   bool timed = true,
   bool autoStartTimer = false,
+  WorkoutPlan? playerPlan,
   Size size = const Size(390, 844),
   bool dark = false,
   double scale = 1,
@@ -191,7 +192,7 @@ Future<_Harness> _pump(
       userProfile: profile, capabilityProfile: capability, sessionMode: mode);
   final plan = preview
       ? WorkoutGenerator.generateCatalog(context)!
-      : _plan(timed: timed);
+      : playerPlan ?? _plan(timed: timed);
   final coach = FakeWorkoutCoach();
   final history = _HistorySpy();
   final container = ProviderContainer(overrides: [
@@ -236,9 +237,13 @@ Future<_Harness> _pump(
         routes: [
           GoRoute(
             path: 'session',
-            routes: [GoRoute(path: 'exercise/:exerciseId', builder: (c, s) => Scaffold(
-              appBar: AppBar(title: const Text('Native detail route')),
-              body: Text(s.pathParameters['exerciseId']!)))],
+            routes: [
+              GoRoute(
+                  path: 'exercise/:exerciseId',
+                  builder: (c, s) => Scaffold(
+                      appBar: AppBar(title: const Text('Native detail route')),
+                      body: Text(s.pathParameters['exerciseId']!)))
+            ],
             builder: (c, s) => WorkoutPlayerSessionView(
               plan: plan,
               sessionMode: mode,
@@ -355,6 +360,17 @@ void main() {
               expect(actionRect.bottom, lessThanOrEqualTo(size.height - 18));
               actionY ??= actionRect.top;
               expect(actionRect.top, closeTo(actionY!, .1));
+              final ring = find.byKey(const ValueKey('player_countdown_ring'));
+              if (ring.evaluate().isNotEmpty) {
+                final rect = tester.getRect(ring);
+                expect(rect.width, closeTo(rect.height, .001));
+                expect(rect.bottom, lessThanOrEqualTo(actionRect.top));
+                expect(find.text(_l.flowSeconds), findsOneWidget);
+                expect(find.text(_l.flowRestSeconds), findsNothing);
+              }
+              expect(find.text(_l.flowNoEquipment), findsNothing);
+              expect(find.text(sectionLabel(_l, c.state.sectionType)),
+                  findsOneWidget);
               expect(tester.takeException(), isNull);
             }
 
@@ -374,15 +390,49 @@ void main() {
                 greaterThanOrEqualTo(4.5));
             c.beginWorkout();
             await check();
+            final prescription = c.state.currentPrescription;
+            final target = timed ? '30 ${_l.flowSeconds}' : _l.flowReps(10);
+            expect(find.text('${_l.flowSet(1, 2)} · $target'), findsOneWidget);
+            final ringSize = timed
+                ? tester.getSize(
+                    find.byKey(const ValueKey('player_countdown_ring')))
+                : null;
+            if (timed) {
+              c.tick();
+              await tester.pump();
+              expect(
+                  tester
+                      .widget<CircularProgressIndicator>(
+                          find.byType(CircularProgressIndicator))
+                      .value,
+                  closeTo(1 / 30, .001));
+            } else {
+              expect(find.byType(CircularProgressIndicator), findsNothing);
+            }
             c.pause();
             await check();
             final paused = c.state;
             c.tick();
             expect(c.state, same(paused));
+            await tester.pump();
+            if (timed) {
+              expect(
+                  tester.getSize(
+                      find.byKey(const ValueKey('player_countdown_ring'))),
+                  ringSize);
+              expect(
+                  tester
+                      .widget<CircularProgressIndicator>(
+                          find.byType(CircularProgressIndicator))
+                      .value,
+                  closeTo(1 / 30, .001));
+            }
+            expect(find.text(_l.flowPaused), findsOneWidget);
+            expect(find.text(_l.flowWork), findsNothing);
             c.resume();
             await check();
             if (timed) {
-              for (var i = 0; i < 30; i++) {
+              for (var i = 0; i < 29; i++) {
                 c.tick();
               }
             } else {
@@ -392,7 +442,30 @@ void main() {
             await check();
             expect(tester.widget<FitFlowExerciseImage>(photo).exerciseId,
                 c.state.currentPrescription.exercise.id);
-            expect(find.text(_l.flowNextSet(2, 2)), findsOneWidget);
+            expect(
+                find.text('${_l.flowNextSet(2, 2)} · $target'), findsOneWidget);
+            expect(c.state.currentPrescription, prescription);
+            expect(find.text(_l.flowRest), findsOneWidget);
+            expect(
+                tester
+                    .widget<CircularProgressIndicator>(
+                        find.byType(CircularProgressIndicator))
+                    .value,
+                0);
+            c.tick();
+            await tester.pump();
+            expect(
+                tester
+                    .widget<CircularProgressIndicator>(
+                        find.byType(CircularProgressIndicator))
+                    .value,
+                closeTo(.1, .001));
+            if (timed) {
+              expect(
+                  tester.getSize(
+                      find.byKey(const ValueKey('player_countdown_ring'))),
+                  ringSize);
+            }
             c.pause();
             await check();
             c.resume();
@@ -445,7 +518,7 @@ void main() {
             expect(fact(_l.homeSession), findsOneWidget);
             expect(fact(_l.flowTarget(20)), findsOneWidget);
             expect(
-                fact('${_l.flowCount(h.plan.totalExerciseCount)} · '
+                fact('${_l.flowCount(h.plan.totalExerciseCount)} Â· '
                     '${_l.flowEstimate(plannedDuration(_l, h.plan.estimatedDuration))}'),
                 findsOneWidget);
             expect(fact(_l.flowNoEquipment), findsOneWidget);
@@ -537,7 +610,7 @@ void main() {
               expect(find.text(c.state.currentPrescription.exercise.name),
                   findsOneWidget);
               expect(find.text(_l.flowExercisePosition(1, 2)), findsOneWidget);
-              expect(find.text(_l.flowSet(1, 2)), findsOneWidget);
+              expect(find.textContaining(_l.flowSet(1, 2)), findsOneWidget);
               expect(
                   tester
                       .widget<LinearProgressIndicator>(
@@ -637,58 +710,63 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets(
-        'empty replacement sheet retains prescription and Cancel at large text',
-        (tester) async {
-      tester.view.physicalSize = const Size(320, 700);
-      tester.view.devicePixelRatio = 1;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
-      final scroll = ScrollController();
-      addTearDown(scroll.dispose);
-      final prescription = _plan().warmup.exercises.first;
-      await tester.pumpWidget(MaterialApp(
-        theme: AppTheme.dark,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        builder: (context, child) => MediaQuery(
-            data: MediaQuery.of(context)
-                .copyWith(textScaler: TextScaler.linear(2)),
-            child: child!),
-        home: Builder(
-            builder: (context) => Scaffold(
-                  body: TextButton(
-                    onPressed: () => showModalBottomSheet<void>(
-                      context: context,
-                      isScrollControlled: true,
-                      builder: (_) => SizedBox(
-                        height: 600,
-                        child: WorkoutReplacementPicker(
-                          currentPrescription: prescription,
-                          options: const [],
-                          scrollController: scroll,
-                          onSelect: (_) =>
-                              fail('Empty picker must not select a candidate'),
-                        ),
-                      ),
-                    ),
-                    child: Text(_l.flowReplace),
-                  ),
-                )),
-      ));
-      await tester.tap(find.text(_l.flowReplace));
-      await tester.pumpAndSettle();
-      expect(find.text(_l.flowCurrent(prescription.exercise.name)),
-          findsOneWidget);
-      expect(find.text(workloadLabel(_l, prescription)), findsOneWidget);
-      expect(find.text(_l.flowNoAlternatives), findsOneWidget);
-      expect(find.text(_l.flowNoAlternativesBody), findsOneWidget);
-      expect(find.byType(FitFlowExerciseImage), findsNothing);
-      await tester.tap(find.text(_l.cancel));
-      await tester.pumpAndSettle();
-      expect(find.byType(WorkoutReplacementPicker), findsNothing);
-      expect(tester.takeException(), isNull);
-    });
+    for (final size in [
+      const Size(360, 640),
+      const Size(360, 800),
+      const Size(412, 915)
+    ]) {
+      for (final dark in [false, true]) {
+        for (final scale in [1.0, 2.0]) {
+          testWidgets('empty replacement sheet $size dark=$dark scale=$scale',
+              (tester) async {
+            final h = await _pump(tester,
+                size: size,
+                dark: dark,
+                scale: scale,
+                playerPlan: _plan(timedExerciseId: 'arm_circles'));
+            final state = h.controller.state;
+            expect(h.controller.getReplacementOptions(), isEmpty);
+            await _tap(tester, _l.flowReplace, size);
+            final picker = find.byType(WorkoutReplacementPicker);
+            expect(picker, findsOneWidget);
+            expect(find.byType(DraggableScrollableSheet), findsNothing);
+            expect(
+                find.text(
+                    _l.flowCurrent(state.currentPrescription.exercise.name)),
+                findsOneWidget);
+            expect(
+                find.descendant(
+                    of: picker,
+                    matching: find
+                        .text(workloadLabel(_l, state.currentPrescription))),
+                findsOneWidget);
+            expect(find.text(_l.flowNoAlternatives), findsOneWidget);
+            final explanation = find.text(_l.flowNoAlternativesBody);
+            if (scale == 1) {
+              expect(tester.getSize(picker).height, lessThan(size.height * .65),
+                  reason:
+                      'Empty state fits its content rather than filling the screen');
+            }
+            final list =
+                find.descendant(of: picker, matching: find.byType(ListView));
+            await tester.scrollUntilVisible(explanation, 100,
+                scrollable: find.descendant(
+                    of: list, matching: find.byType(Scrollable)));
+            await tester.pumpAndSettle();
+            expect(explanation.hitTestable(), findsOneWidget);
+            await tester.scrollUntilVisible(find.text(_l.cancel), -100,
+                scrollable: find.descendant(
+                    of: list, matching: find.byType(Scrollable)));
+            await tester.pumpAndSettle();
+            await tester.tap(find.text(_l.cancel));
+            await tester.pumpAndSettle();
+            expect(picker, findsNothing);
+            expect(h.controller.state, same(state));
+            expect(tester.takeException(), isNull);
+          });
+        }
+      }
+    }
 
     for (final dark in [false, true]) {
       testWidgets(
@@ -888,13 +966,36 @@ void main() {
       expect(find.byType(FitFlowExerciseImage), findsOneWidget);
       await _tap(tester, _l.skipRest, const Size(390, 844));
       expect(c.state.phase, WorkoutPlayerPhase.work);
-      expect(find.text(_l.flowSet(2, 2)), findsOneWidget);
+      expect(find.textContaining(_l.flowSet(2, 2)), findsOneWidget);
       expect(c.canReplaceCurrentExercise, isFalse);
       expect(find.text(_l.flowReplace), findsNothing);
       await _tap(tester, _l.setComplete, const Size(390, 844));
       expect(c.state.phase, WorkoutPlayerPhase.transition);
       expect(find.byType(WorkoutPlayerTransitionView), findsOneWidget);
-      expect(find.byType(FitFlowExerciseImage), findsOneWidget);
+      final next = c.state.nextPrescription!;
+      expect(
+          tester
+              .widget<FitFlowExerciseImage>(find.byType(FitFlowExerciseImage))
+              .exerciseId,
+          next.exercise.id);
+      expect(
+          find.text(
+              '${_l.flowSet(1, next.sets)} · ${_l.flowReps(next.repsPerSet!)}'),
+          findsOneWidget);
+      expect(
+          tester
+              .widget<CircularProgressIndicator>(
+                  find.byType(CircularProgressIndicator))
+              .value,
+          0);
+      c.tick();
+      await tester.pump();
+      expect(
+          tester
+              .widget<CircularProgressIndicator>(
+                  find.byType(CircularProgressIndicator))
+              .value,
+          closeTo(1 / 15, .001));
       await _tap(tester, _l.skipTransition, const Size(390, 844));
       expect(c.state.phase, WorkoutPlayerPhase.work);
       expect(find.text(_l.flowExercisePosition(2, 2)), findsOneWidget);
@@ -943,7 +1044,8 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('paused active Details returns through the Player-only detail route',
+    testWidgets(
+        'paused active Details returns through the Player-only detail route',
         (tester) async {
       final h = await _pump(tester, timed: false);
       h.controller.beginWorkout();

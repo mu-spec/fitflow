@@ -5,7 +5,7 @@ import 'package:fitflow/core/accessibility/system_motion.dart';
 import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
-import 'package:fitflow/l10n/app_localizations.dart';
+import 'package:fitflow/features/workout_player/presentation/workout_copy.dart';
 import 'package:fitflow/features/workout_player/presentation/widgets/workout_replacement_picker.dart';
 import 'package:fitflow/features/workout_player/application/workout_player_controller.dart';
 import 'package:fitflow/features/workout_player/application/workout_player_state.dart';
@@ -230,6 +230,18 @@ class _WorkoutPlayerSessionViewState
           duration: SystemMotion.standard(context),
           reverseDuration: SystemMotion.micro(context)),
       builder: (ctx) {
+        if (options.isEmpty) {
+          return ConstrainedBox(
+            constraints:
+                BoxConstraints(maxHeight: MediaQuery.sizeOf(ctx).height * 0.85),
+            child: WorkoutReplacementPicker(
+              currentPrescription: state.currentPrescription,
+              originalExerciseName: state.originalExerciseName,
+              options: options,
+              onSelect: (_) {},
+            ),
+          );
+        }
         return DraggableScrollableSheet(
           expand: false,
           initialChildSize: 0.8,
@@ -315,7 +327,7 @@ class _WorkoutPlayerSessionViewState
             scrolledUnderElevation: 0,
             toolbarHeight:
                 MediaQuery.textScalerOf(context).scale(16) > 24 ? 72 : 48,
-            title: Text(_appBarTitle(context.l10n, _stableOrigin),
+            title: Text(sectionLabel(context.l10n, state.sectionType),
                 style: Theme.of(context)
                     .textTheme
                     .titleMedium
@@ -346,7 +358,7 @@ class _WorkoutPlayerSessionViewState
                   // At enlarged type the content scrolls instead of scaling text down.
                   final mediaHeight = largeText || short
                       ? 210.0
-                      : (constraints.maxHeight - 350).clamp(140.0, 300.0);
+                      : (constraints.maxHeight - 378).clamp(140.0, 300.0);
                   final phase = KeyedSubtree(
                       key: _phasePresentationKey,
                       child: _buildPhaseBody(
@@ -460,10 +472,3 @@ class _WorkoutPlayerSessionViewState
     }
   }
 }
-
-String _appBarTitle(AppLocalizations l, WorkoutSessionOrigin origin) =>
-    switch (origin) {
-      WorkoutSessionOrigin.custom => l.flowCustom,
-      WorkoutSessionOrigin.program => l.flowProgram,
-      WorkoutSessionOrigin.adaptive => l.flowPlayer,
-    };
