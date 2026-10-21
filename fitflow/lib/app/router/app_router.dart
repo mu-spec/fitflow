@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/backup/presentation/backup_restore_screen.dart';
 import 'package:fitflow/features/capability_assessment/presentation/capability_assessment_screen.dart';
@@ -40,7 +41,15 @@ class AppRouter {
   /// [initialLocation] defaults to the splash start gate; tests may start
   /// directly on a nested route.
   static GoRouter create({String initialLocation = AppRoutes.splash}) {
+    final rootNavigatorKey = GlobalKey<NavigatorState>();
+    // Player detail visits stay above the shell and return to the same session.
+    GoRoute playerExerciseDetail() => GoRoute(
+      path: 'exercise/:exerciseId',
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) => ExerciseDetailScreen(exerciseId: state.pathParameters['exerciseId']!),
+    );
     return GoRouter(
+      navigatorKey: rootNavigatorKey,
       initialLocation: initialLocation,
       routes: [
         GoRoute(
@@ -72,6 +81,8 @@ class AppRouter {
                       routes: [
                         GoRoute(
                           path: 'player',
+                          parentNavigatorKey: rootNavigatorKey,
+                          routes: [playerExerciseDetail()],
                           builder: (context, state) =>
                               const WorkoutPlayerScreen(),
                         ),
@@ -136,6 +147,8 @@ class AppRouter {
                               routes: [
                                 GoRoute(
                                   path: 'player',
+                                  parentNavigatorKey: rootNavigatorKey,
+                                  routes: [playerExerciseDetail()],
                                   builder: (context, state) =>
                                       ProgramSessionPlayerScreen(
                                     programId:
@@ -173,6 +186,8 @@ class AppRouter {
                         ),
                         GoRoute(
                           path: 'player',
+                          parentNavigatorKey: rootNavigatorKey,
+                          routes: [playerExerciseDetail()],
                           builder: (context, state) {
                             final workoutId =
                                 state.pathParameters['workoutId']!;

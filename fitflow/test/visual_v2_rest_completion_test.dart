@@ -12,7 +12,6 @@ import 'package:fitflow/features/workout_player/domain/workout_player_phase.dart
 import 'package:fitflow/features/workout_player/domain/workout_session_origin.dart';
 import 'package:fitflow/features/workout_player/presentation/player_accessibility.dart';
 import 'package:fitflow/features/workout_player/presentation/widgets/adaptive_progression_feedback_sheet.dart';
-import 'package:fitflow/features/workout_player/presentation/widgets/workout_phase_focus.dart';
 import 'package:fitflow/features/workout_player/presentation/widgets/workout_player_completed_view.dart';
 import 'package:fitflow/features/workout_player/presentation/widgets/workout_player_exercise_center.dart';
 import 'package:fitflow/features/workout_player/presentation/widgets/workout_player_rest_view.dart';
@@ -808,12 +807,8 @@ void main() {
                     find.byType(PlayerPhaseAnnouncement))
                 .message,
             announcement);
-        expect(
-            tester
-                .widget<ExcludeSemantics>(
-                    find.byKey(const ValueKey('v2_rest_ring_decoration')))
-                .excluding,
-            isTrue);
+        expect(find.byKey(const ValueKey('v2_rest_ring_decoration')),
+            findsNothing);
         expect(
             find.bySemanticsLabel(
                 RegExp('recovery score|ring decoration', caseSensitive: false)),
@@ -891,24 +886,17 @@ void main() {
         } else {
           await _rest(tester, h);
         }
-        final entry = tester.widget<TweenAnimationBuilder<double>>(
-            find.byWidgetPredicate((w) => w is TweenAnimationBuilder<double>));
-        expect(entry.duration, Duration.zero);
+        expect(
+            find.byWidgetPredicate((w) => w is TweenAnimationBuilder<double>),
+            findsNothing);
         if (completed) {
           expect(
               tester.getSize(find.byKey(const ValueKey('v2_completed_mark'))),
               const Size(40, 40));
           await _reachable(tester, _button(_l.done), size);
         } else {
-          final chip = tester.widget<AnimatedContainer>(find.descendant(
-              of: find.byType(WorkoutPhaseLabel),
-              matching: find.byType(AnimatedContainer)));
-          expect(chip.duration, Duration.zero);
           expect(
-              tester
-                  .getSize(find.byKey(const ValueKey('v2_rest_timer_frame')))
-                  .height,
-              lessThan(216));
+              find.byKey(const ValueKey('v2_rest_timer_frame')), findsNothing);
           await _reachable(tester, _button(_l.skipRest), size);
         }
         await tester.pump(const Duration(seconds: 1));

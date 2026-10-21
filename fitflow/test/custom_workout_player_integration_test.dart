@@ -84,6 +84,11 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
 
     expect(find.text('Custom workout'), findsWidgets);
+    expect(find.byType(NavigationBar), findsNothing);
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(find.text('Player Integration'), findsOneWidget);
+    expect(find.byType(NavigationBar), findsOneWidget);
   });
 
   testWidgets('Custom player shows voice and replace', (tester) async {

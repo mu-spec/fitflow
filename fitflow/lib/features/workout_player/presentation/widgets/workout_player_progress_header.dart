@@ -31,18 +31,20 @@ class WorkoutPlayerProgressHeader extends StatelessWidget {
         ],
       ),
       const SizedBox(height: FitFlowSpace.xs),
-      LinearProgressIndicator(
-        value: state.progressFraction,
-        minHeight: 6,
-        color: t.progress,
-        backgroundColor: v.tint,
-        borderRadius: FitFlowRadius.pillBorder,
-        semanticsLabel: l.flowOverall(state.completedSets, state.totalSets),
-      ),
-      const SizedBox(height: FitFlowSpace.xxs),
-      Text(l.flowSetsProgress(state.completedSets, state.totalSets),
-          style: text.bodySmall?.copyWith(color: t.textSecondary),
-          textAlign: TextAlign.end),
+      Row(children: [
+        Expanded(
+            child: LinearProgressIndicator(
+          value: state.progressFraction,
+          minHeight: 4,
+          color: t.progress,
+          backgroundColor: v.tint,
+          borderRadius: FitFlowRadius.pillBorder,
+          semanticsLabel: l.flowOverall(state.completedSets, state.totalSets),
+        )),
+        const SizedBox(width: 12),
+        Text(l.flowSetsProgress(state.completedSets, state.totalSets),
+            style: text.bodySmall?.copyWith(color: t.textSecondary)),
+      ]),
     ]);
   }
 }

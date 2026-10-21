@@ -1,16 +1,11 @@
+import 'package:fitflow/features/workout_player/presentation/player_theme.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
-import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
-import 'package:fitflow/core/design/widgets/fitflow_v2_workout_media.dart';
-import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
-import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/accessibility/system_motion.dart';
-import 'package:fitflow/core/design/fitflow_motion.dart';
 import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
 import 'package:fitflow/l10n/app_localizations.dart';
-import 'package:fitflow/features/workout_player/presentation/workout_copy.dart';
 import 'package:fitflow/features/workout_player/presentation/widgets/workout_replacement_picker.dart';
 import 'package:fitflow/features/workout_player/application/workout_player_controller.dart';
 import 'package:fitflow/features/workout_player/application/workout_player_state.dart';
@@ -187,7 +182,7 @@ class _WorkoutPlayerSessionViewState
     }
   }
 
-  Future<bool> _showExitDialog() async {
+  Future<bool> _showExitDialog(BuildContext context) async {
     final result = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
@@ -207,7 +202,7 @@ class _WorkoutPlayerSessionViewState
     return result ?? false;
   }
 
-  Future<void> _handleReplaceExercise() async {
+  Future<void> _handleReplaceExercise(BuildContext context) async {
     final controller =
         ref.read(workoutPlayerControllerProvider(_stablePlan).notifier);
     final state = ref.read(workoutPlayerControllerProvider(_stablePlan));
@@ -285,17 +280,25 @@ class _WorkoutPlayerSessionViewState
             state.phase == WorkoutPlayerPhase.completed)
         : true;
 
-    // Ready and work share the responsive layout; other phases retain their
-    // existing state-specific content and controls.
-    final workPresentation = state.phase == WorkoutPlayerPhase.work ||
-        state.phase == WorkoutPlayerPhase.ready;
-    final v = FitFlowVisualV2.of(context);
-
-    return PopScope(
-      canPop: canPop,
-      onPopInvokedWithResult: (didPop, result) async {
-        if (didPop) return;
-        if (!isActiveSession) {
+    return PlayerTheme(child: Builder(builder: (context) {
+      final v = FitFlowVisualV2.of(context);
+      return PopScope(
+        canPop: canPop,
+        onPopInvokedWithResult: (didPop, result) async {
+          if (didPop) return;
+          if (!isActiveSession) {
+            if (context.mounted) {
+              setState(() => _allowPop = true);
+              Future.microtask(() {
+                if (context.mounted) {
+                  context.pop();
+                }
+              });
+            }
+            return;
+          }
+          final shouldEnd = await _showExitDialog(context);
+          if (!shouldEnd) return;
           if (context.mounted) {
             setState(() => _allowPop = true);
             Future.microtask(() {
@@ -304,230 +307,144 @@ class _WorkoutPlayerSessionViewState
               }
             });
           }
-          return;
-        }
-        final shouldEnd = await _showExitDialog();
-        if (!shouldEnd) return;
-        if (context.mounted) {
-          setState(() => _allowPop = true);
-          Future.microtask(() {
-            if (context.mounted) {
-              context.pop();
-            }
-          });
-        }
-      },
-      child: Scaffold(
-        backgroundColor: v.page,
-        appBar: AppBar(
+        },
+        child: Scaffold(
           backgroundColor: v.page,
-          scrolledUnderElevation: 0,
-          toolbarHeight: workPresentation && WorkoutV2Layout.largeText(context)
-              ? 80
-              : null,
-          title: Text(_appBarTitle(context.l10n, _stableOrigin),
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w500),
-              maxLines: workPresentation ? 2 : null),
-          actions: [
-            IconButton(
-              constraints: workPresentation
-                  ? const BoxConstraints(minWidth: 48, minHeight: 48)
-                  : null,
-              tooltip: state.voiceEnabled
-                  ? context.l10n.flowMute
-                  : context.l10n.flowVoice,
-              onPressed: () => controller.toggleVoice(),
-              icon: Icon(state.voiceEnabled
-                  ? Icons.volume_up_rounded
-                  : Icons.volume_off_rounded),
-            ),
-          ],
-        ),
-        body: SafeArea(
-            child: FitFlowMaxWidth(
-                child: Padding(
-          padding: EdgeInsets.all(MediaQuery.sizeOf(context).width < 360
-              ? FitFlowSpace.md
-              : FitFlowSpace.xl),
-          child: LayoutBuilder(builder: (context, constraints) {
-            // Entry is keyed by phase/exercise only, not countdown, set or pause.
-            // No outgoing subtree is retained, and controller ownership stays above.
-            final phase = KeyedSubtree(
-                key: _phasePresentationKey,
-                child: TweenAnimationBuilder<double>(
-                  key: ValueKey(
-                      'phase_${state.phase}_${state.sectionIndex}_${state.exerciseIndex}_${state.currentPrescription.exercise.id}'),
-                  tween: Tween(begin: 0, end: 1),
-                  duration: SystemMotion.standard(context),
-                  curve: FitFlowMotion.standardCurve,
-                  builder: (context, value, child) => Opacity(
-                      opacity: value,
-                      alwaysIncludeSemantics: true,
-                      child: child),
-                  child: _buildPhaseBody(context, state, controller),
-                ));
-            final controls = WorkoutPlayerControls(
-                state: state, controller: controller, plan: _stablePlan);
-            final actions = <Widget>[
-              controls,
-              if (controller.canReplaceCurrentExercise) ...[
-                const SizedBox(height: FitFlowSpace.xs),
-                TextButton.icon(
-                    style: workPresentation
-                        ? TextButton.styleFrom(minimumSize: const Size(48, 48))
-                        : null,
-                    onPressed: _handleReplaceExercise,
-                    icon: const Icon(Icons.swap_horiz_rounded),
-                    label: Text(context.l10n.flowReplace)),
-              ],
-              if (state.phase == WorkoutPlayerPhase.ready || state.isPaused)
-                TextButton.icon(
-                  style: workPresentation
-                      ? TextButton.styleFrom(minimumSize: const Size(48, 48))
-                      : null,
-                  onPressed: () => context.push(AppRoutes.exerciseDetail(
-                      state.currentPrescription.exercise.id)),
-                  icon: const Icon(Icons.info_outline_rounded),
-                  label: Text(context.l10n.flowDetails),
-                ),
-            ];
-            final header = <Widget>[
-              PlayerPhaseAnnouncement(
-                  message: playerPhaseAnnouncement(state, context.l10n)),
-              if (state.phase != WorkoutPlayerPhase.completed) ...[
-                WorkoutPlayerProgressHeader(state: state),
-                const SizedBox(height: FitFlowSpace.md),
-                if (_stableOrigin == WorkoutSessionOrigin.adaptive &&
-                    _stableMode != WorkoutSessionMode.standard) ...[
-                  Text(
-                      context.l10n.flowModeTemporary(
-                          sessionModeLabel(context.l10n, _stableMode)),
-                      style: Theme.of(context).textTheme.labelMedium),
-                  const SizedBox(height: FitFlowSpace.sm),
-                ],
-              ],
-            ];
-            if (workPresentation) {
-              // Keep the exact same phase/header/action objects and controller
-              // above width changes. Media sizing never selects a new session.
-              final largeType = WorkoutV2Layout.largeText(context);
-              final sideBySide = constraints.maxWidth >= 600 && !largeType;
-              final short = constraints.maxHeight < 400;
-              if (sideBySide) {
-                return SingleChildScrollView(
-                  key: const ValueKey('v2_active_player_scroll'),
-                  child: Column(children: [
-                    ...header,
-                    Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(flex: 3, child: phase),
-                          const SizedBox(width: FitFlowSpace.md),
-                          Expanded(
-                              flex: 2,
-                              child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: actions)),
-                        ]),
-                  ]),
-                );
-              }
-              if (short || largeType) {
-                return SingleChildScrollView(
-                  key: const ValueKey('v2_active_player_scroll'),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      ...header,
-                      phase,
-                      const SizedBox(height: FitFlowSpace.md),
-                      ...actions,
-                    ],
-                  ),
-                );
-              }
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  ...header,
-                  Expanded(
-                      child: SingleChildScrollView(
-                          key: const ValueKey('v2_active_player_scroll'),
-                          child: phase)),
-                  const SizedBox(height: FitFlowSpace.sm),
-                  ...actions,
-                ],
-              );
-            }
-            // Width changes presentation only; session/provider ownership stays
-            // above this layout, with no width-based session keys.
-            final wide = constraints.maxWidth >= 600 &&
-                state.phase != WorkoutPlayerPhase.completed;
-            if (wide) {
-              return SingleChildScrollView(
-                  child: Column(children: [
-                ...header,
-                Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Expanded(flex: 3, child: phase),
-                  const SizedBox(width: FitFlowSpace.xl),
-                  Expanded(
-                      flex: 2,
-                      child: Padding(
-                          padding: const EdgeInsets.only(top: FitFlowSpace.xl),
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: actions))),
-                ]),
-              ]));
-            }
-            final largeText = MediaQuery.textScalerOf(context).scale(16) > 24;
-            if (constraints.maxHeight < 400 ||
-                (largeText && constraints.maxHeight < 640)) {
-              return SingleChildScrollView(
-                  child: Column(
+          appBar: AppBar(
+            backgroundColor: v.page,
+            scrolledUnderElevation: 0,
+            toolbarHeight:
+                MediaQuery.textScalerOf(context).scale(16) > 24 ? 72 : 48,
+            title: Text(_appBarTitle(context.l10n, _stableOrigin),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium
+                    ?.copyWith(fontWeight: FontWeight.w500)),
+            actions: [
+              IconButton(
+                constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                tooltip: state.voiceEnabled
+                    ? context.l10n.flowMute
+                    : context.l10n.flowVoice,
+                onPressed: () => controller.toggleVoice(),
+                icon: Icon(state.voiceEnabled
+                    ? Icons.volume_up_rounded
+                    : Icons.volume_off_rounded),
+              ),
+            ],
+          ),
+          body: SafeArea(
+              top: false,
+              child: FitFlowMaxWidth(
+                  child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                child: LayoutBuilder(builder: (context, constraints) {
+                  final largeText =
+                      MediaQuery.textScalerOf(context).scale(16) > 24;
+                  final short = constraints.maxHeight < 400;
+                  // Reserve space for real text and controls before sizing the 4:3 photo.
+                  // At enlarged type the content scrolls instead of scaling text down.
+                  final mediaHeight = largeText || short
+                      ? 210.0
+                      : (constraints.maxHeight - 350).clamp(140.0, 300.0);
+                  final phase = KeyedSubtree(
+                      key: _phasePresentationKey,
+                      child: _buildPhaseBody(
+                          context, state, controller, mediaHeight));
+                  final secondary = <Widget>[
+                    if (state.phase == WorkoutPlayerPhase.ready ||
+                        state.isPaused)
+                      TextButton.icon(
+                          onPressed: () => context.push(
+                              '${GoRouterState.of(context).matchedLocation}/exercise/${Uri.encodeComponent(state.currentPrescription.exercise.id)}'),
+                          icon:
+                              const Icon(Icons.info_outline_rounded, size: 18),
+                          label: Text(context.l10n.flowDetails)),
+                    if (controller.canReplaceCurrentExercise)
+                      TextButton.icon(
+                          onPressed: () => _handleReplaceExercise(context),
+                          icon: const Icon(Icons.swap_horiz_rounded, size: 18),
+                          label: Text(context.l10n.flowReplace)),
+                  ];
+                  final controls = WorkoutPlayerControls(
+                      state: state,
+                      controller: controller,
+                      plan: _stablePlan,
+                      secondaryActions: secondary);
+                  final content = Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                    ...header,
-                    phase,
-                    const SizedBox(height: FitFlowSpace.md),
-                    ...actions
-                  ]));
-            }
-            return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  ...header,
-                  Expanded(child: SingleChildScrollView(child: phase)),
-                  const SizedBox(height: FitFlowSpace.sm),
-                  ...actions,
-                ]);
-          }),
-        ))),
-      ),
-    );
+                        PlayerPhaseAnnouncement(
+                            message:
+                                playerPhaseAnnouncement(state, context.l10n)),
+                        if (state.phase != WorkoutPlayerPhase.completed) ...[
+                          WorkoutPlayerProgressHeader(state: state),
+                          if (_stableOrigin == WorkoutSessionOrigin.adaptive &&
+                              _stableMode != WorkoutSessionMode.standard)
+                            Text(
+                                context.l10n.flowModeTemporary(sessionModeLabel(
+                                    context.l10n, _stableMode)),
+                                style: Theme.of(context).textTheme.bodySmall),
+                          const SizedBox(height: 8),
+                        ],
+                        phase,
+                        if (state.phase == WorkoutPlayerPhase.ready &&
+                            _stableOrigin != WorkoutSessionOrigin.adaptive)
+                          Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: Text(
+                                  _stableOrigin == WorkoutSessionOrigin.custom
+                                      ? context.l10n.flowReadyCustom
+                                      : context.l10n.flowReadyProgram,
+                                  style:
+                                      Theme.of(context).textTheme.bodySmall)),
+                      ]);
+                  if (short || largeText) {
+                    return SingleChildScrollView(
+                        key: const ValueKey('v2_active_player_scroll'),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              content,
+                              const SizedBox(height: 8),
+                              controls,
+                            ]));
+                  }
+                  return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                            child: SingleChildScrollView(
+                                key: const ValueKey('v2_active_player_scroll'),
+                                child: content)),
+                        const SizedBox(height: 4),
+                        controls,
+                      ]);
+                }),
+              ))),
+        ),
+      );
+    }));
   }
 
   Widget _buildPhaseBody(
     BuildContext context,
     WorkoutPlayerState state,
     WorkoutPlayerController controller,
+    double mediaHeight,
   ) {
     switch (state.phase) {
       case WorkoutPlayerPhase.ready:
-        return _ReadyView(
-            state: state,
-            sessionMode: _stableMode,
-            sessionOrigin: _stableOrigin);
+        return WorkoutPlayerExerciseCenter(
+            state: state, mediaHeight: mediaHeight);
       case WorkoutPlayerPhase.work:
-        return WorkoutPlayerExerciseCenter(state: state);
+        return WorkoutPlayerExerciseCenter(
+            state: state, mediaHeight: mediaHeight);
       case WorkoutPlayerPhase.rest:
-        return WorkoutPlayerRestView(state: state);
+        return WorkoutPlayerRestView(state: state, mediaHeight: mediaHeight);
       case WorkoutPlayerPhase.transition:
-        return WorkoutPlayerTransitionView(state: state);
+        return WorkoutPlayerTransitionView(
+            state: state, mediaHeight: mediaHeight);
       case WorkoutPlayerPhase.sectionBreak:
         return WorkoutPlayerSectionBreakView(state: state);
       case WorkoutPlayerPhase.completed:
@@ -550,62 +467,3 @@ String _appBarTitle(AppLocalizations l, WorkoutSessionOrigin origin) =>
       WorkoutSessionOrigin.program => l.flowProgram,
       WorkoutSessionOrigin.adaptive => l.flowPlayer,
     };
-
-class _ReadyView extends StatelessWidget {
-  const _ReadyView(
-      {required this.state,
-      required this.sessionMode,
-      required this.sessionOrigin});
-  final WorkoutPlayerState state;
-  final WorkoutSessionMode sessionMode;
-  final WorkoutSessionOrigin sessionOrigin;
-  @override
-  Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
-    final l = context.l10n;
-    return Padding(
-        padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.xs),
-        child:
-            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Text(l.flowReady,
-              style: text.labelLarge, textAlign: TextAlign.center),
-          const SizedBox(height: FitFlowSpace.md),
-          Semantics(
-              header: true,
-              child: Text(state.currentPrescription.exercise.name,
-                  style: text.titleLarge?.copyWith(fontWeight: FontWeight.w500),
-                  textAlign: TextAlign.center)),
-          if (state.isCurrentReplaced &&
-              state.originalExerciseName != null) ...[
-            const SizedBox(height: FitFlowSpace.xs),
-            Text(l.flowReplaced(state.originalExerciseName!),
-                style: text.bodySmall, textAlign: TextAlign.center),
-          ],
-          const SizedBox(height: FitFlowSpace.md),
-          Text(workloadLabel(l, state.currentPrescription),
-              style: text.titleMedium, textAlign: TextAlign.center),
-          const SizedBox(height: FitFlowSpace.sm),
-          LayoutBuilder(builder: (context, constraints) {
-            final width = constraints.maxWidth.clamp(0.0, 320.0);
-            return Center(
-                child: FitFlowExerciseImage.hero(
-                    exerciseId: state.currentPrescription.exercise.id,
-                    width: width,
-                    height: width * 3 / 4));
-          }),
-          const SizedBox(height: FitFlowSpace.xs),
-          Text(equipmentSummary(l, state.currentPrescription),
-              style: text.bodyMedium, textAlign: TextAlign.center),
-          if (sessionOrigin == WorkoutSessionOrigin.custom ||
-              sessionOrigin == WorkoutSessionOrigin.program) ...[
-            const SizedBox(height: FitFlowSpace.md),
-            Text(
-                sessionOrigin == WorkoutSessionOrigin.custom
-                    ? l.flowReadyCustom
-                    : l.flowReadyProgram,
-                style: text.bodySmall,
-                textAlign: TextAlign.center),
-          ],
-        ]));
-  }
-}

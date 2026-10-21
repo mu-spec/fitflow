@@ -1,3 +1,4 @@
+import 'package:fitflow/features/workout_player/presentation/workout_player_session_view.dart';
 import 'package:fitflow/app/router/app_router.dart';
 import 'package:fitflow/features/onboarding/data/experience_level.dart';
 import 'package:fitflow/features/onboarding/data/fitness_goal.dart';
@@ -88,7 +89,8 @@ Widget buildApp(List<Override> overrides) {
 
 void main() {
   group('Exit Confirmation', () {
-    testWidgets('ready state Back returns normally without dialog', (tester) async {
+    testWidgets('ready state Back returns normally without dialog',
+        (tester) async {
       final overrides = createOverrides();
       await tester.pumpWidget(buildApp(overrides));
       await tester.pumpAndSettle();
@@ -104,12 +106,15 @@ void main() {
 
       expect(find.text('Workout player'), findsOneWidget);
       expect(find.text('Ready to begin'), findsOneWidget);
+      expect(find.byType(NavigationBar), findsNothing);
+      expect(find.byType(NavigationRail), findsNothing);
 
       await tester.pageBack();
       await tester.pumpAndSettle();
 
       expect(find.text('Workout player'), findsNothing);
       expect(find.text('Workout preview'), findsOneWidget);
+      expect(find.byType(NavigationBar), findsOneWidget);
     });
 
     testWidgets('active work Back shows End workout?', (tester) async {
@@ -132,7 +137,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('End workout?'), findsOneWidget);
-      expect(find.text("Your current session progress won't be saved."), findsOneWidget);
+      expect(find.text("Your current session progress won't be saved."),
+          findsOneWidget);
     });
 
     testWidgets('paused workout Back shows confirmation', (tester) async {
@@ -156,6 +162,17 @@ void main() {
         await tester.tap(pauseFinder.first);
         await tester.pumpAndSettle();
       }
+
+      final viewFinder = find.byType(WorkoutPlayerSessionView);
+      final plan = tester.widget<WorkoutPlayerSessionView>(viewFinder).plan;
+      final container = ProviderScope.containerOf(tester.element(viewFinder));
+      final beforeDetails = container.read(workoutPlayerControllerProvider(plan));
+      await tester.tap(find.text('Exercise details'));
+      await tester.pumpAndSettle();
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+      expect(container.read(workoutPlayerControllerProvider(plan)), beforeDetails);
+      expect(find.byType(NavigationBar), findsNothing);
 
       await tester.pageBack();
       await tester.pumpAndSettle();
@@ -256,10 +273,14 @@ void main() {
         } else {
           break;
         }
-        if (find.text('Continue').evaluate().isNotEmpty || find.text('Start cooldown').evaluate().isNotEmpty) break;
+        if (find.text('Continue').evaluate().isNotEmpty ||
+            find.text('Start cooldown').evaluate().isNotEmpty) {
+          break;
+        }
       }
 
-      if (find.text('Continue').evaluate().isNotEmpty || find.text('Start cooldown').evaluate().isNotEmpty) {
+      if (find.text('Continue').evaluate().isNotEmpty ||
+          find.text('Start cooldown').evaluate().isNotEmpty) {
         await tester.pageBack();
         await tester.pumpAndSettle();
         expect(find.text('End workout?'), findsOneWidget);
@@ -338,10 +359,12 @@ void main() {
       await tester.pageBack();
       await tester.pumpAndSettle();
 
-      expect(find.text("Your current session progress won't be saved."), findsOneWidget);
+      expect(find.text("Your current session progress won't be saved."),
+          findsOneWidget);
     });
 
-    testWidgets('completed session can leave without active-session warning', (tester) async {
+    testWidgets('completed session can leave without active-session warning',
+        (tester) async {
       // For completed, PopScope canPop should be true, so no dialog
       // We test via controller state directly: completed phase is not active session
       final user = createUserProfile();
@@ -349,9 +372,11 @@ void main() {
       final plan = WorkoutGenerator.generateCatalog(
         WorkoutGenerationContext(userProfile: user, capabilityProfile: cap),
       )!;
-      final controller = WorkoutPlayerController(plan: plan, autoStartTimer: false);
+      final controller =
+          WorkoutPlayerController(plan: plan, autoStartTimer: false);
       int safety = 0;
-      while (safety < 2000 && controller.state.phase != WorkoutPlayerPhase.completed) {
+      while (safety < 2000 &&
+          controller.state.phase != WorkoutPlayerPhase.completed) {
         final phase = controller.state.phase;
         if (phase == WorkoutPlayerPhase.ready) {
           controller.beginWorkout();
@@ -359,7 +384,8 @@ void main() {
           if (controller.state.isRepsExercise) {
             controller.completeSet();
           } else {
-            while (controller.state.remaining > Duration.zero && controller.state.phase == WorkoutPlayerPhase.work) {
+            while (controller.state.remaining > Duration.zero &&
+                controller.state.phase == WorkoutPlayerPhase.work) {
               controller.tick();
             }
           }
@@ -376,11 +402,12 @@ void main() {
       }
       expect(controller.state.phase, WorkoutPlayerPhase.completed);
       // Completed is not active session, so should allow pop without warning
-      final isActiveSession = controller.state.phase == WorkoutPlayerPhase.work ||
-          controller.state.phase == WorkoutPlayerPhase.rest ||
-          controller.state.phase == WorkoutPlayerPhase.transition ||
-          controller.state.isPaused ||
-          controller.state.phase == WorkoutPlayerPhase.sectionBreak;
+      final isActiveSession =
+          controller.state.phase == WorkoutPlayerPhase.work ||
+              controller.state.phase == WorkoutPlayerPhase.rest ||
+              controller.state.phase == WorkoutPlayerPhase.transition ||
+              controller.state.isPaused ||
+              controller.state.phase == WorkoutPlayerPhase.sectionBreak;
       expect(isActiveSession, false);
       controller.dispose();
     });

@@ -1,3 +1,4 @@
+import 'package:fitflow/app/router/app_router.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/onboarding/data/fitness_goal.dart';
 import 'package:fitflow/features/programs/application/adaptive_programs_controller.dart';
@@ -486,11 +487,13 @@ void main() {
       final detail =
           tester.widget<ProgramDetailScreen>(find.byType(ProgramDetailScreen));
       expect(detail.programId, _program);
+      await programScrollTo(tester, find.text('1 of 12 sessions'));
       expect(find.text('1 of 12 sessions'), findsOneWidget);
       Finder rowOf(String label) => find.ancestor(
             of: find.text(label).first,
             matching: find.byType(ProgramSessionRow),
           );
+      await programScrollTo(tester, find.text('Session 1').first);
       expect(
           find.descendant(
               of: rowOf('Session 1'), matching: find.text('Completed')),
@@ -503,7 +506,7 @@ void main() {
 
     testWidgets('Preview Start navigates to the Player with the same IDs',
         (tester) async {
-      final router = programTestRouter(
+      final router = AppRouter.create(
           initialLocation: AppRoutes.programSessionPreview(_program, _s2));
       addTearDown(router.dispose);
       await tester
@@ -523,6 +526,11 @@ void main() {
       expect(screen.programId, _program);
       expect(screen.sessionId, _s2);
       expect(find.byType(WorkoutPlayerSessionView), findsOneWidget);
+      expect(find.byType(NavigationBar), findsNothing);
+      await tester.pageBack();
+      await tester.pumpAndSettle();
+      expect(find.byType(ProgramSessionPreviewScreen), findsOneWidget);
+      expect(find.byType(NavigationBar), findsOneWidget);
     });
 
     testWidgets('unknown program shows Program not found with safe return',
