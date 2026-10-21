@@ -78,6 +78,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return Scaffold(
       backgroundColor: visual.page,
       appBar: AppBar(
+        scrolledUnderElevation: 0,
+        titleTextStyle: theme.textTheme.titleLarge
+            ?.copyWith(fontSize: 20, fontWeight: FontWeight.w500),
         toolbarHeight: largeText ? (titleScale > 28 ? 120 : 104) : null,
         title: Semantics(
           header: true,
@@ -144,21 +147,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             children: [
                               _AppearanceOption(
                                 title: l.utilitySystemDefault,
-                                subtitle: l.utilitySystemHelp,
                                 value: AppearanceMode.system,
                                 selected: mode == AppearanceMode.system,
                                 enabled: !_savingAppearance,
                               ),
                               _AppearanceOption(
                                 title: l.appearanceLight,
-                                subtitle: l.utilityLightHelp,
                                 value: AppearanceMode.light,
                                 selected: mode == AppearanceMode.light,
                                 enabled: !_savingAppearance,
                               ),
                               _AppearanceOption(
                                 title: l.appearanceDark,
-                                subtitle: l.utilityDarkHelp,
                                 value: AppearanceMode.dark,
                                 selected: mode == AppearanceMode.dark,
                                 enabled: !_savingAppearance,
@@ -171,46 +171,40 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   const SizedBox(height: FitFlowSpace.sm),
                   const WorkoutRemindersSection(),
                   const SizedBox(height: FitFlowSpace.md),
-                  FitFlowV2InfoSurface(
-                    padding: EdgeInsets.zero,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        UtilityHeading(l.utilityData),
-                        const BackupRestoreSettingsEntry(),
-                        const Divider(
-                          height: 1,
-                          indent: FitFlowSpace.md,
-                          endIndent: FitFlowSpace.md,
-                        ),
-                        UtilityHeading(l.utilityAbout),
-                        const _PrivacyPolicyEntry(),
-                      ],
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      UtilityHeading(l.utilityData),
+                      const BackupRestoreSettingsEntry(),
+                      const Divider(
+                        height: 1,
+                        indent: FitFlowSpace.md,
+                        endIndent: FitFlowSpace.md,
+                      ),
+                      UtilityHeading(l.utilityAbout),
+                      const _PrivacyPolicyEntry(),
+                    ],
                   ),
                   const SizedBox(height: FitFlowSpace.md),
-                  FitFlowV2InfoSurface(
-                    tonal: true,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ExcludeSemantics(
-                          child: Icon(
-                            Icons.info_outline_rounded,
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ExcludeSemantics(
+                        child: Icon(
+                          Icons.info_outline_rounded,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(width: FitFlowSpace.sm),
+                      Expanded(
+                        child: Text(
+                          SettingsScreen.localDataFooter,
+                          style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
-                        const SizedBox(width: FitFlowSpace.sm),
-                        Expanded(
-                          child: Text(
-                            SettingsScreen.localDataFooter,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -234,7 +228,7 @@ class _PrivacyPolicyEntry extends StatelessWidget {
       key: tileKey,
       minVerticalPadding: FitFlowSpace.xs,
       contentPadding: const EdgeInsets.symmetric(
-        horizontal: FitFlowSpace.md,
+        horizontal: 0,
       ),
       leading: ExcludeSemantics(
         child: Icon(
@@ -242,7 +236,9 @@ class _PrivacyPolicyEntry extends StatelessWidget {
           color: theme.colorScheme.primary,
         ),
       ),
-      title: const Text('Privacy Policy'),
+      title: Text('Privacy Policy',
+          style: theme.textTheme.titleMedium
+              ?.copyWith(fontWeight: FontWeight.w500)),
       subtitle: const Text('How FitFlow handles information on this device.'),
       trailing: const ExcludeSemantics(
         child: Icon(Icons.chevron_right_rounded),
@@ -255,14 +251,12 @@ class _PrivacyPolicyEntry extends StatelessWidget {
 class _AppearanceOption extends StatelessWidget {
   const _AppearanceOption({
     required this.title,
-    required this.subtitle,
     required this.value,
     required this.selected,
     this.enabled = true,
   });
 
   final String title;
-  final String subtitle;
   final AppearanceMode value;
   final bool selected;
 
@@ -273,8 +267,7 @@ class _AppearanceOption extends StatelessWidget {
   Widget build(BuildContext context) {
     return RadioListTile<AppearanceMode>(
       contentPadding: EdgeInsets.zero,
-      title: Text(title),
-      subtitle: Text(subtitle),
+      title: Text(title, style: Theme.of(context).textTheme.bodyLarge),
       value: value,
       selected: selected,
       enabled: enabled,

@@ -18,7 +18,7 @@ class BackupRestoreSettingsEntry extends StatelessWidget {
       key: tileKey,
       minVerticalPadding: FitFlowSpace.xs,
       contentPadding: const EdgeInsets.symmetric(
-        horizontal: FitFlowSpace.md,
+        horizontal: 0,
       ),
       leading: ExcludeSemantics(
         child: Icon(
@@ -26,7 +26,9 @@ class BackupRestoreSettingsEntry extends StatelessWidget {
           color: theme.colorScheme.primary,
         ),
       ),
-      title: const Text(BackupCopy.settingsTitle),
+      title: Text(BackupCopy.settingsTitle,
+          style: theme.textTheme.titleMedium
+              ?.copyWith(fontWeight: FontWeight.w500)),
       subtitle: const Text(BackupCopy.settingsSubtitle),
       trailing: const ExcludeSemantics(
         child: Icon(Icons.chevron_right_rounded),

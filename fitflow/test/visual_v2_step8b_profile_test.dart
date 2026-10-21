@@ -4,8 +4,6 @@ import 'package:fitflow/app/config/app_theme.dart';
 import 'package:fitflow/app/router/app_router.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/core/accessibility/system_motion.dart';
-import 'package:fitflow/core/design/fitflow_visual_v2.dart';
-import 'package:fitflow/core/design/widgets/fitflow_selection.dart';
 import 'package:fitflow/features/onboarding/data/experience_level.dart';
 import 'package:fitflow/features/onboarding/data/fitness_goal.dart';
 import 'package:fitflow/features/onboarding/data/training_environment.dart';
@@ -54,7 +52,7 @@ void main() {
         isTrue,
       );
       expect(
-        find.text('Your settings shape how FitFlow adapts future workouts.'),
+        find.text('Your setup for future workouts.'),
         findsOneWidget,
       );
       expect(
@@ -288,9 +286,11 @@ void main() {
             isTrue,
             reason: '${screen.title} Save reachability at $viewport',
           );
-          final infoSurface = find.byType(FitFlowV2InfoSurface).first;
+          final editorContent = screen.route == AppRoutes.fitnessProfile
+              ? find.byType(ProfileDisclosure).first
+              : find.byType(ProfileOptionTile).first;
           expect(
-            tester.getSize(infoSurface).width,
+            tester.getSize(editorContent).width,
             lessThanOrEqualTo(720),
             reason: '${screen.title} bounded content at $viewport',
           );
@@ -323,11 +323,10 @@ void main() {
       expect(Theme.of(equipmentContext).brightness, Brightness.dark);
 
       final chairTile = _optionTile('Chair');
-      final animatedTile = tester.widget<AnimatedContainer>(
-        find.descendant(
-            of: chairTile, matching: find.byType(AnimatedContainer)),
-      );
-      expect(animatedTile.duration, Duration.zero);
+      expect(
+          find.descendant(
+              of: chairTile, matching: find.byType(AnimatedContainer)),
+          findsNothing);
       final focusable = find.descendant(
         of: chairTile,
         matching: find.byType(InkWell),
@@ -465,7 +464,7 @@ Future<GoRouter> _pumpProfileV2App(
 Finder _optionTile(String label) => find
     .ancestor(
       of: find.text(label),
-      matching: find.byType(FitFlowSelectableTile),
+      matching: find.byType(ProfileOptionTile),
     )
     .first;
 

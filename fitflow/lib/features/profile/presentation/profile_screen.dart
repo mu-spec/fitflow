@@ -26,7 +26,7 @@ class ProfileScreen extends ConsumerWidget {
     final profileAsync = ref.watch(userFitnessProfileProvider);
     final visual = FitFlowVisualV2.of(context);
 
-    return ColoredBox(
+    return Material(
       color: visual.page,
       child: SafeArea(
         child: Align(
@@ -108,8 +108,8 @@ class _ProfileSummaryList extends StatelessWidget {
             l.homeBrand,
             style: theme.textTheme.labelMedium?.copyWith(
               color: brand.brand,
-              letterSpacing: 1.2,
-              fontWeight: FontWeight.w700,
+              letterSpacing: 1.0,
+              fontWeight: FontWeight.w500,
             ),
           ),
           const SizedBox(height: FitFlowSpace.xs),
@@ -117,74 +117,68 @@ class _ProfileSummaryList extends StatelessWidget {
             header: true,
             child: Text(
               l.yourProfile,
-              style: theme.textTheme.headlineMedium,
+              style: theme.textTheme.titleLarge
+                  ?.copyWith(fontSize: 22, fontWeight: FontWeight.w500),
             ),
           ),
           const SizedBox(height: FitFlowSpace.sm),
           Text(
-            'Your settings shape how FitFlow adapts future workouts.',
-            style: theme.textTheme.bodyLarge?.copyWith(
+            l.profileIntro,
+            style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: FitFlowSpace.xl),
-          FitFlowV2InfoSurface(
-            padding: EdgeInsets.zero,
-            child: Column(
-              children: [
-                _ProfileSummaryRow(
-                  icon: Icons.tune_rounded,
-                  title: 'Fitness Profile',
-                  subtitle:
-                      '${fitnessProfileSummaryPrimary(profile, l10n: l)}\n${fitnessProfileSummarySecondary(profile, l10n: l)}',
-                  onTap: () => context.go(AppRoutes.fitnessProfile),
+          Column(
+            children: [
+              _ProfileSummaryRow(
+                icon: Icons.tune_rounded,
+                title: l.profileFitnessEntry,
+                subtitle:
+                    '${fitnessProfileSummaryPrimary(profile, l10n: l)}\n${fitnessProfileSummarySecondary(profile, l10n: l)}',
+                onTap: () => context.go(AppRoutes.fitnessProfile),
+              ),
+              const Divider(
+                height: 1,
+                indent: FitFlowSpace.md,
+                endIndent: FitFlowSpace.md,
+              ),
+              _ProfileSummaryRow(
+                icon: Icons.build,
+                title: l.homeEquipment,
+                subtitle: formatEquipmentSummary(
+                  profile.equipment,
+                  l10n: l,
+                  showAll: true,
                 ),
-                const Divider(
-                  height: 1,
-                  indent: FitFlowSpace.md,
-                  endIndent: FitFlowSpace.md,
+                onTap: () => context.go(AppRoutes.equipment),
+              ),
+              const Divider(
+                height: 1,
+                indent: FitFlowSpace.md,
+                endIndent: FitFlowSpace.md,
+              ),
+              _ProfileSummaryRow(
+                icon: Icons.tune,
+                title: l.profilePreferencesEntry,
+                subtitle: formatPreferencesSummary(
+                  profile.preferences,
+                  l10n: l,
+                  showAll: true,
                 ),
-                _ProfileSummaryRow(
-                  icon: Icons.build,
-                  title: 'Equipment',
-                  subtitle: formatEquipmentSummary(
-                    profile.equipment,
-                    l10n: l,
-                    showAll: true,
-                  ),
-                  onTap: () => context.go(AppRoutes.equipment),
-                ),
-                const Divider(
-                  height: 1,
-                  indent: FitFlowSpace.md,
-                  endIndent: FitFlowSpace.md,
-                ),
-                _ProfileSummaryRow(
-                  icon: Icons.tune,
-                  title: 'Workout Preferences',
-                  subtitle: formatPreferencesSummary(
-                    profile.preferences,
-                    l10n: l,
-                    showAll: true,
-                  ),
-                  onTap: () => context.go(AppRoutes.workoutPreferences),
-                ),
-              ],
-            ),
+                onTap: () => context.go(AppRoutes.workoutPreferences),
+              ),
+            ],
           ),
           const SizedBox(height: FitFlowSpace.md),
           const _MovementSummary(),
           const SizedBox(height: FitFlowSpace.md),
-          FitFlowV2InfoSurface(
-            tonal: true,
-            padding: EdgeInsets.zero,
-            child: _ProfileSummaryRow(
-              icon: Icons.settings,
-              title: 'Settings',
-              subtitle: l.utilitySettingsSummary,
-              isEditing: false,
-              onTap: () => context.go(AppRoutes.settings),
-            ),
+          _ProfileSummaryRow(
+            icon: Icons.settings,
+            title: l.settingsTitle,
+            subtitle: l.utilitySettingsSummary,
+            isEditing: false,
+            onTap: () => context.go(AppRoutes.settings),
           ),
         ],
       ),
@@ -216,7 +210,7 @@ class _ProfileSummaryRow extends StatelessWidget {
       onTap: onTap,
       minVerticalPadding: FitFlowSpace.xxs,
       contentPadding: const EdgeInsets.symmetric(
-        horizontal: FitFlowSpace.md,
+        horizontal: 0,
       ),
       leading: ExcludeSemantics(
         child: Icon(
@@ -226,7 +220,8 @@ class _ProfileSummaryRow extends StatelessWidget {
       ),
       title: Text(
         title,
-        style: theme.textTheme.titleMedium,
+        style:
+            theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500),
       ),
       subtitle: Text(
         subtitle,
@@ -297,11 +292,11 @@ class _MovementSummary extends ConsumerWidget {
                             l,
                             values[index].movementPattern,
                           ),
-                          style: theme.textTheme.bodyLarge,
+                          style: theme.textTheme.bodyMedium,
                         ),
-                        FitFlowV2Tag(
-                          assessmentChoice(l, values[index].level),
-                        ),
+                        Text(assessmentChoice(l, values[index].level),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant)),
                       ],
                     ),
                   ),

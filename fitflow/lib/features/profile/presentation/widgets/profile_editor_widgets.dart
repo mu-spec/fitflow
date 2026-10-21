@@ -5,7 +5,6 @@ import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
-import 'package:fitflow/core/design/widgets/fitflow_selection.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -98,7 +97,7 @@ class ProfileEditorSaveBar extends StatelessWidget {
 }
 
 /// Profile-only expandable group. It follows system motion and keeps all
-/// existing profile choices inside a single, readable V2 surface.
+/// existing profile choices in a compact expandable section.
 class ProfileDisclosure extends StatelessWidget {
   const ProfileDisclosure({
     super.key,
@@ -114,39 +113,40 @@ class ProfileDisclosure extends StatelessWidget {
   final bool initiallyExpanded;
 
   @override
-  Widget build(BuildContext context) => FitFlowV2InfoSurface(
-        padding: EdgeInsets.zero,
-        child: ExpansionTile(
-          initiallyExpanded: initiallyExpanded,
-          tilePadding: const EdgeInsets.symmetric(
-            horizontal: FitFlowSpace.md,
-            vertical: FitFlowSpace.xs,
-          ),
-          childrenPadding: const EdgeInsets.fromLTRB(
-            FitFlowSpace.md,
-            FitFlowSpace.xs,
-            FitFlowSpace.md,
-            FitFlowSpace.md,
-          ),
-          expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
-          shape: const Border(),
-          collapsedShape: const Border(),
-          title: Semantics(
-            header: true,
-            child: Text(title),
-          ),
-          subtitle: Text(summary),
-          expansionAnimationStyle: AnimationStyle(
-            duration: SystemMotion.standard(context),
-            reverseDuration: SystemMotion.standard(context),
-            curve: FitFlowMotion.standardCurve,
-          ),
-          children: children,
+  Widget build(BuildContext context) => ExpansionTile(
+        initiallyExpanded: initiallyExpanded,
+        tilePadding: const EdgeInsets.symmetric(
+          horizontal: 0,
+          vertical: FitFlowSpace.xs,
         ),
+        childrenPadding: const EdgeInsets.fromLTRB(
+          0,
+          FitFlowSpace.xs,
+          0,
+          FitFlowSpace.md,
+        ),
+        expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
+        shape: const Border(),
+        collapsedShape: const Border(),
+        title: Semantics(
+          header: true,
+          child: Text(title,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w500)),
+        ),
+        subtitle: Text(summary, style: Theme.of(context).textTheme.bodySmall),
+        expansionAnimationStyle: AnimationStyle(
+          duration: SystemMotion.standard(context),
+          reverseDuration: SystemMotion.standard(context),
+          curve: FitFlowMotion.standardCurve,
+        ),
+        children: children,
       );
 }
 
-/// The same canonical choice surface as onboarding; drafts remain editor-owned.
+/// Compact editor-only selection row; drafts remain editor-owned.
 class ProfileOptionTile extends StatelessWidget {
   const ProfileOptionTile(
       {super.key,
@@ -161,14 +161,26 @@ class ProfileOptionTile extends StatelessWidget {
   final bool enabled;
   final VoidCallback onSelected;
   @override
-  Widget build(BuildContext context) => Padding(
-      padding: const EdgeInsets.only(bottom: FitFlowSpace.xs),
-      child: FitFlowSelectableTile(
-          label: label,
-          subtitle: helperText,
-          selected: selected,
-          enabled: enabled,
-          onTap: onSelected));
+  Widget build(BuildContext context) => Semantics(
+      button: true,
+      selected: selected,
+      enabled: enabled,
+      child: ListTile(
+        contentPadding: EdgeInsets.zero,
+        minVerticalPadding: FitFlowSpace.xs,
+        enabled: enabled,
+        selected: selected,
+        onTap: enabled ? onSelected : null,
+        title: Text(label, style: Theme.of(context).textTheme.bodyLarge),
+        subtitle: helperText == null ? null : Text(helperText!),
+        trailing: ExcludeSemantics(
+            child: Icon(
+          selected ? Icons.check_circle : Icons.circle_outlined,
+          color: selected
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.onSurfaceVariant,
+        )),
+      ));
 }
 
 class ProfileEditorMissingState extends StatelessWidget {

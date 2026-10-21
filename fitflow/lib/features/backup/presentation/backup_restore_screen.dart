@@ -77,6 +77,9 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
     return Scaffold(
       backgroundColor: visual.page,
       appBar: AppBar(
+        scrolledUnderElevation: 0,
+        titleTextStyle: theme.textTheme.titleLarge
+            ?.copyWith(fontSize: 20, fontWeight: FontWeight.w500),
         toolbarHeight: largeText ? (titleScale > 28 ? 120 : 104) : null,
         title: Semantics(
           header: true,
@@ -104,31 +107,28 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  FitFlowV2InfoSurface(
-                    tonal: true,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ExcludeSemantics(
-                          child: Icon(
-                            Icons.info_outline_rounded,
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ExcludeSemantics(
+                        child: Icon(
+                          Icons.info_outline_rounded,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(width: FitFlowSpace.sm),
+                      Expanded(
+                        child: Text(
+                          BackupCopy.storageNote,
+                          style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
-                        const SizedBox(width: FitFlowSpace.sm),
-                        Expanded(
-                          child: Text(
-                            BackupCopy.storageNote,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: FitFlowSpace.md),
-                  _SectionCard(
+                  _BackupSection(
                     icon: Icons.save_alt_rounded,
                     title: BackupCopy.createTitle,
                     description: BackupCopy.createDescription,
@@ -152,8 +152,8 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: FitFlowSpace.md),
-                  _SectionCard(
+                  const Divider(height: FitFlowSpace.xl),
+                  _BackupSection(
                     icon: Icons.restore_rounded,
                     title: BackupCopy.restoreTitle,
                     description: BackupCopy.restoreDescription,
@@ -181,29 +181,26 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                     ),
                   ],
                   const SizedBox(height: FitFlowSpace.md),
-                  FitFlowV2InfoSurface(
-                    tonal: true,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ExcludeSemantics(
-                          child: Icon(
-                            Icons.description_outlined,
-                            size: 18,
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ExcludeSemantics(
+                        child: Icon(
+                          Icons.description_outlined,
+                          size: 18,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(width: FitFlowSpace.sm),
+                      Expanded(
+                        child: Text(
+                          BackupCopy.privacyNote,
+                          style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
-                        const SizedBox(width: FitFlowSpace.sm),
-                        Expanded(
-                          child: Text(
-                            BackupCopy.privacyNote,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -215,8 +212,8 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
   }
 }
 
-class _SectionCard extends StatelessWidget {
-  const _SectionCard({
+class _BackupSection extends StatelessWidget {
+  const _BackupSection({
     required this.icon,
     required this.title,
     required this.description,
@@ -231,36 +228,34 @@ class _SectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return FitFlowV2InfoSurface(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ExcludeSemantics(
-                child: Icon(icon, color: theme.colorScheme.primary),
-              ),
-              const SizedBox(width: FitFlowSpace.sm),
-              Expanded(
-                child: Semantics(
-                  header: true,
-                  child: Text(
-                    title,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ExcludeSemantics(
+              child: Icon(icon, color: theme.colorScheme.primary),
+            ),
+            const SizedBox(width: FitFlowSpace.sm),
+            Expanded(
+              child: Semantics(
+                header: true,
+                child: Text(
+                  title,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: FitFlowSpace.xs),
-          Text(description, style: theme.textTheme.bodyMedium),
-          const SizedBox(height: FitFlowSpace.md),
-          action,
-        ],
-      ),
+            ),
+          ],
+        ),
+        const SizedBox(height: FitFlowSpace.xs),
+        Text(description, style: theme.textTheme.bodyMedium),
+        const SizedBox(height: FitFlowSpace.md),
+        action,
+      ],
     );
   }
 }

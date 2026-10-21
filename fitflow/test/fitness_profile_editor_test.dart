@@ -17,7 +17,7 @@ import 'helpers/profile_editor_test_helpers.dart';
 void main() {
   /// Where the Profile tab lives after popping the editor.
   final profileListVisible = find.text(
-    'Your settings shape how FitFlow adapts future workouts.',
+    'Your setup for future workouts.',
   );
 
   setUp(() {

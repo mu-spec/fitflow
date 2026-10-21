@@ -1,6 +1,5 @@
 import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
-import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/features/settings/presentation/widgets/utility_presentation.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/l10n/locale_format.dart';
@@ -159,14 +158,6 @@ class _WorkoutRemindersSectionState
                 },
         ),
         const SizedBox(height: FitFlowSpace.xs),
-        FitFlowV2InfoSurface(
-          tonal: true,
-          padding: const EdgeInsets.symmetric(
-            horizontal: FitFlowSpace.md,
-            vertical: FitFlowSpace.xs,
-          ),
-          child: _StatusLine(status: status),
-        ),
         if (status == WorkoutReminderScheduleStatus.permissionBlocked ||
             state.permission == WorkoutReminderPermissionStatus.denied) ...[
           const SizedBox(height: FitFlowSpace.xs),
@@ -192,13 +183,13 @@ class _WorkoutRemindersSectionState
           header: true,
           child: Text(
             l.utilitySavedSchedule,
-            style: theme.textTheme.titleSmall,
+            style: theme.textTheme.bodySmall,
           ),
         ),
         const SizedBox(height: FitFlowSpace.md),
         Text(
           context.l10n.reminderDaysLabel,
-          style: theme.textTheme.labelLarge,
+          style: theme.textTheme.bodyMedium,
         ),
         const SizedBox(height: FitFlowSpace.xs),
         _WeekdayPicker(
@@ -235,16 +226,9 @@ class _WorkoutRemindersSectionState
           },
         ),
         const SizedBox(height: FitFlowSpace.xs),
-        Text(
-          scheduleSummary(context, prefs),
-          style:
-              theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: FitFlowSpace.xs),
-        FitFlowV2InfoSurface(
-          tonal: true,
+        Padding(
           padding: const EdgeInsets.symmetric(
-            horizontal: FitFlowSpace.md,
+            horizontal: 0,
             vertical: FitFlowSpace.xs,
           ),
           child: Row(
@@ -310,52 +294,6 @@ class _WorkoutRemindersSectionState
   }
 }
 
-class _StatusLine extends StatelessWidget {
-  const _StatusLine({required this.status});
-
-  final WorkoutReminderScheduleStatus status;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final l10n = context.l10n;
-    final (String text, IconData icon, Color color) = switch (status) {
-      WorkoutReminderScheduleStatus.off => (
-          l10n.reminderStatusOff,
-          Icons.notifications_off_outlined,
-          colors.onSurfaceVariant
-        ),
-      WorkoutReminderScheduleStatus.scheduled => (
-          l10n.reminderStatusScheduled,
-          Icons.check_circle_outline,
-          colors.primary
-        ),
-      WorkoutReminderScheduleStatus.permissionBlocked => (
-          l10n.reminderStatusBlocked,
-          Icons.notifications_paused_outlined,
-          colors.error
-        ),
-      WorkoutReminderScheduleStatus.scheduleError => (
-          l10n.reminderStatusError,
-          Icons.error_outline,
-          colors.error
-        ),
-    };
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        ExcludeSemantics(child: Icon(icon, size: 18, color: color)),
-        const SizedBox(width: FitFlowSpace.sm),
-        Expanded(
-          child: Text(text,
-              style: theme.textTheme.bodyMedium?.copyWith(color: color)),
-        ),
-      ],
-    );
-  }
-}
-
 class _WeekdayPicker extends StatelessWidget {
   const _WeekdayPicker({
     required this.selected,
@@ -386,7 +324,7 @@ class _WeekdayPicker extends StatelessWidget {
                   label: FitFlowLocaleFormat.fullWeekday(material, weekday),
                   excludeSemantics: true,
                   child: Text(
-                      FitFlowLocaleFormat.narrowWeekday(material, weekday))),
+                      FitFlowLocaleFormat.shortWeekday(material, weekday))),
               showCheckmark: true,
               selected: selected.contains(weekday),
               onSelected: enabled ? (_) => onToggle(weekday) : null,

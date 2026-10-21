@@ -62,7 +62,7 @@ void main() {
         expect(find.text(label), findsOneWidget, reason: label);
       }
       expect(find.byType(UtilityDisclosure), findsNWidgets(2));
-      expect(find.byType(FitFlowV2InfoSurface), findsAtLeastNWidgets(2));
+      expect(find.byType(FitFlowV2InfoSurface), findsNothing);
       expect(find.text(BackupCopy.settingsTitle), findsOneWidget);
       expect(find.text(BackupCopy.settingsSubtitle), findsOneWidget);
       expect(find.text('Privacy Policy'), findsOneWidget);

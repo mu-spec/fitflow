@@ -2248,4 +2248,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get v2HomeTargetUnit => 'min target';
+
+  @override
+  String get profileIntro => 'Your setup for future workouts.';
+
+  @override
+  String get profileFitnessEntry => 'Fitness Profile';
+
+  @override
+  String get profilePreferencesEntry => 'Workout Preferences';
 }

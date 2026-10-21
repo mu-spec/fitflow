@@ -54,7 +54,7 @@ void main() {
 
       expect(find.text('Your profile'), findsOneWidget);
       expect(
-        find.text('Your settings shape how FitFlow adapts future workouts.'),
+        find.text('Your setup for future workouts.'),
         findsOneWidget,
       );
     });

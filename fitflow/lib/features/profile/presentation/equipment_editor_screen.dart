@@ -123,6 +123,9 @@ class _EquipmentEditorScreenState extends ConsumerState<EquipmentEditorScreen> {
       child: Scaffold(
         backgroundColor: visual.page,
         appBar: AppBar(
+          scrolledUnderElevation: 0,
+          titleTextStyle: theme.textTheme.titleLarge
+              ?.copyWith(fontSize: 20, fontWeight: FontWeight.w500),
           toolbarHeight: largeText ? (titleScale > 28 ? 120 : 104) : null,
           title: Semantics(
             header: true,
@@ -164,24 +167,21 @@ class _EquipmentEditorScreenState extends ConsumerState<EquipmentEditorScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        FitFlowV2InfoSurface(
-                          tonal: true,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Choose the equipment you currently have available.',
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Choose the equipment you currently have available.',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
                               ),
-                              const SizedBox(height: FitFlowSpace.xs),
-                              Text(
-                                context.l10n.utilityEditorDraft,
-                                style: theme.textTheme.bodySmall,
-                              ),
-                            ],
-                          ),
+                            ),
+                            const SizedBox(height: FitFlowSpace.xs),
+                            Text(
+                              context.l10n.utilityEditorDraft,
+                              style: theme.textTheme.bodySmall,
+                            ),
+                          ],
                         ),
                         const SizedBox(height: FitFlowSpace.md),
                         for (final equipment in WorkoutEquipment.values)

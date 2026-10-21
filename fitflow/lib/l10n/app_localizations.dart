@@ -3820,6 +3820,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'min target'**
   String get v2HomeTargetUnit;
+
+  /// No description provided for @profileIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Your setup for future workouts.'**
+  String get profileIntro;
+
+  /// No description provided for @profileFitnessEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Fitness Profile'**
+  String get profileFitnessEntry;
+
+  /// No description provided for @profilePreferencesEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout Preferences'**
+  String get profilePreferencesEntry;
 }
 
 class _AppLocalizationsDelegate

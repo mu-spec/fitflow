@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:fitflow/features/reminders/application/workout_reminders_controller.dart';
 import 'package:fitflow/features/reminders/domain/workout_reminder_ids.dart';
 import 'package:fitflow/features/reminders/domain/workout_reminder_permission_status.dart';
-import 'package:fitflow/features/reminders/domain/workout_reminder_weekday.dart';
 import 'package:fitflow/features/reminders/presentation/widgets/workout_reminders_section.dart';
 import 'package:fitflow/features/settings/presentation/settings_screen.dart';
 import 'package:flutter/material.dart';
@@ -110,7 +109,7 @@ void main() {
   });
 
   testWidgets(
-      'weekday chips expose full-day-name semantics and letters M T W T F S S',
+      'weekday chips expose full-day-name semantics and distinct short labels',
       (tester) async {
     await pumpSection(tester);
     final handle = tester.ensureSemantics();
@@ -126,13 +125,8 @@ void main() {
       expect(find.bySemanticsLabel(entry.value), findsOneWidget,
           reason: entry.value);
     }
-    final letters = [
-      for (final d in WorkoutReminderWeekday.all)
-        WorkoutReminderWeekday.letter(d)
-    ];
-    expect(letters, ['M', 'T', 'W', 'T', 'F', 'S', 'S']);
-    for (final l in ['M', 'W', 'F']) {
-      expect(find.text(l), findsWidgets);
+    for (final day in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']) {
+      expect(find.text(day), findsOneWidget);
     }
     handle.dispose();
   });
