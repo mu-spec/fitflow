@@ -4,14 +4,24 @@ import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/workouts/presentation/widgets/skill_tree_family_card.dart';
+import 'package:fitflow/features/workouts/presentation/workouts_theme.dart';
 import 'package:fitflow/features/workouts/state/exercise_skill_tree_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 /// Overview of progression families discovered from active catalog metadata.
+/// Scoped Slate + Citrus presentation, identical tokens to the Workouts hub.
 class SkillTreesScreen extends ConsumerWidget {
   const SkillTreesScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) =>
+      const WorkoutsTheme(child: _SkillTreesContent());
+}
+
+class _SkillTreesContent extends ConsumerWidget {
+  const _SkillTreesContent();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,9 +33,7 @@ class SkillTreesScreen extends ConsumerWidget {
       appBar: AppBar(
           backgroundColor: FitFlowVisualV2.of(context).page,
           scrolledUnderElevation: 0,
-          title: Text(context.l10n.trainingSkills,
-              style: theme.textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w500))),
+          title: Text(context.l10n.trainingSkills)),
       body: SafeArea(
           top: false,
           child: FitFlowMaxWidth(

@@ -5,6 +5,7 @@ import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/app/config/app_dimensions.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/workouts/presentation/widgets/skill_tree_node_card.dart';
+import 'package:fitflow/features/workouts/presentation/workouts_theme.dart';
 import 'package:fitflow/features/workouts/state/exercise_skill_tree_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,6 +17,16 @@ class SkillTreeFamilyScreen extends ConsumerWidget {
     super.key,
     required this.familyId,
   });
+
+  final String familyId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) =>
+      WorkoutsTheme(child: _SkillTreeFamilyContent(familyId: familyId));
+}
+
+class _SkillTreeFamilyContent extends ConsumerWidget {
+  const _SkillTreeFamilyContent({required this.familyId});
 
   final String familyId;
 
@@ -36,9 +47,7 @@ class SkillTreeFamilyScreen extends ConsumerWidget {
       appBar: AppBar(
           backgroundColor: FitFlowVisualV2.of(context).page,
           scrolledUnderElevation: 0,
-          title: Text(tree.displayName,
-              style: theme.textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w500))),
+          title: Text(tree.displayName)),
       body: SafeArea(
           top: false,
           child: FitFlowMaxWidth(
