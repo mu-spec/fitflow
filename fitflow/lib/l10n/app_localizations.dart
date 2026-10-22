@@ -1366,6 +1366,18 @@ abstract class AppLocalizations {
   /// **'Workout details & preferences'**
   String get homeSetupHint;
 
+  /// No description provided for @homeHowChosen.
+  ///
+  /// In en, this message translates to:
+  /// **'How this workout was chosen'**
+  String get homeHowChosen;
+
+  /// No description provided for @homeChosenExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'FitFlow uses your goal, space, equipment, movement capabilities and workout preferences to choose this workout.'**
+  String get homeChosenExplanation;
+
   /// No description provided for @homeAdaptationDetail.
   ///
   /// In en, this message translates to:

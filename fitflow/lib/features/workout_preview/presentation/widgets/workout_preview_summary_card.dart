@@ -1,3 +1,4 @@
+import 'package:fitflow/features/workout_preview/presentation/widgets/workout_preview_adaptive_note.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:fitflow/features/onboarding/data/workout_equipment.dart';
@@ -41,31 +42,49 @@ class WorkoutPreviewSummaryCard extends StatelessWidget {
               style: text.titleLarge?.copyWith(
                   color: t.textPrimary, fontWeight: FontWeight.w500)),
         ),
-        const SizedBox(height: FitFlowSpace.md),
-        Text(fitnessGoalLabel(l, userProfile.goal),
-            style: text.bodyMedium?.copyWith(color: t.textSecondary)),
         const SizedBox(height: FitFlowSpace.xs),
         Text(
-            l.flowTarget(
-                (effectiveDuration ?? userProfile.workoutDuration).minutes),
-            style: text.titleMedium
-                ?.copyWith(color: t.textPrimary, fontWeight: FontWeight.w500)),
-        const SizedBox(height: FitFlowSpace.xs),
-        Text(
-            '${l.flowCount(plan.totalExerciseCount)} · ${l.flowEstimate(plannedDuration(l, plan.estimatedDuration))}',
+            '${l.flowEstimate(plannedDuration(l, plan.estimatedDuration))} · ${l.flowCount(plan.totalExerciseCount)}',
             style: text.bodyMedium?.copyWith(color: t.textPrimary)),
         const SizedBox(height: FitFlowSpace.xs),
-        Text(
-            equipment.isEmpty
-                ? l.flowNoEquipment
-                : equipment.map((e) => equipmentLabel(l, e)).join(', '),
-            style: text.bodySmall?.copyWith(color: t.textSecondary)),
-        const SizedBox(height: FitFlowSpace.sm),
-        Text(
-            sessionMode == WorkoutSessionMode.standard
-                ? sessionModeLabel(l, sessionMode)
-                : l.flowModeTemporary(sessionModeLabel(l, sessionMode)),
-            style: text.bodyMedium?.copyWith(color: t.textSecondary)),
+        Wrap(spacing: FitFlowSpace.sm, runSpacing: FitFlowSpace.xxs, children: [
+          Text(
+              equipment.isEmpty
+                  ? l.flowNoEquipment
+                  : equipment.map((e) => equipmentLabel(l, e)).join(', '),
+              style: text.bodySmall?.copyWith(color: t.textSecondary)),
+          Text(sessionModeLabel(l, sessionMode),
+              style: text.bodySmall?.copyWith(color: t.textSecondary)),
+        ]),
+        ExpansionTile(
+          key: const Key('preview_details'),
+          initiallyExpanded: false,
+          tilePadding: EdgeInsets.zero,
+          shape: const Border(),
+          collapsedShape: const Border(),
+          expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
+          title: Text(l.flowPreviewDetails,
+              style: text.bodyMedium?.copyWith(fontWeight: FontWeight.w500)),
+          children: [
+            Text(fitnessGoalLabel(l, userProfile.goal), style: text.bodyMedium),
+            const SizedBox(height: FitFlowSpace.xs),
+            Text(
+                l.flowTarget(
+                    (effectiveDuration ?? userProfile.workoutDuration).minutes),
+                style: text.bodyMedium),
+            if (sessionMode != WorkoutSessionMode.standard) ...[
+              const SizedBox(height: FitFlowSpace.xs),
+              Text(l.flowModeTemporary(sessionModeLabel(l, sessionMode)),
+                  style: text.bodySmall),
+            ],
+            const SizedBox(height: FitFlowSpace.sm),
+            Text(l.flowPreviewHelp,
+                style: text.bodyMedium?.copyWith(color: t.textSecondary)),
+            const SizedBox(height: FitFlowSpace.xs),
+            const WorkoutPreviewAdaptiveNote(),
+            const SizedBox(height: FitFlowSpace.sm),
+          ],
+        ),
       ],
     );
   }

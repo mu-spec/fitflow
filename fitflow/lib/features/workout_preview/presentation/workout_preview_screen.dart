@@ -1,5 +1,5 @@
+import 'package:fitflow/features/workout_preview/presentation/preview_theme.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
-import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
@@ -9,7 +9,6 @@ import 'package:fitflow/features/home/presentation/widgets/home_error_state.dart
 import 'package:fitflow/features/home/presentation/widgets/home_loading_state.dart';
 import 'package:fitflow/features/onboarding/data/user_fitness_profile.dart';
 import 'package:fitflow/features/onboarding/state/user_fitness_profile_controller.dart';
-import 'package:fitflow/features/workout_preview/presentation/widgets/workout_preview_adaptive_note.dart';
 import 'package:fitflow/features/workout_preview/presentation/widgets/workout_preview_empty.dart';
 import 'package:fitflow/features/workout_preview/presentation/widgets/workout_preview_exercise_row.dart';
 import 'package:fitflow/features/workout_preview/presentation/widgets/workout_preview_section_header.dart';
@@ -26,8 +25,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 /// Workout Preview screen showing exact deterministic WorkoutPlan + M12 mode.
-class WorkoutPreviewScreen extends ConsumerWidget {
+class WorkoutPreviewScreen extends StatelessWidget {
   const WorkoutPreviewScreen({super.key});
+  @override
+  Widget build(BuildContext context) =>
+      const PreviewTheme(child: _PreviewContent());
+}
+
+class _PreviewContent extends ConsumerWidget {
+  const _PreviewContent();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -107,100 +113,81 @@ class WorkoutPreviewScreen extends ConsumerWidget {
         scrolledUnderElevation: 0,
       ),
       body: SafeArea(
+          top: false,
           child: FitFlowMaxWidth(
               child: Padding(
-        padding: EdgeInsets.all(MediaQuery.sizeOf(context).width < 360
-            ? FitFlowSpace.md
-            : FitFlowSpace.xl),
-        child: LayoutBuilder(builder: (context, constraints) {
-          final start = SizedBox(
-              width: double.infinity,
-              child: FilledButton.icon(
-                key: const Key('preview_start'),
-                style: FilledButton.styleFrom(minimumSize: const Size(48, 56)),
-                onPressed: () => context.push(AppRoutes.workoutPlayer),
-                icon: const Icon(Icons.play_arrow_rounded),
-                label: Text(context.l10n.startWorkout),
-              ));
-          final content = <Widget>[
-            WorkoutPreviewSummaryCard(
-                plan: plan,
-                userProfile: userProfile,
-                effectiveDuration: generationContext.effectiveWorkoutDuration,
-                sessionMode: sessionMode),
-            const SizedBox(height: FitFlowSpace.md),
-            WorkoutPreviewSectionHeader(
-                title: context.l10n.flowWarmup,
-                exerciseCount: plan.warmup.exerciseCount,
-                planned: plan.warmupEstimate,
-                budget: plan.timeBudget.warmup,
-                visualV2: true,
-                compactPreview: true),
-            _buildExerciseList(context, plan.warmup.exercises),
-            const SizedBox(height: FitFlowSpace.xl),
-            WorkoutPreviewSectionHeader(
-                title: context.l10n.flowMain,
-                exerciseCount: plan.main.exerciseCount,
-                planned: plan.mainEstimate,
-                budget: plan.timeBudget.main,
-                visualV2: true,
-                compactPreview: true),
-            _buildExerciseList(context, plan.main.exercises,
-                startIndex: plan.warmup.exerciseCount),
-            const SizedBox(height: FitFlowSpace.xl),
-            WorkoutPreviewSectionHeader(
-                title: context.l10n.flowCooldown,
-                exerciseCount: plan.cooldown.exerciseCount,
-                planned: plan.cooldownEstimate,
-                budget: plan.timeBudget.cooldown,
-                visualV2: true,
-                compactPreview: true),
-            _buildExerciseList(context, plan.cooldown.exercises,
-                startIndex:
-                    plan.warmup.exerciseCount + plan.main.exerciseCount),
-            const SizedBox(height: FitFlowSpace.xl),
-            ExpansionTile(
-              key: const Key('preview_details'),
-              tilePadding: EdgeInsets.zero,
-              shape: const Border(),
-              collapsedShape: const Border(),
-              expandedCrossAxisAlignment: CrossAxisAlignment.start,
-              title: Text(context.l10n.flowPreviewDetails,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleSmall
-                      ?.copyWith(fontWeight: FontWeight.w500)),
-              children: [
-                Text(context.l10n.flowPreviewHelp,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: FitFlowTheme.of(context).textSecondary)),
-                const SizedBox(height: FitFlowSpace.xs),
-                const WorkoutPreviewAdaptiveNote(),
+            padding: const EdgeInsets.symmetric(
+                horizontal: FitFlowSpace.md, vertical: FitFlowSpace.sm),
+            child: LayoutBuilder(builder: (context, constraints) {
+              final start = SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    key: const Key('preview_start'),
+                    style:
+                        FilledButton.styleFrom(minimumSize: const Size(48, 56)),
+                    onPressed: () => context.push(AppRoutes.workoutPlayer),
+                    icon: const Icon(Icons.play_arrow_rounded),
+                    label: Text(context.l10n.startWorkout),
+                  ));
+              final content = <Widget>[
+                WorkoutPreviewSummaryCard(
+                    plan: plan,
+                    userProfile: userProfile,
+                    effectiveDuration:
+                        generationContext.effectiveWorkoutDuration,
+                    sessionMode: sessionMode),
                 const SizedBox(height: FitFlowSpace.md),
-              ],
-            ),
-            const SizedBox(height: FitFlowSpace.md),
-          ];
-          if (constraints.maxHeight < 320) {
-            return SingleChildScrollView(
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [...content, start]));
-          }
-          return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(
-                    child: SingleChildScrollView(
-                        key: const Key('preview_scroll'),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: content))),
-                const SizedBox(height: FitFlowSpace.sm),
-                start,
-              ]);
-        }),
-      ))),
+                WorkoutPreviewSectionHeader(
+                    title: context.l10n.flowWarmup,
+                    exerciseCount: plan.warmup.exerciseCount,
+                    planned: plan.warmupEstimate,
+                    budget: plan.timeBudget.warmup,
+                    visualV2: true,
+                    compactPreview: true),
+                _buildExerciseList(context, plan.warmup.exercises),
+                const SizedBox(height: FitFlowSpace.md),
+                WorkoutPreviewSectionHeader(
+                    title: context.l10n.flowMain,
+                    exerciseCount: plan.main.exerciseCount,
+                    planned: plan.mainEstimate,
+                    budget: plan.timeBudget.main,
+                    visualV2: true,
+                    compactPreview: true),
+                _buildExerciseList(context, plan.main.exercises,
+                    startIndex: plan.warmup.exerciseCount),
+                const SizedBox(height: FitFlowSpace.md),
+                WorkoutPreviewSectionHeader(
+                    title: context.l10n.flowCooldown,
+                    exerciseCount: plan.cooldown.exerciseCount,
+                    planned: plan.cooldownEstimate,
+                    budget: plan.timeBudget.cooldown,
+                    visualV2: true,
+                    compactPreview: true),
+                _buildExerciseList(context, plan.cooldown.exercises,
+                    startIndex:
+                        plan.warmup.exerciseCount + plan.main.exerciseCount),
+                const SizedBox(height: FitFlowSpace.md),
+              ];
+              if (constraints.maxHeight < 320) {
+                return SingleChildScrollView(
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [...content, start]));
+              }
+              return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                        child: SingleChildScrollView(
+                            key: const Key('preview_scroll'),
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: content))),
+                    const SizedBox(height: FitFlowSpace.sm),
+                    start,
+                  ]);
+            }),
+          ))),
     );
   }
 

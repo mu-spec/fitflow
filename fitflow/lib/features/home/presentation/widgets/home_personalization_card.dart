@@ -1,6 +1,6 @@
 import 'package:fitflow/core/accessibility/system_motion.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
-import 'package:fitflow/core/design/fitflow_theme_extension.dart';
+import 'package:fitflow/features/home/presentation/widgets/home_detail_row.dart';
 import 'package:fitflow/features/home/presentation/widgets/home_adaptive_explanation.dart';
 import 'package:fitflow/features/home/presentation/widgets/home_movement_focus.dart';
 import 'package:fitflow/features/onboarding/data/user_fitness_profile.dart';
@@ -21,7 +21,6 @@ class HomePersonalizationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = context.l10n;
     final text = Theme.of(context).textTheme;
-    final colors = FitFlowTheme.of(context);
     final meaningful =
         userProfile.equipment.where((e) => e != WorkoutEquipment.none);
     final equipment = meaningful.isEmpty
@@ -30,28 +29,8 @@ class HomePersonalizationCard extends StatelessWidget {
     final prefs = userProfile.preferences.isEmpty
         ? l.homeNoPreferences
         : userProfile.preferences.map((p) => preferenceLabel(l, p)).join(' · ');
-    Widget fact(String label, String value) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.sm),
-        child: LayoutBuilder(builder: (context, constraints) {
-          final labelWidget = Text(label,
-              style: text.bodySmall?.copyWith(color: colors.textSecondary));
-          final valueWidget = Text(value, style: text.bodyMedium);
-          if (constraints.maxWidth < 300 ||
-              MediaQuery.textScalerOf(context).scale(16) > 22) {
-            return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  labelWidget,
-                  const SizedBox(height: FitFlowSpace.xxs),
-                  valueWidget,
-                ]);
-          }
-          return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            SizedBox(width: 104, child: labelWidget),
-            const SizedBox(width: FitFlowSpace.sm),
-            Expanded(child: valueWidget),
-          ]);
-        }));
+    Widget fact(String label, String value) =>
+        HomeDetailRow(label: label, value: value);
     Widget count(String label, int value) => Semantics(
         label: '$label: $value',
         excludeSemantics: true,
@@ -72,7 +51,7 @@ class HomePersonalizationCard extends StatelessWidget {
       children: [
         if (plan != null) ...[
           Wrap(
-              spacing: FitFlowSpace.lg,
+              spacing: FitFlowSpace.md,
               runSpacing: FitFlowSpace.xs,
               children: [
                 count(l.homeWarmup, plan!.warmup.exerciseCount),
@@ -80,15 +59,8 @@ class HomePersonalizationCard extends StatelessWidget {
                 count(l.homeCooldown, plan!.cooldown.exerciseCount),
               ]),
           const SizedBox(height: FitFlowSpace.sm),
-          Text(l.homeAdaptation, style: text.bodyMedium),
-          const SizedBox(height: FitFlowSpace.md),
           HomeMovementFocus(plan: plan!),
-          const SizedBox(height: FitFlowSpace.md),
         ],
-        Semantics(
-            header: true,
-            child: Text(l.homeBuiltForYou, style: text.titleMedium)),
-        const SizedBox(height: FitFlowSpace.md),
         fact(l.homeGoal, fitnessGoalLabel(l, userProfile.goal)),
         fact(l.homeEnvironment, environmentLabel(l, userProfile.environment)),
         fact(l.homeUsualTime,
@@ -96,7 +68,18 @@ class HomePersonalizationCard extends StatelessWidget {
         fact(l.homeEquipment, equipment),
         fact(l.homePreferences, prefs),
         const SizedBox(height: FitFlowSpace.sm),
-        const HomeAdaptiveExplanation(),
+        ExpansionTile(
+          key: const PageStorageKey('home_chosen_explanation'),
+          tilePadding: EdgeInsets.zero,
+          shape: const Border(),
+          collapsedShape: const Border(),
+          title: Text(l.homeHowChosen, style: text.bodyMedium),
+          expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
+          children: const [
+            HomeAdaptiveExplanation(),
+            SizedBox(height: FitFlowSpace.sm),
+          ],
+        ),
       ],
     );
   }

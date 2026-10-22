@@ -310,6 +310,8 @@
   "homeAdaptation": "Built around your goal, space, equipment, and current ability.",
   "homeBuiltForYou": "Built for you",
   "homeSetupHint": "Workout details & preferences",
+  "homeHowChosen": "How this workout was chosen",
+  "homeChosenExplanation": "FitFlow uses your goal, space, equipment, movement capabilities and workout preferences to choose this workout.",
   "homeAdaptationDetail": "FitFlow chose exercises that match your movement capabilities and current workout preferences.",
   "homeFocus": "Today’s focus",
   "homeTarget": "Target time",

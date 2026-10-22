@@ -99,6 +99,9 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(find.textContaining('Low Energy'), findsWidgets);
+      expect(find.textContaining('Temporary for this workout'), findsNothing);
+      await tester.tap(find.text('About this workout'));
+      await tester.pumpAndSettle();
       expect(find.textContaining('Temporary for this workout'), findsWidgets);
     });
 
@@ -123,6 +126,9 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(find.textContaining('Comeback'), findsWidgets);
+      expect(find.textContaining('Temporary for this workout'), findsNothing);
+      await tester.tap(find.text('About this workout'));
+      await tester.pumpAndSettle();
       expect(find.textContaining('Temporary for this workout'), findsWidgets);
     });
 
@@ -145,6 +151,8 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('About this workout'));
       await tester.pumpAndSettle();
       // Effective duration for 20 -> 15 for low energy
       expect(find.textContaining('15 min target'), findsWidgets);

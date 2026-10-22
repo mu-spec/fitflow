@@ -147,17 +147,40 @@ void main() {
             expect(find.text('${workout.cooldown.exerciseCount} Cooldown'),
                 findsOneWidget);
             for (final label in [
-              'Built for you',
               'Goal',
               'Environment',
               'Usual time',
               'Equipment',
               'Preferences',
-              'FitFlow chose exercises that match your movement capabilities and current workout preferences.',
             ]) {
               expect(find.text(label), findsOneWidget);
             }
             expect(find.text('Equipment'), findsOneWidget);
+            expect(find.text('Built for you'), findsNothing);
+            const explanation =
+                'FitFlow uses your goal, space, equipment, movement capabilities and workout preferences to choose this workout.';
+            final how = find.text('How this workout was chosen');
+            expect(find.text(explanation), findsNothing);
+            await tester.ensureVisible(how);
+            await tester.pumpAndSettle();
+            expect(
+                tester.getSemantics(how).getSemanticsData().hint, 'Collapsed');
+            await tester.tap(how);
+            await tester.pumpAndSettle();
+            expect(
+                tester.getSemantics(how).getSemanticsData().hint, 'Expanded');
+            expect(find.text(explanation), findsOneWidget);
+            expect(
+                find.ancestor(
+                    of: find.text('Browse exercises'),
+                    matching: find.byKey(
+                        const PageStorageKey('home_chosen_explanation'))),
+                findsNothing);
+            await tester.ensureVisible(how);
+            await tester.tap(how);
+            await tester.pumpAndSettle();
+            expect(find.text(explanation), findsNothing);
+
             if ((size == const Size(390, 844) && scale == 1) ||
                 (size == const Size(320, 700) && scale == 2)) {
               await tester.ensureVisible(find.text('Equipment'));
@@ -234,7 +257,7 @@ void main() {
     expect(
         Theme.of(tester.element(find.byType(WorkoutPreviewSummaryCard)))
             .scaffoldBackgroundColor,
-        AppTheme.light.scaffoldBackgroundColor);
+        const Color(0xFFF3F4EE));
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox.shrink());
     router.dispose();

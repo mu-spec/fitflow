@@ -736,6 +736,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeSetupHint => 'Workout details & preferences';
 
   @override
+  String get homeHowChosen => 'How this workout was chosen';
+
+  @override
+  String get homeChosenExplanation =>
+      'FitFlow uses your goal, space, equipment, movement capabilities and workout preferences to choose this workout.';
+
+  @override
   String get homeAdaptationDetail =>
       'FitFlow chose exercises that match your movement capabilities and current workout preferences.';
 

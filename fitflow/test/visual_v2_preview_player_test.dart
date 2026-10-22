@@ -504,7 +504,12 @@ void main() {
   });
 
   group('Step 5A truthful Preview and reachable Start', () {
-    for (final size in _sizes) {
+    for (final size in {
+      ..._sizes,
+      const Size(360, 640),
+      const Size(360, 800),
+      const Size(412, 915)
+    }) {
       for (final dark in [false, true]) {
         for (final scale in [1.0, 2.0]) {
           final name = '${size.width.toInt()}x${size.height.toInt()} '
@@ -516,12 +521,43 @@ void main() {
             Finder fact(String value) =>
                 find.descendant(of: summary, matching: find.text(value));
             expect(fact(_l.homeSession), findsOneWidget);
-            expect(fact(_l.flowTarget(20)), findsOneWidget);
+            expect(fact(_l.flowTarget(20)), findsNothing);
             expect(
-                fact('${_l.flowCount(h.plan.totalExerciseCount)} Â· '
-                    '${_l.flowEstimate(plannedDuration(_l, h.plan.estimatedDuration))}'),
+                fact('${_l.flowEstimate(plannedDuration(_l, h.plan.estimatedDuration))} \u00b7 '
+                    '${_l.flowCount(h.plan.totalExerciseCount)}'),
                 findsOneWidget);
             expect(fact(_l.flowNoEquipment), findsOneWidget);
+            final previewTheme = Theme.of(tester.element(summary));
+            expect(previewTheme.scaffoldBackgroundColor,
+                dark ? const Color(0xFF202526) : const Color(0xFFF3F4EE));
+            final buttonStyle = previewTheme.filledButtonTheme.style!;
+            expect(buttonStyle.backgroundColor!.resolve({}),
+                const Color(0xFFD4E779));
+            expect(
+                fitflowContrast(previewTheme.colorScheme.onSurface,
+                    previewTheme.scaffoldBackgroundColor),
+                greaterThanOrEqualTo(4.5));
+            final details = find.text(_l.flowPreviewDetails);
+            expect(find.text(_l.flowPreviewHelp), findsNothing);
+            await tester.ensureVisible(details);
+            await tester.pumpAndSettle();
+            await tester.tap(details);
+            await tester.pumpAndSettle();
+            expect(fact(_l.flowTarget(20)), findsOneWidget);
+            expect(
+                fact(fitnessGoalLabel(
+                    _l,
+                    tester
+                        .widget<WorkoutPreviewSummaryCard>(summary)
+                        .userProfile
+                        .goal)),
+                findsOneWidget);
+            expect(find.text(_l.flowPreviewHelp), findsOneWidget);
+            await tester.ensureVisible(details);
+            await tester.tap(details);
+            await tester.pumpAndSettle();
+            expect(fact(_l.flowTarget(20)), findsNothing);
+
             expect(find.byKey(const ValueKey('v2_preview_summary')),
                 findsOneWidget);
             expect(find.byType(FitFlowV2WorkoutMedia), findsNothing);
@@ -899,6 +935,12 @@ void main() {
             capabilityProfile:
                 fixtures.createFullProfile(CapabilityLevel.level5),
             sessionMode: mode);
+        expect(
+            find.descendant(
+                of: summary, matching: find.text(sessionModeLabel(_l, mode))),
+            findsOneWidget);
+        await tester.tap(find.text(_l.flowPreviewDetails));
+        await tester.pumpAndSettle();
         expect(
             find.descendant(
                 of: summary,

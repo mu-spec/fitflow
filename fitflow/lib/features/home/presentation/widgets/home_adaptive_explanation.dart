@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class HomeAdaptiveExplanation extends StatelessWidget {
   const HomeAdaptiveExplanation({super.key});
   @override
-  Widget build(BuildContext context) => Text(context.l10n.homeAdaptationDetail,
+  Widget build(BuildContext context) => Text(context.l10n.homeChosenExplanation,
       style: Theme.of(context)
           .textTheme
           .bodySmall

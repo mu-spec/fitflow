@@ -211,7 +211,11 @@ void main() {
       await tester.pumpWidget(buildPreviewOnly(overrides: overrides));
       await tester.pumpAndSettle();
 
-      // Summary should show target, estimated, count, goal
+      // Target and goal remain available in the opening disclosure.
+      expect(find.textContaining('${userProfile.workoutDuration.minutes} min target'), findsNothing);
+      expect(find.textContaining(userProfile.goal.label), findsNothing);
+      await tester.tap(find.text('About this workout'));
+      await tester.pumpAndSettle();
       expect(find.textContaining('${userProfile.workoutDuration.minutes} min target'), findsOneWidget);
       expect(find.textContaining('exercises'), findsWidgets);
       expect(find.textContaining(userProfile.goal.label), findsWidgets);
