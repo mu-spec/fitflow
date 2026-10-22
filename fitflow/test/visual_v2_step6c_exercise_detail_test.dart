@@ -438,8 +438,11 @@ void main() {
     expect(
         find.text(englishAppLocalizations().trainingProgression), findsNothing);
     expect(find.byType(ExerciseProgressionSection), findsNothing);
-    expect(find.byKey(const ValueKey('exercise_detail_media')), findsNothing);
-    expect(find.byType(FitFlowExerciseImage), findsNothing);
+    // pushup_pike has registered production photography, so its hero renders;
+    // the unknown-ID case below still covers the missing-media fallback.
+    expect(
+        find.byKey(const ValueKey('exercise_detail_media')), findsOneWidget);
+    expect(find.byType(FitFlowExerciseImage), findsOneWidget);
     expect(find.text(ExerciseCatalog.byId('pushup_pike')!.shortDescription!),
         findsOneWidget);
     expect(tester.takeException(), isNull);

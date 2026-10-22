@@ -13,11 +13,13 @@ import 'package:fitflow/features/workouts/domain/exercise.dart';
 import 'package:fitflow/features/workouts/presentation/exercise_library_filter.dart';
 import 'package:fitflow/features/workouts/presentation/widgets/exercise_filter_sheet.dart';
 import 'package:fitflow/features/workouts/presentation/widgets/exercise_list_tile.dart';
+import 'package:fitflow/features/workouts/presentation/workouts_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 /// Exercise Library with instant search, filters, quick filters, live count.
-class ExerciseLibraryScreen extends StatefulWidget {
+/// Scoped Slate + Citrus presentation, identical tokens to the Workouts hub.
+class ExerciseLibraryScreen extends StatelessWidget {
   const ExerciseLibraryScreen({super.key, this.exercisesForTest});
 
   /// Optional override for testing empty-catalog handling.
@@ -25,10 +27,20 @@ class ExerciseLibraryScreen extends StatefulWidget {
   final List<Exercise>? exercisesForTest;
 
   @override
-  State<ExerciseLibraryScreen> createState() => _ExerciseLibraryScreenState();
+  Widget build(BuildContext context) =>
+      WorkoutsTheme(child: _ExerciseLibraryBody(exercisesForTest: exercisesForTest));
 }
 
-class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
+class _ExerciseLibraryBody extends StatefulWidget {
+  const _ExerciseLibraryBody({this.exercisesForTest});
+
+  final List<Exercise>? exercisesForTest;
+
+  @override
+  State<_ExerciseLibraryBody> createState() => _ExerciseLibraryScreenState();
+}
+
+class _ExerciseLibraryScreenState extends State<_ExerciseLibraryBody> {
   late final TextEditingController _searchController;
   late List<Exercise> _allExercises;
   ExerciseLibraryFilter _filter = const ExerciseLibraryFilter();
@@ -46,7 +58,7 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
   }
 
   @override
-  void didUpdateWidget(covariant ExerciseLibraryScreen oldWidget) {
+  void didUpdateWidget(covariant _ExerciseLibraryBody oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.exercisesForTest != widget.exercisesForTest) _readCatalog();
   }
@@ -113,8 +125,7 @@ class _ExerciseLibraryScreenState extends State<ExerciseLibraryScreen> {
     final v = FitFlowVisualV2.of(context);
 
     final libraryAppBar = AppBar(
-      title: Text(context.l10n.exerciseLibraryTitle,
-          style: theme.textTheme.titleLarge),
+      title: Text(context.l10n.exerciseLibraryTitle),
       centerTitle: false,
       toolbarHeight:
           56 + (MediaQuery.textScalerOf(context).scale(1) - 1).clamp(0, 3) * 48,

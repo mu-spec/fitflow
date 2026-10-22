@@ -36,9 +36,10 @@ class ExerciseProgressionSection extends StatelessWidget {
           header: true,
           child: Text(
             context.l10n.trainingProgression,
-            style: theme.textTheme.titleLarge?.copyWith(
+            style: theme.textTheme.titleMedium?.copyWith(
               color: visual.onTint,
-              fontWeight: FontWeight.w700,
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ),

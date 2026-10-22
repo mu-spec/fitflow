@@ -16,14 +16,27 @@ import 'package:fitflow/features/workouts/domain/exercise_type.dart';
 import 'package:fitflow/features/workouts/presentation/widgets/exercise_characteristics_section.dart';
 import 'package:fitflow/features/workouts/presentation/widgets/exercise_progression_section.dart';
 import 'package:fitflow/features/workouts/presentation/widgets/training_presentation.dart';
+import 'package:fitflow/features/workouts/presentation/workouts_theme.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/l10n/locale_format.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+/// Scoped Slate + Citrus presentation. The same tokens back the Player's own
+/// theme, so the Player's exercise-detail visits keep their approved look.
 class ExerciseDetailScreen extends StatelessWidget {
   const ExerciseDetailScreen({super.key, required this.exerciseId});
+
+  final String exerciseId;
+
+  @override
+  Widget build(BuildContext context) =>
+      WorkoutsTheme(child: _ExerciseDetailContent(exerciseId: exerciseId));
+}
+
+class _ExerciseDetailContent extends StatelessWidget {
+  const _ExerciseDetailContent({required this.exerciseId});
 
   final String exerciseId;
 
@@ -59,8 +72,7 @@ class ExerciseDetailScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: visual.page,
       appBar: AppBar(
-        title: Text(context.l10n.trainingDetails,
-            style: Theme.of(context).textTheme.titleLarge),
+        title: Text(context.l10n.trainingDetails),
         centerTitle: false,
         toolbarHeight: 56 +
             (MediaQuery.textScalerOf(context).scale(1) - 1).clamp(0, 3) * 48,
@@ -250,7 +262,7 @@ class _HeroSectionState extends State<_HeroSection> {
           child: Text(
             exercise.name,
             key: const ValueKey('exercise_detail_title'),
-            style: theme.textTheme.headlineMedium,
+            style: theme.textTheme.titleLarge,
           ),
         ),
         const SizedBox(height: FitFlowSpace.xs),
@@ -704,7 +716,16 @@ class _SectionCard extends StatelessWidget {
         Divider(height: 1, color: FitFlowTheme.of(context).divider),
         const SizedBox(height: FitFlowSpace.sm),
         if (title.isNotEmpty) ...[
-          TrainingHeading(title),
+          Semantics(
+            header: true,
+            child: Text(
+              title,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontSize: 18, fontWeight: FontWeight.w500),
+            ),
+          ),
           const SizedBox(height: FitFlowSpace.xs),
         ],
         child,
