@@ -49,7 +49,7 @@ class ExerciseCharacteristicsSection extends StatelessWidget {
               'Exercise Characteristics',
               style: theme.textTheme.titleMedium?.copyWith(
                 color: visual.onTint,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),

@@ -15,6 +15,7 @@ import 'package:fitflow/features/workout_player/domain/workout_session_origin.da
 import 'package:fitflow/features/workout_player/presentation/workout_player_session_view.dart';
 import 'package:fitflow/features/workouts/domain/session/workout_session_mode.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_plan.dart';
+import 'package:fitflow/features/workouts/presentation/workouts_theme.dart';
 import 'package:fitflow/features/workouts/state/capability_profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -98,6 +99,16 @@ class _ProgramSessionPlayerScreenState
 
   @override
   Widget build(BuildContext context) {
+    // The shared Player restyles itself via its approved PlayerTheme, so the
+    // Workouts-area theme is only applied around the not-found, loading,
+    // error, missing-profile and generation-failed states of this flow.
+    final definition = AdaptiveProgramCatalog.byId(widget.programId);
+    final content = _buildContent(context);
+    final playsApprovedPlayer = definition != null && _frozenPlan != null;
+    return playsApprovedPlayer ? content : WorkoutsTheme(child: content);
+  }
+
+  Widget _buildContent(BuildContext context) {
     final definition = AdaptiveProgramCatalog.byId(widget.programId);
     if (definition == null) {
       return _NotFoundScaffold(
