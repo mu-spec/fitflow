@@ -94,7 +94,9 @@ class WorkoutsTheme extends StatelessWidget {
         appBarTheme: base.appBarTheme.copyWith(
             backgroundColor: page,
             foregroundColor: ink,
-            surfaceTintColor: Colors.transparent),
+            surfaceTintColor: Colors.transparent,
+            // Nested Workouts-area screens share the hub's title rhythm.
+            titleTextStyle: text.titleLarge),
         bottomSheetTheme: base.bottomSheetTheme.copyWith(backgroundColor: page),
         dialogTheme: base.dialogTheme.copyWith(backgroundColor: page),
         filledButtonTheme: FilledButtonThemeData(

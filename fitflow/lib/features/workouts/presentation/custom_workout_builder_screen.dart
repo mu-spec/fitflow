@@ -25,23 +25,37 @@ import 'package:fitflow/features/workouts/domain/eligibility/exercise_eligibilit
 import 'package:fitflow/features/workouts/domain/exercise.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_exercise_prescription.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_section_type.dart';
+import 'package:fitflow/features/workouts/presentation/workouts_theme.dart';
 import 'package:fitflow/features/workouts/state/capability_profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class CustomWorkoutBuilderScreen extends ConsumerStatefulWidget {
+/// Scoped Slate + Citrus wrapper: placing the body below the theme means the
+/// state's discard dialog, add-exercise sheet and prescription editor inherit
+/// the same tokens (they are presented from the state's own context).
+class CustomWorkoutBuilderScreen extends StatelessWidget {
   const CustomWorkoutBuilderScreen({super.key, this.workoutId});
 
   final String? workoutId;
 
   @override
-  ConsumerState<CustomWorkoutBuilderScreen> createState() =>
+  Widget build(BuildContext context) =>
+      WorkoutsTheme(child: _CustomWorkoutBuilderBody(workoutId: workoutId));
+}
+
+class _CustomWorkoutBuilderBody extends ConsumerStatefulWidget {
+  const _CustomWorkoutBuilderBody({this.workoutId});
+
+  final String? workoutId;
+
+  @override
+  ConsumerState<_CustomWorkoutBuilderBody> createState() =>
       _CustomWorkoutBuilderScreenState();
 }
 
 class _CustomWorkoutBuilderScreenState
-    extends ConsumerState<CustomWorkoutBuilderScreen> {
+    extends ConsumerState<_CustomWorkoutBuilderBody> {
   final _nameController = TextEditingController();
   WorkoutDuration? _selectedDuration;
   List<CustomWorkoutExerciseEntry> _warmup = [];
@@ -458,10 +472,7 @@ class _CustomWorkoutBuilderScreenState
           toolbarHeight: largeText ? (titleScale > 28 ? 104 : 80) : null,
           title: Semantics(
             header: true,
-            child: Text(
-                isEditing ? 'Edit workout' : context.l10n.trainingCreate,
-                style: theme.textTheme.titleMedium
-                    ?.copyWith(fontWeight: FontWeight.w500)),
+            child: Text(isEditing ? 'Edit workout' : context.l10n.trainingCreate),
           ),
           actions: [
             if (_isSaving)
@@ -1121,7 +1132,6 @@ class _PrescriptionEditorDialogState extends State<_PrescriptionEditorDialog> {
 
     return AlertDialog(
       scrollable: true,
-      backgroundColor: theme.colorScheme.surface,
       shape: RoundedRectangleBorder(borderRadius: FitFlowRadius.cardBorder),
       title: Semantics(
         header: true,

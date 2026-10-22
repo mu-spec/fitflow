@@ -168,7 +168,7 @@ void main() {
       initialLocation: AppRoutes.workouts,
     );
 
-    expect(find.text('No custom workouts yet'), findsOneWidget);
+    expect(find.byKey(const Key('v2_custom_empty')), findsOneWidget);
     expect(
       find.text('Build your own workout with exercises from your library.'),
       findsOneWidget,
@@ -210,7 +210,7 @@ void main() {
       findsOneWidget,
     );
 
-    final view = find.widgetWithText(FilledButton, 'View');
+    final view = find.widgetWithText(OutlinedButton, 'View');
     await tester.ensureVisible(view);
     await tester.tap(view);
     await tester.pumpAndSettle();
@@ -257,7 +257,7 @@ void main() {
     await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
     await tester.pumpAndSettle();
     expect(find.byType(WorkoutsScreen), findsOneWidget);
-    expect(find.text('No custom workouts yet'), findsOneWidget);
+    expect(find.byKey(const Key('v2_custom_empty')), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -565,7 +565,7 @@ void main() {
         workouts: [fixture],
       );
       expect(find.text(_workoutName), findsOneWidget);
-      final view = find.widgetWithText(FilledButton, 'View');
+      final view = find.widgetWithText(OutlinedButton, 'View');
       await tester.ensureVisible(view);
       expect(tester.getSize(view).height, greaterThanOrEqualTo(48));
       expect(tester.takeException(), isNull, reason: 'overview $viewport');
@@ -595,14 +595,12 @@ void main() {
         workouts: [fixture],
       );
       expect(find.byType(CustomWorkoutBuilderScreen), findsOneWidget);
-      final builderContext =
-          tester.element(find.byType(CustomWorkoutBuilderScreen));
-      final builderScaffold = tester.widget<Scaffold>(
-        find.descendant(
-          of: find.byType(CustomWorkoutBuilderScreen),
-          matching: find.byType(Scaffold),
-        ),
+      final builderScaffoldFinder = find.descendant(
+        of: find.byType(CustomWorkoutBuilderScreen),
+        matching: find.byType(Scaffold),
       );
+      final builderContext = tester.element(builderScaffoldFinder);
+      final builderScaffold = tester.widget<Scaffold>(builderScaffoldFinder);
       expect(
         builderScaffold.backgroundColor,
         FitFlowVisualV2.of(builderContext).page,
@@ -633,14 +631,12 @@ void main() {
       );
       expect(find.byType(CustomWorkoutDetailScreen), findsOneWidget);
       expect(find.text(_workoutName), findsOneWidget);
-      final detailContext =
-          tester.element(find.byType(CustomWorkoutDetailScreen));
-      final detailScaffold = tester.widget<Scaffold>(
-        find.descendant(
-          of: find.byType(CustomWorkoutDetailScreen),
-          matching: find.byType(Scaffold),
-        ),
+      final detailScaffoldFinder = find.descendant(
+        of: find.byType(CustomWorkoutDetailScreen),
+        matching: find.byType(Scaffold),
       );
+      final detailContext = tester.element(detailScaffoldFinder);
+      final detailScaffold = tester.widget<Scaffold>(detailScaffoldFinder);
       expect(
         detailScaffold.backgroundColor,
         FitFlowVisualV2.of(detailContext).page,

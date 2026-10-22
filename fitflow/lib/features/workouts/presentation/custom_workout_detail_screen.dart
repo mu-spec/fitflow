@@ -14,6 +14,7 @@ import 'package:fitflow/features/workouts/domain/custom/custom_workout_controlle
 import 'package:fitflow/features/workouts/domain/custom/custom_workout_plan_resolver.dart';
 import 'package:fitflow/features/workouts/domain/exercise.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_plan.dart';
+import 'package:fitflow/features/workouts/presentation/workouts_theme.dart';
 import 'package:fitflow/features/workouts/state/capability_profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -21,6 +22,16 @@ import 'package:go_router/go_router.dart';
 
 class CustomWorkoutDetailScreen extends ConsumerWidget {
   const CustomWorkoutDetailScreen({super.key, required this.workoutId});
+
+  final String workoutId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) =>
+      WorkoutsTheme(child: _CustomWorkoutDetailContent(workoutId: workoutId));
+}
+
+class _CustomWorkoutDetailContent extends ConsumerWidget {
+  const _CustomWorkoutDetailContent({required this.workoutId});
 
   final String workoutId;
 
@@ -130,8 +141,7 @@ class CustomWorkoutDetailScreen extends ConsumerWidget {
                       header: true,
                       child: Text(
                         template.name,
-                        style: theme.textTheme.headlineSmall
-                            ?.copyWith(fontWeight: FontWeight.w700),
+                        style: theme.textTheme.titleLarge,
                       ),
                     ),
                     const SizedBox(height: FitFlowSpace.xs),
@@ -202,21 +212,21 @@ class CustomWorkoutDetailScreen extends ConsumerWidget {
                       catalogById: catalogById,
                       planSection: resolvedPlan?.warmup,
                     ),
-                    const SizedBox(height: FitFlowSpace.sm),
+                    const Divider(height: FitFlowSpace.xl),
                     _SectionPreview(
                       title: 'Main',
                       entries: template.main,
                       catalogById: catalogById,
                       planSection: resolvedPlan?.main,
                     ),
-                    const SizedBox(height: FitFlowSpace.sm),
+                    const Divider(height: FitFlowSpace.xl),
                     _SectionPreview(
                       title: 'Cool-down',
                       entries: template.cooldown,
                       catalogById: catalogById,
                       planSection: resolvedPlan?.cooldown,
                     ),
-                    const SizedBox(height: FitFlowSpace.lg),
+                    const SizedBox(height: FitFlowSpace.xl),
                     LayoutBuilder(
                       builder: (context, constraints) {
                         final stackActions = constraints.maxWidth < 420 ||
@@ -306,82 +316,83 @@ class _SectionPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return FitFlowV2InfoSurface(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Semantics(
-            header: true,
-            child: Text(
-              title,
-              style: theme.textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w600),
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Semantics(
+          header: true,
+          child: Text(
+            title,
+            style: theme.textTheme.titleMedium
+                ?.copyWith(fontWeight: FontWeight.w500),
           ),
-          const SizedBox(height: FitFlowSpace.sm),
-          if (entries.isEmpty)
-            Text(
-              context.l10n.trainingNoExercises,
-              style: theme.textTheme.bodySmall
-                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-            )
-          else
-            for (final entry in entries) ...[
-              Builder(
-                builder: (context) {
-                  final Exercise? ex = catalogById[entry.exerciseId];
-                  final workload = entry.isTimed
-                      ? '${entry.sets} × ${entry.workDuration!.inSeconds}s'
-                      : '${entry.sets} × ${entry.repsPerSet} reps';
-                  final rest = '${entry.restBetweenSets.inSeconds}s rest';
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: FitFlowSpace.sm),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (ex != null) ...[
-                          FitFlowV2ExerciseMedia.forExercise(
-                            exercise: ex,
-                            width: 52,
-                            height: 52,
-                          ),
-                          const SizedBox(width: FitFlowSpace.sm),
-                        ],
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (ex == null)
-                                Text(
-                                  context.l10n.trainingMissingExercise,
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: theme.colorScheme.error,
-                                  ),
-                                )
-                              else
-                                Text(
-                                  ex.name,
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              if (ex != null)
-                                Text(
-                                  '${ex.movementPattern == null ? '' : movementPatternLabel(context.l10n, ex.movementPattern!)} • ${trainingDifficultyLabel(context.l10n, ex.difficulty)} • $workload • $rest',
-                                  style: theme.textTheme.bodySmall,
-                                ),
-                            ],
-                          ),
+        ),
+        const SizedBox(height: FitFlowSpace.xs),
+        if (entries.isEmpty)
+          Text(
+            context.l10n.trainingNoExercises,
+            style: theme.textTheme.bodySmall
+                ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          )
+        else
+          for (var index = 0; index < entries.length; index++) ...[
+            if (index > 0) const Divider(height: FitFlowSpace.lg),
+            Builder(
+              builder: (context) {
+                final entry = entries[index];
+                final Exercise? ex = catalogById[entry.exerciseId];
+                final workload = entry.isTimed
+                    ? '${entry.sets} × ${entry.workDuration!.inSeconds}s'
+                    : '${entry.sets} × ${entry.repsPerSet} reps';
+                final rest = '${entry.restBetweenSets.inSeconds}s rest';
+                return Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: FitFlowSpace.xxs),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (ex != null) ...[
+                        FitFlowV2ExerciseMedia.forExercise(
+                          exercise: ex,
+                          width: 52,
+                          height: 52,
                         ),
+                        const SizedBox(width: FitFlowSpace.sm),
                       ],
-                    ),
-                  );
-                },
-              ),
-            ],
-        ],
-      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (ex == null)
+                              Text(
+                                context.l10n.trainingMissingExercise,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: theme.colorScheme.error,
+                                ),
+                              )
+                            else
+                              Text(
+                                ex.name,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            if (ex != null)
+                              Text(
+                                '${ex.movementPattern == null ? '' : movementPatternLabel(context.l10n, ex.movementPattern!)} • ${trainingDifficultyLabel(context.l10n, ex.difficulty)} • $workload • $rest',
+                                style: theme.textTheme.bodySmall,
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ],
+      ],
     );
   }
 }
