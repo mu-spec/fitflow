@@ -1,5 +1,5 @@
 import 'package:fitflow/core/design/fitflow_spacing.dart';
-import 'package:fitflow/core/design/fitflow_visual_v2.dart';
+import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:fitflow/core/design/media/fitflow_program_image.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/app/config/app_dimensions.dart';
@@ -119,17 +119,15 @@ class RecommendedProgramCard extends ConsumerWidget {
   }
 }
 
-/// Active program card (Visual V2): same factual completion, next planned
-/// session and exact navigation as before — promoted to first-class emphasis
-/// on the V2 hero surface, with the registered active-program cover that yields to
-/// large text. Renders nothing when no program is active.
+/// Hub-only continuation with factual status and the exact registered cover.
+/// Renders nothing when no program is active.
 class ActiveProgramCard extends ConsumerWidget {
   const ActiveProgramCard({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final v = FitFlowVisualV2.of(context);
+    final colors = FitFlowTheme.of(context);
     final stateAsync = ref.watch(adaptiveProgramsControllerProvider);
     final state = stateAsync.value;
     if (state == null) return const SizedBox.shrink();
@@ -148,21 +146,16 @@ class ActiveProgramCard extends ConsumerWidget {
       children: [
         Text(context.l10n.trainingProgramActiveTitle,
             style: theme.textTheme.labelMedium?.copyWith(
-              color: v.action,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 1,
+              color: colors.brand,
+              fontWeight: FontWeight.w500,
             )),
         const SizedBox(height: FitFlowSpace.xs),
-        Text(def.name,
-            style: theme.textTheme.titleLarge?.copyWith(
-              color: v.onHero,
-              fontWeight: FontWeight.w700,
-            )),
+        Text(def.name, style: theme.textTheme.titleMedium),
         const SizedBox(height: FitFlowSpace.xxs),
         Text(
           context.l10n
               .trainingSessions(status.completedCount, status.totalCount),
-          style: theme.textTheme.bodyMedium?.copyWith(color: v.onHero),
+          style: theme.textTheme.bodySmall,
         ),
         const SizedBox(height: FitFlowSpace.xxs),
         Text(
@@ -170,14 +163,20 @@ class ActiveProgramCard extends ConsumerWidget {
               ? context.l10n.trainingProgramProgramComplete
               : context.l10n.trainingNextSession(status.currentWeek,
                   context.l10n.trainingSession(next!.session)),
-          style: theme.textTheme.bodySmall?.copyWith(color: v.heroSecondary),
+          style:
+              theme.textTheme.bodySmall?.copyWith(color: colors.textSecondary),
         ),
       ],
     );
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: FitFlowSpace.lg),
-      child: FitFlowV2HeroSurface(
+      padding: const EdgeInsets.only(bottom: FitFlowSpace.sm),
+      child: Container(
+        padding: const EdgeInsets.all(FitFlowSpace.sm),
+        decoration: BoxDecoration(
+          color: colors.palette.surface,
+          borderRadius: BorderRadius.circular(16),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -188,11 +187,9 @@ class ActiveProgramCard extends ConsumerWidget {
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Expanded(child: texts),
-                  const SizedBox(width: FitFlowSpace.xs),
                   SizedBox(
                     width: artSize,
-                    height: artSize,
+                    height: artSize * 3 / 4,
                     child: Center(
                       child: FitFlowProgramImage(
                         programId: def.id,
@@ -201,10 +198,12 @@ class ActiveProgramCard extends ConsumerWidget {
                       ),
                     ),
                   ),
+                  const SizedBox(width: FitFlowSpace.sm),
+                  Expanded(child: texts),
                 ],
               );
             }),
-            const SizedBox(height: FitFlowSpace.md),
+            const SizedBox(height: FitFlowSpace.sm),
             Align(
               alignment: AlignmentDirectional.centerStart,
               child: FilledButton.icon(
@@ -216,12 +215,6 @@ class ActiveProgramCard extends ConsumerWidget {
                     context.push(AppRoutes.programDetail(def.id));
                   }
                 },
-                style: FilledButton.styleFrom(
-                  backgroundColor: v.action,
-                  foregroundColor: v.onAction,
-                  minimumSize: const Size(64, 56),
-                  overlayColor: v.onAction.withValues(alpha: .12),
-                ),
                 icon: const Icon(Icons.arrow_forward_rounded),
                 label: Text(next == null
                     ? context.l10n.trainingProgramViewProgram

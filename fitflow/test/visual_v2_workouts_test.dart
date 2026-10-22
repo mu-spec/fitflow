@@ -140,9 +140,19 @@ void main() {
                     const Scaffold(body: Center(child: Text('Skill stub'))),
               ),
               GoRoute(
+                path: 'custom/:id/edit',
+                builder: (context, state) => Scaffold(
+                    body: Text('Edit ${state.pathParameters['id']}')),
+              ),
+              GoRoute(
                 path: 'custom/new',
                 builder: (context, state) =>
                     const Scaffold(body: Center(child: Text('Create stub'))),
+              ),
+              GoRoute(
+                path: 'custom/:id',
+                builder: (context, state) => Scaffold(
+                    body: Text('Detail ${state.pathParameters['id']}')),
               ),
             ],
           ),
@@ -224,7 +234,8 @@ void main() {
 
       expect(find.text('Custom workouts'), findsOneWidget);
       expect(find.byKey(const Key('v2_custom_empty')), findsOneWidget);
-      expect(find.text('No custom workouts yet'), findsOneWidget);
+      expect(find.text('No custom workouts yet'), findsNothing);
+      expect(find.text('Build your own workout with exercises from your library.'), findsOneWidget);
 
       expect(find.text('Explore'), findsOneWidget);
       expect(find.byIcon(Icons.fitness_center_outlined), findsWidgets);
@@ -243,7 +254,7 @@ void main() {
       expect(programsY, lessThan(customY));
       expect(customY, lessThan(exploreY));
 
-      // The hub page uses the shared V2 layered background, not plain white.
+      // The local hub palette does not replace the surrounding app theme.
       final ctx = tester.element(programsCard());
       final scaffold = tester.widget<Scaffold>(find.descendant(
           of: find.byType(WorkoutsScreen), matching: find.byType(Scaffold)));
@@ -274,12 +285,12 @@ void main() {
       expect(find.text('4 of 12 sessions'), findsOneWidget);
       expect(find.textContaining('Week 2 • Next: Session 2'), findsOneWidget);
 
-      // Emphasis: hero surface, still the exact existing content/action.
+      // Compact continuation surface, still the exact existing content/action.
       final card = find.byType(ActiveProgramCard);
       expect(
           find.descendant(
               of: card, matching: find.byType(FitFlowV2HeroSurface)),
-          findsOneWidget);
+          findsNothing);
       expect(
           find.descendant(of: card, matching: find.byType(FitFlowV2FeatureArt)),
           findsNothing);
@@ -359,7 +370,7 @@ void main() {
       expect(find.byType(ProgramDetailScreen), findsOneWidget);
     });
 
-    testWidgets('custom empty state: designed card, one create action',
+    testWidgets('custom empty state: one explanation and one create action',
         (tester) async {
       await pumpHub(tester);
       final card = find.byKey(const Key('v2_custom_empty'));
@@ -385,10 +396,53 @@ void main() {
       expect(find.text('No custom workouts yet'), findsNothing);
       expect(find.text('Create custom workout'), findsOneWidget);
       expect(find.textContaining('15 minutes'), findsWidgets);
-      expect(find.widgetWithText(FilledButton, 'View'), findsOneWidget);
+      expect(find.widgetWithText(OutlinedButton, 'View'), findsOneWidget);
       expect(find.widgetWithText(TextButton, 'Edit'), findsOneWidget);
-      expect(tester.getSize(find.widgetWithText(FilledButton, 'View')).height,
+      expect(tester.getSize(find.widgetWithText(OutlinedButton, 'View')).height,
           greaterThanOrEqualTo(48));
+    });
+
+    testWidgets('saved hub actions preserve IDs and delete confirmation',
+        (tester) async {
+      for (final action in ['View', 'Edit']) {
+        await pumpHub(tester, custom: true);
+        final button = action == 'View'
+            ? find.widgetWithText(OutlinedButton, action)
+            : find.widgetWithText(TextButton, action);
+        await tester.ensureVisible(button);
+        await tester.pumpAndSettle();
+        await tester.tap(button);
+        await tester.pumpAndSettle();
+        expect(find.text('${action == 'View' ? 'Detail' : 'Edit'} v2-custom'),
+            findsOneWidget);
+      }
+      for (final action in ['View', 'Edit', 'Delete']) {
+        await pumpHub(tester, custom: true);
+        final menu = find.byType(PopupMenuButton<String>);
+        await tester.ensureVisible(menu);
+        await tester.pumpAndSettle();
+        await tester.tap(menu);
+        await tester.pumpAndSettle();
+        await tester.tap(find.widgetWithText(PopupMenuItem<String>, action));
+        await tester.pumpAndSettle();
+        if (action != 'Delete') {
+          expect(find.text('${action == 'View' ? 'Detail' : 'Edit'} v2-custom'),
+              findsOneWidget);
+          continue;
+        }
+        expect(find.byType(AlertDialog), findsOneWidget);
+        await tester.tap(find.widgetWithText(TextButton, 'Cancel'));
+        await tester.pumpAndSettle();
+        expect(await const CustomWorkoutStorage().loadAll(), hasLength(1));
+        await tester.tap(menu);
+        await tester.pumpAndSettle();
+        await tester.tap(find.widgetWithText(PopupMenuItem<String>, 'Delete'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
+        await tester.pumpAndSettle();
+        expect(await const CustomWorkoutStorage().loadAll(), isEmpty);
+        expect(find.byKey(const Key('v2_custom_empty')), findsOneWidget);
+      }
     });
 
     testWidgets('explore tiles keep library and skill tree destinations',
@@ -446,6 +500,15 @@ void main() {
             greaterThanOrEqualTo(4.5));
         expect(fitflowContrast(colors.textSecondary, page),
             greaterThanOrEqualTo(4.5));
+        expect(page, dark ? const Color(0xFF202526) : const Color(0xFFF3F4EE));
+        final buttonTheme = Theme.of(context).filledButtonTheme.style!;
+        final fill = buttonTheme.backgroundColor!.resolve({})!;
+        final ink = buttonTheme.foregroundColor!.resolve({})!;
+        expect(fill, const Color(0xFFD4E779));
+        expect(fitflowContrast(ink, fill), greaterThanOrEqualTo(4.5));
+        final outer = Theme.of(tester.element(find.byType(WorkoutsScreen)));
+        expect(outer.scaffoldBackgroundColor,
+            (dark ? AppTheme.dark : AppTheme.light).scaffoldBackgroundColor);
       }
     });
 
@@ -575,7 +638,9 @@ void main() {
 
     const sizes = [
       Size(320, 700),
+      Size(360, 640),
       Size(360, 800),
+      Size(412, 915),
       Size(390, 844),
       Size(430, 900),
       Size(600, 900),

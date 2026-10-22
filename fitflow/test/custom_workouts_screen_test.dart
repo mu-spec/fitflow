@@ -35,7 +35,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
     await tester.pump(const Duration(milliseconds: 500));
 
-    expect(find.text('No custom workouts yet'), findsOneWidget);
+    expect(find.text('No custom workouts yet'), findsNothing);
     expect(
         find.text('Build your own workout with exercises from your library.'),
         findsWidgets);

@@ -15,6 +15,7 @@ import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/onboarding/state/user_fitness_profile_controller.dart';
 import 'package:fitflow/features/programs/presentation/widgets/workouts_program_cards.dart';
 import 'package:fitflow/features/workouts/data/exercise_catalog.dart';
+import 'workouts_theme.dart';
 import 'package:fitflow/features/workouts/domain/custom/custom_workout_controller.dart';
 import 'package:fitflow/features/workouts/domain/custom/custom_workout_plan_resolver.dart';
 import 'package:fitflow/features/workouts/domain/custom/custom_workout_template.dart';
@@ -26,8 +27,16 @@ import 'package:go_router/go_router.dart';
 
 /// Visual V2 Workouts hub. Routes, destinations, active-program logic,
 /// custom-workout CRUD and persisted state are unchanged — presentation only.
-class WorkoutsScreen extends ConsumerWidget {
+class WorkoutsScreen extends StatelessWidget {
   const WorkoutsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) =>
+      const WorkoutsTheme(child: _WorkoutsContent());
+}
+
+class _WorkoutsContent extends ConsumerWidget {
+  const _WorkoutsContent();
 
   /// Restrained entrance for leading sections. Reduced motion is immediate.
   static Widget _entrance(BuildContext context, Widget child) {
@@ -59,7 +68,7 @@ class WorkoutsScreen extends ConsumerWidget {
           child: FitFlowMaxWidth(
             child: Padding(
               padding: EdgeInsets.symmetric(
-                  horizontal: inset, vertical: FitFlowSpace.md),
+                  horizontal: inset, vertical: FitFlowSpace.sm),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -88,9 +97,7 @@ class WorkoutsScreen extends ConsumerWidget {
                   _HubHeading(l.trainingExplore),
                   const SizedBox(height: FitFlowSpace.sm),
                   _entrance(context, const _ExploreTiles()),
-                  const SizedBox(height: FitFlowSpace.lg),
-
-                  const Divider(),
+                  const Divider(height: 1),
                   _HubNavigationRow(
                     title: l.trainingAdaptiveHome,
                     subtitle: l.trainingAdaptiveAction,
@@ -121,7 +128,7 @@ class _WorkoutsHeader extends StatelessWidget {
       children: [
         Text(l.homeBrand,
             style: text.labelMedium?.copyWith(
-                color: t.brand,
+                color: t.textSecondary,
                 fontWeight: FontWeight.w500,
                 letterSpacing: .8)),
         const SizedBox(height: FitFlowSpace.xs),
@@ -157,9 +164,6 @@ class _CustomWorkoutsSection extends ConsumerWidget {
                   key: const Key('v2_custom_empty'),
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(l.trainingCustomEmpty,
-                        style: Theme.of(context).textTheme.bodyLarge),
-                    const SizedBox(height: FitFlowSpace.xxs),
                     Text(l.trainingCustomHelp,
                         style: Theme.of(context).textTheme.bodyMedium),
                     const SizedBox(height: FitFlowSpace.sm),
@@ -365,11 +369,11 @@ class _CustomWorkoutCard extends ConsumerWidget {
           ),
           if (movementChips.isNotEmpty) ...[
             const SizedBox(height: FitFlowSpace.sm),
-            Wrap(
-              spacing: FitFlowSpace.xs,
-              runSpacing: FitFlowSpace.xs,
-              children:
-                  movementChips.map((label) => FitFlowV2Tag(label)).toList(),
+            Text(
+              movementChips.join(' · '),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
           ],
           const SizedBox(height: FitFlowSpace.sm),
@@ -377,7 +381,7 @@ class _CustomWorkoutCard extends ConsumerWidget {
             spacing: FitFlowSpace.xs,
             runSpacing: FitFlowSpace.xs,
             children: [
-              FilledButton(
+              OutlinedButton(
                 onPressed: () =>
                     context.push(AppRoutes.customWorkoutDetail(template.id)),
                 child: Text(context.l10n.trainingView),
