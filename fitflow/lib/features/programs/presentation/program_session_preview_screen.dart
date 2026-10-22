@@ -18,6 +18,7 @@ import 'package:fitflow/features/programs/presentation/program_copy.dart';
 import 'package:fitflow/features/programs/presentation/widgets/program_widgets.dart';
 import 'package:fitflow/features/workout_preview/presentation/widgets/workout_preview_exercise_row.dart';
 import 'package:fitflow/features/workout_preview/presentation/widgets/workout_preview_section_header.dart';
+import 'package:fitflow/features/workouts/presentation/workouts_theme.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_exercise_prescription.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_plan.dart';
 import 'package:fitflow/features/workouts/state/capability_profile_controller.dart';
@@ -32,6 +33,21 @@ import 'package:go_router/go_router.dart';
 class ProgramSessionPreviewScreen extends ConsumerWidget {
   const ProgramSessionPreviewScreen({
     super.key,
+    required this.programId,
+    required this.sessionId,
+  });
+
+  final String programId;
+  final String sessionId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => WorkoutsTheme(
+      child: _ProgramSessionPreviewContent(
+          programId: programId, sessionId: sessionId));
+}
+
+class _ProgramSessionPreviewContent extends ConsumerWidget {
+  const _ProgramSessionPreviewContent({
     required this.programId,
     required this.sessionId,
   });
@@ -281,9 +297,9 @@ class _ProgramSessionSummaryCard extends StatelessWidget {
           Text(
             definition.name,
             style: theme.textTheme.labelMedium?.copyWith(
-              letterSpacing: 1.0,
-              fontWeight: FontWeight.w600,
-              color: FitFlowTheme.of(context).brand,
+              letterSpacing: .8,
+              fontWeight: FontWeight.w500,
+              color: FitFlowTheme.of(context).textSecondary,
             ),
           ),
           const SizedBox(height: FitFlowSpace.xs),
@@ -291,9 +307,7 @@ class _ProgramSessionSummaryCard extends StatelessWidget {
             header: true,
             child: Text(
               session.title,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: theme.textTheme.titleLarge,
             ),
           ),
           const SizedBox(height: FitFlowSpace.xs),

@@ -12,6 +12,7 @@ import 'package:fitflow/features/programs/domain/adaptive_program_recommendation
 import 'package:fitflow/features/programs/domain/adaptive_program_status.dart';
 import 'package:fitflow/features/programs/domain/adaptive_programs_state.dart';
 import 'package:fitflow/features/programs/presentation/widgets/program_widgets.dart';
+import 'package:fitflow/features/workouts/presentation/workouts_theme.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollCacheExtent;
@@ -20,8 +21,19 @@ import 'package:go_router/go_router.dart';
 
 /// V2 program identity, factual progress, original actions and compact weeks.
 /// No program/session definition, policy, controller or route is replaced.
+/// Scoped Slate + Citrus presentation, identical tokens to the Workouts hub.
 class ProgramDetailScreen extends ConsumerWidget {
   const ProgramDetailScreen({super.key, required this.programId});
+
+  final String programId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) =>
+      WorkoutsTheme(child: _ProgramDetailContent(programId: programId));
+}
+
+class _ProgramDetailContent extends ConsumerWidget {
+  const _ProgramDetailContent({required this.programId});
 
   final String programId;
 

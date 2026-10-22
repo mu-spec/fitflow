@@ -27,10 +27,10 @@ class ProgramTag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final bg = emphasized ? colors.primaryContainer : colors.secondaryContainer;
-    final fg =
-        emphasized ? colors.onPrimaryContainer : colors.onSecondaryContainer;
+    final v = FitFlowVisualV2.of(context);
+    final t = FitFlowTheme.of(context);
+    final bg = emphasized ? v.tint : v.support;
+    final fg = emphasized ? t.brand : t.textSecondary;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -60,6 +60,8 @@ class ProgramTag extends StatelessWidget {
 }
 
 /// Status chip for a planned session: Completed / Next / Planned.
+/// Colors come from the scoped palette roles so the chip stays legible on
+/// both the Slate + Citrus surfaces and any other caller's theme.
 class ProgramSessionStatusChip extends StatelessWidget {
   const ProgramSessionStatusChip({super.key, required this.status});
 
@@ -67,29 +69,26 @@ class ProgramSessionStatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final t = FitFlowTheme.of(context);
+    final v = FitFlowVisualV2.of(context);
     final theme = Theme.of(context);
-    late final Color bg;
     late final Color fg;
     late final IconData icon;
     switch (status) {
       case AdaptiveProgramSessionStatus.completed:
-        bg = colors.tertiaryContainer;
-        fg = colors.onTertiaryContainer;
+        fg = t.success;
         icon = Icons.check_circle_outline;
       case AdaptiveProgramSessionStatus.next:
-        bg = colors.primaryContainer;
-        fg = colors.onPrimaryContainer;
+        fg = t.brand;
         icon = Icons.play_circle_outline;
       case AdaptiveProgramSessionStatus.planned:
-        bg = colors.surfaceContainerHighest;
-        fg = colors.onSurfaceVariant;
+        fg = t.textSecondary;
         icon = Icons.radio_button_unchecked;
     }
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: bg,
+        color: v.tint,
         borderRadius: BorderRadius.circular(AppDimens.radiusSmall),
       ),
       child: Row(

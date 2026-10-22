@@ -261,10 +261,13 @@ void main() {
       expect(find.text('FITFLOW'), findsNothing);
       expect(find.text('Adaptive programs'), findsNothing);
       expect(find.text('Programs'), findsOneWidget);
-      final context = tester.element(find.byType(ProgramsOverviewScreen));
-      final scaffold = tester.widget<Scaffold>(find.descendant(
+      final scaffoldFinder = find.descendant(
           of: find.byType(ProgramsOverviewScreen),
-          matching: find.byType(Scaffold)));
+          matching: find.byType(Scaffold));
+      // The scoped Slate + Citrus theme sits between the screen widget and
+      // its content, so the V2 roles must be read inside the content subtree.
+      final context = tester.element(scaffoldFinder);
+      final scaffold = tester.widget<Scaffold>(scaffoldFinder);
       expect(scaffold.backgroundColor, FitFlowVisualV2.of(context).page);
       for (final definition in AdaptiveProgramCatalog.all) {
         await programScrollTo(tester, cardFor(definition.id));
@@ -473,13 +476,13 @@ void main() {
         await tester.tap(find.text('About this program'));
         await tester.pumpAndSettle();
         expect(find.text(definition.description), findsOneWidget);
-        final scaffold = tester.widget<Scaffold>(find.descendant(
+        final scaffoldFinder = find.descendant(
             of: find.byType(ProgramDetailScreen),
-            matching: find.byType(Scaffold)));
-        expect(
-            scaffold.backgroundColor,
-            FitFlowVisualV2.of(tester.element(find.byType(ProgramDetailScreen)))
-                .page);
+            matching: find.byType(Scaffold));
+        // Scoped theme: read the V2 roles inside the themed content subtree.
+        final scaffold = tester.widget<Scaffold>(scaffoldFinder);
+        expect(scaffold.backgroundColor,
+            FitFlowVisualV2.of(tester.element(scaffoldFinder)).page);
       }
     });
 

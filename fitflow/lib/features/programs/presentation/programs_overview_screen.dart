@@ -12,6 +12,7 @@ import 'package:fitflow/features/programs/domain/adaptive_program_recommendation
 import 'package:fitflow/features/programs/domain/adaptive_program_status.dart';
 import 'package:fitflow/features/programs/domain/adaptive_programs_state.dart';
 import 'package:fitflow/features/programs/presentation/widgets/program_widgets.dart';
+import 'package:fitflow/features/workouts/presentation/workouts_theme.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,8 +20,17 @@ import 'package:go_router/go_router.dart';
 
 /// V2 discovery for the same five built-in programs. Only their presentation
 /// order changes when a real active program leads; it is not listed twice.
+/// Scoped Slate + Citrus presentation, identical tokens to the Workouts hub.
 class ProgramsOverviewScreen extends ConsumerWidget {
   const ProgramsOverviewScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) =>
+      const WorkoutsTheme(child: _ProgramsOverviewContent());
+}
+
+class _ProgramsOverviewContent extends ConsumerWidget {
+  const _ProgramsOverviewContent();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -128,7 +138,6 @@ class _ProgramOverviewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
     final t = FitFlowTheme.of(context);
-    final v = FitFlowVisualV2.of(context);
     final imageWidth = ProgramV2Layout.viewport(context).width < 360 ||
             ProgramV2Layout.largeText(context)
         ? 80.0
@@ -212,9 +221,9 @@ class _ProgramOverviewCard extends StatelessWidget {
               alignment: AlignmentDirectional.centerStart,
               child: FilledButton.icon(
                 onPressed: onContinue,
+                // Scoped theme supplies the citrus fill/dark label in both
+                // brightnesses; only the wider target is declared locally.
                 style: FilledButton.styleFrom(
-                  backgroundColor: v.action,
-                  foregroundColor: v.onAction,
                   minimumSize: const Size(64, 48),
                 ),
                 icon: const Icon(Icons.arrow_forward_rounded),
