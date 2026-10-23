@@ -1,3 +1,4 @@
+import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
@@ -157,15 +158,40 @@ class _ProgramSessionPreviewContent extends ConsumerWidget {
     return Scaffold(
       backgroundColor: visual.page,
       appBar: appBar,
+      bottomNavigationBar: plan == null
+          ? null
+          : SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                child: Align(
+                  heightFactor: 1,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                        maxWidth: FitFlowLayout.maxContentWidth),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: FilledButton.icon(
+                        style: FilledButton.styleFrom(
+                          minimumSize: const Size(48, 56),
+                        ),
+                        onPressed: () => context.push(
+                          AppRoutes.programSessionPlayer(
+                              definition.id, session.id),
+                        ),
+                        icon: const Icon(Icons.play_arrow_rounded),
+                        label: Text(context.l10n.trainingProgramStartWorkout),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
       body: SafeArea(
         child: FitFlowMaxWidth(
           maxWidth: FitFlowLayout.maxContentWidth,
           child: ListView(
-            padding: EdgeInsets.all(
-              MediaQuery.sizeOf(context).width < 360
-                  ? FitFlowSpace.md
-                  : FitFlowSpace.xl,
-            ),
+            padding: const EdgeInsets.all(FitFlowSpace.md),
             children: [
               _ProgramSessionSummaryCard(
                 definition: definition,
@@ -174,15 +200,7 @@ class _ProgramSessionPreviewContent extends ConsumerWidget {
                 targetMinutes: userProfile.workoutDuration.minutes,
                 plan: plan,
               ),
-              const SizedBox(height: FitFlowSpace.sm),
-              _NoteCard(
-                icon: Icons.info_outline,
-                lines: const [
-                  ProgramCopy.adaptationNote,
-                  ProgramCopy.goalUnchangedNote,
-                ],
-              ),
-              const SizedBox(height: FitFlowSpace.xl),
+              const SizedBox(height: FitFlowSpace.md),
               if (plan == null)
                 _GenerationFailedCard(
                   message:
@@ -190,7 +208,7 @@ class _ProgramSessionPreviewContent extends ConsumerWidget {
                 )
               else ...[
                 WorkoutPreviewSectionHeader(
-                  title: 'Warm-up',
+                  title: context.l10n.flowWarmup,
                   visualV2: true,
                   exerciseCount: plan.warmup.exerciseCount,
                   planned: plan.warmupEstimate,
@@ -198,9 +216,9 @@ class _ProgramSessionPreviewContent extends ConsumerWidget {
                 ),
                 const SizedBox(height: FitFlowSpace.xs),
                 _exerciseList(plan.warmup.exercises),
-                const SizedBox(height: FitFlowSpace.xl),
+                const SizedBox(height: FitFlowSpace.md),
                 WorkoutPreviewSectionHeader(
-                  title: 'Main workout',
+                  title: context.l10n.flowMain,
                   visualV2: true,
                   exerciseCount: plan.main.exerciseCount,
                   planned: plan.mainEstimate,
@@ -208,9 +226,9 @@ class _ProgramSessionPreviewContent extends ConsumerWidget {
                 ),
                 const SizedBox(height: FitFlowSpace.xs),
                 _exerciseList(plan.main.exercises),
-                const SizedBox(height: FitFlowSpace.xl),
+                const SizedBox(height: FitFlowSpace.md),
                 WorkoutPreviewSectionHeader(
-                  title: 'Cooldown',
+                  title: context.l10n.flowCooldown,
                   visualV2: true,
                   exerciseCount: plan.cooldown.exerciseCount,
                   planned: plan.cooldownEstimate,
@@ -218,23 +236,7 @@ class _ProgramSessionPreviewContent extends ConsumerWidget {
                 ),
                 const SizedBox(height: FitFlowSpace.xs),
                 _exerciseList(plan.cooldown.exercises),
-                const SizedBox(height: FitFlowSpace.xl),
-                // Part 2: Start opens the shared Player for this planned
-                // session. The Player generates its own frozen plan from
-                // the current profile/capability at open time.
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton.icon(
-                    style: FilledButton.styleFrom(
-                      minimumSize: const Size(48, 56),
-                    ),
-                    onPressed: () => context.push(
-                      AppRoutes.programSessionPlayer(definition.id, session.id),
-                    ),
-                    icon: const Icon(Icons.play_arrow_rounded),
-                    label: const Text(ProgramCopy.startWorkout),
-                  ),
-                ),
+                const SizedBox(height: FitFlowSpace.md),
               ],
               const SizedBox(height: FitFlowSpace.md),
             ],
@@ -290,109 +292,55 @@ class _ProgramSessionSummaryCard extends StatelessWidget {
     final theme = Theme.of(context);
     final fitFlowTheme = FitFlowTheme.of(context);
     final p = plan;
-    return FitFlowV2InfoSurface(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            definition.name,
-            style: theme.textTheme.labelMedium?.copyWith(
-              letterSpacing: .8,
-              fontWeight: FontWeight.w500,
-              color: FitFlowTheme.of(context).textSecondary,
-            ),
-          ),
-          const SizedBox(height: FitFlowSpace.xs),
-          Semantics(
-            header: true,
-            child: Text(
-              session.title,
-              style: theme.textTheme.titleLarge,
-            ),
-          ),
-          const SizedBox(height: FitFlowSpace.xs),
-          Wrap(
-            spacing: FitFlowSpace.sm,
-            runSpacing: FitFlowSpace.xs,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              Text(
-                'Focus: ${session.focus}',
-                style: theme.textTheme.bodyMedium
-                    ?.copyWith(color: fitFlowTheme.textSecondary),
-              ),
-              ProgramSessionStatusChip(status: status),
-            ],
-          ),
-          const SizedBox(height: FitFlowSpace.xs),
-          Text(
-            'Session goal: ${session.generationGoal.label}',
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(definition.name,
             style: theme.textTheme.bodySmall
-                ?.copyWith(color: fitFlowTheme.textSecondary),
-          ),
-          const SizedBox(height: FitFlowSpace.md),
-          Wrap(
-            spacing: FitFlowSpace.xs,
-            runSpacing: FitFlowSpace.xs,
-            children: [
-              _metric(Icons.timer_outlined, '$targetMinutes min target'),
-              if (p != null) ...[
-                _metric(Icons.timelapse_outlined,
-                    '~${_formatDuration(p.estimatedDuration)} planned'),
-                _metric(Icons.fitness_center_outlined,
-                    '${p.totalExerciseCount} exercises'),
-                _metric(Icons.repeat, '${_totalSets(p)} sets'),
-              ],
-            ],
-          ),
+                ?.copyWith(color: fitFlowTheme.textSecondary)),
+        const SizedBox(height: FitFlowSpace.xs),
+        Semantics(
+            header: true,
+            child: Text(session.title, style: theme.textTheme.titleLarge)),
+        const SizedBox(height: FitFlowSpace.xs),
+        Wrap(spacing: FitFlowSpace.sm, runSpacing: FitFlowSpace.xs, children: [
+          Text('Focus: ${session.focus}', style: theme.textTheme.bodyMedium),
+          ProgramSessionStatusChip(status: status),
+        ]),
+        if (p != null) ...[
+          const SizedBox(height: FitFlowSpace.xs),
+          Text(
+              '${context.l10n.flowEstimate('~${_formatDuration(p.estimatedDuration)}')} · ${context.l10n.flowCount(p.totalExerciseCount)}',
+              style: theme.textTheme.bodyMedium),
         ],
-      ),
-    );
-  }
-
-  Widget _metric(IconData icon, String text) {
-    return FitFlowV2Tag(text, icon: icon);
-  }
-}
-
-class _NoteCard extends StatelessWidget {
-  const _NoteCard({required this.icon, required this.lines});
-
-  final IconData icon;
-  final List<String> lines;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final fitFlowTheme = FitFlowTheme.of(context);
-    return FitFlowV2InfoSurface(
-      tonal: true,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ExcludeSemantics(
-            child: Icon(icon, size: 18, color: fitFlowTheme.textSecondary),
-          ),
-          const SizedBox(width: FitFlowSpace.sm),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                for (var i = 0; i < lines.length; i++) ...[
-                  if (i > 0) const SizedBox(height: FitFlowSpace.xs),
-                  Text(
-                    lines[i],
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: fitFlowTheme.textSecondary,
-                      height: 1.35,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ],
-      ),
+        ExpansionTile(
+          key: const Key('program_session_about'),
+          tilePadding: EdgeInsets.zero,
+          childrenPadding: const EdgeInsets.only(bottom: FitFlowSpace.sm),
+          expandedCrossAxisAlignment: CrossAxisAlignment.start,
+          shape: const Border(),
+          collapsedShape: const Border(),
+          title: Text(context.l10n.flowPreviewDetails,
+              style: theme.textTheme.titleSmall
+                  ?.copyWith(fontWeight: FontWeight.w500)),
+          children: [
+            Text('Session goal: ${session.generationGoal.label}',
+                style: theme.textTheme.bodyMedium),
+            const SizedBox(height: FitFlowSpace.xs),
+            Text(context.l10n.flowTarget(targetMinutes),
+                style: theme.textTheme.bodyMedium),
+            if (p != null)
+              Text('${context.l10n.trainingTotalSets}: ${_totalSets(p)}',
+                  style: theme.textTheme.bodyMedium),
+            const SizedBox(height: FitFlowSpace.sm),
+            Text(context.l10n.trainingProgramAdaptationNote,
+                style: theme.textTheme.bodyMedium),
+            const SizedBox(height: FitFlowSpace.xs),
+            Text(context.l10n.trainingProgramGoalUnchangedNote,
+                style: theme.textTheme.bodyMedium),
+          ],
+        ),
+      ],
     );
   }
 }

@@ -204,7 +204,7 @@ void main() {
       expect(find.textContaining('behind'), findsNothing);
     });
 
-    testWidgets('session rows show focus, goal and View workout',
+    testWidgets('session rows show focus, goal and one navigation action',
         (tester) async {
       SharedPreferences.setMockInitialValues({});
       await pumpAt(tester, AppRoutes.programDetail('balanced_foundations'));
@@ -218,9 +218,10 @@ void main() {
           tester, find.text('Endurance • Goal: Improve endurance'));
       expect(find.text('Endurance • Goal: Improve endurance'), findsWidgets);
       await programScrollToTop(tester);
-      await programScrollTo(tester, find.text('View workout'));
-      expect(find.text('View workout'), findsWidgets);
-      await tester.tap(find.text('View workout').first);
+      final firstSession = find.byKey(const ValueKey('v2_program_session_balanced_foundations_w1_s1'));
+      await programScrollTo(tester, firstSession);
+      expect(find.text('View workout'), findsNothing);
+      await tester.tap(find.descendant(of: firstSession, matching: find.byType(TextButton)));
       await tester.pumpAndSettle();
       expect(find.byType(ProgramSessionPreviewScreen), findsOneWidget);
       expect(find.text('Week 1 • Session 1'), findsOneWidget);
@@ -456,11 +457,14 @@ void main() {
       expect(find.text('Balanced Foundations'), findsOneWidget);
       expect(find.text('Week 1 • Session 3'), findsOneWidget);
       expect(find.text('Focus: Endurance'), findsOneWidget);
+      expect(find.text('Session goal: Improve endurance'), findsNothing);
+      await tester.tap(find.byKey(const Key('program_session_about')));
+      await tester.pumpAndSettle();
       expect(find.text('Session goal: Improve endurance'), findsOneWidget);
       expect(find.text('15 min target'), findsOneWidget);
       expect(find.textContaining('planned'), findsWidgets);
       expect(find.textContaining('exercises'), findsWidgets);
-      expect(find.textContaining(' sets'), findsWidgets);
+      expect(find.textContaining('Total sets:'), findsOneWidget);
       expect(
           find.text(
               'Generated from your current movement levels, equipment, environment, and preferences.'),
@@ -555,7 +559,13 @@ void main() {
             .map((r) => r.prescription.exercise.id)
             .toList();
         results[mode] = ids.isEmpty ? idsFor(mode) : ids;
-        // Target duration stays the profile duration (no Low Energy cut).
+        // Target remains the profile duration, now inside the About disclosure.
+        if (find.text('15 min target').evaluate().isEmpty) {
+          await tester.ensureVisible(find.byKey(const Key('program_session_about')));
+          await tester.pumpAndSettle();
+          await tester.tap(find.byKey(const Key('program_session_about')));
+          await tester.pumpAndSettle();
+        }
         expect(find.text('15 min target'), findsOneWidget);
         expect(find.textContaining('Temporary for this workout'), findsNothing);
       }

@@ -226,37 +226,20 @@ class ProgramSessionRow extends StatelessWidget {
             style: theme.textTheme.bodySmall?.copyWith(color: t.textSecondary)),
       ],
     );
-    final action = TextButton.icon(
-      onPressed: onView,
-      icon: const Icon(Icons.visibility_outlined, size: 18),
-      label: Text(context.l10n.trainingProgramViewWorkout),
-      style: TextButton.styleFrom(
-        minimumSize: const Size(48, 48),
-        padding: const EdgeInsets.symmetric(horizontal: FitFlowSpace.xs),
-      ),
-    );
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.xs),
-          child: LayoutBuilder(builder: (context, constraints) {
-            if (constraints.maxWidth >= 420 &&
-                !ProgramV2Layout.largeText(context)) {
-              return Row(
-                children: [
-                  Expanded(child: copy),
-                  const SizedBox(width: FitFlowSpace.xs),
-                  action,
-                ],
-              );
-            }
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [copy, action],
-            );
-          }),
+        TextButton(
+          onPressed: onView,
+          style: TextButton.styleFrom(
+            minimumSize: const Size(48, 48),
+            padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.sm),
+          ),
+          child: Row(children: [
+            Expanded(child: copy),
+            const SizedBox(width: FitFlowSpace.xs),
+            const ExcludeSemantics(child: Icon(Icons.chevron_right, size: 20)),
+          ]),
         ),
         if (!isLast) Divider(height: 1, color: v.subtleBorder),
       ],
@@ -312,6 +295,7 @@ class ProgramDialogs {
       context: context,
       animationStyle: SystemMotion.overlay(context),
       builder: (ctx) => AlertDialog(
+        scrollable: true,
         title: Text(context.l10n.trainingProgramSwitchDialogTitle),
         content: Text(context.l10n.trainingProgramSwitchDialogBody),
         actions: [
@@ -334,6 +318,7 @@ class ProgramDialogs {
       context: context,
       animationStyle: SystemMotion.overlay(context),
       builder: (ctx) => AlertDialog(
+        scrollable: true,
         title: Text(context.l10n.trainingProgramRestartDialogTitle),
         content: Text(context.l10n.trainingProgramRestartDialogBody),
         actions: [

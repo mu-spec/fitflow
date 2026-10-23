@@ -322,6 +322,7 @@ class _CustomWorkoutCard extends ConsumerWidget {
                       context: context,
                       animationStyle: SystemMotion.overlay(context),
                       builder: (ctx) => AlertDialog(
+                        scrollable: true,
                         title: Text(context.l10n.trainingDeleteTitle),
                         content: Text(context.l10n.trainingDeleteBody),
                         actions: [

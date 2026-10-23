@@ -87,7 +87,7 @@ class ExerciseVariationCard extends StatelessWidget {
                         directionLabel,
                         style: theme.textTheme.labelMedium?.copyWith(
                           color: FitFlowTheme.of(context).brand,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w500,
                           letterSpacing: .35,
                         ),
                       ),
@@ -96,7 +96,7 @@ class ExerciseVariationCard extends StatelessWidget {
                         exercise.name,
                         style: theme.textTheme.titleSmall?.copyWith(
                           color: FitFlowTheme.of(context).textPrimary,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                       const SizedBox(height: 2),

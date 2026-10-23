@@ -183,6 +183,7 @@ class _CustomWorkoutBuilderScreenState
       context: context,
       animationStyle: SystemMotion.overlay(context),
       builder: (ctx) => AlertDialog(
+        scrollable: true,
         title: const Text('Discard changes?'),
         content: const Text('You have unsaved changes. Discard them?'),
         actions: [

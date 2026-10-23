@@ -2,7 +2,7 @@ import 'package:fitflow/core/design/fitflow_colors.dart';
 import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:flutter/material.dart';
 
-/// Workouts-hub-only Slate + Citrus roles. The user's selected brightness is retained.
+/// Opt-in Workouts-area Slate + Citrus roles. The user's selected brightness is retained.
 class WorkoutsTheme extends StatelessWidget {
   const WorkoutsTheme({super.key, required this.child});
   final Widget child;
@@ -96,9 +96,69 @@ class WorkoutsTheme extends StatelessWidget {
             foregroundColor: ink,
             surfaceTintColor: Colors.transparent,
             // Nested Workouts-area screens share the hub's title rhythm.
-            titleTextStyle: text.titleLarge),
+            titleTextStyle: text.titleLarge
+                ?.copyWith(fontSize: 21, fontWeight: FontWeight.w500)),
         bottomSheetTheme: base.bottomSheetTheme.copyWith(backgroundColor: page),
-        dialogTheme: base.dialogTheme.copyWith(backgroundColor: page),
+        dialogTheme: base.dialogTheme.copyWith(
+          backgroundColor: page,
+          titleTextStyle: text.titleLarge
+              ?.copyWith(fontSize: 21, fontWeight: FontWeight.w500),
+          contentTextStyle: text.bodyMedium?.copyWith(color: secondary),
+        ),
+        cardTheme: base.cardTheme.copyWith(
+          color: surface,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        ),
+        iconButtonTheme: IconButtonThemeData(
+          style: IconButton.styleFrom(
+            foregroundColor: ink,
+            minimumSize: const Size(48, 48),
+          ),
+        ),
+        listTileTheme: base.listTileTheme.copyWith(
+          textColor: ink,
+          iconColor: secondary,
+        ),
+        inputDecorationTheme: base.inputDecorationTheme.copyWith(
+          fillColor: surface,
+          hintStyle: text.bodyMedium?.copyWith(color: secondary),
+          labelStyle: text.bodyMedium?.copyWith(color: secondary),
+          floatingLabelStyle: text.bodyMedium?.copyWith(color: accent),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: line),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: accent, width: 2),
+          ),
+        ),
+        textSelectionTheme: base.textSelectionTheme.copyWith(
+          cursorColor: accent,
+          selectionColor: accent.withValues(alpha: .25),
+          selectionHandleColor: accent,
+        ),
+        chipTheme: base.chipTheme.copyWith(
+          backgroundColor: surface,
+          selectedColor: citrus,
+          secondarySelectedColor: citrus,
+          disabledColor: surface,
+          checkmarkColor: slate,
+          labelStyle: text.labelMedium?.copyWith(
+            color: WidgetStateColor.resolveWith((states) =>
+                states.contains(WidgetState.selected) ? slate : ink),
+            fontWeight: FontWeight.w500,
+          ),
+          secondaryLabelStyle: text.labelMedium?.copyWith(color: slate),
+          side: BorderSide(color: line),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        ),
+        progressIndicatorTheme: base.progressIndicatorTheme.copyWith(
+          color: accent,
+          linearTrackColor: surface,
+          circularTrackColor: surface,
+        ),
         filledButtonTheme: FilledButtonThemeData(
             style: FilledButton.styleFrom(
           backgroundColor: citrus,
@@ -120,7 +180,11 @@ class WorkoutsTheme extends StatelessWidget {
           minimumSize: const Size(48, 48),
           side: BorderSide(color: line),
         )),
-        popupMenuTheme: base.popupMenuTheme.copyWith(color: surface),
+        popupMenuTheme: base.popupMenuTheme.copyWith(
+          color: surface,
+          textStyle: text.bodyMedium,
+        ),
+        dividerTheme: base.dividerTheme.copyWith(color: line),
         dividerColor: line,
       ),
       child: child,

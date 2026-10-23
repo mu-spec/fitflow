@@ -118,7 +118,8 @@ void main() {
       final view = programPlayerView(tester);
       expect(view.sessionOrigin, WorkoutSessionOrigin.program);
       expect(view.sessionMode, WorkoutSessionMode.standard);
-      expect(find.text('Program workout'), findsWidgets);
+      // Approved Player toolbar identifies the current section.
+      expect(find.widgetWithText(AppBar, 'Warm-up'), findsOneWidget);
       expect(find.text('Begin workout'), findsOneWidget);
       // No temporary-mode or custom badges.
       expect(find.textContaining('Temporary for this workout'), findsNothing);
@@ -419,6 +420,7 @@ void main() {
       expect(router.routerDelegate.currentConfiguration.uri.toString(),
           AppRoutes.programDetail(_program));
       expect(find.byType(ProgramDetailScreen), findsOneWidget);
+      await programScrollTo(tester, find.text('Session 1'));
       // Truthful: nothing was persisted, so no session is marked Completed.
       expect(find.text('1 of 12 sessions'), findsNothing);
       expect(find.text('Completed'), findsNothing);
@@ -625,10 +627,17 @@ void main() {
           .pumpWidget(programTestApp(router: router, overrides: overrides()));
       await tester.pumpAndSettle();
 
+      await programScrollTo(tester, find.text('Start program'));
       await tester.tap(find.text('Start program'));
       await tester.pumpAndSettle();
+      await programScrollToTop(tester);
+      await programScrollTo(tester, find.text('0 of 12 sessions'));
       expect(find.text('0 of 12 sessions'), findsOneWidget);
-      await tester.tap(find.text('View workout').first);
+      final firstSession = find.byKey(
+          const ValueKey('v2_program_session_balanced_foundations_w1_s1'));
+      await programScrollTo(tester, firstSession);
+      await tester.tap(find.descendant(
+          of: firstSession, matching: find.byType(TextButton)));
       await tester.pumpAndSettle();
       expect(find.byType(ProgramSessionPreviewScreen), findsOneWidget);
       final preview = tester.widget<ProgramSessionPreviewScreen>(
@@ -652,7 +661,10 @@ void main() {
       await tester.pumpAndSettle();
       expect(router.routerDelegate.currentConfiguration.uri.toString(),
           AppRoutes.programDetail(_program));
+      await programScrollToTop(tester);
+      await programScrollTo(tester, find.text('1 of 12 sessions'));
       expect(find.text('1 of 12 sessions'), findsOneWidget);
+      await programScrollTo(tester, find.text('Session 1'));
       Finder rowOf(String label) => find.ancestor(
             of: find.text(label).first,
             matching: find.byType(ProgramSessionRow),

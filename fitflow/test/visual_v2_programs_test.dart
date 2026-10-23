@@ -139,8 +139,6 @@ void main() {
   Finder rowFor(String id) => find.byKey(ValueKey('v2_program_session_$id'));
   Finder coverIn(Finder parent) =>
       find.descendant(of: parent, matching: find.byType(FitFlowProgramImage));
-  Finder buttonIn(Finder parent, String label) => find.descendant(
-      of: parent, matching: find.widgetWithText(TextButton, label));
 
   group('Visual V2 program covers', () {
     test('five canonical IDs and real structures are unchanged', () {
@@ -518,11 +516,11 @@ void main() {
             find.descendant(
                 of: row, matching: find.byType(ProgramSessionStatusChip)),
             findsOneWidget);
-        final action = buttonIn(row, 'View workout');
+        final action = find.descendant(of: row, matching: find.byType(TextButton));
         expect(tester.getSize(action).height, greaterThanOrEqualTo(48));
       }
       final session = balanced.sessions[3];
-      final action = buttonIn(rowFor(session.id), 'View workout');
+      final action = find.descendant(of: rowFor(session.id), matching: find.byType(TextButton));
       await tester.ensureVisible(action);
       await tester.tap(action);
       await tester.pumpAndSettle();
@@ -534,6 +532,9 @@ void main() {
           AppRoutes.programSessionPreview(balanced.id, session.id));
       expect(find.byType(ProgramSessionPreviewScreen), findsOneWidget);
       expect(find.text(session.title), findsOneWidget);
+      expect(find.text('Session goal: ${session.generationGoal.label}'), findsNothing);
+      await tester.tap(find.byKey(const Key('program_session_about')));
+      await tester.pumpAndSettle();
       expect(find.text('Session goal: ${session.generationGoal.label}'),
           findsOneWidget);
     });
@@ -746,7 +747,7 @@ void main() {
             expect(row.session, week.sessions.last);
             expect(row.isLast, isTrue);
             final action =
-                buttonIn(rowFor(week.sessions.last.id), 'View workout');
+                find.descendant(of: rowFor(week.sessions.last.id), matching: find.byType(TextButton));
             await tester.ensureVisible(action);
             expect(tester.getSize(action).height, greaterThanOrEqualTo(48));
             expect(tester.takeException(), isNull,

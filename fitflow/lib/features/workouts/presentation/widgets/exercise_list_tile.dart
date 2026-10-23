@@ -59,7 +59,7 @@ class ExerciseListTile extends StatelessWidget {
                           style: Theme.of(context)
                               .textTheme
                               .titleMedium
-                              ?.copyWith(fontWeight: FontWeight.w600),
+                              ?.copyWith(fontWeight: FontWeight.w500),
                         ),
                         if (focus.isNotEmpty) ...[
                           const SizedBox(height: 2),
