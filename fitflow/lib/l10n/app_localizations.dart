@@ -2516,7 +2516,7 @@ abstract class AppLocalizations {
   /// No description provided for @trainingProgramsHelp.
   ///
   /// In en, this message translates to:
-  /// **'Structured plans that adapt to your level and setup.'**
+  /// **'Plans for your level and setup.'**
   String get trainingProgramsHelp;
 
   /// No description provided for @trainingCustom.
@@ -2540,7 +2540,7 @@ abstract class AppLocalizations {
   /// No description provided for @trainingCustomHelp.
   ///
   /// In en, this message translates to:
-  /// **'Build your own workout with exercises from your library.'**
+  /// **'Choose exercises for your own workout.'**
   String get trainingCustomHelp;
 
   /// No description provided for @trainingCustomEmpty.

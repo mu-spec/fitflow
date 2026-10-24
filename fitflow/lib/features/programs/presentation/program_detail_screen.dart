@@ -76,8 +76,6 @@ class _ProgramDetailContent extends ConsumerWidget {
     final isRecommended =
         AdaptiveProgramRecommendationPolicy.isRecommended(definition.id, goal);
     final otherActive = programsState.activeProgramId != null && !isActive;
-    final compact = ProgramV2Layout.viewport(context).width >= 600 &&
-        !ProgramV2Layout.largeText(context);
 
     return Scaffold(
       backgroundColor: v.page,
@@ -104,10 +102,9 @@ class _ProgramDetailContent extends ConsumerWidget {
                 _ProgramDetailHeader(
                   definition: definition,
                   isRecommended: isRecommended,
-                  isActive: isActive,
                 ),
                 const SizedBox(height: FitFlowSpace.sm),
-                ProgramV2ProgressSummary(status: status, compact: compact),
+                ProgramV2ProgressSummary(status: status, isActive: isActive),
                 const SizedBox(height: FitFlowSpace.sm),
                 _ProgramActions(
                   definition: definition,
@@ -173,12 +170,10 @@ class _ProgramDetailHeader extends StatelessWidget {
   const _ProgramDetailHeader({
     required this.definition,
     required this.isRecommended,
-    required this.isActive,
   });
 
   final AdaptiveProgramDefinition definition;
   final bool isRecommended;
-  final bool isActive;
 
   @override
   Widget build(BuildContext context) {
@@ -205,20 +200,10 @@ class _ProgramDetailHeader extends StatelessWidget {
             style: text.bodyMedium?.copyWith(color: t.textSecondary)),
         const SizedBox(height: FitFlowSpace.xs),
         ProgramStructureLine(definition: definition),
-        if (isRecommended || isActive) ...[
+        if (isRecommended) ...[
           const SizedBox(height: FitFlowSpace.xs),
-          Wrap(
-            spacing: FitFlowSpace.sm,
-            runSpacing: FitFlowSpace.xxs,
-            children: [
-              if (isActive)
-                Text(context.l10n.trainingProgramActiveTitle,
-                    style: text.bodySmall?.copyWith(color: t.brand)),
-              if (isRecommended)
-                Text(context.l10n.trainingProgramRecommendedMatch,
-                    style: text.bodySmall?.copyWith(color: t.textSecondary)),
-            ],
-          ),
+          Text(context.l10n.trainingProgramRecommendedMatch,
+              style: text.bodySmall?.copyWith(color: t.textSecondary)),
         ],
       ],
     );
@@ -303,9 +288,18 @@ class _ProgramActions extends ConsumerWidget {
       ));
     }
 
-    return Wrap(
-        spacing: FitFlowSpace.xs,
-        runSpacing: FitFlowSpace.xs,
-        children: buttons);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (var i = 0; i < buttons.length; i++) ...[
+          if (i > 0) const SizedBox(height: FitFlowSpace.xs),
+          if (buttons[i] is FilledButton || buttons.length == 1)
+            buttons[i]
+          else
+            Align(
+                alignment: AlignmentDirectional.centerStart, child: buttons[i]),
+        ],
+      ],
+    );
   }
 }

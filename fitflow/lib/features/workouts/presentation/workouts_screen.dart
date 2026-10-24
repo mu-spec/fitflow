@@ -75,7 +75,7 @@ class _WorkoutsContent extends ConsumerWidget {
                   // A. Page header — same header rhythm the product's
                   // canonical V2 Home established.
                   const _WorkoutsHeader(),
-                  const SizedBox(height: FitFlowSpace.lg),
+                  const SizedBox(height: FitFlowSpace.md),
 
                   // B. Active program continuation (renders nothing when no
                   // real program is active). Behavior and texts unchanged.
@@ -83,14 +83,14 @@ class _WorkoutsContent extends ConsumerWidget {
 
                   // Collection navigation, not an active/recommended program.
                   _entrance(context, const _ProgramsEntry()),
-                  const SizedBox(height: FitFlowSpace.lg),
+                  const SizedBox(height: FitFlowSpace.md),
 
                   // D. Custom Workouts — clearly user-authored content.
                   _entrance(
                     context,
                     _CustomWorkoutsSection(customAsync: customAsync),
                   ),
-                  const SizedBox(height: FitFlowSpace.lg),
+                  const SizedBox(height: FitFlowSpace.md),
 
                   // E. Explore — compact secondary tools, never rivaling
                   // the primary features.

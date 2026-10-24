@@ -25,12 +25,14 @@ class FitFlowNavigationShell extends StatelessWidget {
     required this.destinations,
     required this.selectedIndex,
     required this.onSelected,
+    this.bottomBarMinHeight,
   });
 
   final Widget body;
   final List<FitFlowNavDestination> destinations;
   final int selectedIndex;
   final ValueChanged<int> onSelected;
+  final double? bottomBarMinHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +54,7 @@ class FitFlowNavigationShell extends StatelessWidget {
         bottomNavigationBar: expanded
             ? null
             : _FitFlowBottomBar(
+                minHeight: bottomBarMinHeight,
                 destinations: destinations,
                 selectedIndex: selectedIndex,
                 onSelected: onSelected,
@@ -66,11 +69,13 @@ class _FitFlowBottomBar extends StatelessWidget {
     required this.destinations,
     required this.selectedIndex,
     required this.onSelected,
+    this.minHeight,
   });
 
   final List<FitFlowNavDestination> destinations;
   final int selectedIndex;
   final ValueChanged<int> onSelected;
+  final double? minHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +86,8 @@ class _FitFlowBottomBar extends StatelessWidget {
       ),
       child: NavigationBar(
         animationDuration: SystemMotion.standard(context),
-        height: MediaQuery.textScalerOf(context).scale(12) > 18 ? 96 : null,
+        height:
+            MediaQuery.textScalerOf(context).scale(12) > 18 ? 96 : minHeight,
         selectedIndex: selectedIndex,
         onDestinationSelected: onSelected,
         destinations: [

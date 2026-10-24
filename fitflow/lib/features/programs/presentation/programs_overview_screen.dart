@@ -143,7 +143,7 @@ class _ProgramOverviewCard extends StatelessWidget {
         ? 80.0
         : 112.0;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.md),
+      padding: const EdgeInsets.symmetric(vertical: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -179,22 +179,11 @@ class _ProgramOverviewCard extends StatelessWidget {
                               style: text.bodyMedium
                                   ?.copyWith(color: t.textSecondary)),
                           const SizedBox(height: FitFlowSpace.xs),
-                          ProgramStructureLine(definition: definition),
-                          if (isActive) ...[
-                            const SizedBox(height: FitFlowSpace.xs),
-                            Text(context.l10n.trainingProgramActiveTitle,
-                                style:
-                                    text.bodySmall?.copyWith(color: t.brand)),
-                          ],
+                          ProgramStructureLine(
+                              definition: definition, includeTotal: false),
                           if (isRecommended) ...[
                             const SizedBox(height: FitFlowSpace.xxs),
                             Text(context.l10n.trainingProgramRecommendedMatch,
-                                style: text.bodySmall
-                                    ?.copyWith(color: t.textSecondary)),
-                          ],
-                          if (!isActive && !status.hasProgress) ...[
-                            const SizedBox(height: FitFlowSpace.xs),
-                            Text(programStatusLabel(context, status),
                                 style: text.bodySmall
                                     ?.copyWith(color: t.textSecondary)),
                           ],
@@ -213,7 +202,10 @@ class _ProgramOverviewCard extends StatelessWidget {
           if (isActive || status.hasProgress) ...[
             const SizedBox(height: FitFlowSpace.sm),
             ProgramV2ProgressSummary(
-                status: status, showNext: isActive, compact: true),
+                status: status,
+                isActive: isActive,
+                showNext: isActive,
+                showBar: false),
           ],
           if (onContinue != null) ...[
             const SizedBox(height: FitFlowSpace.xs),

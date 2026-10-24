@@ -164,18 +164,23 @@ class ProgramCompletionBar extends StatelessWidget {
 
 /// Compact structural facts: weeks • sessions/week • total workouts.
 class ProgramStructureLine extends StatelessWidget {
-  const ProgramStructureLine({super.key, required this.definition, this.color});
+  const ProgramStructureLine(
+      {super.key,
+      required this.definition,
+      this.color,
+      this.includeTotal = true});
 
   final AdaptiveProgramDefinition definition;
   final Color? color;
+  final bool includeTotal;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Text(
       '${context.l10n.trainingProgramWeeks(definition.weekCount)} • '
-      '${context.l10n.trainingProgramPerWeek(definition.sessionsPerWeek)} • '
-      '${context.l10n.trainingProgramTotal(definition.totalSessionCount)}',
+      '${context.l10n.trainingProgramPerWeek(definition.sessionsPerWeek)}'
+      '${includeTotal ? ' • ${context.l10n.trainingProgramTotal(definition.totalSessionCount)}' : ''}',
       style: theme.textTheme.bodySmall?.copyWith(
         color: color ?? theme.colorScheme.onSurfaceVariant,
       ),
@@ -409,13 +414,15 @@ class ProgramV2ProgressSummary extends StatelessWidget {
     required this.status,
     this.onHero = false,
     this.showNext = true,
-    this.compact = false,
+    this.isActive = false,
+    this.showBar = true,
   });
 
   final AdaptiveProgramStatus status;
   final bool onHero;
   final bool showNext;
-  final bool compact;
+  final bool isActive;
+  final bool showBar;
 
   @override
   Widget build(BuildContext context) {
@@ -437,7 +444,9 @@ class ProgramV2ProgressSummary extends StatelessWidget {
           child: Text(
             status.isComplete
                 ? context.l10n.trainingProgramProgramComplete
-                : programStatusLabel(context, status),
+                : isActive
+                    ? context.l10n.trainingProgramActiveTitle
+                    : programStatusLabel(context, status),
             style: text.labelLarge?.copyWith(color: onHero ? v.onHero : null),
           ),
         ),
@@ -452,20 +461,30 @@ class ProgramV2ProgressSummary extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (compact)
-          Wrap(
-            spacing: FitFlowSpace.sm,
-            runSpacing: FitFlowSpace.xs,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [label, if (hasNext) nextLabel()],
-          )
-        else
-          label,
-        const SizedBox(height: FitFlowSpace.xs),
-        ProgramCompletionBar(status: status, onHero: onHero),
-        if (!compact && hasNext) ...[
-          const SizedBox(height: FitFlowSpace.xs),
+        Wrap(
+          spacing: FitFlowSpace.sm,
+          runSpacing: FitFlowSpace.xxs,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            label,
+            Text(
+                context.l10n
+                    .trainingSessions(status.completedCount, status.totalCount),
+                style: text.bodySmall?.copyWith(color: t.textSecondary)),
+          ],
+        ),
+        if (hasNext) ...[
+          const SizedBox(height: FitFlowSpace.xxs),
           nextLabel(),
+        ],
+        if (showBar) ...[
+          const SizedBox(height: FitFlowSpace.xs),
+          LinearProgressIndicator(
+            value: status.completionFraction,
+            minHeight: 4,
+            semanticsLabel: context.l10n
+                .trainingSessions(status.completedCount, status.totalCount),
+          ),
         ],
       ],
     );

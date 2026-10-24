@@ -1443,8 +1443,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trainingPrograms => 'Programs';
 
   @override
-  String get trainingProgramsHelp =>
-      'Structured plans that adapt to your level and setup.';
+  String get trainingProgramsHelp => 'Plans for your level and setup.';
 
   @override
   String get trainingCustom => 'Custom workouts';
@@ -1456,8 +1455,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trainingCreateCustom => 'Create custom workout';
 
   @override
-  String get trainingCustomHelp =>
-      'Build your own workout with exercises from your library.';
+  String get trainingCustomHelp => 'Choose exercises for your own workout.';
 
   @override
   String get trainingCustomEmpty => 'No custom workouts yet';

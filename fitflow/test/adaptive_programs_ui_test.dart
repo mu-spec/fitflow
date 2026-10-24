@@ -86,11 +86,11 @@ void main() {
       await programScrollToTop(tester);
       // Structural facts (ListView is lazy, so check each while visible).
       const facts = {
-        'Balanced Foundations': '4 weeks • 3 sessions/week • 12 workouts',
-        'Strength Foundations': '6 weeks • 3 sessions/week • 18 workouts',
-        'Endurance Builder': '4 weeks • 4 sessions/week • 16 workouts',
-        'Mobility & Movement': '4 weeks • 3 sessions/week • 12 workouts',
-        'Stay Active Starter': '4 weeks • 3 sessions/week • 12 workouts',
+        'Balanced Foundations': '4 weeks • 3 sessions/week',
+        'Strength Foundations': '6 weeks • 3 sessions/week',
+        'Endurance Builder': '4 weeks • 4 sessions/week',
+        'Mobility & Movement': '4 weeks • 3 sessions/week',
+        'Stay Active Starter': '4 weeks • 3 sessions/week',
       };
       for (final entry in facts.entries) {
         await programScrollTo(tester, find.text(entry.key));

@@ -227,7 +227,7 @@ void main() {
 
       expect(programsCard(), findsOneWidget);
       expect(find.widgetWithText(TextButton, 'Programs'), findsOneWidget);
-      expect(find.text('Structured plans that adapt to your level and setup.'),
+      expect(find.text('Plans for your level and setup.'),
           findsOneWidget);
       expect(find.byType(FitFlowProgramImage), findsOneWidget);
       expect(find.byType(FitFlowV2FeatureArt), findsNothing);
@@ -235,7 +235,7 @@ void main() {
       expect(find.text('Custom workouts'), findsOneWidget);
       expect(find.byKey(const Key('v2_custom_empty')), findsOneWidget);
       expect(find.text('No custom workouts yet'), findsNothing);
-      expect(find.text('Build your own workout with exercises from your library.'), findsOneWidget);
+      expect(find.text('Choose exercises for your own workout.'), findsOneWidget);
 
       expect(find.text('Explore'), findsOneWidget);
       expect(find.byIcon(Icons.fitness_center_outlined), findsWidgets);

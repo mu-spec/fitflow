@@ -300,7 +300,7 @@ void main() {
                 find.descendant(of: schedule, matching: find.byType(Text));
             final paragraph = tester.renderObject<RenderParagraph>(copy);
             expect(tester.widget<Text>(copy).data,
-                '4 weeks \u2022 3 sessions/week \u2022 12 workouts');
+                '4 weeks \u2022 3 sessions/week');
             expect(paragraph.didExceedMaxLines, isFalse);
             expect(
                 tester.getTopLeft(schedule).dy,
