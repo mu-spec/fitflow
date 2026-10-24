@@ -1,19 +1,16 @@
 import 'package:fitflow/core/accessibility/system_motion.dart';
-import 'package:fitflow/core/design/fitflow_radius.dart';
-import 'package:fitflow/core/design/fitflow_spacing.dart';
-import 'package:fitflow/core/design/fitflow_theme_extension.dart';
-import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/features/progress/domain/training_analytics.dart';
-import 'package:fitflow/features/workouts/presentation/widgets/training_presentation.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/l10n/locale_format.dart';
 import 'package:flutter/material.dart';
+import 'progress_presentation.dart';
 
-/// Same eight engine buckets. True proportional bars with visible text
-/// equivalents; no minimum-height fake values or animation of historical data.
+/// Same eight rolling buckets and proportional values; dates remain accessible.
 class ProgressActivityChart extends StatefulWidget {
-  const ProgressActivityChart({super.key, required this.analytics});
+  const ProgressActivityChart(
+      {super.key, required this.analytics, this.showHeading = true});
   final TrainingAnalytics analytics;
+  final bool showHeading;
   @override
   State<ProgressActivityChart> createState() => _ProgressActivityChartState();
 }
@@ -24,26 +21,26 @@ class _ProgressActivityChartState extends State<ProgressActivityChart> {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
+    final theme = Theme.of(context);
     final buckets = widget.analytics.trendBuckets;
     final maxValue = buckets
         .map((b) => _showSets ? b.mainSetCount : b.workoutCount)
         .fold(0, (a, b) => a > b ? a : b);
-    final fitFlowTheme = FitFlowTheme.of(context);
-
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      TrainingHeading(l.trainingActivity),
-      const SizedBox(height: FitFlowSpace.xs),
-      Text(
-        l.trainingActivityHelp,
-        style: Theme.of(context)
-            .textTheme
-            .bodySmall
-            ?.copyWith(color: fitFlowTheme.textSecondary),
-      ),
-      const SizedBox(height: FitFlowSpace.sm),
-      Wrap(spacing: FitFlowSpace.xs, runSpacing: FitFlowSpace.xs, children: [
+    String period(TrainingTrendBucket b) => b.isCurrent
+        ? l.trainingCurrentPeriod
+        : l.trainingWeeksAgo(buckets.length - 1 - b.index);
+    String count(TrainingTrendBucket b) => _showSets
+        ? l.trainingActivitySets(b.mainSetCount)
+        : l.trainingActivityCount(b.workoutCount);
+    String dates(TrainingTrendBucket b) =>
+        '${FitFlowLocaleFormat.formatDate(MaterialLocalizations.of(context), b.start)} – ${FitFlowLocaleFormat.formatDate(MaterialLocalizations.of(context), b.end)}';
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      if (widget.showHeading)
+        Text(l.trainingActivity, style: theme.textTheme.titleMedium),
+      Text(l.progressPeriodOrder, style: theme.textTheme.bodySmall),
+      const SizedBox(height: 4),
+      Wrap(spacing: 8, runSpacing: 4, children: [
         ChoiceChip(
-            materialTapTargetSize: MaterialTapTargetSize.padded,
             chipAnimationStyle: ChipAnimationStyle(
                 selectAnimation: AnimationStyle(
                     duration: SystemMotion.micro(context),
@@ -52,7 +49,6 @@ class _ProgressActivityChartState extends State<ProgressActivityChart> {
             selected: !_showSets,
             onSelected: (_) => setState(() => _showSets = false)),
         ChoiceChip(
-            materialTapTargetSize: MaterialTapTargetSize.padded,
             chipAnimationStyle: ChipAnimationStyle(
                 selectAnimation: AnimationStyle(
                     duration: SystemMotion.micro(context),
@@ -61,62 +57,62 @@ class _ProgressActivityChartState extends State<ProgressActivityChart> {
             selected: _showSets,
             onSelected: (_) => setState(() => _showSets = true)),
       ]),
-      const SizedBox(height: FitFlowSpace.md),
-      FitFlowV2InfoSurface(
-        padding: EdgeInsets.zero,
-        child: Column(
-          children: [
-            for (var i = 0; i < buckets.length; i++) ...[
-              Padding(
-                padding: const EdgeInsets.all(FitFlowSpace.md),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${buckets[i].isCurrent ? l.trainingCurrentPeriod : l.trainingWeeksAgo(buckets.length - 1 - buckets[i].index)} · ${_showSets ? l.trainingActivitySets(buckets[i].mainSetCount) : l.trainingActivityCount(buckets[i].workoutCount)}',
-                      style: Theme.of(context).textTheme.labelLarge,
-                    ),
-                    const SizedBox(height: FitFlowSpace.xxs),
-                    Text(
-                      '${FitFlowLocaleFormat.formatDate(MaterialLocalizations.of(context), buckets[i].start)} – ${FitFlowLocaleFormat.formatDate(MaterialLocalizations.of(context), buckets[i].end)}',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(color: fitFlowTheme.textSecondary),
-                    ),
-                    const SizedBox(height: FitFlowSpace.xs),
-                    ExcludeSemantics(
-                      child: ClipRRect(
-                        borderRadius: FitFlowRadius.pillBorder,
-                        child: LinearProgressIndicator(
-                          value: maxValue == 0
-                              ? 0
-                              : (_showSets
-                                      ? buckets[i].mainSetCount
-                                      : buckets[i].workoutCount) /
-                                  maxValue,
-                          minHeight: 8,
-                          color: fitFlowTheme.brand,
-                          backgroundColor: fitFlowTheme.subtleSurface,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (i != buckets.length - 1)
-                const Divider(
-                    height: 1,
-                    indent: FitFlowSpace.md,
-                    endIndent: FitFlowSpace.md),
-            ],
-          ],
+      const SizedBox(height: 8),
+      for (final bucket in buckets)
+        Semantics(
+          label: '${period(bucket)} · ${count(bucket)} · ${dates(bucket)}',
+          excludeSemantics: true,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6),
+            child: LayoutBuilder(builder: (context, constraints) {
+              final label =
+                  Text(period(bucket), style: theme.textTheme.bodySmall);
+              final value = Text(
+                  '${_showSets ? bucket.mainSetCount : bucket.workoutCount}',
+                  style: theme.textTheme.bodyMedium);
+              final bar = LinearProgressIndicator(
+                value: maxValue == 0
+                    ? 0
+                    : (_showSets ? bucket.mainSetCount : bucket.workoutCount) /
+                        maxValue,
+                minHeight: 6,
+              );
+              if (MediaQuery.textScalerOf(context).scale(1) > 1.3) {
+                return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(children: [
+                        Expanded(child: label),
+                        const SizedBox(width: 8),
+                        value
+                      ]),
+                      const SizedBox(height: 4),
+                      bar,
+                    ]);
+              }
+              return Row(children: [
+                SizedBox(width: constraints.maxWidth * .4, child: label),
+                const SizedBox(width: 8),
+                Expanded(child: bar),
+                const SizedBox(width: 12),
+                SizedBox(width: 32, child: value),
+              ]);
+            }),
+          ),
         ),
-      ),
-      if (maxValue == 0) ...[
-        const SizedBox(height: FitFlowSpace.sm),
-        Text(l.trainingNoActivity),
-      ],
+      if (maxValue == 0)
+        Text(l.trainingNoActivity, style: theme.textTheme.bodySmall),
+      ProgressDisclosure(
+          key: const Key('progress_period_dates'),
+          title: l.progressPeriodDates,
+          children: [
+            for (final bucket in buckets)
+              Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: Text(
+                      '${period(bucket)} · ${count(bucket)}\n${dates(bucket)}',
+                      style: theme.textTheme.bodySmall)),
+          ]),
     ]);
   }
 }

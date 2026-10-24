@@ -1,13 +1,16 @@
+import 'package:fitflow/l10n/fitflow_l10n.dart';
+import 'progress_presentation.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_theme_extension.dart';
-import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/features/progress/domain/training_analytics.dart';
 import 'package:flutter/material.dart';
 
 class ProgressMovementTraining extends StatelessWidget {
-  const ProgressMovementTraining({super.key, required this.analytics});
+  const ProgressMovementTraining(
+      {super.key, required this.analytics, this.showHeading = true});
 
   final TrainingAnalytics analytics;
+  final bool showHeading;
 
   String _formatLastTrained(DateTime? last, DateTime now) {
     if (last == null) return 'Not trained in last 28 days';
@@ -42,14 +45,15 @@ class ProgressMovementTraining extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Semantics(
-          header: true,
-          child: Text(
-            'Movement training',
-            style: theme.textTheme.titleLarge
-                ?.copyWith(fontWeight: FontWeight.w700),
+        if (showHeading)
+          Semantics(
+            header: true,
+            child: Text(
+              context.l10n.progressMovementTitle,
+              style: theme.textTheme.titleLarge
+                  ?.copyWith(fontWeight: FontWeight.w500),
+            ),
           ),
-        ),
         const SizedBox(height: FitFlowSpace.xxs),
         Text(
           'Main-workout sets from your last 28 days.',
@@ -58,16 +62,15 @@ class ProgressMovementTraining extends StatelessWidget {
         ),
         const SizedBox(height: FitFlowSpace.md),
         if (withData.isEmpty)
-          FitFlowV2InfoSurface(
-            tonal: true,
+          ProgressRows(
             child: Text(
               'No Main movement training in last 28 days.',
               style: theme.textTheme.bodyMedium,
             ),
           )
         else
-          FitFlowV2InfoSurface(
-            padding: const EdgeInsets.all(FitFlowSpace.md),
+          ProgressRows(
+            padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.sm),
             child: Column(
               children: [
                 for (var i = 0; i < withData.length; i++) ...[
@@ -78,7 +81,7 @@ class ProgressMovementTraining extends StatelessWidget {
                     formatLast: _formatLastTrained,
                   ),
                   if (i != withData.length - 1)
-                    const Divider(height: FitFlowSpace.xl),
+                    const Divider(height: FitFlowSpace.md),
                 ],
               ],
             ),
@@ -88,25 +91,14 @@ class ProgressMovementTraining extends StatelessWidget {
           Semantics(
             header: true,
             child: Text(
-              'Movements not trained yet',
+              context.l10n.progressNotTrained28,
               style: theme.textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w600),
+                  ?.copyWith(fontWeight: FontWeight.w500),
             ),
           ),
           const SizedBox(height: FitFlowSpace.xs),
-          Text(
-            'No Main sets for these movements in last 28 days.',
-            style: theme.textTheme.bodySmall
-                ?.copyWith(color: colorScheme.onSurfaceVariant),
-          ),
-          const SizedBox(height: FitFlowSpace.xs),
-          Wrap(
-            spacing: FitFlowSpace.xs,
-            runSpacing: FitFlowSpace.xs,
-            children: withoutData
-                .map((m) => FitFlowV2Tag(m.movementPattern.label))
-                .toList(),
-          ),
+          Text(withoutData.map((m) => m.movementPattern.label).join(' · '),
+              style: theme.textTheme.bodyMedium),
         ],
       ],
     );
@@ -146,14 +138,14 @@ class _MovementRow extends StatelessWidget {
                 child: Text(
                   data.movementPattern.label,
                   style: theme.textTheme.titleSmall
-                      ?.copyWith(fontWeight: FontWeight.w600),
+                      ?.copyWith(fontWeight: FontWeight.w500),
                 ),
               ),
               const SizedBox(width: FitFlowSpace.xs),
               Text(
                 '${data.mainSets} sets',
                 style: theme.textTheme.titleSmall
-                    ?.copyWith(fontWeight: FontWeight.w700),
+                    ?.copyWith(fontWeight: FontWeight.w500),
               ),
             ],
           ),
@@ -170,42 +162,14 @@ class _MovementRow extends StatelessWidget {
             ),
           ),
           const SizedBox(height: FitFlowSpace.xs),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final textScale = MediaQuery.textScalerOf(context).scale(1);
-              final compact = constraints.maxWidth < 420 || textScale > 1.3;
-              final sessions = Text(
-                '${data.sessions} sessions',
+          Wrap(spacing: 12, runSpacing: 2, children: [
+            Text('${data.sessions} sessions',
                 style: theme.textTheme.bodySmall
-                    ?.copyWith(color: colorScheme.onSurfaceVariant),
-              );
-              final lastTrained = Text(
-                formatLast(data.lastTrained, now),
+                    ?.copyWith(color: colorScheme.onSurfaceVariant)),
+            Text(formatLast(data.lastTrained, now),
                 style: theme.textTheme.bodySmall
-                    ?.copyWith(color: colorScheme.onSurfaceVariant),
-                textAlign: compact ? TextAlign.start : TextAlign.end,
-              );
-
-              if (compact) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    sessions,
-                    const SizedBox(height: FitFlowSpace.xxs),
-                    lastTrained,
-                  ],
-                );
-              }
-
-              return Row(
-                children: [
-                  Expanded(child: sessions),
-                  const SizedBox(width: FitFlowSpace.xs),
-                  Expanded(child: lastTrained),
-                ],
-              );
-            },
-          ),
+                    ?.copyWith(color: colorScheme.onSurfaceVariant)),
+          ]),
         ],
       ),
     );

@@ -1,3 +1,4 @@
+import 'progress_presentation.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/features/workouts/domain/history/completed_workout.dart';
@@ -96,9 +97,12 @@ class _RecentWorkoutTile extends StatelessWidget {
         vertical: FitFlowSpace.xs,
       ),
       minVerticalPadding: FitFlowSpace.xs,
-      leading: ExcludeSemantics(
-          child: Icon(Icons.check_circle_outline_rounded,
-              size: 24, color: theme.colorScheme.primary)),
+      leading: Semantics(
+        label: l.trainingHistoryCompleted,
+        child: ExcludeSemantics(
+            child: Icon(Icons.check_circle_outline_rounded,
+                size: 24, color: theme.colorScheme.primary)),
+      ),
       title: Text(
         FitFlowLocaleFormat.formatDateTime(context, workout.completedAt),
         style:
@@ -111,7 +115,6 @@ class _RecentWorkoutTile extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l.trainingHistoryCompleted),
             Text(l.trainingHistoryCounts(
               workout.totalExerciseCount,
               workout.totalSetCount,
@@ -119,7 +122,7 @@ class _RecentWorkoutTile extends StatelessWidget {
             if (workout.estimatedDuration != null ||
                 workout.targetDuration != null)
               Text(
-                '${workout.estimatedDuration != null ? l.trainingEstimatedDuration : l.trainingPlannedDuration}: ${FitFlowLocaleFormat.formatDuration(l, workout.estimatedDuration ?? workout.targetDuration!)}',
+                '${workout.estimatedDuration != null ? l.trainingEstimatedDuration : l.trainingPlannedDuration}: ${progressDuration(context, workout.estimatedDuration ?? workout.targetDuration!)}',
               ),
           ],
         ),

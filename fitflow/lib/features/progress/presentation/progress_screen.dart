@@ -1,3 +1,4 @@
+import 'widgets/progress_presentation.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
@@ -15,7 +16,6 @@ import 'package:fitflow/features/progress/presentation/widgets/progress_recovery
 import 'package:fitflow/features/progress/presentation/widgets/progress_summary_cards.dart';
 import 'package:fitflow/features/workouts/application/workout_history_controller.dart';
 import 'package:fitflow/features/workouts/domain/recovery/training_recovery_engine.dart';
-import 'package:fitflow/features/workouts/presentation/widgets/training_presentation.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,6 +26,13 @@ import 'package:go_router/go_router.dart';
 class ProgressScreen extends ConsumerWidget {
   const ProgressScreen({super.key});
 
+  @override
+  Widget build(BuildContext context, WidgetRef ref) =>
+      const ProgressTheme(child: _ProgressContent());
+}
+
+class _ProgressContent extends ConsumerWidget {
+  const _ProgressContent();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final historyAsync = ref.watch(workoutHistoryProvider);
@@ -90,45 +97,56 @@ class ProgressScreen extends ConsumerWidget {
                   ProgressRecentWorkouts(
                     history: analytics.validWorkouts,
                   ),
-                  const SizedBox(height: FitFlowSpace.section),
-                  Column(
+                  const SizedBox(height: FitFlowSpace.md),
+                  Text(context.l10n.trainingTrends,
+                      style: Theme.of(context).textTheme.titleMedium),
+                  const SizedBox(height: FitFlowSpace.xs),
+                  ProgressDisclosure(
+                    title: context.l10n.trainingActivity,
                     children: [
-                      TrainingDisclosure(
-                        title: context.l10n.trainingTrends,
-                        subtitle: context.l10n.trainingTrendsHelp,
-                        children: [
-                          ProgressActivityChart(analytics: analytics),
-                          const SizedBox(height: FitFlowSpace.section),
-                          ProgressPeriodComparison(analytics: analytics),
-                          const SizedBox(height: FitFlowSpace.section),
-                          ProgressConsistency(analytics: analytics),
-                          const SizedBox(height: FitFlowSpace.section),
-                          ProgressMovementTraining(analytics: analytics),
-                        ],
-                      ),
-                      const Divider(
-                        height: 1,
-                        indent: FitFlowSpace.md,
-                        endIndent: FitFlowSpace.md,
-                      ),
-                      TrainingDisclosure(
-                        title: context.l10n.trainingMovementSnapshot,
-                        children: const [ProgressCapabilitySnapshot()],
-                      ),
-                      const Divider(
-                        height: 1,
-                        indent: FitFlowSpace.md,
-                        endIndent: FitFlowSpace.md,
-                      ),
-                      TrainingDisclosure(
-                        title: context.l10n.trainingRecoveryDetails,
-                        children: [
-                          ProgressRecoverySection(
-                            recoveryStatuses: recoveryStatuses,
-                            now: now,
-                          ),
-                        ],
-                      ),
+                      ProgressActivityChart(
+                          analytics: analytics, showHeading: false)
+                    ],
+                  ),
+                  const Divider(height: 1),
+                  ProgressDisclosure(
+                    title: context.l10n.progressComparisonTitle,
+                    children: [
+                      ProgressPeriodComparison(
+                          analytics: analytics, showHeading: false)
+                    ],
+                  ),
+                  const Divider(height: 1),
+                  ProgressDisclosure(
+                    title: context.l10n.progressConsistencyTitle,
+                    children: [
+                      ProgressConsistency(
+                          analytics: analytics, showHeading: false)
+                    ],
+                  ),
+                  const Divider(height: 1),
+                  ProgressDisclosure(
+                    title: context.l10n.progressMovementTitle,
+                    children: [
+                      ProgressMovementTraining(
+                          analytics: analytics, showHeading: false)
+                    ],
+                  ),
+                  const Divider(height: 1),
+                  ProgressDisclosure(
+                    title: context.l10n.trainingMovementSnapshot,
+                    children: const [
+                      ProgressCapabilitySnapshot(showHeading: false)
+                    ],
+                  ),
+                  const Divider(height: 1),
+                  ProgressDisclosure(
+                    title: context.l10n.trainingRecoveryDetails,
+                    children: [
+                      ProgressRecoverySection(
+                          recoveryStatuses: recoveryStatuses,
+                          now: now,
+                          showHeading: false)
                     ],
                   ),
                   const SizedBox(height: FitFlowSpace.xl),
@@ -145,7 +163,7 @@ class ProgressScreen extends ConsumerWidget {
 Widget _progressOverviewScroll(Widget child) => SingleChildScrollView(
       padding: const EdgeInsets.symmetric(
         horizontal: FitFlowSpace.screenHorizontal,
-        vertical: FitFlowSpace.lg,
+        vertical: FitFlowSpace.sm,
       ),
       child: FitFlowMaxWidth(
         maxWidth: FitFlowLayout.maxContentWidth,

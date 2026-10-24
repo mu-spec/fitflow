@@ -1,5 +1,5 @@
+import 'progress_presentation.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
-import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/features/workouts/domain/recovery/movement_recovery_status.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/l10n/locale_format.dart';
@@ -10,10 +10,12 @@ class ProgressRecoverySection extends StatelessWidget {
     super.key,
     required this.recoveryStatuses,
     required this.now,
+    this.showHeading = true,
   });
 
   final List<MovementRecoveryStatus> recoveryStatuses;
   final DateTime now;
+  final bool showHeading;
 
   String _friendlyLastTrained(BuildContext context, DateTime? last) {
     final l10n = context.l10n;
@@ -49,39 +51,31 @@ class ProgressRecoverySection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Semantics(
-          header: true,
-          child: Text(
-            'Training recovery',
-            style: theme.textTheme.titleLarge
-                ?.copyWith(fontWeight: FontWeight.w700),
+        if (showHeading)
+          Semantics(
+            header: true,
+            child: Text(
+              context.l10n.trainingRecoveryDetails,
+              style: theme.textTheme.titleLarge
+                  ?.copyWith(fontWeight: FontWeight.w500),
+            ),
           ),
-        ),
         const SizedBox(height: FitFlowSpace.xxs),
         Text(
-          'Based on your recent FitFlow training history, not a medical recovery measure.',
+          context.l10n.progressRecoveryHelp,
           style: theme.textTheme.bodySmall
               ?.copyWith(color: colorScheme.onSurfaceVariant),
         ),
-        const SizedBox(height: FitFlowSpace.xxs),
-        Text(
-          'Based only on time since this movement appeared in your FitFlow workouts.',
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-            fontStyle: FontStyle.italic,
-          ),
-        ),
         const SizedBox(height: FitFlowSpace.md),
         if (trainedStatuses.isEmpty)
-          FitFlowV2InfoSurface(
-            tonal: true,
+          ProgressRows(
             child: Text(
               'No recent training data. Complete workouts with different movements to see recovery.',
               style: theme.textTheme.bodyMedium,
             ),
           )
         else
-          FitFlowV2InfoSurface(
+          ProgressRows(
             padding: EdgeInsets.zero,
             child: Column(
               children: [
@@ -96,8 +90,8 @@ class ProgressRecoverySection extends StatelessWidget {
                   if (i != trainedStatuses.length - 1)
                     const Divider(
                       height: 1,
-                      indent: FitFlowSpace.md,
-                      endIndent: FitFlowSpace.md,
+                      indent: 0,
+                      endIndent: 0,
                     ),
                 ],
               ],
@@ -110,17 +104,15 @@ class ProgressRecoverySection extends StatelessWidget {
             child: Text(
               'Movements not trained yet',
               style: theme.textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w600),
+                  ?.copyWith(fontWeight: FontWeight.w500),
             ),
           ),
           const SizedBox(height: FitFlowSpace.xs),
-          Wrap(
-            spacing: FitFlowSpace.xs,
-            runSpacing: FitFlowSpace.xs,
-            children: untrainedStatuses
-                .map((status) => FitFlowV2Tag(status.movementPattern.label))
-                .toList(),
-          ),
+          Text(
+              untrainedStatuses
+                  .map((status) => status.movementPattern.label)
+                  .join(' · '),
+              style: theme.textTheme.bodyMedium),
         ],
       ],
     );
@@ -142,7 +134,7 @@ class _RecoveryRow extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return Padding(
-      padding: const EdgeInsets.all(FitFlowSpace.md),
+      padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.sm),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -154,9 +146,11 @@ class _RecoveryRow extends StatelessWidget {
               Text(
                 status.movementPattern.label,
                 style: theme.textTheme.titleMedium
-                    ?.copyWith(fontWeight: FontWeight.w700),
+                    ?.copyWith(fontWeight: FontWeight.w500),
               ),
-              FitFlowV2Tag(status.category.label),
+              Text(status.category.label,
+                  style: theme.textTheme.bodyMedium
+                      ?.copyWith(color: colorScheme.onSurfaceVariant)),
             ],
           ),
           const SizedBox(height: FitFlowSpace.xs),

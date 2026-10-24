@@ -1231,5 +1231,68 @@
   "v2HomeTargetUnit": "min target",
   "profileIntro": "Your setup for future workouts.",
   "profileFitnessEntry": "Fitness Profile",
-  "profilePreferencesEntry": "Workout Preferences"
+  "profilePreferencesEntry": "Workout Preferences",
+  "progressCompactMinutes": "{minutes} min",
+  "@progressCompactMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "progressCompactSeconds": "{seconds} sec",
+  "@progressCompactSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "progressCompactDuration": "{minutes}m {seconds}s",
+  "@progressCompactDuration": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "progressComparisonTitle": "7-day comparison",
+  "progressComparisonHelp": "Current and previous rolling 7-day periods.",
+  "progressPreviousValue": "Previous: {value}",
+  "@progressPreviousValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "progressCurrentValue": "Current: {value}",
+  "@progressCurrentValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "progressMainSets": "Main sets",
+  "progressPlannedTime": "Planned time",
+  "progressConsistencyTitle": "Training consistency",
+  "progressConsistencyHelp": "Weeks with a completed workout, across four rolling 7-day periods.",
+  "progressActiveWeeks": "{count} of 4 recent weeks",
+  "@progressActiveWeeks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "progressMovementTitle": "Movement training",
+  "progressRecoveryHelp": "Time since each movement was trained in FitFlow, not a medical recovery measure.",
+  "progressPeriodDates": "Period dates",
+  "progressPeriodOrder": "Eight rolling 7-day periods, oldest to newest.",
+  "progressTimeHelp": "Target and estimated times are planned, not elapsed time.",
+  "progressNotTrained28": "No main sets in the last 28 days"
 }

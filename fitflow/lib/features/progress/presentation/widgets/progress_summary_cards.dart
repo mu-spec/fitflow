@@ -2,7 +2,7 @@ import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:fitflow/features/progress/domain/training_analytics.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
-import 'package:fitflow/l10n/locale_format.dart';
+import 'progress_presentation.dart';
 import 'package:flutter/material.dart';
 
 /// Compact identity header shared by the populated and empty Progress states.
@@ -54,8 +54,8 @@ class ProgressSummaryCards extends StatelessWidget {
       ),
       _ProgressSummaryStat(
         label: l.trainingPlanned7,
-        value: FitFlowLocaleFormat.formatDuration(
-          l,
+        value: progressDuration(
+          context,
           analytics.currentPeriod.plannedDuration,
         ),
       ),
@@ -67,34 +67,31 @@ class ProgressSummaryCards extends StatelessWidget {
         LayoutBuilder(
           builder: (context, constraints) {
             final textScale = MediaQuery.textScalerOf(context).scale(1);
-            final useColumns = constraints.maxWidth >= 560 && textScale <= 1.25;
-
-            if (useColumns) {
-              return Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  for (var i = 0; i < stats.length; i++) ...[
-                    if (i > 0) const SizedBox(width: FitFlowSpace.md),
-                    Expanded(
-                        child: _ProgressMetric(stat: stats[i], stacked: true)),
-                  ],
-                ],
-              );
-            }
-
+            final useColumns = constraints.maxWidth >= 280 && textScale <= 1.3;
             return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                for (var i = 0; i < stats.length; i++) ...[
-                  if (i > 0)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: FitFlowSpace.xs),
-                      child: Divider(height: 1),
-                    ),
-                  _ProgressMetric(stat: stats[i]),
-                ],
-              ],
-            );
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (useColumns)
+                    Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                              child: _ProgressMetric(
+                                  stat: stats[0], stacked: true)),
+                          const SizedBox(width: FitFlowSpace.md),
+                          Expanded(
+                              child: _ProgressMetric(
+                                  stat: stats[1], stacked: true)),
+                        ])
+                  else ...[
+                    _ProgressMetric(stat: stats[0]),
+                    _ProgressMetric(stat: stats[1]),
+                  ],
+                  const SizedBox(height: FitFlowSpace.sm),
+                  const Divider(height: 1),
+                  const SizedBox(height: FitFlowSpace.xs),
+                  _ProgressMetric(stat: stats[2]),
+                ]);
           },
         ),
         const SizedBox(height: FitFlowSpace.sm),

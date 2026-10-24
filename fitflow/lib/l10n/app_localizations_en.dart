@@ -2262,4 +2262,75 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profilePreferencesEntry => 'Workout Preferences';
+
+  @override
+  String progressCompactMinutes(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String progressCompactSeconds(int seconds) {
+    return '$seconds sec';
+  }
+
+  @override
+  String progressCompactDuration(int minutes, int seconds) {
+    return '${minutes}m ${seconds}s';
+  }
+
+  @override
+  String get progressComparisonTitle => '7-day comparison';
+
+  @override
+  String get progressComparisonHelp =>
+      'Current and previous rolling 7-day periods.';
+
+  @override
+  String progressPreviousValue(String value) {
+    return 'Previous: $value';
+  }
+
+  @override
+  String progressCurrentValue(String value) {
+    return 'Current: $value';
+  }
+
+  @override
+  String get progressMainSets => 'Main sets';
+
+  @override
+  String get progressPlannedTime => 'Planned time';
+
+  @override
+  String get progressConsistencyTitle => 'Training consistency';
+
+  @override
+  String get progressConsistencyHelp =>
+      'Weeks with a completed workout, across four rolling 7-day periods.';
+
+  @override
+  String progressActiveWeeks(int count) {
+    return '$count of 4 recent weeks';
+  }
+
+  @override
+  String get progressMovementTitle => 'Movement training';
+
+  @override
+  String get progressRecoveryHelp =>
+      'Time since each movement was trained in FitFlow, not a medical recovery measure.';
+
+  @override
+  String get progressPeriodDates => 'Period dates';
+
+  @override
+  String get progressPeriodOrder =>
+      'Eight rolling 7-day periods, oldest to newest.';
+
+  @override
+  String get progressTimeHelp =>
+      'Target and estimated times are planned, not elapsed time.';
+
+  @override
+  String get progressNotTrained28 => 'No main sets in the last 28 days';
 }

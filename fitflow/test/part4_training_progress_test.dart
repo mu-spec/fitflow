@@ -180,7 +180,7 @@ void main() {
           if (screen is ProgressScreen) {
             expect(find.byType(FitFlowStat), findsNWidgets(3));
             expect(find.byType(ProgressActivityChart), findsNothing);
-            await _open(tester, 'Training trends');
+            await _open(tester, '8-week activity');
             await _open(tester, 'Current movement levels');
             await _open(tester, 'Training recovery');
           }
@@ -243,13 +243,15 @@ void main() {
       });
       await _pump(tester, const ProgressScreen(), reduced: reduced);
       final tile = tester.widget<ExpansionTile>(
-          find.widgetWithText(ExpansionTile, 'Training trends'));
+          find.widgetWithText(ExpansionTile, '8-week activity'));
       expect(tile.expansionAnimationStyle!.duration,
           reduced ? Duration.zero : const Duration(milliseconds: 200));
       expect(find.byType(ProgressActivityChart), findsNothing);
-      await _open(tester, 'Training trends');
+      await _open(tester, '8-week activity');
       expect(find.byType(ProgressActivityChart), findsOneWidget);
-      expect(find.textContaining('Current 7 days · 1 workout'), findsOneWidget);
+      final semantics = tester.ensureSemantics();
+      expect(find.bySemanticsLabel(RegExp('Current 7 days · 1 workout')), findsOneWidget);
+      semantics.dispose();
       expect(tester.takeException(), isNull);
     });
   }
@@ -268,13 +270,13 @@ void main() {
             completedAt: DateTime.now().subtract(Duration(days: i, hours: 1))));
     await _pump(tester,
         SingleChildScrollView(child: ProgressRecentWorkouts(history: records)));
-    expect(find.text('Completed workout'), findsNWidgets(10));
+    expect(find.byType(ListTile), findsNWidgets(10));
     await tester.ensureVisible(find.text('Show more workouts'));
     await tester.tap(find.text('Show more workouts'));
     await tester.pumpAndSettle();
-    expect(find.text('Completed workout'), findsNWidgets(13));
+    expect(find.byType(ListTile), findsNWidgets(13));
     expect(find.text('Show more workouts'), findsNothing);
-    expect(find.textContaining('Estimated duration: 22 minutes'),
+    expect(find.textContaining('Estimated duration: 22 min'),
         findsNWidgets(13));
     final tiles = tester.widgetList<ListTile>(find.byType(ListTile)).toList();
     final dates = tiles.map((t) => (t.title as Text).data).toList();

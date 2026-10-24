@@ -1,3 +1,4 @@
+import 'widgets/progress_presentation.dart';
 import 'package:fitflow/core/design/media/exercise_media_registry.dart';
 import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
 import 'package:fitflow/app/config/app_dimensions.dart';
@@ -24,8 +25,17 @@ class ProgressHistoryDetailScreen extends ConsumerWidget {
   static String routeName(String sessionId) =>
       'progress-history-detail-$sessionId';
 
+  @override
+  Widget build(BuildContext context, WidgetRef ref) =>
+      ProgressTheme(child: _HistoryDetailContent(sessionId: sessionId));
+}
+
+class _HistoryDetailContent extends ConsumerWidget {
+  const _HistoryDetailContent({required this.sessionId});
+  final String sessionId;
+
   String _formatDuration(BuildContext context, Duration? d) =>
-      d == null ? '—' : FitFlowLocaleFormat.formatDuration(context.l10n, d);
+      d == null ? '—' : progressDuration(context, d);
 
   String _formatDateTime(BuildContext context, DateTime dt) {
     return FitFlowLocaleFormat.formatDateTime(context, dt);
@@ -121,7 +131,7 @@ class ProgressHistoryDetailScreen extends ConsumerWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: FitFlowSpace.xl),
+                    const SizedBox(height: FitFlowSpace.md),
                     Column(
                       children: [
                         _DetailRow(
@@ -151,17 +161,23 @@ class ProgressHistoryDetailScreen extends ConsumerWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: FitFlowSpace.lg),
+                    const SizedBox(height: FitFlowSpace.md),
+                    Text(context.l10n.progressTimeHelp,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurfaceVariant)),
+                    const SizedBox(height: FitFlowSpace.md),
                     _SectionBlock(
                       title: context.l10n.flowWarmup,
                       exercises: workout.warmup,
                     ),
-                    const SizedBox(height: FitFlowSpace.lg),
+                    const SizedBox(height: FitFlowSpace.md),
                     _SectionBlock(
                       title: context.l10n.flowMain,
                       exercises: workout.main,
                     ),
-                    const SizedBox(height: FitFlowSpace.lg),
+                    const SizedBox(height: FitFlowSpace.md),
                     _SectionBlock(
                       title: context.l10n.flowCooldown,
                       exercises: workout.cooldown,

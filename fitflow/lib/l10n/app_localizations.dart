@@ -3850,6 +3850,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Workout Preferences'**
   String get profilePreferencesEntry;
+
+  /// No description provided for @progressCompactMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String progressCompactMinutes(int minutes);
+
+  /// No description provided for @progressCompactSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds} sec'**
+  String progressCompactSeconds(int seconds);
+
+  /// No description provided for @progressCompactDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes}m {seconds}s'**
+  String progressCompactDuration(int minutes, int seconds);
+
+  /// No description provided for @progressComparisonTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'7-day comparison'**
+  String get progressComparisonTitle;
+
+  /// No description provided for @progressComparisonHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Current and previous rolling 7-day periods.'**
+  String get progressComparisonHelp;
+
+  /// No description provided for @progressPreviousValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous: {value}'**
+  String progressPreviousValue(String value);
+
+  /// No description provided for @progressCurrentValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Current: {value}'**
+  String progressCurrentValue(String value);
+
+  /// No description provided for @progressMainSets.
+  ///
+  /// In en, this message translates to:
+  /// **'Main sets'**
+  String get progressMainSets;
+
+  /// No description provided for @progressPlannedTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned time'**
+  String get progressPlannedTime;
+
+  /// No description provided for @progressConsistencyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Training consistency'**
+  String get progressConsistencyTitle;
+
+  /// No description provided for @progressConsistencyHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Weeks with a completed workout, across four rolling 7-day periods.'**
+  String get progressConsistencyHelp;
+
+  /// No description provided for @progressActiveWeeks.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of 4 recent weeks'**
+  String progressActiveWeeks(int count);
+
+  /// No description provided for @progressMovementTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Movement training'**
+  String get progressMovementTitle;
+
+  /// No description provided for @progressRecoveryHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Time since each movement was trained in FitFlow, not a medical recovery measure.'**
+  String get progressRecoveryHelp;
+
+  /// No description provided for @progressPeriodDates.
+  ///
+  /// In en, this message translates to:
+  /// **'Period dates'**
+  String get progressPeriodDates;
+
+  /// No description provided for @progressPeriodOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Eight rolling 7-day periods, oldest to newest.'**
+  String get progressPeriodOrder;
+
+  /// No description provided for @progressTimeHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Target and estimated times are planned, not elapsed time.'**
+  String get progressTimeHelp;
+
+  /// No description provided for @progressNotTrained28.
+  ///
+  /// In en, this message translates to:
+  /// **'No main sets in the last 28 days'**
+  String get progressNotTrained28;
 }
 
 class _AppLocalizationsDelegate

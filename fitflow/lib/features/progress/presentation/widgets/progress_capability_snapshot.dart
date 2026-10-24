@@ -1,5 +1,5 @@
+import 'progress_presentation.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
-import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
 import 'package:fitflow/features/workouts/presentation/widgets/training_presentation.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
@@ -11,7 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ProgressCapabilitySnapshot extends ConsumerWidget {
-  const ProgressCapabilitySnapshot({super.key});
+  const ProgressCapabilitySnapshot({super.key, this.showHeading = true});
+  final bool showHeading;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -22,14 +23,15 @@ class ProgressCapabilitySnapshot extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Semantics(
-          header: true,
-          child: Text(
-            context.l10n.trainingMovementSnapshot,
-            style: theme.textTheme.titleLarge
-                ?.copyWith(fontWeight: FontWeight.w700),
+        if (showHeading)
+          Semantics(
+            header: true,
+            child: Text(
+              context.l10n.trainingMovementSnapshot,
+              style: theme.textTheme.titleLarge
+                  ?.copyWith(fontWeight: FontWeight.w500),
+            ),
           ),
-        ),
         const SizedBox(height: FitFlowSpace.xxs),
         Text(
           context.l10n.trainingMovementHelp,
@@ -48,8 +50,7 @@ class ProgressCapabilitySnapshot extends ConsumerWidget {
                   child: Text(context.l10n.retry))),
           data: (profile) {
             if (profile == null) {
-              return FitFlowV2InfoSurface(
-                tonal: true,
+              return ProgressRows(
                 child: Text(
                   context.l10n.trainingMovementMissing,
                   style: theme.textTheme.bodyMedium,
@@ -70,14 +71,14 @@ class _CapabilityGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FitFlowV2InfoSurface(
+    return ProgressRows(
       padding: EdgeInsets.zero,
       child: Column(
         children: [
           for (final pattern in CapabilityProfile.trainablePatterns) ...[
             Padding(
               padding: const EdgeInsets.symmetric(
-                horizontal: FitFlowSpace.md,
+                horizontal: 0,
                 vertical: FitFlowSpace.xs,
               ),
               child: _CapabilityRow(
@@ -88,8 +89,8 @@ class _CapabilityGrid extends StatelessWidget {
             if (pattern != CapabilityProfile.trainablePatterns.last)
               const Divider(
                 height: 1,
-                indent: FitFlowSpace.md,
-                endIndent: FitFlowSpace.md,
+                indent: 0,
+                endIndent: 0,
               ),
           ],
         ],
@@ -104,20 +105,10 @@ class _CapabilityRow extends StatelessWidget {
   final CapabilityLevel? level;
 
   @override
-  Widget build(BuildContext context) => Wrap(
-        spacing: FitFlowSpace.xs,
-        runSpacing: FitFlowSpace.xs,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          Text(
-            patternLabel,
-            style: Theme.of(context).textTheme.titleSmall,
-          ),
-          FitFlowV2Tag(
-            level == null
-                ? context.l10n.trainingUnknown
-                : trainingLevelLabel(context.l10n, level!),
-          ),
-        ],
+  Widget build(BuildContext context) => ProgressLabelValue(
+        label: patternLabel,
+        value: level == null
+            ? context.l10n.trainingUnknown
+            : trainingLevelLabel(context.l10n, level!),
       );
 }

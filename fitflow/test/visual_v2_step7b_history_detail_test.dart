@@ -186,9 +186,9 @@ void main() {
         );
 
         expect(find.text(l.trainingPlannedDuration), findsOneWidget);
-        expect(find.text(l.minutes(25)), findsOneWidget);
+        expect(find.text(l.progressCompactMinutes(25)), findsOneWidget);
         expect(find.text(l.trainingEstimatedDuration), findsOneWidget);
-        expect(find.text(l.minutes(21)), findsOneWidget);
+        expect(find.text(l.progressCompactMinutes(21)), findsOneWidget);
         expect(find.text(l.trainingTotalExercises), findsOneWidget);
         expect(find.text('3'), findsOneWidget);
         expect(find.text(l.trainingTotalSets), findsOneWidget);

@@ -165,7 +165,7 @@ void main() {
         expect(find.text(l.trainingPlanned7), findsOneWidget);
         expect(find.text('3'), findsOneWidget);
         expect(find.text('2'), findsOneWidget);
-        expect(find.text(l.minutes(30)), findsOneWidget);
+        expect(find.text(l.progressCompactMinutes(30)), findsOneWidget);
         expect(find.text(l.trainingPlannedNote), findsOneWidget);
         expect(find.textContaining('Actual duration'), findsNothing);
 
@@ -173,7 +173,7 @@ void main() {
             findsOneWidget);
         expect(find.bySemanticsLabel('${l.trainingLast7} 2'), findsOneWidget);
         expect(
-          find.bySemanticsLabel('${l.trainingPlanned7} ${l.minutes(30)}'),
+          find.bySemanticsLabel('${l.trainingPlanned7} ${l.progressCompactMinutes(30)}'),
           findsOneWidget,
         );
         expect(
@@ -339,13 +339,13 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text(l.trainingPlannedNote), findsOneWidget);
       expect(find.text(l.trainingRecoveryDetails), findsOneWidget);
-      expect(find.text('8-week activity'), findsNothing);
+      expect(find.byType(ProgressActivityChart), findsNothing);
       expect(tester.takeException(), isNull);
 
-      final trends = find.text(l.trainingTrends);
+      final trends = find.widgetWithText(ExpansionTile, l.trainingActivity);
       await tester.ensureVisible(trends);
       await tester.tap(trends);
-      await tester.pump();
+      await tester.pumpAndSettle();
       expect(find.text('8-week activity'), findsOneWidget);
       final chart = find.byType(ProgressActivityChart);
       final bars = find.descendant(

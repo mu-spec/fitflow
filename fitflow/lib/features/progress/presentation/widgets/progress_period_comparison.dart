@@ -1,14 +1,16 @@
 import 'package:fitflow/core/design/fitflow_spacing.dart';
-import 'package:fitflow/core/design/fitflow_visual_v2.dart';
+import 'progress_presentation.dart';
 import 'package:fitflow/features/progress/domain/training_analytics.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/l10n/locale_format.dart';
 import 'package:flutter/material.dart';
 
 class ProgressPeriodComparison extends StatelessWidget {
-  const ProgressPeriodComparison({super.key, required this.analytics});
+  const ProgressPeriodComparison(
+      {super.key, required this.analytics, this.showHeading = true});
 
   final TrainingAnalytics analytics;
+  final bool showHeading;
 
   String _formatDuration(Duration d) {
     final isNegative = d.isNegative;
@@ -58,51 +60,46 @@ class ProgressPeriodComparison extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Semantics(
-          header: true,
-          child: Text(
-            'Compared with previous 7 days',
-            style: theme.textTheme.titleLarge
-                ?.copyWith(fontWeight: FontWeight.w700),
+        if (showHeading)
+          Semantics(
+            header: true,
+            child: Text(
+              context.l10n.progressComparisonTitle,
+              style: theme.textTheme.titleLarge
+                  ?.copyWith(fontWeight: FontWeight.w500),
+            ),
           ),
-        ),
         const SizedBox(height: FitFlowSpace.xs),
         Text(
-          'Previous 7 days: [now - 14 days, now - 7 days). Current: [now - 7 days, now].',
+          context.l10n.progressComparisonHelp,
           style: theme.textTheme.bodySmall
               ?.copyWith(color: colorScheme.onSurfaceVariant),
         ),
         const SizedBox(height: FitFlowSpace.md),
-        FitFlowV2InfoSurface(
+        ProgressRows(
           padding: EdgeInsets.zero,
           child: Column(
             children: [
               _ComparisonRow(
-                label: 'Workouts',
+                label: context.l10n.trainingWorkouts,
                 current: '${analytics.currentPeriod.workoutCount}',
                 previous: '${analytics.previousPeriod.workoutCount}',
                 delta: _formatWorkoutsDelta(context, workoutDelta),
                 isPositive: workoutDelta > 0,
                 isNegative: workoutDelta < 0,
               ),
-              const Divider(
-                  height: FitFlowSpace.xl,
-                  indent: FitFlowSpace.md,
-                  endIndent: FitFlowSpace.md),
+              const Divider(height: FitFlowSpace.sm, indent: 0, endIndent: 0),
               _ComparisonRow(
-                label: 'Main sets',
+                label: context.l10n.progressMainSets,
                 current: '${analytics.currentPeriod.mainSets}',
                 previous: '${analytics.previousPeriod.mainSets}',
                 delta: _formatSetsDelta(setsDelta),
                 isPositive: setsDelta > 0,
                 isNegative: setsDelta < 0,
               ),
-              const Divider(
-                  height: FitFlowSpace.xl,
-                  indent: FitFlowSpace.md,
-                  endIndent: FitFlowSpace.md),
+              const Divider(height: FitFlowSpace.sm, indent: 0, endIndent: 0),
               _ComparisonRow(
-                label: 'Planned time',
+                label: context.l10n.progressPlannedTime,
                 current:
                     _formatDuration(analytics.currentPeriod.plannedDuration)
                         .replaceFirst('+', ''),
@@ -158,7 +155,7 @@ class _ComparisonRow extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.symmetric(
-        horizontal: FitFlowSpace.md,
+        horizontal: 0,
         vertical: FitFlowSpace.sm,
       ),
       child: Column(
@@ -167,7 +164,7 @@ class _ComparisonRow extends StatelessWidget {
           Text(
             label,
             style: theme.textTheme.titleSmall
-                ?.copyWith(fontWeight: FontWeight.w600),
+                ?.copyWith(fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: FitFlowSpace.xs),
           Wrap(
@@ -177,40 +174,28 @@ class _ComparisonRow extends StatelessWidget {
             runSpacing: FitFlowSpace.xxs,
             children: [
               Text(
-                'Prev: $previous',
+                context.l10n.progressPreviousValue(previous),
                 style: theme.textTheme.bodySmall
                     ?.copyWith(color: colorScheme.onSurfaceVariant),
               ),
               Text(
-                current,
+                context.l10n.progressCurrentValue(current),
                 style: theme.textTheme.titleMedium
-                    ?.copyWith(fontWeight: FontWeight.w700),
+                    ?.copyWith(fontWeight: FontWeight.w500),
               ),
             ],
           ),
           const SizedBox(height: FitFlowSpace.xxs),
-          Align(
-            alignment: AlignmentDirectional.centerEnd,
-            child: Wrap(
-              alignment: WrapAlignment.end,
+          Wrap(
               crossAxisAlignment: WrapCrossAlignment.center,
-              spacing: FitFlowSpace.xxs,
-              runSpacing: FitFlowSpace.xxs,
+              spacing: 4,
               children: [
                 ExcludeSemantics(
-                  child: Icon(deltaIcon, size: 18, color: deltaColor),
-                ),
-                Text(
-                  delta,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: deltaColor,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  textAlign: TextAlign.end,
-                ),
-              ],
-            ),
-          ),
+                    child: Icon(deltaIcon, size: 16, color: deltaColor)),
+                Text(delta,
+                    style:
+                        theme.textTheme.bodySmall?.copyWith(color: deltaColor)),
+              ]),
         ],
       ),
     );

@@ -190,7 +190,7 @@ void main() {
         ),
       );
 
-      expect(find.text('Compared with previous 7 days'), findsOneWidget);
+      expect(find.text('7-day comparison'), findsOneWidget);
     });
 
     testWidgets('positive delta', (tester) async {
@@ -283,6 +283,9 @@ void main() {
 
       expect(find.text('8-week activity'), findsOneWidget);
       // Should not crash, show 0 values
+      expect(tester.widgetList<LinearProgressIndicator>(find.byType(LinearProgressIndicator)).map((bar) => bar.value), everyElement(0.0));
+      await tester.tap(find.text('Period dates'));
+      await tester.pumpAndSettle();
       expect(find.textContaining('0 workouts'), findsNWidgets(8));
     });
 
@@ -300,7 +303,7 @@ void main() {
       );
 
       expect(find.textContaining('of 4 recent weeks'), findsOneWidget);
-      expect(find.text('Weeks with at least one completed workout.'),
+      expect(find.text('Weeks with a completed workout, across four rolling 7-day periods.'),
           findsOneWidget);
     });
 
