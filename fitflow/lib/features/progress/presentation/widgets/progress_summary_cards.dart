@@ -1,173 +1,103 @@
-import 'package:fitflow/core/design/fitflow_spacing.dart';
-import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:fitflow/features/progress/domain/training_analytics.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
-import 'progress_presentation.dart';
 import 'package:flutter/material.dart';
+import 'progress_presentation.dart';
 
-/// Compact identity header shared by the populated and empty Progress states.
 class ProgressOverviewHeader extends StatelessWidget {
-  const ProgressOverviewHeader({super.key});
-
+  const ProgressOverviewHeader({super.key, this.showDeviceNote = true});
+  final bool showDeviceNote;
   @override
-  Widget build(BuildContext context) {
-    final l = context.l10n;
-    final theme = Theme.of(context);
-    final colors = FitFlowTheme.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+  Widget build(BuildContext context) =>
+      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Semantics(
             header: true,
-            child: Text(l.yourProgress,
-                style: theme.textTheme.titleLarge
+            child: Text(context.l10n.yourProgress,
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge
                     ?.copyWith(fontSize: 22, fontWeight: FontWeight.w500))),
-        const SizedBox(height: FitFlowSpace.xs),
-        Text(l.progressDeviceNote,
-            style: theme.textTheme.bodySmall
-                ?.copyWith(color: colors.textSecondary)),
-      ],
-    );
-  }
+        if (showDeviceNote) ...[
+          const SizedBox(height: 4),
+          Text(context.l10n.progressDeviceNote,
+              style: Theme.of(context).textTheme.bodySmall),
+        ],
+      ]);
 }
 
-/// The three canonical, history-derived facts shown at the top of Progress.
-/// Values and calculation sources intentionally remain owned by analytics.
+/// Metrics share the current rolling seven-day window. Deltas compare with
+/// the preceding window; none represents elapsed time or a workout goal.
 class ProgressSummaryCards extends StatelessWidget {
   const ProgressSummaryCards({super.key, required this.analytics});
-
   final TrainingAnalytics analytics;
-
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final theme = Theme.of(context);
-    final colors = FitFlowTheme.of(context);
-    final stats = [
-      _ProgressSummaryStat(
-        label: l.trainingSavedWorkouts,
-        value: '${analytics.savedWorkoutsCount}',
-      ),
-      _ProgressSummaryStat(
-        label: l.trainingLast7,
-        value: '${analytics.currentPeriod.workoutCount}',
-      ),
-      _ProgressSummaryStat(
-        label: l.trainingPlanned7,
-        value: progressDuration(
-          context,
-          analytics.currentPeriod.plannedDuration,
-        ),
-      ),
+    final text = Theme.of(context).textTheme;
+    String signed(int n) => n > 0 ? '+$n' : '$n';
+    final timeDelta = analytics.plannedDurationDelta;
+    final metrics = [
+      _Metric(
+          label: l.trainingWorkouts,
+          value: '${analytics.currentPeriod.workoutCount}',
+          delta: signed(analytics.workoutDelta)),
+      _Metric(
+          label: l.progressMainSets,
+          value: '${analytics.currentPeriod.mainSets}',
+          delta: signed(analytics.mainSetsDelta)),
+      _Metric(
+          label: l.progressPlannedTime,
+          value: progressDuration(
+              context, analytics.currentPeriod.plannedDuration),
+          delta:
+              '${timeDelta.isNegative ? '−' : timeDelta > Duration.zero ? '+' : ''}${progressDuration(context, timeDelta)}'),
     ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final textScale = MediaQuery.textScalerOf(context).scale(1);
-            final useColumns = constraints.maxWidth >= 280 && textScale <= 1.3;
-            return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (useColumns)
-                    Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                              child: _ProgressMetric(
-                                  stat: stats[0], stacked: true)),
-                          const SizedBox(width: FitFlowSpace.md),
-                          Expanded(
-                              child: _ProgressMetric(
-                                  stat: stats[1], stacked: true)),
-                        ])
-                  else ...[
-                    _ProgressMetric(stat: stats[0]),
-                    _ProgressMetric(stat: stats[1]),
-                  ],
-                  const SizedBox(height: FitFlowSpace.sm),
-                  const Divider(height: 1),
-                  const SizedBox(height: FitFlowSpace.xs),
-                  _ProgressMetric(stat: stats[2]),
-                ]);
-          },
-        ),
-        const SizedBox(height: FitFlowSpace.sm),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ExcludeSemantics(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 1),
-                child: Icon(
-                  Icons.info_outline_rounded,
-                  size: 18,
-                  color: colors.textSecondary,
-                ),
-              ),
-            ),
-            const SizedBox(width: FitFlowSpace.xs),
-            Expanded(
-              child: Text(
-                l.trainingPlannedNote,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colors.textSecondary,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      Text(l.trainingCurrentPeriod, style: text.bodyMedium),
+      const SizedBox(height: 8),
+      LayoutBuilder(builder: (context, constraints) {
+        final columns = constraints.maxWidth >= 280 &&
+            MediaQuery.textScalerOf(context).scale(1) <= 1.3;
+        return columns
+            ? Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                for (var i = 0; i < metrics.length; i++) ...[
+                  if (i > 0) const SizedBox(width: 12),
+                  Expanded(child: metrics[i]),
+                ],
+              ])
+            : Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                for (final metric in metrics)
+                  Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: metric),
+              ]);
+      }),
+      const SizedBox(height: 4),
+      Text(l.progressDeltaContext, style: text.bodySmall),
+    ]);
   }
 }
 
-class _ProgressSummaryStat {
-  const _ProgressSummaryStat({required this.label, required this.value});
-
+class _Metric extends StatelessWidget {
+  const _Metric(
+      {required this.label, required this.value, required this.delta});
   final String label;
   final String value;
-}
-
-class _ProgressMetric extends StatelessWidget {
-  const _ProgressMetric({required this.stat, this.stacked = false});
-
-  final _ProgressSummaryStat stat;
-  final bool stacked;
-
+  final String delta;
   @override
   Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
+    final theme = Theme.of(context);
     return Semantics(
-      label: '${stat.label} ${stat.value}',
-      excludeSemantics: true,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.xs),
-        child: stacked
-            ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text(stat.value,
-                    style:
-                        text.titleLarge?.copyWith(fontWeight: FontWeight.w500)),
-                const SizedBox(height: FitFlowSpace.xxs),
-                Text(stat.label,
-                    style: text.bodyMedium?.copyWith(
-                        color: FitFlowTheme.of(context).textSecondary)),
-              ])
-            : Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Expanded(
-                    child: Text(stat.label,
-                        style: text.bodyMedium?.copyWith(
-                            color: FitFlowTheme.of(context).textSecondary))),
-                const SizedBox(width: FitFlowSpace.sm),
-                Flexible(
-                    child: Text(stat.value,
-                        textAlign: TextAlign.end,
-                        style: text.titleLarge
-                            ?.copyWith(fontWeight: FontWeight.w500))),
-              ]),
-      ),
-    );
+        label: '$label $value. ${context.l10n.progressDeltaContext}: $delta',
+        excludeSemantics: true,
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(value,
+              style: theme.textTheme.titleLarge
+                  ?.copyWith(fontSize: 22, fontWeight: FontWeight.w500)),
+          Text(label, style: theme.textTheme.bodySmall),
+          const SizedBox(height: 2),
+          Text(delta,
+              style: theme.textTheme.bodySmall
+                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+        ]));
   }
 }

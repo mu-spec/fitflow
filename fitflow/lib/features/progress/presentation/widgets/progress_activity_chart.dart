@@ -36,7 +36,10 @@ class _ProgressActivityChartState extends State<ProgressActivityChart> {
         '${FitFlowLocaleFormat.formatDate(MaterialLocalizations.of(context), b.start)} – ${FitFlowLocaleFormat.formatDate(MaterialLocalizations.of(context), b.end)}';
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       if (widget.showHeading)
-        Text(l.trainingActivity, style: theme.textTheme.titleMedium),
+        Semantics(
+            header: true,
+            child:
+                Text(l.trainingActivity, style: theme.textTheme.titleMedium)),
       Text(l.progressPeriodOrder, style: theme.textTheme.bodySmall),
       const SizedBox(height: 4),
       Wrap(spacing: 8, runSpacing: 4, children: [
@@ -58,50 +61,64 @@ class _ProgressActivityChartState extends State<ProgressActivityChart> {
             onSelected: (_) => setState(() => _showSets = true)),
       ]),
       const SizedBox(height: 8),
-      for (final bucket in buckets)
-        Semantics(
-          label: '${period(bucket)} · ${count(bucket)} · ${dates(bucket)}',
-          excludeSemantics: true,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6),
-            child: LayoutBuilder(builder: (context, constraints) {
-              final label =
-                  Text(period(bucket), style: theme.textTheme.bodySmall);
-              final value = Text(
-                  '${_showSets ? bucket.mainSetCount : bucket.workoutCount}',
-                  style: theme.textTheme.bodyMedium);
-              final bar = LinearProgressIndicator(
-                value: maxValue == 0
-                    ? 0
-                    : (_showSets ? bucket.mainSetCount : bucket.workoutCount) /
-                        maxValue,
-                minHeight: 6,
-              );
-              if (MediaQuery.textScalerOf(context).scale(1) > 1.3) {
-                return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(children: [
-                        Expanded(child: label),
-                        const SizedBox(width: 8),
-                        value
-                      ]),
-                      const SizedBox(height: 4),
-                      bar,
-                    ]);
-              }
-              return Row(children: [
-                SizedBox(width: constraints.maxWidth * .4, child: label),
-                const SizedBox(width: 8),
-                Expanded(child: bar),
-                const SizedBox(width: 12),
-                SizedBox(width: 32, child: value),
-              ]);
-            }),
-          ),
-        ),
+      LayoutBuilder(builder: (context, constraints) {
+        final scale = MediaQuery.textScalerOf(context).scale(1);
+        // Large labels scroll horizontally instead of being compressed.
+        final minSlot = scale > 1.3 ? 64.0 * scale : 34.0;
+        final width = constraints.maxWidth < minSlot * buckets.length
+            ? minSlot * buckets.length
+            : constraints.maxWidth;
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: SizedBox(
+              width: width,
+              child:
+                  Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                for (final bucket in buckets)
+                  Expanded(
+                      child: Semantics(
+                    label:
+                        '${period(bucket)} · ${count(bucket)} · ${dates(bucket)}',
+                    excludeSemantics: true,
+                    child: Column(children: [
+                      Text(
+                          '${_showSets ? bucket.mainSetCount : bucket.workoutCount}',
+                          style: theme.textTheme.bodyMedium),
+                      const SizedBox(height: 6),
+                      SizedBox(
+                          key: ValueKey('progress_bar_${bucket.index}'),
+                          width: 22,
+                          height: 88,
+                          child: RotatedBox(
+                              quarterTurns: 3,
+                              child: LinearProgressIndicator(
+                                value: maxValue == 0
+                                    ? 0
+                                    : (_showSets
+                                            ? bucket.mainSetCount
+                                            : bucket.workoutCount) /
+                                        maxValue,
+                                borderRadius: BorderRadius.circular(3),
+                                color: theme.colorScheme.primary,
+                                backgroundColor:
+                                    theme.colorScheme.surfaceContainerHighest,
+                              ))),
+                      const SizedBox(height: 6),
+                      Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 2),
+                          child: Text(
+                              MaterialLocalizations.of(context)
+                                  .formatShortMonthDay(bucket.start.toLocal()),
+                              textAlign: TextAlign.center,
+                              style: theme.textTheme.bodySmall)),
+                    ]),
+                  )),
+              ])),
+        );
+      }),
       if (maxValue == 0)
-        Text(l.trainingNoActivity, style: theme.textTheme.bodySmall),
+        Text(_showSets ? l.progressNoMainSets : l.trainingNoActivity,
+            style: theme.textTheme.bodySmall),
       ProgressDisclosure(
           key: const Key('progress_period_dates'),
           title: l.progressPeriodDates,

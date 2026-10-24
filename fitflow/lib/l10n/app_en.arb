@@ -1294,5 +1294,16 @@
   "progressPeriodDates": "Period dates",
   "progressPeriodOrder": "Eight rolling 7-day periods, oldest to newest.",
   "progressTimeHelp": "Target and estimated times are planned, not elapsed time.",
-  "progressNotTrained28": "No main sets in the last 28 days"
+  "progressNotTrained28": "No main sets in the last 28 days",
+  "progressDeltaContext": "Change vs previous 7 days",
+  "progressMoreDetails": "Details, movement levels & recovery",
+  "progressNoMainSets": "No main sets in these periods.",
+  "progressSavedCount": "{count, plural, =1{1 saved workout} other{{count} saved workouts}}",
+  "@progressSavedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

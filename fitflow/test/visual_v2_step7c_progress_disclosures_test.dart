@@ -374,7 +374,7 @@ void main() {
             isNull,
             reason: 'overflow at $size in ${theme.brightness} theme',
           );
-          expect(find.byType(SingleChildScrollView), findsOneWidget);
+          expect(find.byWidgetPredicate((w) => w is SingleChildScrollView && w.scrollDirection == Axis.vertical), findsOneWidget);
         }
       }
 

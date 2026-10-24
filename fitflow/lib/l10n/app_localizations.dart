@@ -3958,6 +3958,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No main sets in the last 28 days'**
   String get progressNotTrained28;
+
+  /// No description provided for @progressDeltaContext.
+  ///
+  /// In en, this message translates to:
+  /// **'Change vs previous 7 days'**
+  String get progressDeltaContext;
+
+  /// No description provided for @progressMoreDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Details, movement levels & recovery'**
+  String get progressMoreDetails;
+
+  /// No description provided for @progressNoMainSets.
+  ///
+  /// In en, this message translates to:
+  /// **'No main sets in these periods.'**
+  String get progressNoMainSets;
+
+  /// No description provided for @progressSavedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 saved workout} other{{count} saved workouts}}'**
+  String progressSavedCount(int count);
 }
 
 class _AppLocalizationsDelegate

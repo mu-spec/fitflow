@@ -178,11 +178,12 @@ void main() {
             await _open(tester, 'Exercise characteristics');
           }
           if (screen is ProgressScreen) {
-            expect(find.byType(FitFlowStat), findsNWidgets(3));
-            expect(find.byType(ProgressActivityChart), findsNothing);
-            await _open(tester, '8-week activity');
-            await _open(tester, 'Current movement levels');
-            await _open(tester, 'Training recovery');
+            expect(find.text('Main sets'), findsOneWidget);
+            expect(find.text('Planned time'), findsOneWidget);
+            expect(find.byType(ProgressActivityChart), findsOneWidget);
+            await _open(tester, 'Details, movement levels & recovery');
+            expect(find.text('Current movement levels'), findsOneWidget);
+            expect(find.text('Training recovery'), findsOneWidget);
           }
           expect(tester.takeException(), isNull,
               reason: '${screen.runtimeType} disclosed');
@@ -243,14 +244,16 @@ void main() {
       });
       await _pump(tester, const ProgressScreen(), reduced: reduced);
       final tile = tester.widget<ExpansionTile>(
-          find.widgetWithText(ExpansionTile, '8-week activity'));
+          find.widgetWithText(ExpansionTile, 'Details, movement levels & recovery'));
       expect(tile.expansionAnimationStyle!.duration,
           reduced ? Duration.zero : const Duration(milliseconds: 200));
-      expect(find.byType(ProgressActivityChart), findsNothing);
-      await _open(tester, '8-week activity');
+      expect(find.byType(ProgressActivityChart), findsOneWidget);
+      expect(find.text('Current movement levels'), findsNothing);
+      await _open(tester, 'Details, movement levels & recovery');
+      expect(find.text('Current movement levels'), findsOneWidget);
       expect(find.byType(ProgressActivityChart), findsOneWidget);
       final semantics = tester.ensureSemantics();
-      expect(find.bySemanticsLabel(RegExp('Current 7 days · 1 workout')), findsOneWidget);
+      expect(find.descendant(of: find.byType(ProgressActivityChart), matching: find.bySemanticsLabel(RegExp('Current 7 days · 1 workout'))), findsOneWidget);
       semantics.dispose();
       expect(tester.takeException(), isNull);
     });
@@ -324,6 +327,7 @@ void main() {
             child: ProgressActivityChart(analytics: analytics)),
         size: const Size(320, 700),
         scale: 2);
+    await _open(tester, 'Period dates');
     expect(find.textContaining('0 workouts'), findsNWidgets(7));
     expect(find.textContaining('1 workout'), findsOneWidget);
     final bars = tester
@@ -331,6 +335,7 @@ void main() {
             find.byType(LinearProgressIndicator))
         .toList();
     expect(bars.map((b) => b.value), [0, 0, 0, 0, 0, 0, 0, 1]);
+    await tester.ensureVisible(find.text('Sets'));
     await tester.tap(find.text('Sets'));
     await tester.pumpAndSettle();
     expect(find.textContaining('3 main sets'), findsOneWidget);

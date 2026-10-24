@@ -7,10 +7,14 @@ import 'package:flutter/material.dart';
 
 class ProgressMovementTraining extends StatelessWidget {
   const ProgressMovementTraining(
-      {super.key, required this.analytics, this.showHeading = true});
+      {super.key,
+      required this.analytics,
+      this.showHeading = true,
+      this.compact = false});
 
   final TrainingAnalytics analytics;
   final bool showHeading;
+  final bool compact;
 
   String _formatLastTrained(DateTime? last, DateTime now) {
     if (last == null) return 'Not trained in last 28 days';
@@ -76,6 +80,7 @@ class ProgressMovementTraining extends StatelessWidget {
                 for (var i = 0; i < withData.length; i++) ...[
                   _MovementRow(
                     data: withData[i],
+                    compact: compact,
                     maxSets: maxSets,
                     now: analytics.now,
                     formatLast: _formatLastTrained,
@@ -108,12 +113,14 @@ class ProgressMovementTraining extends StatelessWidget {
 class _MovementRow extends StatelessWidget {
   const _MovementRow({
     required this.data,
+    required this.compact,
     required this.maxSets,
     required this.now,
     required this.formatLast,
   });
 
   final MovementTrainingAnalytics data;
+  final bool compact;
   final int maxSets;
   final DateTime now;
   final String Function(DateTime?, DateTime) formatLast;
@@ -129,49 +136,83 @@ class _MovementRow extends StatelessWidget {
       label:
           '${data.movementPattern.label}: ${data.mainSets} Main sets, ${data.sessions} sessions, ${formatLast(data.lastTrained, now)}',
       excludeSemantics: true,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  data.movementPattern.label,
-                  style: theme.textTheme.titleSmall
-                      ?.copyWith(fontWeight: FontWeight.w500),
+      child: compact
+          ? LayoutBuilder(builder: (context, constraints) {
+              final label = Text(data.movementPattern.label,
+                  style: theme.textTheme.bodyMedium);
+              final count =
+                  Text('${data.mainSets}', style: theme.textTheme.bodyMedium);
+              final bar = LinearProgressIndicator(
+                  value: barWidthFactor,
+                  minHeight: 8,
+                  borderRadius: BorderRadius.circular(4),
+                  backgroundColor: fitFlowTheme.subtleSurface,
+                  color: fitFlowTheme.brand);
+              if (MediaQuery.textScalerOf(context).scale(1) > 1.3 ||
+                  constraints.maxWidth < 280) {
+                return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(children: [
+                        Expanded(child: label),
+                        const SizedBox(width: 8),
+                        count
+                      ]),
+                      const SizedBox(height: 6),
+                      bar,
+                    ]);
+              }
+              return Row(children: [
+                SizedBox(width: 80, child: label),
+                const SizedBox(width: 8),
+                Expanded(child: bar),
+                const SizedBox(width: 12),
+                SizedBox(width: 32, child: count),
+              ]);
+            })
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        data.movementPattern.label,
+                        style: theme.textTheme.titleSmall
+                            ?.copyWith(fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                    const SizedBox(width: FitFlowSpace.xs),
+                    Text(
+                      '${data.mainSets} sets',
+                      style: theme.textTheme.titleSmall
+                          ?.copyWith(fontWeight: FontWeight.w500),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(width: FitFlowSpace.xs),
-              Text(
-                '${data.mainSets} sets',
-                style: theme.textTheme.titleSmall
-                    ?.copyWith(fontWeight: FontWeight.w500),
-              ),
-            ],
-          ),
-          const SizedBox(height: FitFlowSpace.xxs),
-          ExcludeSemantics(
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(
-                value: barWidthFactor,
-                minHeight: 8,
-                backgroundColor: fitFlowTheme.subtleSurface,
-                color: fitFlowTheme.brand,
-              ),
+                const SizedBox(height: FitFlowSpace.xxs),
+                ExcludeSemantics(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: LinearProgressIndicator(
+                      value: barWidthFactor,
+                      minHeight: 8,
+                      backgroundColor: fitFlowTheme.subtleSurface,
+                      color: fitFlowTheme.brand,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: FitFlowSpace.xs),
+                Wrap(spacing: 12, runSpacing: 2, children: [
+                  Text('${data.sessions} sessions',
+                      style: theme.textTheme.bodySmall
+                          ?.copyWith(color: colorScheme.onSurfaceVariant)),
+                  Text(formatLast(data.lastTrained, now),
+                      style: theme.textTheme.bodySmall
+                          ?.copyWith(color: colorScheme.onSurfaceVariant)),
+                ]),
+              ],
             ),
-          ),
-          const SizedBox(height: FitFlowSpace.xs),
-          Wrap(spacing: 12, runSpacing: 2, children: [
-            Text('${data.sessions} sessions',
-                style: theme.textTheme.bodySmall
-                    ?.copyWith(color: colorScheme.onSurfaceVariant)),
-            Text(formatLast(data.lastTrained, now),
-                style: theme.textTheme.bodySmall
-                    ?.copyWith(color: colorScheme.onSurfaceVariant)),
-          ]),
-        ],
-      ),
     );
   }
 }

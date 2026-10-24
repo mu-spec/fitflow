@@ -8,16 +8,18 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class ProgressRecentWorkouts extends StatefulWidget {
-  const ProgressRecentWorkouts({super.key, required this.history});
+  const ProgressRecentWorkouts(
+      {super.key, required this.history, this.initialCount = 10});
 
   final List<CompletedWorkout> history;
+  final int initialCount;
 
   @override
   State<ProgressRecentWorkouts> createState() => _ProgressRecentWorkoutsState();
 }
 
 class _ProgressRecentWorkoutsState extends State<ProgressRecentWorkouts> {
-  int _visible = 10;
+  late int _visible = widget.initialCount;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +37,8 @@ class _ProgressRecentWorkoutsState extends State<ProgressRecentWorkouts> {
                     .textTheme
                     .titleMedium
                     ?.copyWith(fontWeight: FontWeight.w500))),
+        Text(l.progressSavedCount(widget.history.length),
+            style: Theme.of(context).textTheme.bodySmall),
         const SizedBox(height: FitFlowSpace.sm),
         Column(
           children: [

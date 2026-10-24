@@ -160,22 +160,15 @@ void main() {
         await tester.pumpWidget(_buildApp(router, theme: AppTheme.light));
         await tester.pumpAndSettle();
 
-        expect(find.text(l.trainingSavedWorkouts), findsOneWidget);
-        expect(find.text(l.trainingLast7), findsOneWidget);
-        expect(find.text(l.trainingPlanned7), findsOneWidget);
-        expect(find.text('3'), findsOneWidget);
-        expect(find.text('2'), findsOneWidget);
+        expect(find.text(l.progressSavedCount(3)), findsOneWidget);
+        expect(find.text(l.trainingCurrentPeriod), findsOneWidget);
+        expect(find.text(l.progressMainSets), findsOneWidget);
+        expect(find.text(l.progressPlannedTime), findsOneWidget);
         expect(find.text(l.progressCompactMinutes(30)), findsOneWidget);
-        expect(find.text(l.trainingPlannedNote), findsOneWidget);
         expect(find.textContaining('Actual duration'), findsNothing);
-
-        expect(find.bySemanticsLabel('${l.trainingSavedWorkouts} 3'),
-            findsOneWidget);
-        expect(find.bySemanticsLabel('${l.trainingLast7} 2'), findsOneWidget);
-        expect(
-          find.bySemanticsLabel('${l.trainingPlanned7} ${l.progressCompactMinutes(30)}'),
-          findsOneWidget,
-        );
+        expect(find.bySemanticsLabel('${l.trainingWorkouts} 2. ${l.progressDeltaContext}: +1'), findsOneWidget);
+        expect(find.bySemanticsLabel('${l.progressMainSets} 0. ${l.progressDeltaContext}: 0'), findsOneWidget);
+        expect(find.bySemanticsLabel('${l.progressPlannedTime} 30 min. ${l.progressDeltaContext}: −69 min'), findsOneWidget);
         expect(
           tester
               .getSemantics(find.text(l.yourProgress))
@@ -215,11 +208,11 @@ void main() {
       expect(next, findsOneWidget);
       expect(
           tester.getTopLeft(newest).dy, lessThan(tester.getTopLeft(next).dy));
-      expect(find.byKey(const ValueKey('progress_recent_workout_session-9')),
+      expect(find.byKey(const ValueKey('progress_recent_workout_session-2')),
           findsOneWidget);
-      expect(find.byKey(const ValueKey('progress_recent_workout_session-10')),
+      expect(find.byKey(const ValueKey('progress_recent_workout_session-3')),
           findsNothing);
-      expect(find.byKey(const ValueKey('progress_recent_workout_session-99')),
+      expect(find.byKey(const ValueKey('progress_recent_workout_session-29')),
           findsNothing);
       expect(find.text(l.trainingHistoryMore), findsOneWidget);
 
@@ -229,11 +222,11 @@ void main() {
       await tester.tap(moreButton);
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const ValueKey('progress_recent_workout_session-19')),
+      expect(find.byKey(const ValueKey('progress_recent_workout_session-12')),
           findsOneWidget);
-      expect(find.byKey(const ValueKey('progress_recent_workout_session-20')),
+      expect(find.byKey(const ValueKey('progress_recent_workout_session-13')),
           findsNothing);
-      expect(find.byKey(const ValueKey('progress_recent_workout_session-99')),
+      expect(find.byKey(const ValueKey('progress_recent_workout_session-29')),
           findsNothing);
       expect(find.text(l.trainingHistoryMore), findsOneWidget);
     });
@@ -266,7 +259,9 @@ void main() {
           isTrue,
         );
 
-        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.ensureVisible(row);
+        await tester.pumpAndSettle();
+        Focus.of(tester.element(find.descendant(of: row, matching: find.byType(Text)).first)).requestFocus();
         await tester.pump();
         await tester.sendKeyEvent(LogicalKeyboardKey.enter);
         await tester.pumpAndSettle();
@@ -337,16 +332,9 @@ void main() {
 
       await tester.pumpWidget(_buildApp(router, theme: AppTheme.dark));
       await tester.pumpAndSettle();
-      expect(find.text(l.trainingPlannedNote), findsOneWidget);
-      expect(find.text(l.trainingRecoveryDetails), findsOneWidget);
-      expect(find.byType(ProgressActivityChart), findsNothing);
+      expect(find.text(l.progressMoreDetails), findsOneWidget);
+      expect(find.byType(ProgressActivityChart), findsOneWidget);
       expect(tester.takeException(), isNull);
-
-      final trends = find.widgetWithText(ExpansionTile, l.trainingActivity);
-      await tester.ensureVisible(trends);
-      await tester.tap(trends);
-      await tester.pumpAndSettle();
-      expect(find.text('8-week activity'), findsOneWidget);
       final chart = find.byType(ProgressActivityChart);
       final bars = find.descendant(
           of: chart, matching: find.byType(LinearProgressIndicator));

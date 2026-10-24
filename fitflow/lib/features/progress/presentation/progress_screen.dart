@@ -21,7 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// History-first Progress, with existing analytics progressively disclosed.
+/// Chart-led overview; primary analytics are visible without disclosure.
 /// Truthful offline analytics derived from real history + current capability snapshot.
 class ProgressScreen extends ConsumerWidget {
   const ProgressScreen({super.key});
@@ -90,63 +90,37 @@ class _ProgressContent extends ConsumerWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const ProgressOverviewHeader(),
-                  const SizedBox(height: FitFlowSpace.md),
+                  const ProgressOverviewHeader(showDeviceNote: false),
+                  const SizedBox(height: 12),
                   ProgressSummaryCards(analytics: analytics),
-                  const SizedBox(height: FitFlowSpace.lg),
+                  const Divider(height: 24),
+                  ProgressActivityChart(analytics: analytics),
+                  const SizedBox(height: 12),
+                  ProgressConsistency(analytics: analytics, showHeading: false),
+                  const Divider(height: 32),
+                  ProgressMovementTraining(analytics: analytics, compact: true),
+                  const Divider(height: 32),
                   ProgressRecentWorkouts(
-                    history: analytics.validWorkouts,
-                  ),
-                  const SizedBox(height: FitFlowSpace.md),
-                  Text(context.l10n.trainingTrends,
-                      style: Theme.of(context).textTheme.titleMedium),
-                  const SizedBox(height: FitFlowSpace.xs),
+                      history: analytics.validWorkouts, initialCount: 3),
+                  const Divider(height: 24),
                   ProgressDisclosure(
-                    title: context.l10n.trainingActivity,
+                    key: const Key('progress_more_details'),
+                    title: context.l10n.progressMoreDetails,
                     children: [
-                      ProgressActivityChart(
-                          analytics: analytics, showHeading: false)
-                    ],
-                  ),
-                  const Divider(height: 1),
-                  ProgressDisclosure(
-                    title: context.l10n.progressComparisonTitle,
-                    children: [
-                      ProgressPeriodComparison(
-                          analytics: analytics, showHeading: false)
-                    ],
-                  ),
-                  const Divider(height: 1),
-                  ProgressDisclosure(
-                    title: context.l10n.progressConsistencyTitle,
-                    children: [
-                      ProgressConsistency(
-                          analytics: analytics, showHeading: false)
-                    ],
-                  ),
-                  const Divider(height: 1),
-                  ProgressDisclosure(
-                    title: context.l10n.progressMovementTitle,
-                    children: [
-                      ProgressMovementTraining(
-                          analytics: analytics, showHeading: false)
-                    ],
-                  ),
-                  const Divider(height: 1),
-                  ProgressDisclosure(
-                    title: context.l10n.trainingMovementSnapshot,
-                    children: const [
-                      ProgressCapabilitySnapshot(showHeading: false)
-                    ],
-                  ),
-                  const Divider(height: 1),
-                  ProgressDisclosure(
-                    title: context.l10n.trainingRecoveryDetails,
-                    children: [
+                      Text(context.l10n.progressDeviceNote,
+                          style: Theme.of(context).textTheme.bodySmall),
+                      const SizedBox(height: 8),
+                      Text(context.l10n.trainingPlannedNote,
+                          style: Theme.of(context).textTheme.bodySmall),
+                      const SizedBox(height: 16),
+                      ProgressPeriodComparison(analytics: analytics),
+                      const Divider(height: 32),
+                      ProgressMovementTraining(analytics: analytics),
+                      const Divider(height: 32),
+                      const ProgressCapabilitySnapshot(),
+                      const Divider(height: 32),
                       ProgressRecoverySection(
-                          recoveryStatuses: recoveryStatuses,
-                          now: now,
-                          showHeading: false)
+                          recoveryStatuses: recoveryStatuses, now: now),
                     ],
                   ),
                   const SizedBox(height: FitFlowSpace.xl),

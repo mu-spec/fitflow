@@ -2333,4 +2333,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get progressNotTrained28 => 'No main sets in the last 28 days';
+
+  @override
+  String get progressDeltaContext => 'Change vs previous 7 days';
+
+  @override
+  String get progressMoreDetails => 'Details, movement levels & recovery';
+
+  @override
+  String get progressNoMainSets => 'No main sets in these periods.';
+
+  @override
+  String progressSavedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count saved workouts',
+      one: '1 saved workout',
+    );
+    return '$_temp0';
+  }
 }

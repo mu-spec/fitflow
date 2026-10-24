@@ -21,32 +21,25 @@ class ProgressConsistency extends StatelessWidget {
       const SizedBox(height: 4),
       Text(l.progressConsistencyHelp, style: theme.textTheme.bodySmall),
       const SizedBox(height: 8),
-      for (var i = 0; i < recent.length; i++)
-        Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6),
-            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              ExcludeSemantics(
-                  child: Icon(
-                      recent[i].workoutCount > 0
-                          ? Icons.check_circle_outline
-                          : Icons.remove_circle_outline,
-                      size: 18,
-                      color: recent[i].workoutCount > 0
-                          ? theme.colorScheme.primary
-                          : theme.colorScheme.onSurfaceVariant)),
-              const SizedBox(width: 8),
-              Expanded(
-                  child: Text(
-                      recent[i].isCurrent
-                          ? l.trainingCurrentPeriod
-                          : l.trainingWeeksAgo(3 - i),
-                      style: theme.textTheme.bodyMedium)),
-              const SizedBox(width: 8),
-              Flexible(
-                  child: Text(l.trainingActivityCount(recent[i].workoutCount),
-                      textAlign: TextAlign.end,
-                      style: theme.textTheme.bodySmall)),
-            ])),
+      Row(children: [
+        for (var i = 0; i < recent.length; i++)
+          Expanded(
+              child: Semantics(
+            label:
+                '${recent[i].isCurrent ? l.trainingCurrentPeriod : l.trainingWeeksAgo(3 - i)} · ${l.trainingActivityCount(recent[i].workoutCount)}',
+            excludeSemantics: true,
+            child: Padding(
+                padding: EdgeInsetsDirectional.only(
+                    end: i == recent.length - 1 ? 0 : 8),
+                child: Container(
+                    height: 8,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        color: recent[i].workoutCount > 0
+                            ? theme.colorScheme.primary
+                            : theme.colorScheme.surfaceContainerHighest))),
+          )),
+      ]),
     ]);
   }
 }

@@ -103,7 +103,7 @@ void main() {
           findsOneWidget);
     });
 
-    testWidgets('Saved workouts truthful label', (tester) async {
+    testWidgets('Current completed workouts truthful label', (tester) async {
       final w = makeWorkout(completedAt: now.subtract(const Duration(days: 1)));
       final analytics =
           TrainingAnalyticsEngine.calculate(history: [w], now: now);
@@ -116,7 +116,7 @@ void main() {
         ),
       );
 
-      expect(find.text('Saved workouts'), findsOneWidget);
+      expect(find.text('Workouts'), findsOneWidget);
       expect(find.text('1'), findsWidgets);
     });
 
@@ -133,7 +133,7 @@ void main() {
         ),
       );
 
-      expect(find.text('Workouts — last 7 days'), findsOneWidget);
+      expect(find.text('Current 7 days'), findsOneWidget);
     });
 
     testWidgets('Main sets stay available in training trends', (tester) async {
@@ -153,9 +153,10 @@ void main() {
 
       await tester.tap(find.text('Sets'));
       await tester.pumpAndSettle();
-      expect(
-          find.textContaining('${analytics.currentPeriod.mainSets} main sets'),
-          findsWidgets);
+      expect(tester.widgetList<LinearProgressIndicator>(find.byType(LinearProgressIndicator)).last.value, 1.0);
+      await tester.tap(find.text('Period dates'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('${analytics.currentPeriod.mainSets} main sets'), findsWidgets);
     });
 
     testWidgets('Planned time card', (tester) async {
@@ -171,9 +172,8 @@ void main() {
         ),
       );
 
-      expect(find.text('Planned time — last 7 days'), findsOneWidget);
-      expect(
-          find.text('Planned time is not elapsed workout time.'), findsWidgets);
+      expect(find.text('Planned time'), findsOneWidget);
+      expect(find.text('22 min'), findsOneWidget);
     });
 
     testWidgets('comparison section', (tester) async {
@@ -265,6 +265,33 @@ void main() {
       );
 
       expect(find.text('8-week activity'), findsOneWidget);
+    });
+
+    testWidgets('activity bars retain chronology and actual workout/set proportions', (tester) async {
+      final history = [
+        makeWorkout(id: 'older', completedAt: now.subtract(const Duration(days: 16)), main: [makeEx(sets: 8)]),
+        for (var i = 0; i < 2; i++) makeWorkout(id: 'previous-$i', completedAt: now.subtract(const Duration(days: 9)), main: [makeEx(sets: 1)]),
+        for (var i = 0; i < 4; i++) makeWorkout(id: 'current-$i', completedAt: now.subtract(const Duration(days: 1)), main: [makeEx(sets: 1)]),
+      ];
+      final analytics = TrainingAnalyticsEngine.calculate(history: history, now: now);
+      final semantics = tester.ensureSemantics();
+      try {
+      await tester.pumpWidget(MaterialApp(home: Scaffold(body: SingleChildScrollView(
+        child: ProgressActivityChart(analytics: analytics)))));
+      final bars = find.byType(LinearProgressIndicator);
+      expect(tester.widgetList<LinearProgressIndicator>(bars).map((b) => b.value),
+        [0, 0, 0, 0, 0, .25, .5, 1]);
+      expect(find.bySemanticsLabel(RegExp('Current 7 days · 4 workouts')), findsOneWidget);
+      for (var i = 1; i < 8; i++) {
+        expect(tester.getTopLeft(find.byKey(ValueKey('progress_bar_$i'))).dx,
+          greaterThan(tester.getTopLeft(find.byKey(ValueKey('progress_bar_${i - 1}'))).dx));
+      }
+      await tester.tap(find.widgetWithText(ChoiceChip, 'Sets'));
+      await tester.pumpAndSettle();
+      expect(tester.widgetList<LinearProgressIndicator>(bars).map((b) => b.value),
+        [0, 0, 0, 0, 0, 1, .25, .5]);
+      expect(find.bySemanticsLabel(RegExp('Current 7 days · 4 main sets')), findsOneWidget);
+      } finally { semantics.dispose(); }
     });
 
     testWidgets('all-zero chart safe', (tester) async {
