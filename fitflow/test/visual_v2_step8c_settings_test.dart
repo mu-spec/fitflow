@@ -64,15 +64,17 @@ void main() {
       expect(find.byType(UtilityDisclosure), findsNWidgets(2));
       expect(find.byType(FitFlowV2InfoSurface), findsNothing);
       expect(find.text(BackupCopy.settingsTitle), findsOneWidget);
-      expect(find.text(BackupCopy.settingsSubtitle), findsOneWidget);
+      expect(find.text(BackupCopy.settingsSubtitle), findsNothing);
       expect(find.text('Privacy Policy'), findsOneWidget);
       expect(find.text('How FitFlow handles information on this device.'),
-          findsOneWidget);
+          findsNothing);
       expect(find.text(SettingsScreen.localDataFooter), findsOneWidget);
 
       await _ensureVisibleAndTap(tester, 'Appearance');
       for (final option in ['System default', 'Light', 'Dark']) {
-        expect(find.text(option), findsOneWidget, reason: option);
+        expect(find.widgetWithText(RadioListTile<AppearanceMode>, option),
+            findsOneWidget,
+            reason: option);
       }
       final lightRadio = find.widgetWithText(
         RadioListTile<AppearanceMode>,

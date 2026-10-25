@@ -72,22 +72,30 @@ class ProfileEditorSaveBar extends StatelessWidget {
               constraints: const BoxConstraints(
                 maxWidth: FitFlowLayout.maxReadableWidth - 32,
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  FilledButton.icon(
-                    onPressed: enabled && !saving ? onSave : null,
-                    icon: Icon(saving ? Icons.hourglass_top : Icons.check),
-                    label: Text(saving ? l.utilitySaving : l.utilitySave),
-                  ),
-                  TextButton(
-                    onPressed:
-                        saving ? null : () => Navigator.of(context).maybePop(),
-                    child: Text(l.utilityCancel),
-                  ),
-                ],
-              ),
+              child: LayoutBuilder(builder: (context, constraints) {
+                final save = FilledButton.icon(
+                  onPressed: enabled && !saving ? onSave : null,
+                  icon: Icon(saving ? Icons.hourglass_top : Icons.check),
+                  label: Text(saving ? l.utilitySaving : l.utilitySave),
+                );
+                final cancel = TextButton(
+                  onPressed:
+                      saving ? null : () => Navigator.of(context).maybePop(),
+                  child: Text(l.utilityCancel),
+                );
+                if (MediaQuery.textScalerOf(context).scale(1) > 1.3 ||
+                    constraints.maxWidth < 280) {
+                  return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [save, cancel]);
+                }
+                return Row(children: [
+                  cancel,
+                  const SizedBox(width: 12),
+                  Expanded(child: save)
+                ]);
+              }),
             ),
           ),
         ),
@@ -98,7 +106,7 @@ class ProfileEditorSaveBar extends StatelessWidget {
 
 /// Profile-only expandable group. It follows system motion and keeps all
 /// existing profile choices in a compact expandable section.
-class ProfileDisclosure extends StatelessWidget {
+class ProfileDisclosure extends StatefulWidget {
   const ProfileDisclosure({
     super.key,
     required this.title,
@@ -108,16 +116,24 @@ class ProfileDisclosure extends StatelessWidget {
   });
 
   final String title;
-  final String summary;
+  final String? summary;
   final List<Widget> children;
   final bool initiallyExpanded;
 
   @override
+  State<ProfileDisclosure> createState() => _ProfileDisclosureState();
+}
+
+class _ProfileDisclosureState extends State<ProfileDisclosure> {
+  late bool _expanded = widget.initiallyExpanded;
+  @override
   Widget build(BuildContext context) => ExpansionTile(
-        initiallyExpanded: initiallyExpanded,
+        initiallyExpanded: widget.initiallyExpanded,
+        onExpansionChanged: (expanded) => setState(() => _expanded = expanded),
+        minTileHeight: 56,
         tilePadding: const EdgeInsets.symmetric(
           horizontal: 0,
-          vertical: FitFlowSpace.xs,
+          vertical: 0,
         ),
         childrenPadding: const EdgeInsets.fromLTRB(
           0,
@@ -130,19 +146,22 @@ class ProfileDisclosure extends StatelessWidget {
         collapsedShape: const Border(),
         title: Semantics(
           header: true,
-          child: Text(title,
+          child: Text(widget.title,
               style: Theme.of(context)
                   .textTheme
                   .titleMedium
                   ?.copyWith(fontWeight: FontWeight.w500)),
         ),
-        subtitle: Text(summary, style: Theme.of(context).textTheme.bodySmall),
+        subtitle: _expanded || widget.summary == null
+            ? null
+            : Text(widget.summary!,
+                style: Theme.of(context).textTheme.bodySmall),
         expansionAnimationStyle: AnimationStyle(
           duration: SystemMotion.standard(context),
           reverseDuration: SystemMotion.standard(context),
           curve: FitFlowMotion.standardCurve,
         ),
-        children: children,
+        children: widget.children,
       );
 }
 
@@ -167,7 +186,8 @@ class ProfileOptionTile extends StatelessWidget {
       enabled: enabled,
       child: ListTile(
         contentPadding: EdgeInsets.zero,
-        minVerticalPadding: FitFlowSpace.xs,
+        minVerticalPadding: 4,
+        minTileHeight: 48,
         enabled: enabled,
         selected: selected,
         onTap: enabled ? onSelected : null,

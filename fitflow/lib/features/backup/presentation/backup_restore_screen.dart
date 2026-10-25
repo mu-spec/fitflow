@@ -1,3 +1,4 @@
+import 'package:fitflow/features/settings/presentation/widgets/profile_settings_theme.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
@@ -16,18 +17,26 @@ import 'package:go_router/go_router.dart';
 /// Presentation only: file access and persistence go through
 /// [BackupRestoreController]; this widget never touches `FilePicker` or
 /// `SharedPreferences`.
-class BackupRestoreScreen extends ConsumerStatefulWidget {
+class BackupRestoreScreen extends StatelessWidget {
   const BackupRestoreScreen({super.key});
 
   static const Key createButtonKey = Key('backup_create_button');
   static const Key chooseFileButtonKey = Key('backup_choose_file_button');
 
   @override
-  ConsumerState<BackupRestoreScreen> createState() =>
+  Widget build(BuildContext context) =>
+      const ProfileSettingsTheme(child: _BackupRestoreScreenContent());
+}
+
+class _BackupRestoreScreenContent extends ConsumerStatefulWidget {
+  const _BackupRestoreScreenContent();
+  @override
+  ConsumerState<_BackupRestoreScreenContent> createState() =>
       _BackupRestoreScreenState();
 }
 
-class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
+class _BackupRestoreScreenState
+    extends ConsumerState<_BackupRestoreScreenContent> {
   Future<void> _confirmRestore() async {
     final confirmed = await FitFlowConfirmDialog.show(
       context,

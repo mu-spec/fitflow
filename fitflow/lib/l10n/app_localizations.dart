@@ -3686,7 +3686,7 @@ abstract class AppLocalizations {
   /// No description provided for @utilityEditorDraft.
   ///
   /// In en, this message translates to:
-  /// **'Changes stay here until you save.'**
+  /// **'Save to apply changes.'**
   String get utilityEditorDraft;
 
   /// No description provided for @utilityCancel.
@@ -3758,7 +3758,7 @@ abstract class AppLocalizations {
   /// No description provided for @utilitySavedSchedule.
   ///
   /// In en, this message translates to:
-  /// **'Choose days and a time. Changes save as you make them.'**
+  /// **'Changes save automatically.'**
   String get utilitySavedSchedule;
 
   /// No description provided for @utilityProfileError.
@@ -3982,6 +3982,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 saved workout} other{{count} saved workouts}}'**
   String progressSavedCount(int count);
+
+  /// No description provided for @profileMovementGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved levels guide exercise selection, not a health score.'**
+  String get profileMovementGuide;
 }
 
 class _AppLocalizationsDelegate

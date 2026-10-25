@@ -1,3 +1,4 @@
+import 'package:fitflow/features/settings/presentation/widgets/profile_settings_theme.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
@@ -62,7 +63,10 @@ class PrivacyPolicyScreen extends StatelessWidget {
   ];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) =>
+      ProfileSettingsTheme(child: Builder(builder: _buildContent));
+
+  Widget _buildContent(BuildContext context) {
     final theme = Theme.of(context);
     final visual = FitFlowVisualV2.of(context);
     final viewportWidth = MediaQuery.sizeOf(context).width;

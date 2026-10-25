@@ -12,10 +12,7 @@ import 'helpers/profile_editor_test_helpers.dart';
 
 void main() {
   final editorVisible = find.text(
-    'Choose the equipment you currently have available.',
-  );
-  final profileListVisible = find.text(
-    'Your settings shape how FitFlow adapts future workouts.',
+    'Save to apply changes.',
   );
 
   UserFitnessProfile seedWith(Set<WorkoutEquipment> equipment) =>
@@ -124,7 +121,7 @@ void main() {
       await settleProfileFrames(tester);
 
       expect(find.text('Equipment updated.'), findsOneWidget);
-      expect(profileListVisible, findsOneWidget);
+      expect(find.text('Your profile'), findsOneWidget);
 
       final prefs = await SharedPreferences.getInstance();
       final stored = UserFitnessProfileStorage(prefs).load()!;

@@ -110,7 +110,7 @@ void main() {
         const Offset(0, -200),
       );
       expect(find.text(BackupCopy.settingsTitle), findsWidgets);
-      expect(find.text(BackupCopy.settingsSubtitle), findsOneWidget);
+      expect(find.text(BackupCopy.settingsSubtitle), findsNothing);
       // The heavy workflow is NOT inline on Settings.
       expect(find.text(BackupCopy.createDescription), findsNothing);
       expect(find.byType(BackupRestoreScreen), findsNothing);
@@ -423,7 +423,7 @@ void main() {
           find.byType(SingleChildScrollView),
           const Offset(0, -200),
         );
-        expect(find.text(BackupCopy.settingsSubtitle), findsOneWidget);
+        expect(find.text(BackupCopy.settingsSubtitle), findsNothing);
         expect(tester.takeException(), isNull);
       });
     }

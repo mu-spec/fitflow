@@ -14,10 +14,7 @@ import 'helpers/profile_editor_test_helpers.dart';
 
 void main() {
   final editorVisible = find.text(
-    'FitFlow uses these preferences when choosing exercises.',
-  );
-  final profileListVisible = find.text(
-    'Your settings shape how FitFlow adapts future workouts.',
+    'Save to apply changes.',
   );
 
   UserFitnessProfile seedWith(Set<WorkoutPreference> preferences) =>
@@ -137,7 +134,7 @@ void main() {
       await settleProfileFrames(tester);
 
       expect(find.text('Workout preferences updated.'), findsOneWidget);
-      expect(profileListVisible, findsOneWidget);
+      expect(find.text('Your profile'), findsOneWidget);
 
       final prefs = await SharedPreferences.getInstance();
       final stored = UserFitnessProfileStorage(prefs).load()!;
@@ -208,10 +205,7 @@ void main() {
         findsOneWidget,
       );
       expect(
-        containerOf(tester)
-            .read(userFitnessProfileProvider)
-            .value!
-            .preferences,
+        containerOf(tester).read(userFitnessProfileProvider).value!.preferences,
         {WorkoutPreference.noJumping},
       );
     });
@@ -226,7 +220,8 @@ void main() {
 
   group('Preferences summary formatting (deterministic)', () {
     test('empty selection uses the fallback copy', () {
-      expect(formatPreferencesSummary(const {}), 'No special workout preferences');
+      expect(
+          formatPreferencesSummary(const {}), 'No special workout preferences');
     });
 
     test('selections list in enum declaration order', () {

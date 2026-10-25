@@ -1,3 +1,4 @@
+import 'package:fitflow/features/settings/presentation/widgets/profile_settings_theme.dart';
 import 'package:fitflow/features/onboarding/data/user_fitness_profile.dart';
 import 'package:fitflow/features/onboarding/data/workout_equipment.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
@@ -17,17 +18,25 @@ import 'package:go_router/go_router.dart';
 /// Uses the same selection rules as onboarding: `None` is exclusive, real
 /// equipment removes `None`, and the selection is never empty — deselecting
 /// the final real item automatically falls back to `None`.
-class EquipmentEditorScreen extends ConsumerStatefulWidget {
+class EquipmentEditorScreen extends StatelessWidget {
   const EquipmentEditorScreen({super.key});
 
   static const String successMessage = 'Equipment updated.';
 
   @override
-  ConsumerState<EquipmentEditorScreen> createState() =>
+  Widget build(BuildContext context) =>
+      const ProfileSettingsTheme(child: _EquipmentEditorScreenContent());
+}
+
+class _EquipmentEditorScreenContent extends ConsumerStatefulWidget {
+  const _EquipmentEditorScreenContent();
+  @override
+  ConsumerState<_EquipmentEditorScreenContent> createState() =>
       _EquipmentEditorScreenState();
 }
 
-class _EquipmentEditorScreenState extends ConsumerState<EquipmentEditorScreen> {
+class _EquipmentEditorScreenState
+    extends ConsumerState<_EquipmentEditorScreenContent> {
   /// Persisted profile the draft was started from.
   UserFitnessProfile? _baseline;
 
@@ -167,22 +176,8 @@ class _EquipmentEditorScreenState extends ConsumerState<EquipmentEditorScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Choose the equipment you currently have available.',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                            const SizedBox(height: FitFlowSpace.xs),
-                            Text(
-                              context.l10n.utilityEditorDraft,
-                              style: theme.textTheme.bodySmall,
-                            ),
-                          ],
-                        ),
+                        Text(context.l10n.utilityEditorDraft,
+                            style: theme.textTheme.bodySmall),
                         const SizedBox(height: FitFlowSpace.md),
                         for (final equipment in WorkoutEquipment.values)
                           ProfileOptionTile(

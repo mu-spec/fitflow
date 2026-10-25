@@ -17,7 +17,7 @@ import 'helpers/profile_editor_test_helpers.dart';
 void main() {
   /// Where the Profile tab lives after popping the editor.
   final profileListVisible = find.text(
-    'Your setup for future workouts.',
+    'Your profile',
   );
 
   setUp(() {
@@ -181,7 +181,7 @@ void main() {
 
       // Still on the editor with the failure message.
       expect(
-        find.text('These settings shape future adaptive workouts.'),
+        find.text('Save to apply changes.'),
         findsOneWidget,
       );
       expect(
@@ -271,7 +271,7 @@ void main() {
       await settleProfileFrames(tester);
 
       expect(
-        find.text('These settings shape future adaptive workouts.'),
+        find.text('Save to apply changes.'),
         findsOneWidget,
       );
       expect(optionCardSelected(tester, 'Build muscle'), isTrue);

@@ -55,7 +55,7 @@ void main() {
       expect(find.text('Your profile'), findsOneWidget);
       expect(
         find.text('Your setup for future workouts.'),
-        findsOneWidget,
+        findsNothing,
       );
     });
 
@@ -114,7 +114,7 @@ void main() {
       await pumpProfileApp(tester);
 
       expect(find.text('Settings'), findsOneWidget);
-      expect(find.text('Appearance, reminders, and backups.'), findsOneWidget);
+      expect(find.text('Appearance, reminders, and backups.'), findsNothing);
 
       await tester.tap(find.text('Settings'));
       await settleProfileFrames(tester);
@@ -129,7 +129,7 @@ void main() {
       await settleProfileFrames(tester);
 
       expect(
-        find.text('These settings shape future adaptive workouts.'),
+        find.text('Save to apply changes.'),
         findsOneWidget,
       );
     });
@@ -141,7 +141,7 @@ void main() {
       await settleProfileFrames(tester);
 
       expect(
-        find.text('Choose the equipment you currently have available.'),
+        find.text('Save to apply changes.'),
         findsOneWidget,
       );
     });
@@ -153,7 +153,7 @@ void main() {
       await settleProfileFrames(tester);
 
       expect(
-        find.text('FitFlow uses these preferences when choosing exercises.'),
+        find.text('Save to apply changes.'),
         findsOneWidget,
       );
     });

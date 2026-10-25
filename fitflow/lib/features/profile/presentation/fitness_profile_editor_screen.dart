@@ -1,3 +1,4 @@
+import 'package:fitflow/features/settings/presentation/widgets/profile_settings_theme.dart';
 import 'package:fitflow/features/onboarding/data/experience_level.dart';
 import 'package:fitflow/features/onboarding/data/fitness_goal.dart';
 import 'package:fitflow/features/onboarding/data/training_environment.dart';
@@ -20,18 +21,25 @@ import 'package:go_router/go_router.dart';
 /// Changes stay in a local draft until the user explicitly taps
 /// `Save changes`; nothing is persisted on selection. Equipment and
 /// preferences are edited on their own screens.
-class FitnessProfileEditorScreen extends ConsumerStatefulWidget {
+class FitnessProfileEditorScreen extends StatelessWidget {
   const FitnessProfileEditorScreen({super.key});
 
   static const String successMessage = 'Fitness profile updated.';
 
   @override
-  ConsumerState<FitnessProfileEditorScreen> createState() =>
+  Widget build(BuildContext context) =>
+      const ProfileSettingsTheme(child: _FitnessProfileEditorScreenContent());
+}
+
+class _FitnessProfileEditorScreenContent extends ConsumerStatefulWidget {
+  const _FitnessProfileEditorScreenContent();
+  @override
+  ConsumerState<_FitnessProfileEditorScreenContent> createState() =>
       _FitnessProfileEditorScreenState();
 }
 
 class _FitnessProfileEditorScreenState
-    extends ConsumerState<FitnessProfileEditorScreen> {
+    extends ConsumerState<_FitnessProfileEditorScreenContent> {
   /// Persisted profile the draft was started from.
   UserFitnessProfile? _baseline;
 
@@ -155,28 +163,12 @@ class _FitnessProfileEditorScreenState
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'These settings shape future adaptive workouts.',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                            const SizedBox(height: FitFlowSpace.xs),
-                            Text(
-                              context.l10n.utilityEditorDraft,
-                              style: theme.textTheme.bodySmall,
-                            ),
-                          ],
-                        ),
+                        Text(context.l10n.utilityEditorDraft,
+                            style: theme.textTheme.bodySmall),
                         const SizedBox(height: FitFlowSpace.md),
                         ProfileDisclosure(
                           title: context.l10n.utilityGoal,
-                          summary: context.l10n.utilitySelectedValue(
-                            fitnessGoalLabel(context.l10n, draft.goal),
-                          ),
+                          summary: fitnessGoalLabel(context.l10n, draft.goal),
                           children: [
                             for (final goal in FitnessGoal.values)
                               ProfileOptionTile(
@@ -188,12 +180,11 @@ class _FitnessProfileEditorScreenState
                               ),
                           ],
                         ),
-                        const SizedBox(height: FitFlowSpace.sm),
+                        const Divider(height: 1),
                         ProfileDisclosure(
                           title: context.l10n.utilityExperience,
-                          summary: context.l10n.utilitySelectedValue(
-                            experienceLabel(context.l10n, draft.experience),
-                          ),
+                          summary:
+                              experienceLabel(context.l10n, draft.experience),
                           children: [
                             for (final level in ExperienceLevel.values)
                               ProfileOptionTile(
@@ -207,14 +198,12 @@ class _FitnessProfileEditorScreenState
                               ),
                           ],
                         ),
-                        const SizedBox(height: FitFlowSpace.sm),
+                        const Divider(height: 1),
                         ProfileDisclosure(
                           title: context.l10n.utilityDuration,
-                          summary: context.l10n.utilitySelectedValue(
-                            workoutDurationLabel(
-                              context.l10n,
-                              draft.workoutDuration,
-                            ),
+                          summary: workoutDurationLabel(
+                            context.l10n,
+                            draft.workoutDuration,
                           ),
                           children: [
                             for (final duration in WorkoutDuration.values)
@@ -231,12 +220,11 @@ class _FitnessProfileEditorScreenState
                               ),
                           ],
                         ),
-                        const SizedBox(height: FitFlowSpace.sm),
+                        const Divider(height: 1),
                         ProfileDisclosure(
                           title: context.l10n.utilityEnvironment,
-                          summary: context.l10n.utilitySelectedValue(
-                            environmentLabel(context.l10n, draft.environment),
-                          ),
+                          summary:
+                              environmentLabel(context.l10n, draft.environment),
                           children: [
                             for (final env in TrainingEnvironment.values)
                               ProfileOptionTile(

@@ -2169,7 +2169,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get utilityNoPreferences => 'No special workout preferences';
 
   @override
-  String get utilityEditorDraft => 'Changes stay here until you save.';
+  String get utilityEditorDraft => 'Save to apply changes.';
 
   @override
   String get utilityCancel => 'Cancel';
@@ -2205,8 +2205,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get utilityLoadingReminders => 'Loading reminders…';
 
   @override
-  String get utilitySavedSchedule =>
-      'Choose days and a time. Changes save as you make them.';
+  String get utilitySavedSchedule => 'Changes save automatically.';
 
   @override
   String get utilityProfileError => 'Your profile couldn\'t be loaded.';
@@ -2353,4 +2352,8 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get profileMovementGuide =>
+      'Saved levels guide exercise selection, not a health score.';
 }

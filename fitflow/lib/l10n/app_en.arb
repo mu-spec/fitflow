@@ -1176,7 +1176,7 @@
   "utilityMovementError": "Your movement levels couldn’t be loaded.",
   "utilityRetryBody": "Try loading again.",
   "utilityNoPreferences": "No special workout preferences",
-  "utilityEditorDraft": "Changes stay here until you save.",
+  "utilityEditorDraft": "Save to apply changes.",
   "utilityCancel": "Cancel",
   "utilitySave": "Save changes",
   "utilityDiscardTitle": "Discard changes?",
@@ -1188,7 +1188,7 @@
   "utilityDuration": "Typical workout time",
   "utilityEnvironment": "Training environment",
   "utilityLoadingReminders": "Loading reminders…",
-  "utilitySavedSchedule": "Choose days and a time. Changes save as you make them.",
+  "utilitySavedSchedule": "Changes save automatically.",
   "utilityProfileError": "Your profile couldn't be loaded.",
   "utilityProfileMissing": "Fitness profile not set up",
   "utilityProfileSetupBody": "Answer a few quick questions so FitFlow can tailor your workouts.",
@@ -1305,5 +1305,6 @@
         "type": "int"
       }
     }
-  }
+  },
+  "profileMovementGuide": "Saved levels guide exercise selection, not a health score."
 }

@@ -53,7 +53,7 @@ void main() {
       );
       expect(
         find.text('Your setup for future workouts.'),
-        findsOneWidget,
+        findsNothing,
       );
       expect(
         find.text(
@@ -70,11 +70,14 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('Settings'), findsOneWidget);
-      expect(find.text('Appearance, reminders, and backups.'), findsOneWidget);
+      expect(find.text('Appearance, reminders, and backups.'), findsNothing);
       expect(find.byType(ProfileOptionTile), findsNothing);
 
       await _ensureVisibleAndTap(tester, 'Movement levels');
-      expect(find.text('How exercise variations are chosen'), findsOneWidget);
+      expect(
+          find.text(
+              'Saved levels guide exercise selection, not a health score.'),
+          findsOneWidget);
       final movementLabels = [
         'Push',
         'Pull',
@@ -129,8 +132,7 @@ void main() {
     final profileBefore = prefs.getString(UserFitnessProfileStorage.profileKey);
 
     await _ensureVisibleAndTap(tester, 'Fitness Profile');
-    expect(find.text('These settings shape future adaptive workouts.'),
-        findsOneWidget);
+    expect(find.text('Save to apply changes.'), findsOneWidget);
     await _ensureVisibleAndTap(tester, 'Goal');
     await _ensureVisibleAndTap(tester, 'Build muscle');
 
@@ -365,7 +367,10 @@ void main() {
       expect(tile.expansionAnimationStyle?.duration, Duration.zero);
       await tester.tap(find.text('Movement levels'));
       await tester.pump();
-      expect(find.text('How exercise variations are chosen'), findsOneWidget);
+      expect(
+          find.text(
+              'Saved levels guide exercise selection, not a health score.'),
+          findsOneWidget);
       await tester.pump(const Duration(seconds: 1));
       expect(tester.binding.transientCallbackCount, 0);
       expect(tester.takeException(), isNull);

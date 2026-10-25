@@ -29,7 +29,6 @@ class BackupRestoreSettingsEntry extends StatelessWidget {
       title: Text(BackupCopy.settingsTitle,
           style: theme.textTheme.titleMedium
               ?.copyWith(fontWeight: FontWeight.w500)),
-      subtitle: const Text(BackupCopy.settingsSubtitle),
       trailing: const ExcludeSemantics(
         child: Icon(Icons.chevron_right_rounded),
       ),

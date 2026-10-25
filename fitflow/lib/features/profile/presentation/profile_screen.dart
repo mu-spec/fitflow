@@ -1,3 +1,4 @@
+import 'package:fitflow/features/settings/presentation/widgets/profile_settings_theme.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/onboarding/data/user_fitness_profile.dart';
@@ -18,9 +19,16 @@ import 'package:go_router/go_router.dart';
 
 /// Profile tab: real persisted profile summaries with entries into the
 /// M19 editors, plus the existing Settings entry.
-class ProfileScreen extends ConsumerWidget {
+class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
+  @override
+  Widget build(BuildContext context) =>
+      const ProfileSettingsTheme(child: _ProfileContent());
+}
+
+class _ProfileContent extends ConsumerWidget {
+  const _ProfileContent();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(userFitnessProfileProvider);
@@ -97,7 +105,7 @@ class _ProfileSummaryList extends StatelessWidget {
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(
         FitFlowSpace.screenHorizontal,
-        FitFlowSpace.xl,
+        FitFlowSpace.md,
         FitFlowSpace.screenHorizontal,
         FitFlowSpace.xxxl,
       ),
@@ -121,14 +129,7 @@ class _ProfileSummaryList extends StatelessWidget {
                   ?.copyWith(fontSize: 22, fontWeight: FontWeight.w500),
             ),
           ),
-          const SizedBox(height: FitFlowSpace.sm),
-          Text(
-            l.profileIntro,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: FitFlowSpace.xl),
+          const SizedBox(height: 16),
           Column(
             children: [
               _ProfileSummaryRow(
@@ -170,16 +171,16 @@ class _ProfileSummaryList extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: FitFlowSpace.md),
-          const _MovementSummary(),
-          const SizedBox(height: FitFlowSpace.md),
+          const Divider(height: 16),
           _ProfileSummaryRow(
             icon: Icons.settings,
             title: l.settingsTitle,
-            subtitle: l.utilitySettingsSummary,
+            subtitle: null,
             isEditing: false,
             onTap: () => context.go(AppRoutes.settings),
           ),
+          const Divider(height: 16),
+          const _MovementSummary(),
         ],
       ),
     );
@@ -199,7 +200,7 @@ class _ProfileSummaryRow extends StatelessWidget {
   final bool isEditing;
   final IconData icon;
   final String title;
-  final String subtitle;
+  final String? subtitle;
   final VoidCallback? onTap;
 
   @override
@@ -207,7 +208,14 @@ class _ProfileSummaryRow extends StatelessWidget {
     final theme = Theme.of(context);
 
     return ListTile(
-      onTap: onTap,
+      onTap: onTap == null
+          ? null
+          : () {
+              // A previous editor's success toast must not cover the next editor's
+              // compact Save action when moving quickly between settings.
+              ScaffoldMessenger.maybeOf(context)?.hideCurrentSnackBar();
+              onTap!();
+            },
       minVerticalPadding: FitFlowSpace.xxs,
       contentPadding: const EdgeInsets.symmetric(
         horizontal: 0,
@@ -223,12 +231,14 @@ class _ProfileSummaryRow extends StatelessWidget {
         style:
             theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w500),
       ),
-      subtitle: Text(
-        subtitle,
-        style: theme.textTheme.bodyMedium?.copyWith(
-          color: theme.colorScheme.onSurfaceVariant,
-        ),
-      ),
+      subtitle: subtitle == null
+          ? null
+          : Text(
+              subtitle!,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
       trailing: Tooltip(
         message: isEditing ? context.l10n.utilityEditSection(title) : title,
         child: ExcludeSemantics(
@@ -254,9 +264,9 @@ class _MovementSummary extends ConsumerWidget {
 
     return ProfileDisclosure(
       title: l.utilityMovementTitle,
-      summary: l.utilityMovementSummary,
+      summary: null,
       children: [
-        Text(l.utilityMovementBody),
+        Text(l.profileMovementGuide, style: theme.textTheme.bodySmall),
         const SizedBox(height: FitFlowSpace.sm),
         current.when(
           loading: () => FitFlowLoading(label: l.assessmentLoading),

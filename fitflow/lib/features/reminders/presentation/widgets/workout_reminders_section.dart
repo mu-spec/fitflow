@@ -140,6 +140,7 @@ class _WorkoutRemindersSectionState
 
     return UtilityDisclosure(
       title: l.reminderSectionTitle,
+      icon: Icons.notifications_outlined,
       summary: busy
           ? l.utilityUpdating
           : '$statusText\n${scheduleSummary(context, prefs)}',
@@ -148,7 +149,6 @@ class _WorkoutRemindersSectionState
         SwitchListTile.adaptive(
           contentPadding: EdgeInsets.zero,
           title: Text(context.l10n.reminderToggleTitle),
-          subtitle: Text(context.l10n.reminderToggleSubtitle),
           value: prefs.enabled,
           onChanged: busy
               ? null
@@ -178,7 +178,7 @@ class _WorkoutRemindersSectionState
             ),
           ),
         ],
-        const Divider(height: FitFlowSpace.xl),
+        const Divider(height: 16),
         Semantics(
           header: true,
           child: Text(
@@ -186,7 +186,7 @@ class _WorkoutRemindersSectionState
             style: theme.textTheme.bodySmall,
           ),
         ),
-        const SizedBox(height: FitFlowSpace.md),
+        const SizedBox(height: 8),
         Text(
           context.l10n.reminderDaysLabel,
           style: theme.textTheme.bodyMedium,
@@ -252,7 +252,7 @@ class _WorkoutRemindersSectionState
             ],
           ),
         ),
-        const SizedBox(height: FitFlowSpace.md),
+        const SizedBox(height: 8),
         Align(
           alignment: AlignmentDirectional.centerStart,
           child: FilledButton.tonalIcon(

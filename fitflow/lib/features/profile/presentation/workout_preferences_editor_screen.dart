@@ -1,3 +1,4 @@
+import 'package:fitflow/features/settings/presentation/widgets/profile_settings_theme.dart';
 import 'package:fitflow/features/onboarding/data/user_fitness_profile.dart';
 import 'package:fitflow/features/onboarding/data/workout_preference.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
@@ -14,18 +15,25 @@ import 'package:go_router/go_router.dart';
 
 /// Editor for optional workout preferences (user preferences, never medical
 /// advice). An empty selection is valid and can be saved.
-class WorkoutPreferencesEditorScreen extends ConsumerStatefulWidget {
+class WorkoutPreferencesEditorScreen extends StatelessWidget {
   const WorkoutPreferencesEditorScreen({super.key});
 
   static const String successMessage = 'Workout preferences updated.';
 
   @override
-  ConsumerState<WorkoutPreferencesEditorScreen> createState() =>
+  Widget build(BuildContext context) => const ProfileSettingsTheme(
+      child: _WorkoutPreferencesEditorScreenContent());
+}
+
+class _WorkoutPreferencesEditorScreenContent extends ConsumerStatefulWidget {
+  const _WorkoutPreferencesEditorScreenContent();
+  @override
+  ConsumerState<_WorkoutPreferencesEditorScreenContent> createState() =>
       _WorkoutPreferencesEditorScreenState();
 }
 
 class _WorkoutPreferencesEditorScreenState
-    extends ConsumerState<WorkoutPreferencesEditorScreen> {
+    extends ConsumerState<_WorkoutPreferencesEditorScreenContent> {
   /// Persisted profile the draft was started from.
   UserFitnessProfile? _baseline;
 
@@ -149,22 +157,8 @@ class _WorkoutPreferencesEditorScreenState
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'FitFlow uses these preferences when choosing exercises.',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                            const SizedBox(height: FitFlowSpace.xs),
-                            Text(
-                              context.l10n.utilityEditorDraft,
-                              style: theme.textTheme.bodySmall,
-                            ),
-                          ],
-                        ),
+                        Text(context.l10n.utilityEditorDraft,
+                            style: theme.textTheme.bodySmall),
                         const SizedBox(height: FitFlowSpace.md),
                         for (final preference in WorkoutPreference.values)
                           ProfileOptionTile(

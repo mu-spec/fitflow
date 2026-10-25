@@ -1,3 +1,4 @@
+import 'package:fitflow/features/settings/presentation/widgets/profile_settings_theme.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
@@ -20,7 +21,7 @@ import 'package:go_router/go_router.dart';
 /// backup & restore), plus a small factual local-data footer. Appearance
 /// selection uses persist-first semantics: a failed write keeps the previous
 /// mode active and shows an honest error message.
-class SettingsScreen extends ConsumerStatefulWidget {
+class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   /// Exact copy shown when an appearance change could not be persisted.
@@ -34,10 +35,17 @@ class SettingsScreen extends ConsumerStatefulWidget {
   static const Key privacyPolicyTileKey = Key('privacy_policy_settings_tile');
 
   @override
-  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
+  Widget build(BuildContext context) =>
+      const ProfileSettingsTheme(child: _SettingsScreenContent());
 }
 
-class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+class _SettingsScreenContent extends ConsumerStatefulWidget {
+  const _SettingsScreenContent();
+  @override
+  ConsumerState<_SettingsScreenContent> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends ConsumerState<_SettingsScreenContent> {
   /// Whether an appearance write is in flight; blocks duplicate selections.
   bool _savingAppearance = false;
 
@@ -111,17 +119,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   UtilityHeading(l.utilityPreferences),
                   UtilityDisclosure(
                     title: l.utilityAppearance,
+                    icon: Icons.palette_outlined,
+                    hideSummaryWhenExpanded: true,
                     summary: _savingAppearance
                         ? l.utilitySaving
                         : appearance.isLoading
                             ? l.utilityUpdating
                             : appearance.hasError
                                 ? l.utilityRetryBody
-                                : l.utilityCurrentValue(
-                                    mode == AppearanceMode.system
-                                        ? l.utilitySystemDefault
-                                        : appearanceModeLabel(l, mode),
-                                  ),
+                                : (mode == AppearanceMode.system
+                                    ? l.utilitySystemDefault
+                                    : appearanceModeLabel(l, mode)),
                     children: [
                       if (appearance.isLoading)
                         FitFlowLoading(label: l.utilityUpdating)
@@ -168,9 +176,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         ),
                     ],
                   ),
-                  const SizedBox(height: FitFlowSpace.sm),
+                  const Divider(height: 1),
                   const WorkoutRemindersSection(),
-                  const SizedBox(height: FitFlowSpace.md),
+                  const Divider(height: 16),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -199,7 +207,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       Expanded(
                         child: Text(
                           SettingsScreen.localDataFooter,
-                          style: theme.textTheme.bodyMedium?.copyWith(
+                          style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
@@ -239,7 +247,6 @@ class _PrivacyPolicyEntry extends StatelessWidget {
       title: Text('Privacy Policy',
           style: theme.textTheme.titleMedium
               ?.copyWith(fontWeight: FontWeight.w500)),
-      subtitle: const Text('How FitFlow handles information on this device.'),
       trailing: const ExcludeSemantics(
         child: Icon(Icons.chevron_right_rounded),
       ),
