@@ -100,7 +100,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       'environment' => const EnvironmentStepContent(),
       'equipment' => const EquipmentStepContent(),
       'preferences' => const PreferencesStepContent(),
-      _ => Text(body ?? ''),
+      'ready' => Text(body ?? ''),
+      _ => const SizedBox.shrink(),
     };
   }
 

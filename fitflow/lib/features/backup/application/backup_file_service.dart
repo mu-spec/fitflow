@@ -53,7 +53,7 @@ class FilePickerBackupFileService implements BackupFileService {
   }) async {
     try {
       final uri = await FilePicker.saveFile(
-        dialogTitle: 'Save FitFlow backup',
+        dialogTitle: 'Save Home Workout backup',
         fileName: suggestedFileName,
         bytes: bytes,
         mimeType: BackupFormat.mimeType,
@@ -73,7 +73,7 @@ class FilePickerBackupFileService implements BackupFileService {
       {int maxBytes = BackupFormat.maxImportBytes}) async {
     try {
       final file = await FilePicker.pickFile(
-        dialogTitle: 'Choose a FitFlow backup',
+        dialogTitle: 'Choose a Home Workout backup',
         type: FileType.custom,
         allowedExtensions: const [BackupFormat.fileExtension],
       );

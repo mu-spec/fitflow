@@ -115,11 +115,11 @@ void main() {
     test('passes name, bytes and application/json to Save As → saved',
         () async {
       final outcome = await service.saveBackup(
-          suggestedFileName: 'FitFlow-backup-20260930-070509.json',
+          suggestedFileName: 'Home Workout-backup-20260930-070509.json',
           bytes: payload);
       expect(outcome, BackupSaveOutcome.saved);
       expect(platform.saveCalls.single['fileName'],
-          'FitFlow-backup-20260930-070509.json');
+          'Home Workout-backup-20260930-070509.json');
       expect(platform.saveCalls.single['bytes'], same(payload));
       expect(platform.saveCalls.single['mimeType'], BackupFormat.mimeType);
       expect(platform.saveCalls.single['mimeType'], 'application/json');

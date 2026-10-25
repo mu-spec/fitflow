@@ -256,7 +256,7 @@ void main() {
         'compact header, photographic rows and canonical facts appear once',
         (tester) async {
       await pumpPrograms(tester);
-      expect(find.text('FITFLOW'), findsNothing);
+      expect(find.text('Home Workout'), findsNothing);
       expect(find.text('Adaptive programs'), findsNothing);
       expect(find.text('Programs'), findsOneWidget);
       final scaffoldFinder = find.descendant(

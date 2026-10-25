@@ -52,10 +52,10 @@ void main() {
       expect(gradle.contains('applicationId = "com.fitflow.fitflow"'), isTrue);
     });
 
-    test('launcher label is FitFlow from a string resource', () {
+    test('launcher label is Home Workout from a string resource', () {
       expect(manifest.contains('android:label="@string/app_name"'), isTrue);
       expect(manifest.contains('android:label="fitflow"'), isFalse);
-      expect(strings.contains('<string name="app_name">FitFlow</string>'), isTrue);
+      expect(strings.contains('<string name="app_name">Home Workout</string>'), isTrue);
     });
 
     test('release signing cannot fall back to the debug key', () {
@@ -175,9 +175,9 @@ void main() {
       expect(combined.contains('@'), isFalse);
       expect(combined.toLowerCase().contains('diagnos'), isTrue);
       expect(combined.toLowerCase().contains('does not diagnose'), isTrue);
-      expect(combined.contains('does not sell FitFlow user data'), isTrue);
+      expect(combined.contains('does not sell Home Workout user data'), isTrue);
       expect(combined.contains('does not operate a speech server'), isTrue);
-      expect(combined.contains('no FitFlow account') || combined.contains('does not create an account'), isTrue);
+      expect(combined.contains('no Home Workout account') || combined.contains('does not create an account'), isTrue);
     });
 
     testWidgets('Settings opens the Privacy Policy', (tester) async {
@@ -206,7 +206,7 @@ void main() {
       await tester.tap(tile);
       await settleProfileFrames(tester);
 
-      expect(find.text('No account and no FitFlow service'), findsOneWidget);
+      expect(find.text('No account and no Home Workout service'), findsOneWidget);
       expect(find.text('No ads, analytics, or sale of data'), findsOneWidget);
       expect(find.textContaining('does not diagnose disease'), findsOneWidget);
       expect(tester.takeException(), isNull);

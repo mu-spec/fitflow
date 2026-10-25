@@ -22,11 +22,11 @@ import 'helpers/backup_test_helpers.dart';
 
 void main() {
   group('BackupFormat', () {
-    test('file name pattern FitFlow-backup-YYYYMMDD-HHmmss.json', () {
+    test('file name pattern Home Workout-backup-YYYYMMDD-HHmmss.json', () {
       final name = BackupFormat.defaultFileName(DateTime(2026, 9, 30, 7, 5, 9));
-      expect(name, 'FitFlow-backup-20260930-070509.json');
+      expect(name, 'Home Workout-backup-20260930-070509.json');
       expect(
-          RegExp(r'^FitFlow-backup-\d{8}-\d{6}\.json$').hasMatch(name), isTrue);
+          RegExp(r'^Home Workout-backup-\d{8}-\d{6}\.json$').hasMatch(name), isTrue);
     });
 
     test('owns exactly the eight persisted keys', () {

@@ -97,7 +97,7 @@ abstract class AppLocalizations {
   /// Application title
   ///
   /// In en, this message translates to:
-  /// **'FitFlow'**
+  /// **'Home Workout'**
   String get appTitle;
 
   /// No description provided for @navHome.
@@ -187,55 +187,55 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingWelcomeTitle.
   ///
   /// In en, this message translates to:
-  /// **'Welcome to FitFlow'**
+  /// **'Welcome to Home Workout'**
   String get onboardingWelcomeTitle;
 
   /// No description provided for @onboardingWelcomeBody.
   ///
   /// In en, this message translates to:
-  /// **'Your workouts will adapt to your strength, time, space and equipment.'**
+  /// **'A few choices to shape your workouts.'**
   String get onboardingWelcomeBody;
 
   /// No description provided for @onboardingGoalTitle.
   ///
   /// In en, this message translates to:
-  /// **'What is your main goal?'**
+  /// **'Your main goal'**
   String get onboardingGoalTitle;
 
   /// No description provided for @onboardingExperienceTitle.
   ///
   /// In en, this message translates to:
-  /// **'What is your current experience?'**
+  /// **'Your training experience'**
   String get onboardingExperienceTitle;
 
   /// No description provided for @onboardingTimeTitle.
   ///
   /// In en, this message translates to:
-  /// **'How much time do you usually have?'**
+  /// **'Time for a workout'**
   String get onboardingTimeTitle;
 
   /// No description provided for @onboardingEnvironmentTitle.
   ///
   /// In en, this message translates to:
-  /// **'Where do you usually train?'**
+  /// **'Your training space'**
   String get onboardingEnvironmentTitle;
 
   /// No description provided for @onboardingEquipmentTitle.
   ///
   /// In en, this message translates to:
-  /// **'What equipment do you have?'**
+  /// **'Available equipment'**
   String get onboardingEquipmentTitle;
 
   /// No description provided for @onboardingPreferencesTitle.
   ///
   /// In en, this message translates to:
-  /// **'Let\'s customize your workouts'**
+  /// **'Your workout preferences'**
   String get onboardingPreferencesTitle;
 
   /// No description provided for @onboardingReadyTitle.
   ///
   /// In en, this message translates to:
-  /// **'You\'re ready'**
+  /// **'One last step'**
   String get onboardingReadyTitle;
 
   /// No description provided for @onboardingReadyBody.
@@ -943,7 +943,7 @@ abstract class AppLocalizations {
   /// No description provided for @reminderStatusBlocked.
   ///
   /// In en, this message translates to:
-  /// **'Reminders are enabled in FitFlow, but notifications are blocked by Android.'**
+  /// **'Reminders are enabled in Home Workout, but notifications are blocked by Android.'**
   String get reminderStatusBlocked;
 
   /// No description provided for @reminderStatusError.
@@ -991,7 +991,7 @@ abstract class AppLocalizations {
   /// No description provided for @reminderNotificationTitle.
   ///
   /// In en, this message translates to:
-  /// **'FitFlow workout reminder'**
+  /// **'Home Workout reminder'**
   String get reminderNotificationTitle;
 
   /// No description provided for @reminderNotificationBody.
@@ -1003,7 +1003,7 @@ abstract class AppLocalizations {
   /// No description provided for @reminderTestTitle.
   ///
   /// In en, this message translates to:
-  /// **'FitFlow test reminder'**
+  /// **'Home Workout test reminder'**
   String get reminderTestTitle;
 
   /// No description provided for @reminderTestBody.
@@ -1027,7 +1027,7 @@ abstract class AppLocalizations {
   /// No description provided for @backupSettingsSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Save a copy of your FitFlow data or restore it on this device.'**
+  /// **'Save a copy of your Home Workout data or restore it on this device.'**
   String get backupSettingsSubtitle;
 
   /// No description provided for @backupCreate.
@@ -1165,37 +1165,37 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingGoalHelp.
   ///
   /// In en, this message translates to:
-  /// **'Your goal helps shape the exercises in your sessions.'**
+  /// **'Choose what you want to work toward.'**
   String get onboardingGoalHelp;
 
   /// No description provided for @onboardingExperienceHelp.
   ///
   /// In en, this message translates to:
-  /// **'This gives us a starting point. You can fine-tune each movement next.'**
+  /// **'Choose the starting point that fits you.'**
   String get onboardingExperienceHelp;
 
   /// No description provided for @onboardingTimeHelp.
   ///
   /// In en, this message translates to:
-  /// **'Choose your usual session length. You can go lighter when you need to.'**
+  /// **'Choose your usual session length.'**
   String get onboardingTimeHelp;
 
   /// No description provided for @onboardingEnvironmentHelp.
   ///
   /// In en, this message translates to:
-  /// **'We’ll choose exercises that work in your training space.'**
+  /// **'Choose where you usually train.'**
   String get onboardingEnvironmentHelp;
 
   /// No description provided for @onboardingEquipmentHelp.
   ///
   /// In en, this message translates to:
-  /// **'Select all that you have. Choose None to train without equipment.'**
+  /// **'Select all you have, or choose None.'**
   String get onboardingEquipmentHelp;
 
   /// No description provided for @onboardingPreferencesHelp.
   ///
   /// In en, this message translates to:
-  /// **'Select any that suit you, or continue without a selection.'**
+  /// **'Select any that suit you. These are optional.'**
   String get onboardingPreferencesHelp;
 
   /// No description provided for @onboardingPreferencesNote.
@@ -1207,7 +1207,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingReadyHelp.
   ///
   /// In en, this message translates to:
-  /// **'Movement Check comes next. Your answers help us choose appropriate exercise variations.'**
+  /// **'Review your movement levels next.'**
   String get onboardingReadyHelp;
 
   /// No description provided for @onboardingSaveError.
@@ -1243,7 +1243,7 @@ abstract class AppLocalizations {
   /// No description provided for @assessmentBody.
   ///
   /// In en, this message translates to:
-  /// **'Different movements can feel different. Review these suggestions to help FitFlow choose exercise variations that suit you.'**
+  /// **'Choose a comfortable starting level for each movement. You can change the suggestions below.'**
   String get assessmentBody;
 
   /// No description provided for @assessmentSuggested.
@@ -1327,7 +1327,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeBrand.
   ///
   /// In en, this message translates to:
-  /// **'FITFLOW'**
+  /// **'Home Workout'**
   String get homeBrand;
 
   /// No description provided for @homeTitle.
@@ -1375,13 +1375,13 @@ abstract class AppLocalizations {
   /// No description provided for @homeChosenExplanation.
   ///
   /// In en, this message translates to:
-  /// **'FitFlow uses your goal, space, equipment, movement capabilities and workout preferences to choose this workout.'**
+  /// **'Home Workout uses your goal, space, equipment, movement capabilities and workout preferences to choose this workout.'**
   String get homeChosenExplanation;
 
   /// No description provided for @homeAdaptationDetail.
   ///
   /// In en, this message translates to:
-  /// **'FitFlow chose exercises that match your movement capabilities and current workout preferences.'**
+  /// **'Home Workout chose exercises that match your movement capabilities and current workout preferences.'**
   String get homeAdaptationDetail;
 
   /// No description provided for @homeFocus.
@@ -2281,7 +2281,7 @@ abstract class AppLocalizations {
   /// No description provided for @flowTuneHelp.
   ///
   /// In en, this message translates to:
-  /// **'Tell FitFlow how each movement felt. Your movement levels adapt independently.'**
+  /// **'Tell Home Workout how each movement felt. Your movement levels adapt independently.'**
   String get flowTuneHelp;
 
   /// No description provided for @flowApply.
@@ -3656,7 +3656,7 @@ abstract class AppLocalizations {
   /// No description provided for @utilityMovementBody.
   ///
   /// In en, this message translates to:
-  /// **'FitFlow uses a separate level for each movement to choose exercise variations. These are your current saved levels, not a health score.'**
+  /// **'Home Workout uses a separate level for each movement to choose exercise variations. These are your current saved levels, not a health score.'**
   String get utilityMovementBody;
 
   /// No description provided for @utilityMovementMissing.
@@ -3776,7 +3776,7 @@ abstract class AppLocalizations {
   /// No description provided for @utilityProfileSetupBody.
   ///
   /// In en, this message translates to:
-  /// **'Answer a few quick questions so FitFlow can tailor your workouts.'**
+  /// **'Answer a few quick questions so Home Workout can tailor your workouts.'**
   String get utilityProfileSetupBody;
 
   /// No description provided for @utilityCurrentValue.
@@ -3932,7 +3932,7 @@ abstract class AppLocalizations {
   /// No description provided for @progressRecoveryHelp.
   ///
   /// In en, this message translates to:
-  /// **'Time since each movement was trained in FitFlow, not a medical recovery measure.'**
+  /// **'Time since each movement was trained in Home Workout, not a medical recovery measure.'**
   String get progressRecoveryHelp;
 
   /// No description provided for @progressPeriodDates.
@@ -3988,6 +3988,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Saved levels guide exercise selection, not a health score.'**
   String get profileMovementGuide;
+
+  /// No description provided for @setupPreparing.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing your workout'**
+  String get setupPreparing;
+
+  /// No description provided for @setupSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving your movement levels'**
+  String get setupSaving;
+
+  /// No description provided for @setupGenerating.
+  ///
+  /// In en, this message translates to:
+  /// **'Choosing exercises for your setup'**
+  String get setupGenerating;
+
+  /// No description provided for @setupLoadingMedia.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing exercise photos'**
+  String get setupLoadingMedia;
+
+  /// No description provided for @setupReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Your setup is ready'**
+  String get setupReady;
+
+  /// No description provided for @setupPreparationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Your choices are saved. We couldn’t prepare your workout. Try again.'**
+  String get setupPreparationFailed;
+
+  /// No description provided for @setupPreparationLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Prepared on your device.'**
+  String get setupPreparationLocal;
+
+  /// No description provided for @exerciseExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise examples'**
+  String get exerciseExamples;
 }
 
 class _AppLocalizationsDelegate

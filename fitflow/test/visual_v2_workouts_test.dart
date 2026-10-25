@@ -221,7 +221,7 @@ void main() {
         (tester) async {
       await pumpHub(tester);
       expect(find.text('Your workouts'), findsOneWidget);
-      expect(find.text('FITFLOW'), findsOneWidget);
+      expect(find.text('Home Workout'), findsOneWidget);
       expect(find.text('Follow a program or build a workout of your own.'),
           findsNothing);
 

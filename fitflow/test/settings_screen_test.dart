@@ -79,7 +79,7 @@ void main() {
       expect(find.text(SettingsScreen.localDataFooter), findsOneWidget);
       expect(
         find.text(
-          'FitFlow works without an account. Your workout data is stored on '
+          'Home Workout works without an account. Your workout data is stored on '
           'this device unless you create a backup.',
         ),
         findsOneWidget,

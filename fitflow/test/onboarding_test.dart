@@ -30,18 +30,18 @@ void main() {
     }
   }
 
-  FilledButton continueButton(WidgetTester tester) => tester.widget<
-      FilledButton>(find.widgetWithText(FilledButton, 'Continue'));
+  FilledButton continueButton(WidgetTester tester) => tester
+      .widget<FilledButton>(find.widgetWithText(FilledButton, 'Continue'));
 
   testWidgets('first step shows the welcome content and progress', (
     tester,
   ) async {
     await launchOnboarding(tester);
 
-    expect(find.text('Welcome to FitFlow'), findsOneWidget);
+    expect(find.text('Welcome to Home Workout'), findsOneWidget);
     expect(
       find.text(
-        'Your workouts will adapt to your strength, time, space and equipment.',
+        'A few choices to shape your workouts.',
       ),
       findsOneWidget,
     );
@@ -58,7 +58,7 @@ void main() {
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
 
-    expect(find.text('What is your main goal?'), findsOneWidget);
+    expect(find.text('Your main goal'), findsOneWidget);
     expect(find.text('2 of ${OnboardingPages.all.length}'), findsOneWidget);
   });
 
@@ -83,7 +83,7 @@ void main() {
     await tester.tap(find.text('Back'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Welcome to FitFlow'), findsOneWidget);
+    expect(find.text('Welcome to Home Workout'), findsOneWidget);
     expect(find.text('1 of ${OnboardingPages.all.length}'), findsOneWidget);
   });
 
@@ -94,7 +94,7 @@ void main() {
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
 
-    expect(find.text('What is your main goal?'), findsOneWidget);
+    expect(find.text('Your main goal'), findsOneWidget);
     expect(continueButton(tester).onPressed, isNull);
 
     await tester.tap(find.text('Build strength'));
@@ -116,12 +116,12 @@ void main() {
 
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
-    expect(find.text('What is your current experience?'), findsOneWidget);
+    expect(find.text('Your training experience'), findsOneWidget);
 
     await tester.tap(find.text('Back'));
     await tester.pumpAndSettle();
 
-    expect(find.text('What is your main goal?'), findsOneWidget);
+    expect(find.text('Your main goal'), findsOneWidget);
     expect(find.byIcon(Icons.check_circle), findsOneWidget);
   });
 
@@ -136,7 +136,7 @@ void main() {
       await tester.tap(find.text('Continue'));
       await tester.pumpAndSettle();
 
-      expect(find.text('What is your current experience?'), findsOneWidget);
+      expect(find.text('Your training experience'), findsOneWidget);
       expect(continueButton(tester).onPressed, isNull);
 
       await tester.tap(find.text('Regular training'));
@@ -163,12 +163,12 @@ void main() {
 
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
-    expect(find.text('How much time do you usually have?'), findsOneWidget);
+    expect(find.text('Time for a workout'), findsOneWidget);
 
     await tester.tap(find.text('Back'));
     await tester.pumpAndSettle();
 
-    expect(find.text('What is your current experience?'), findsOneWidget);
+    expect(find.text('Your training experience'), findsOneWidget);
     expect(find.byIcon(Icons.check_circle), findsOneWidget);
   });
 
@@ -178,7 +178,7 @@ void main() {
       await launchOnboarding(tester);
       await advanceToStep(tester, 'workout_time');
 
-      expect(find.text('How much time do you usually have?'), findsOneWidget);
+      expect(find.text('Time for a workout'), findsOneWidget);
       expect(continueButton(tester).onPressed, isNull);
 
       await tester.tap(find.text('30 minutes'));
@@ -200,12 +200,12 @@ void main() {
 
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
-    expect(find.text('Where do you usually train?'), findsOneWidget);
+    expect(find.text('Your training space'), findsOneWidget);
 
     await tester.tap(find.text('Back'));
     await tester.pumpAndSettle();
 
-    expect(find.text('How much time do you usually have?'), findsOneWidget);
+    expect(find.text('Time for a workout'), findsOneWidget);
     expect(find.byIcon(Icons.check_circle), findsOneWidget);
   });
 
@@ -215,7 +215,7 @@ void main() {
       await launchOnboarding(tester);
       await advanceToStep(tester, 'environment');
 
-      expect(find.text('Where do you usually train?'), findsOneWidget);
+      expect(find.text('Your training space'), findsOneWidget);
       expect(continueButton(tester).onPressed, isNull);
 
       await tester.tap(find.text('Hotel / travel'));
@@ -238,16 +238,17 @@ void main() {
 
     await tester.tap(find.text('Continue'));
     await tester.pumpAndSettle();
-    expect(find.text('What equipment do you have?'), findsOneWidget);
+    expect(find.text('Available equipment'), findsOneWidget);
 
     await tester.tap(find.text('Back'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Where do you usually train?'), findsOneWidget);
+    expect(find.text('Your training space'), findsOneWidget);
     expect(find.byIcon(Icons.check_circle), findsOneWidget);
   });
 
-  testWidgets('final step opens Movement Check with Get Started', (tester) async {
+  testWidgets('final step opens Movement Check with Get Started',
+      (tester) async {
     await launchOnboarding(tester);
 
     for (var i = 0; i < OnboardingPages.all.length - 1; i++) {
@@ -256,7 +257,7 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    expect(find.text("You're ready"), findsOneWidget);
+    expect(find.text("One last step"), findsOneWidget);
     expect(
       find.text(
         '${OnboardingPages.all.length} of ${OnboardingPages.all.length}',
@@ -270,6 +271,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
 
     expect(find.text('Movement Check'), findsWidgets);
-    expect(find.textContaining('Different movements can feel different'), findsOneWidget);
+    expect(find.textContaining('Choose a comfortable starting level'),
+        findsOneWidget);
   });
 }

@@ -58,6 +58,21 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
   }
 
+  Future<void> waitForPreparedHome(WidgetTester tester) async {
+    var sawComplete = false;
+    for (var frame = 0; frame < 80; frame++) {
+      await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 10)));
+      await tester.pump(const Duration(milliseconds: 50));
+      sawComplete = sawComplete || find.text('100%').evaluate().isNotEmpty;
+      if (find.text('Your workout').evaluate().isNotEmpty) break;
+    }
+    expect(sawComplete, isTrue,
+        reason:
+            'Show completed preparation before Home: ${tester.widgetList<Text>(find.byType(Text)).map((t) => t.data).toList()}');
+    expect(find.text('Your workout'), findsOneWidget);
+  }
+
   group('Saving - Mixed Assessment', () {
     testWidgets('complete/save mixed assessment preserves exact levels',
         (tester) async {
@@ -81,12 +96,9 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
 
       // Save & Continue
-      await scrollToKey(
-          tester, const Key('save_and_continue_button'));
+      await scrollToKey(tester, const Key('save_and_continue_button'));
       await tester.tap(find.byKey(const Key('save_and_continue_button')));
-      await tester.pump(const Duration(milliseconds: 500));
-      await tester.pump(const Duration(milliseconds: 500));
-      await tester.pump(const Duration(milliseconds: 800));
+      await waitForPreparedHome(tester);
 
       // Should navigate to Home
       expect(find.text('Your workout'), findsOneWidget);
@@ -145,7 +157,7 @@ void main() {
       );
       await waitUntilOnboarding(tester);
 
-      expect(find.text('Welcome to FitFlow'), findsOneWidget);
+      expect(find.text('Welcome to Home Workout'), findsOneWidget);
 
       // Use completeOnboarding to reach assessment
       await completeOnboarding(tester);
@@ -154,9 +166,7 @@ void main() {
       // Save & Continue
       await scrollToKey(tester, const Key('save_and_continue_button'));
       await tester.tap(find.byKey(const Key('save_and_continue_button')));
-      await tester.pump(const Duration(milliseconds: 500));
-      await tester.pump(const Duration(milliseconds: 500));
-      await tester.pump(const Duration(milliseconds: 800));
+      await waitForPreparedHome(tester);
 
       expect(find.text('Your workout'), findsOneWidget);
       expect(find.text('Movement Check'), findsNothing);
@@ -181,9 +191,7 @@ void main() {
       // Now save
       await scrollToKey(tester, const Key('save_and_continue_button'));
       await tester.tap(find.byKey(const Key('save_and_continue_button')));
-      await tester.pump(const Duration(milliseconds: 500));
-      await tester.pump(const Duration(milliseconds: 500));
-      await tester.pump(const Duration(milliseconds: 800));
+      await waitForPreparedHome(tester);
 
       expect(find.text('Your workout'), findsOneWidget);
     });

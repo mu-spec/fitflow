@@ -159,11 +159,11 @@ void main() {
 
       final ms = await pumpUntil(
         tester,
-        find.text('Welcome to FitFlow'),
+        find.text('Welcome to Home Workout'),
         maxCumulative: 600,
       );
 
-      expect(find.text('Welcome to FitFlow'), findsOneWidget);
+      expect(find.text('Welcome to Home Workout'), findsOneWidget);
       expect(ms, lessThan(1500));
     });
 
@@ -220,7 +220,7 @@ void main() {
 
       // Profile already resolved; capability still pending -> still splash.
       await tester.pump(const Duration(milliseconds: 300));
-      expect(find.text('FitFlow'), findsWidgets);
+      expect(find.text('Home Workout'), findsWidgets);
       expect(find.text('Movement Check'), findsNothing);
       expect(find.text('Your workout'), findsNothing);
 

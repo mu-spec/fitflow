@@ -90,7 +90,7 @@ void main() {
       await controller.createBackup();
 
       expect(files.saveCalls, 1);
-      expect(files.lastSavedFileName, 'FitFlow-backup-20260930-070509.json');
+      expect(files.lastSavedFileName, 'Home Workout-backup-20260930-070509.json');
       final decoded = BackupCodec.decode(files.lastSavedBytes!);
       expect(decoded.isSuccess, isTrue, reason: decoded.detail);
       expect(decoded.envelope!.createdAtUtc, backupTestNow);

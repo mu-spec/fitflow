@@ -210,8 +210,9 @@ void main() {
     final button = find.byKey(const Key('save_and_continue_button'));
     await pressV2(tester, button);
     expect(fake.calls, 1);
-    expect(find.text('Saving your movement profile…'), findsOneWidget);
-    expect(tester.widget<FilledButton>(button).onPressed, isNull);
+    expect(find.text('Saving your movement levels'), findsOneWidget);
+    expect(find.text('0%'), findsOneWidget);
+    expect(button, findsNothing);
     fake.completion.complete(false);
     await tester.pumpAndSettle();
     expect(find.text('Failed to save your movement profile. Please try again.'),

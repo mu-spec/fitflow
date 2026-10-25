@@ -16,39 +16,39 @@ class PrivacyPolicyScreen extends StatelessWidget {
 
   static const List<({String heading, String body})> sections = [
     (
-      heading: 'No account and no FitFlow service',
+      heading: 'No account and no Home Workout service',
       body:
-          'FitFlow does not create an account and does not operate a FitFlow backend, cloud sync service, or advertising service. The app works on this device without a login.',
+          'Home Workout does not create an account and does not operate a Home Workout backend, cloud sync service, or advertising service. The app works on this device without a login.',
     ),
     (
       heading: 'Information stored on this device',
       body:
-          'FitFlow stores your fitness profile, movement levels and progress, workout history, custom workouts, adaptive program progress, reminder choices, and appearance preference locally on this device. Those values are not sent to a FitFlow server.',
+          'Home Workout stores your fitness profile, movement levels and progress, workout history, custom workouts, adaptive program progress, reminder choices, and appearance preference locally on this device. Those values are not sent to a Home Workout server.',
     ),
     (
       heading: 'Backups you create',
       body:
-          'A backup file is created only when you choose Backup & restore. The file is saved wherever you select with the system file picker. FitFlow does not upload that file. Android automatic backup and device-to-device transfer of FitFlow app data are turned off, so FitFlow data is not silently copied by the operating system. A file you already saved stays where you put it until you delete it.',
+          'A backup file is created only when you choose Backup & restore. The file is saved wherever you select with the system file picker. Home Workout does not upload that file. Android automatic backup and device-to-device transfer of Home Workout app data are turned off, so Home Workout data is not silently copied by the operating system. A file you already saved stays where you put it until you delete it.',
     ),
     (
       heading: 'Workout reminders',
       body:
-          'If you turn reminders on, FitFlow asks for notification permission when Android requires it and uses notifications only for workout reminders and the test notification you request. After a restart, the boot permission lets FitFlow restore those scheduled reminders. FitFlow does not use exact alarms.',
+          'If you turn reminders on, Home Workout asks for notification permission when Android requires it and uses notifications only for workout reminders and the test notification you request. After a restart, the boot permission lets Home Workout restore those scheduled reminders. Home Workout does not use exact alarms.',
     ),
     (
       heading: 'Voice coaching',
       body:
-          'Voice coaching uses the text-to-speech service already configured on this device. FitFlow does not operate a speech server. The engine you or the device selected may be offline or online; FitFlow does not control that provider.',
+          'Voice coaching uses the text-to-speech service already configured on this device. Home Workout does not operate a speech server. The engine you or the device selected may be offline or online; Home Workout does not control that provider.',
     ),
     (
       heading: 'No ads, analytics, or sale of data',
       body:
-          'FitFlow does not include an advertising SDK or an analytics SDK, and it does not sell FitFlow user data.',
+          'Home Workout does not include an advertising SDK or an analytics SDK, and it does not sell Home Workout user data.',
     ),
     (
       heading: 'Removing the app',
       body:
-          'Uninstalling FitFlow removes the app-owned local state, subject to ordinary operating-system behavior. Backup files you saved outside the app remain until you delete them.',
+          'Uninstalling Home Workout removes the app-owned local state, subject to ordinary operating-system behavior. Backup files you saved outside the app remain until you delete them.',
     ),
     (
       heading: 'Contact',
@@ -58,7 +58,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
     (
       heading: 'Not medical advice',
       body:
-          'FitFlow provides general workouts and exercise routines. It does not diagnose disease, treat a medical condition, provide rehabilitation, or act as a medical device.',
+          'Home Workout provides general workouts and exercise routines. It does not diagnose disease, treat a medical condition, provide rehabilitation, or act as a medical device.',
     ),
   ];
 
@@ -106,7 +106,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
                   FitFlowV2InfoSurface(
                     tonal: true,
                     child: Text(
-                      'This page describes how FitFlow handles information in this version of the app.',
+                      'This page describes how Home Workout handles information in this version of the app.',
                       style: theme.textTheme.bodyLarge?.copyWith(
                         color: FitFlowTheme.of(context).textPrimary,
                       ),

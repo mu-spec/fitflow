@@ -4,10 +4,10 @@ class WorkoutReminderCopy {
   WorkoutReminderCopy._();
 
   // Notification content
-  static const String notificationTitle = 'FitFlow workout reminder';
+  static const String notificationTitle = 'Home Workout reminder';
   static const String notificationBody =
       'Your workout reminder is ready when you are.';
-  static const String testTitle = 'FitFlow test reminder';
+  static const String testTitle = 'Home Workout test reminder';
   static const String testBody = 'Notifications are working.';
 
   // Settings section
@@ -27,7 +27,7 @@ class WorkoutReminderCopy {
   static const String statusOff = 'Reminders are off.';
   static const String statusScheduled = 'Workout reminders are scheduled.';
   static const String statusBlocked =
-      'Reminders are enabled in FitFlow, but notifications are blocked by Android.';
+      'Reminders are enabled in Home Workout, but notifications are blocked by Android.';
   static const String statusScheduleError =
       "Couldn't schedule reminders. Try again.";
 

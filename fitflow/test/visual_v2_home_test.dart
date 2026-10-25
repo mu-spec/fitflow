@@ -158,7 +158,7 @@ void main() {
             expect(find.text('Equipment'), findsOneWidget);
             expect(find.text('Built for you'), findsNothing);
             const explanation =
-                'FitFlow uses your goal, space, equipment, movement capabilities and workout preferences to choose this workout.';
+                'Home Workout uses your goal, space, equipment, movement capabilities and workout preferences to choose this workout.';
             final how = find.text('How this workout was chosen');
             expect(find.text(explanation), findsNothing);
             await tester.ensureVisible(how);

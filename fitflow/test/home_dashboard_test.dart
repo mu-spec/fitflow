@@ -183,7 +183,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Header
-      expect(find.text('FITFLOW'), findsOneWidget);
+      expect(find.text('Home Workout'), findsOneWidget);
       expect(find.text('Your workout'), findsOneWidget);
       expect(find.text('Built around your goal, space, equipment, and current ability.'), findsNothing);
 
@@ -204,7 +204,7 @@ void main() {
       await tester.ensureVisible(find.text('How this workout was chosen'));
       await tester.tap(find.text('How this workout was chosen'));
       await tester.pumpAndSettle();
-      expect(find.text('FitFlow uses your goal, space, equipment, movement capabilities and workout preferences to choose this workout.'), findsOneWidget);
+      expect(find.text('Home Workout uses your goal, space, equipment, movement capabilities and workout preferences to choose this workout.'), findsOneWidget);
       expect(find.textContaining(' Warm-up'), findsOneWidget);
       expect(find.textContaining(' Main'), findsOneWidget);
       expect(find.textContaining(' Cooldown'), findsOneWidget);

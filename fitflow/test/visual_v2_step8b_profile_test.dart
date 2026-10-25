@@ -45,7 +45,7 @@ void main() {
 
     final semantics = tester.ensureSemantics();
     try {
-      expect(find.text('FITFLOW'), findsOneWidget);
+      expect(find.text('Home Workout'), findsOneWidget);
       expect(find.text('Your profile'), findsOneWidget);
       expect(
         tester.getSemantics(find.text('Your profile')).flagsCollection.isHeader,

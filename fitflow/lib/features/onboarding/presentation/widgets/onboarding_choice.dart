@@ -1,12 +1,7 @@
-import 'package:fitflow/core/design/fitflow_radius.dart';
-import 'package:fitflow/core/design/fitflow_spacing.dart';
-import 'package:fitflow/core/design/fitflow_theme_extension.dart';
-import 'package:fitflow/core/design/fitflow_v2_setup.dart';
-import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:flutter/material.dart';
 
-/// V2 presentation only. Profile's legacy option card remains unchanged.
+/// One complete, accessible choice without nested icon boxes or heavy borders.
 class OnboardingChoice extends StatelessWidget {
   const OnboardingChoice(
       {super.key,
@@ -24,94 +19,70 @@ class OnboardingChoice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final v = FitFlowVisualV2.of(context);
-    final colors = FitFlowTheme.of(context);
-    final text = Theme.of(context).textTheme;
-    final ink = selected ? v.onHero : colors.textPrimary;
-    final secondary = selected ? v.heroSecondary : colors.textSecondary;
-    final accent = selected ? v.action : colors.brand;
-    final title = Text(label, style: text.titleSmall?.copyWith(color: ink));
-    final subtitle = helperText == null
-        ? null
-        : Text(helperText!, style: text.bodySmall?.copyWith(color: secondary));
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     return Padding(
-      padding: const EdgeInsets.only(bottom: FitFlowSpace.xs),
-      child: MergeSemantics(
-          child: Semantics(
-        button: true,
-        selected: selected,
-        inMutuallyExclusiveGroup: !multiSelect,
-        label: selected
-            ? context.l10n.choiceSelected
-            : context.l10n.choiceNotSelected,
-        child: FitFlowV2SelectionSurface(
+        padding: const EdgeInsets.only(bottom: 6),
+        child: MergeSemantics(
+            child: Semantics(
+          button: true,
           selected: selected,
-          child: multiSelect
-              ? CheckboxListTile(
-                  dense: true,
-                  value: selected,
-                  onChanged: (_) => onSelected(),
-                  title: title,
-                  subtitle: subtitle,
-                  activeColor: v.action,
-                  checkColor: v.onAction,
-                  side: BorderSide(
-                      color: selected ? v.action : colors.textMuted,
-                      width: 1.5),
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: FitFlowRadius.mediumBorder),
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: FitFlowSpace.sm),
-                  visualDensity: VisualDensity.standard,
-                )
-              : InkWell(
-                  onTap: onSelected,
-                  borderRadius: FitFlowRadius.mediumBorder,
-                  focusColor: accent.withValues(alpha: .20),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(minHeight: 52),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: FitFlowSpace.sm,
-                          vertical: FitFlowSpace.xs),
-                      child: Row(children: [
-                        if (icon != null) ...[
-                          ExcludeSemantics(
-                              child: Container(
-                                  padding:
-                                      const EdgeInsets.all(FitFlowSpace.xs),
-                                  decoration: BoxDecoration(
-                                      color: selected
-                                          ? v.onHero.withValues(alpha: .08)
-                                          : v.tint,
-                                      borderRadius: FitFlowRadius.smallBorder),
-                                  child: Icon(icon, color: accent, size: 20))),
-                          const SizedBox(width: FitFlowSpace.sm),
-                        ],
-                        Expanded(
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                              title,
-                              if (subtitle != null) ...[
-                                const SizedBox(height: FitFlowSpace.xxs),
-                                subtitle,
-                              ]
-                            ])),
-                        const SizedBox(width: FitFlowSpace.xs),
+          inMutuallyExclusiveGroup: !multiSelect,
+          label: selected
+              ? context.l10n.choiceSelected
+              : context.l10n.choiceNotSelected,
+          child: Material(
+              color: selected
+                  ? colors.primaryContainer
+                  : colors.surfaceContainerLow,
+              borderRadius: BorderRadius.circular(12),
+              child: InkWell(
+                onTap: onSelected,
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                    constraints: const BoxConstraints(minHeight: 48),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 10),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                            color: selected
+                                ? colors.primary
+                                : Colors.transparent)),
+                    child: Row(children: [
+                      if (icon != null) ...[
                         ExcludeSemantics(
-                            child: Icon(
-                                selected
-                                    ? Icons.check_circle
-                                    : Icons.circle_outlined,
-                                color: selected ? v.action : colors.textMuted,
-                                size: 22)),
-                      ]),
-                    ),
-                  ),
-                ),
-        ),
-      )),
-    );
+                            child: Icon(icon, size: 20, color: colors.primary)),
+                        const SizedBox(width: 12),
+                      ],
+                      Expanded(
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                            Text(label,
+                                style: theme.textTheme.bodyMedium
+                                    ?.copyWith(fontWeight: FontWeight.w500)),
+                            if (helperText != null)
+                              Text(helperText!,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                      color: colors.onSurfaceVariant)),
+                          ])),
+                      const SizedBox(width: 8),
+                      ExcludeSemantics(
+                          child: Icon(
+                              multiSelect
+                                  ? (selected
+                                      ? Icons.check_box
+                                      : Icons.check_box_outline_blank)
+                                  : (selected
+                                      ? Icons.check_circle
+                                      : Icons.radio_button_unchecked),
+                              size: 22,
+                              color: selected
+                                  ? colors.primary
+                                  : colors.onSurfaceVariant)),
+                    ])),
+              )),
+        )));
   }
 }

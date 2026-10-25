@@ -439,7 +439,7 @@ void main() {
               body: Column(
                 children: [
                   Text(
-                      'Based on your recent FitFlow training history, not a medical recovery measure.'),
+                      'Based on your recent Home Workout training history, not a medical recovery measure.'),
                 ],
               ),
             ),
@@ -449,7 +449,7 @@ void main() {
 
       expect(
           find.text(
-              'Based on your recent FitFlow training history, not a medical recovery measure.'),
+              'Based on your recent Home Workout training history, not a medical recovery measure.'),
           findsOneWidget);
     });
 

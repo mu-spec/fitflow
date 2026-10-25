@@ -30,7 +30,7 @@ class SettingsScreen extends StatelessWidget {
 
   /// Factual footer copy — FitFlow has no accounts and stores data locally.
   static const String localDataFooter =
-      'FitFlow works without an account. Your workout data is stored on this device unless you create a backup.';
+      'Home Workout works without an account. Your workout data is stored on this device unless you create a backup.';
 
   static const Key privacyPolicyTileKey = Key('privacy_policy_settings_tile');
 

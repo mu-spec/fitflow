@@ -158,7 +158,7 @@ void main() {
         );
         expect(AppLocalizations.delegate.isSupported(locale), isFalse);
       }
-      expect(lookupAppLocalizations(const Locale('en')).appTitle, 'FitFlow');
+      expect(lookupAppLocalizations(const Locale('en')).appTitle, 'Home Workout');
     });
 
     testWidgets('unsupported system locales fall back to English',

@@ -4,7 +4,13 @@ import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/core/design/fitflow_v2_setup.dart';
-import 'package:fitflow/core/design/fitflow_radius.dart';
+import 'package:fitflow/features/workouts/presentation/workouts_theme.dart';
+import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
+import 'package:fitflow/core/design/media/exercise_media_registry.dart';
+import 'package:fitflow/features/workouts/domain/generation/workout_generator.dart';
+import 'package:fitflow/features/workouts/domain/generation/workout_generation_context.dart';
+import 'package:fitflow/features/workouts/application/workout_session_mode_controller.dart';
+import 'package:fitflow/features/onboarding/presentation/workout_preparation_view.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
 import 'package:fitflow/features/capability_assessment/presentation/capability_assessment_copy.dart';
 import 'package:fitflow/app/router/app_routes.dart';
@@ -26,21 +32,30 @@ import 'package:go_router/go_router.dart';
 /// Title: Movement Check
 /// Supporting text: Your workouts adapt to each movement separately. Review these
 /// starting levels and change anything that doesn't feel right.
-class CapabilityAssessmentScreen extends ConsumerStatefulWidget {
+class CapabilityAssessmentScreen extends StatelessWidget {
   const CapabilityAssessmentScreen({super.key});
 
   @override
-  ConsumerState<CapabilityAssessmentScreen> createState() =>
+  Widget build(BuildContext context) =>
+      const WorkoutsTheme(child: _AssessmentContent());
+}
+
+class _AssessmentContent extends ConsumerStatefulWidget {
+  const _AssessmentContent();
+  @override
+  ConsumerState<_AssessmentContent> createState() =>
       _CapabilityAssessmentScreenState();
 }
 
 class _CapabilityAssessmentScreenState
-    extends ConsumerState<CapabilityAssessmentScreen> {
+    extends ConsumerState<_AssessmentContent> {
   CapabilityAssessmentState? _assessmentState;
   CapabilityAssessmentState? _initialState;
   bool _isSaving = false;
   String? _errorMessage;
   bool _hasInitialized = false;
+  double _preparationProgress = 0;
+  bool _preparationFailed = false;
 
   void _updateLevel(MovementPattern pattern, CapabilityLevel newLevel) {
     if (_assessmentState == null) return;
@@ -55,8 +70,9 @@ class _CapabilityAssessmentScreenState
   }
 
   Future<void> _saveAndContinue() async {
-    if (_assessmentState == null) return;
+    if (_assessmentState == null || _isSaving) return;
     setState(() {
+      _preparationProgress = 0;
       _isSaving = true;
       _errorMessage = null;
     });
@@ -91,16 +107,58 @@ class _CapabilityAssessmentScreenState
       return;
     }
 
-    // Same save gate and route. Success feedback never adds a delay or extra tap.
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(context.l10n.assessmentSuccess),
-      duration: const Duration(seconds: 2),
-    ));
-    context.go(AppRoutes.home);
+    await _prepareWorkout();
+  }
+
+  Future<void> _prepareWorkout() async {
+    setState(() {
+      _isSaving = true;
+      _preparationFailed = false;
+      _preparationProgress = 1 / 3;
+    });
+    try {
+      // Stages represent completed local work, not a simulated download timer.
+      await WidgetsBinding.instance.endOfFrame;
+      if (!mounted) return;
+      final user = await ref.read(userFitnessProfileProvider.future);
+      final capability = await ref.read(capabilityProfileProvider.future);
+      if (!mounted) return;
+      if (user == null || capability == null) throw StateError('Missing setup');
+      final plan = WorkoutGenerator.generateCatalog(WorkoutGenerationContext(
+          userProfile: user,
+          capabilityProfile: capability,
+          sessionMode: ref.read(workoutSessionModeProvider)));
+      setState(() => _preparationProgress = 2 / 3);
+      await WidgetsBinding.instance.endOfFrame;
+      if (!mounted) return;
+      if (plan != null && plan.main.exercises.isNotEmpty) {
+        final asset =
+            ExerciseMediaRegistry.lookup(plan.main.exercises.first.exercise.id)
+                ?.hero;
+        if (asset != null) {
+          // Missing imagery keeps the existing renderer's fallback available.
+          await precacheImage(AssetImage(asset.path), context,
+              onError: (_, stackTrace) {});
+        }
+      }
+      if (!mounted) return;
+      setState(() => _preparationProgress = 1);
+      // Briefly display the completed state; no fabricated intermediate values.
+      await Future<void>.delayed(const Duration(milliseconds: 450));
+      if (mounted) context.go(AppRoutes.home);
+    } on Object {
+      if (mounted) setState(() => _preparationFailed = true);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_isSaving) {
+      return WorkoutPreparationView(
+          progress: _preparationProgress,
+          failed: _preparationFailed,
+          onRetry: _prepareWorkout);
+    }
     final userProfileAsync = ref.watch(userFitnessProfileProvider);
     final capabilityProfileAsync = ref.watch(capabilityProfileProvider);
 
@@ -182,7 +240,7 @@ class _CapabilityAssessmentScreenState
         backgroundColor: v.page,
         appBar: AppBar(
           backgroundColor: v.page,
-          title: Text(l10n.movementCheckTitle),
+          title: Text(l10n.movementCheckTitle, style: text.titleLarge),
           leading: IconButton(
               icon: const BackButtonIcon(),
               onPressed: () => context.go(AppRoutes.onboarding),
@@ -193,8 +251,7 @@ class _CapabilityAssessmentScreenState
           maxWidth: FitFlowLayout.maxReadableWidth,
           child: LayoutBuilder(builder: (context, constraints) {
             final short = constraints.maxHeight < 320;
-            final inset =
-                constraints.maxWidth < 360 ? FitFlowSpace.md : FitFlowSpace.xl;
+            final inset = 20.0;
             final scroll = CustomScrollView(slivers: [
               SliverToBoxAdapter(
                   child: Padding(
@@ -202,27 +259,8 @@ class _CapabilityAssessmentScreenState
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      FitFlowV2HeroSurface(
-                          child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(children: [
-                            Expanded(
-                                child: Semantics(
-                                    header: true,
-                                    child: Text(l10n.assessmentIntro,
-                                        style: text.headlineSmall
-                                            ?.copyWith(color: v.onHero)))),
-                            const SizedBox(width: FitFlowSpace.xs),
-                            const FitFlowV2AdaptiveMotif(size: 56),
-                          ]),
-                          const SizedBox(height: FitFlowSpace.sm),
-                          Text(l10n.assessmentBody,
-                              style: text.bodyMedium
-                                  ?.copyWith(color: v.heroSecondary)),
-                        ],
-                      )),
-                      const SizedBox(height: FitFlowSpace.md),
+                      Text(l10n.assessmentBody, style: text.bodyMedium),
+                      const SizedBox(height: 12),
                       FitFlowProgress(
                           label: l10n.assessmentProgress(
                               assessmentState.answeredCount,
@@ -271,14 +309,11 @@ class _CapabilityAssessmentScreenState
                   child: Padding(
                 key: const Key('assessment_summary'),
                 padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.md),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                child: ExpansionTile(
+                    tilePadding: EdgeInsets.zero,
+                    title:
+                        Text(l10n.assessmentSummary, style: text.titleMedium),
                     children: [
-                      Semantics(
-                          header: true,
-                          child: Text(l10n.assessmentSummary,
-                              style: text.titleMedium)),
-                      const SizedBox(height: FitFlowSpace.sm),
                       for (final item in CapabilityAssessmentCatalog.all)
                         if (assessmentState.answerFor(item.movementPattern)
                             case final answer?)
@@ -292,9 +327,9 @@ class _CapabilityAssessmentScreenState
                                       assessmentChoice(
                                           l10n, answer.selectedLevel)),
                                   style: text.bodyMedium)),
-                      if (short) save,
                     ]),
               )),
+              if (short) SliverToBoxAdapter(child: save),
             ]);
             return Padding(
               padding: EdgeInsets.symmetric(horizontal: inset),
@@ -330,86 +365,76 @@ class _MovementAssessmentCard extends StatelessWidget {
     final l10n = context.l10n;
     final text = Theme.of(context).textTheme;
     final colors = FitFlowTheme.of(context);
-    final v = FitFlowVisualV2.of(context);
-    return FitFlowV2InfoSurface(
-        tonal: ordinal.isEven,
-        child:
-            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          Row(children: [
-            ExcludeSemantics(
-                child: Container(
-                    padding: const EdgeInsets.all(FitFlowSpace.xs),
-                    decoration: BoxDecoration(
-                        color: v.heroStart,
-                        borderRadius: FitFlowRadius.smallBorder),
-                    child: Text(ordinal.toString().padLeft(2, '0'),
-                        style: text.labelMedium?.copyWith(color: v.action)))),
-            const SizedBox(width: FitFlowSpace.sm),
-            Expanded(
-                child: Semantics(
-                    header: true,
-                    child: Text(assessmentTitle(l10n, item.movementPattern),
-                        style: text.titleMedium))),
+    final theme = Theme.of(context);
+    final photo = switch (item.movementPattern) {
+      MovementPattern.push => 'pushup_wall',
+      MovementPattern.pull => 'row_towel',
+      MovementPattern.squat => 'squat_bodyweight',
+      MovementPattern.lunge => 'lunge_reverse',
+      MovementPattern.hinge => 'hip_hinge',
+      MovementPattern.core => 'dead_bug',
+      MovementPattern.glute => 'bridge_glute',
+      MovementPattern.cardio => 'march_in_place',
+      MovementPattern.mobility => 'cat_cow',
+      MovementPattern.balance => 'single_leg_stand',
+      _ => 'arm_circles',
+    };
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      const Divider(height: 24),
+      Row(children: [
+        ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: FitFlowExerciseImage.hero(
+                exerciseId: photo, width: 88, height: 66)),
+        const SizedBox(width: 12),
+        Expanded(
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Semantics(
+              header: true,
+              child: Text(assessmentTitle(l10n, item.movementPattern),
+                  style:
+                      text.titleMedium?.copyWith(fontWeight: FontWeight.w500))),
+          Text(isChanged ? l10n.assessmentChanged : l10n.assessmentSuggested,
+              style: text.bodySmall?.copyWith(color: colors.textSecondary)),
+        ])),
+      ]),
+      const SizedBox(height: 10),
+      Text(assessmentPrompt(l10n, item.movementPattern),
+          style: text.bodyMedium),
+      const SizedBox(height: 6),
+      Wrap(spacing: 6, runSpacing: 0, children: [
+        for (final level in CapabilityLevel.values)
+          ChoiceChip(
+              key: ValueKey('level_${item.movementPattern.name}_${level.name}'),
+              label: Text(assessmentChoice(l10n, level)),
+              tooltip: assessmentChoiceBody(l10n, level),
+              selected: level == currentLevel,
+              onSelected: (selected) {
+                if (selected) onLevelSelected(level);
+              },
+              selectedColor: theme.colorScheme.primaryContainer,
+              backgroundColor: theme.colorScheme.surface,
+              checkmarkColor: colors.brand,
+              labelStyle: text.bodyMedium,
+              side: BorderSide(
+                  color: level == currentLevel ? colors.brand : colors.border),
+              showCheckmark: true,
+              materialTapTargetSize: MaterialTapTargetSize.padded),
+      ]),
+      Text(assessmentChoiceBody(l10n, currentLevel), style: text.bodySmall),
+      ExpansionTile(
+          tilePadding: EdgeInsets.zero,
+          minTileHeight: 48,
+          shape: const Border(),
+          collapsedShape: const Border(),
+          title: Text(l10n.exerciseExamples, style: text.bodySmall),
+          children: [
+            Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Text(assessmentExamples(l10n, item.movementPattern),
+                    style: text.bodySmall))
           ]),
-          const SizedBox(height: FitFlowSpace.xxs),
-          Text(assessmentPrompt(l10n, item.movementPattern),
-              style: text.bodyMedium?.copyWith(color: colors.textSecondary)),
-          const SizedBox(height: FitFlowSpace.xs),
-          Text(assessmentExamples(l10n, item.movementPattern),
-              style: text.bodySmall?.copyWith(color: colors.textMuted)),
-          const SizedBox(height: FitFlowSpace.sm),
-          Text(l10n.assessmentChoose, style: text.labelMedium),
-          const SizedBox(height: FitFlowSpace.xs),
-          Wrap(
-              spacing: FitFlowSpace.xs,
-              runSpacing: FitFlowSpace.xxs,
-              children: [
-                for (final level in CapabilityLevel.values)
-                  ChoiceChip(
-                    key: ValueKey(
-                        'level_${item.movementPattern.name}_${level.name}'),
-                    label: Text(assessmentChoice(l10n, level)),
-                    tooltip: assessmentChoiceBody(l10n, level),
-                    selected: level == currentLevel,
-                    onSelected: (selected) {
-                      if (selected) onLevelSelected(level);
-                    },
-                    selectedColor: v.heroStart,
-                    backgroundColor: v.support,
-                    checkmarkColor: v.action,
-                    labelStyle: text.labelLarge?.copyWith(
-                        color: level == currentLevel
-                            ? v.onHero
-                            : colors.textPrimary),
-                    side: BorderSide(
-                        color: level == currentLevel
-                            ? colors.brand
-                            : v.subtleBorder),
-                    showCheckmark: true,
-                    materialTapTargetSize: MaterialTapTargetSize.padded,
-                  ),
-              ]),
-          const SizedBox(height: FitFlowSpace.xs),
-          Padding(
-              padding: const EdgeInsets.only(top: FitFlowSpace.xxs),
-              child: Text(assessmentChoiceBody(l10n, currentLevel),
-                  style: text.bodySmall)),
-          const SizedBox(height: FitFlowSpace.xs),
-          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            ExcludeSemantics(
-                child: Icon(
-                    isChanged ? Icons.check_rounded : Icons.tune_rounded,
-                    size: 16,
-                    color: colors.brand)),
-            const SizedBox(width: FitFlowSpace.xs),
-            Expanded(
-                child: Text(
-                    isChanged
-                        ? l10n.assessmentChanged
-                        : l10n.assessmentSuggested,
-                    style: text.labelSmall
-                        ?.copyWith(color: colors.textSecondary))),
-          ]),
-        ]));
+    ]);
   }
 }

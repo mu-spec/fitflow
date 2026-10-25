@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'FitFlow';
+  String get appTitle => 'Home Workout';
 
   @override
   String get navHome => 'Home';
@@ -54,32 +54,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get splashRecoveryHint => 'Reloads local data without changing it';
 
   @override
-  String get onboardingWelcomeTitle => 'Welcome to FitFlow';
+  String get onboardingWelcomeTitle => 'Welcome to Home Workout';
 
   @override
-  String get onboardingWelcomeBody =>
-      'Your workouts will adapt to your strength, time, space and equipment.';
+  String get onboardingWelcomeBody => 'A few choices to shape your workouts.';
 
   @override
-  String get onboardingGoalTitle => 'What is your main goal?';
+  String get onboardingGoalTitle => 'Your main goal';
 
   @override
-  String get onboardingExperienceTitle => 'What is your current experience?';
+  String get onboardingExperienceTitle => 'Your training experience';
 
   @override
-  String get onboardingTimeTitle => 'How much time do you usually have?';
+  String get onboardingTimeTitle => 'Time for a workout';
 
   @override
-  String get onboardingEnvironmentTitle => 'Where do you usually train?';
+  String get onboardingEnvironmentTitle => 'Your training space';
 
   @override
-  String get onboardingEquipmentTitle => 'What equipment do you have?';
+  String get onboardingEquipmentTitle => 'Available equipment';
 
   @override
-  String get onboardingPreferencesTitle => 'Let\'s customize your workouts';
+  String get onboardingPreferencesTitle => 'Your workout preferences';
 
   @override
-  String get onboardingReadyTitle => 'You\'re ready';
+  String get onboardingReadyTitle => 'One last step';
 
   @override
   String get onboardingReadyBody =>
@@ -452,7 +451,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reminderStatusBlocked =>
-      'Reminders are enabled in FitFlow, but notifications are blocked by Android.';
+      'Reminders are enabled in Home Workout, but notifications are blocked by Android.';
 
   @override
   String get reminderStatusError => 'Couldn\'t schedule reminders. Try again.';
@@ -479,14 +478,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Notification settings are not available on this device.';
 
   @override
-  String get reminderNotificationTitle => 'FitFlow workout reminder';
+  String get reminderNotificationTitle => 'Home Workout reminder';
 
   @override
   String get reminderNotificationBody =>
       'Your workout reminder is ready when you are.';
 
   @override
-  String get reminderTestTitle => 'FitFlow test reminder';
+  String get reminderTestTitle => 'Home Workout test reminder';
 
   @override
   String get reminderTestBody => 'Notifications are working.';
@@ -501,7 +500,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get backupSettingsSubtitle =>
-      'Save a copy of your FitFlow data or restore it on this device.';
+      'Save a copy of your Home Workout data or restore it on this device.';
 
   @override
   String get backupCreate => 'Create backup';
@@ -620,36 +619,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingSingleChoice => 'Choose one option to continue.';
 
   @override
-  String get onboardingGoalHelp =>
-      'Your goal helps shape the exercises in your sessions.';
+  String get onboardingGoalHelp => 'Choose what you want to work toward.';
 
   @override
   String get onboardingExperienceHelp =>
-      'This gives us a starting point. You can fine-tune each movement next.';
+      'Choose the starting point that fits you.';
 
   @override
-  String get onboardingTimeHelp =>
-      'Choose your usual session length. You can go lighter when you need to.';
+  String get onboardingTimeHelp => 'Choose your usual session length.';
 
   @override
-  String get onboardingEnvironmentHelp =>
-      'We’ll choose exercises that work in your training space.';
+  String get onboardingEnvironmentHelp => 'Choose where you usually train.';
 
   @override
-  String get onboardingEquipmentHelp =>
-      'Select all that you have. Choose None to train without equipment.';
+  String get onboardingEquipmentHelp => 'Select all you have, or choose None.';
 
   @override
   String get onboardingPreferencesHelp =>
-      'Select any that suit you, or continue without a selection.';
+      'Select any that suit you. These are optional.';
 
   @override
   String get onboardingPreferencesNote =>
       'Preferences guide exercise selection; they are not medical advice.';
 
   @override
-  String get onboardingReadyHelp =>
-      'Movement Check comes next. Your answers help us choose appropriate exercise variations.';
+  String get onboardingReadyHelp => 'Review your movement levels next.';
 
   @override
   String get onboardingSaveError =>
@@ -669,7 +663,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get assessmentBody =>
-      'Different movements can feel different. Review these suggestions to help FitFlow choose exercise variations that suit you.';
+      'Choose a comfortable starting level for each movement. You can change the suggestions below.';
 
   @override
   String get assessmentSuggested => 'Suggested from your experience';
@@ -714,7 +708,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Failed to save your movement profile. Please try again.';
 
   @override
-  String get homeBrand => 'FITFLOW';
+  String get homeBrand => 'Home Workout';
 
   @override
   String get homeTitle => 'Your workout';
@@ -740,11 +734,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeChosenExplanation =>
-      'FitFlow uses your goal, space, equipment, movement capabilities and workout preferences to choose this workout.';
+      'Home Workout uses your goal, space, equipment, movement capabilities and workout preferences to choose this workout.';
 
   @override
   String get homeAdaptationDetail =>
-      'FitFlow chose exercises that match your movement capabilities and current workout preferences.';
+      'Home Workout chose exercises that match your movement capabilities and current workout preferences.';
 
   @override
   String get homeFocus => 'Today’s focus';
@@ -1302,7 +1296,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get flowTuneHelp =>
-      'Tell FitFlow how each movement felt. Your movement levels adapt independently.';
+      'Tell Home Workout how each movement felt. Your movement levels adapt independently.';
 
   @override
   String get flowApply => 'Apply & finish';
@@ -2154,7 +2148,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get utilityMovementBody =>
-      'FitFlow uses a separate level for each movement to choose exercise variations. These are your current saved levels, not a health score.';
+      'Home Workout uses a separate level for each movement to choose exercise variations. These are your current saved levels, not a health score.';
 
   @override
   String get utilityMovementMissing => 'No movement levels saved yet.';
@@ -2215,7 +2209,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get utilityProfileSetupBody =>
-      'Answer a few quick questions so FitFlow can tailor your workouts.';
+      'Answer a few quick questions so Home Workout can tailor your workouts.';
 
   @override
   String utilityCurrentValue(String value) {
@@ -2317,7 +2311,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get progressRecoveryHelp =>
-      'Time since each movement was trained in FitFlow, not a medical recovery measure.';
+      'Time since each movement was trained in Home Workout, not a medical recovery measure.';
 
   @override
   String get progressPeriodDates => 'Period dates';
@@ -2356,4 +2350,29 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get profileMovementGuide =>
       'Saved levels guide exercise selection, not a health score.';
+
+  @override
+  String get setupPreparing => 'Preparing your workout';
+
+  @override
+  String get setupSaving => 'Saving your movement levels';
+
+  @override
+  String get setupGenerating => 'Choosing exercises for your setup';
+
+  @override
+  String get setupLoadingMedia => 'Preparing exercise photos';
+
+  @override
+  String get setupReady => 'Your setup is ready';
+
+  @override
+  String get setupPreparationFailed =>
+      'Your choices are saved. We couldn’t prepare your workout. Try again.';
+
+  @override
+  String get setupPreparationLocal => 'Prepared on your device.';
+
+  @override
+  String get exerciseExamples => 'Exercise examples';
 }

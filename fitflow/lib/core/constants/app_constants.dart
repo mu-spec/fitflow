@@ -1,7 +1,7 @@
 class AppConstants {
   AppConstants._();
 
-  static const String appName = 'FitFlow';
+  static const String appName = 'Home Workout';
   static const String tagline = 'Workouts that adapt to you.';
 
   /// Legacy settling budget kept for test pumps only.

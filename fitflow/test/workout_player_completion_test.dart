@@ -349,7 +349,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Should be back on home, which shows "Your workout" or "FITFLOW"
-      expect(find.text('Your workout').evaluate().isNotEmpty || find.text('FITFLOW').evaluate().isNotEmpty, true);
+      expect(find.text('Your workout').evaluate().isNotEmpty || find.text('Home Workout').evaluate().isNotEmpty, true);
     });
   });
 }

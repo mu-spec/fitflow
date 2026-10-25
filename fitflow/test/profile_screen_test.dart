@@ -212,7 +212,7 @@ void main() {
       await tester.tap(find.text('Set up profile'));
       await settleProfileFrames(tester);
 
-      expect(find.text('Welcome to FitFlow'), findsOneWidget);
+      expect(find.text('Welcome to Home Workout'), findsOneWidget);
     });
   });
 

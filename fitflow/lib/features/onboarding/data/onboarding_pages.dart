@@ -24,39 +24,38 @@ class OnboardingPages {
   static const List<OnboardingPage> all = [
     OnboardingPage(
       id: 'welcome',
-      title: 'Welcome to FitFlow',
-      body:
-          'Your workouts will adapt to your strength, time, space and equipment.',
+      title: 'Welcome to Home Workout',
+      body: 'A few choices to shape your workouts.',
     ),
     OnboardingPage(
       id: 'goal',
-      title: 'What is your main goal?',
+      title: 'Your main goal',
     ),
     OnboardingPage(
       id: 'experience',
-      title: 'What is your current experience?',
+      title: 'Your training experience',
     ),
     OnboardingPage(
       id: 'workout_time',
-      title: 'How much time do you usually have?',
+      title: 'Time for a workout',
     ),
     OnboardingPage(
       id: 'environment',
-      title: 'Where do you usually train?',
+      title: 'Your training space',
     ),
     OnboardingPage(
       id: 'equipment',
-      title: 'What equipment do you have?',
+      title: 'Available equipment',
     ),
     OnboardingPage(
       id: 'preferences',
-      title: "Let's customize your workouts",
+      title: "Your workout preferences",
     ),
     OnboardingPage(
       id: 'ready',
-      title: "You're ready",
+      title: "One last step",
       body:
-          'Next, FitFlow will use your preferences to build workouts around you.',
+          'Next, Home Workout will use your preferences to build workouts around you.',
     ),
   ];
 }

@@ -28,7 +28,7 @@ class LocalWorkoutReminderNotificationService
   static const String channelId = 'fitflow_workout_reminders_v1';
   static const String channelName = 'Workout reminders';
   static const String channelDescription =
-      'Reminders for your FitFlow workout schedule.';
+      'Reminders for your Home Workout workout schedule.';
   static const String settingsChannelName = 'fitflow/notification_settings';
   static const String _androidIcon = '@mipmap/ic_launcher';
 

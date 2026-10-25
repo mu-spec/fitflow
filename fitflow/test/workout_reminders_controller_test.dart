@@ -65,7 +65,7 @@ void main() {
     expect(service.permissionRequests, 0, reason: 'already granted');
     expect(service.scheduledIds, {17001, 17003, 17005});
     for (final r in service.scheduled.values) {
-      expect(r.title, 'FitFlow workout reminder');
+      expect(r.title, 'Home Workout reminder');
       expect(r.body, 'Your workout reminder is ready when you are.');
       expect(r.payload, workoutReminderPayload);
       expect(r.scheduledAt.location.name, 'Asia/Karachi');
@@ -287,7 +287,7 @@ void main() {
     final scheduleBefore = Map.of(service.scheduled);
     expect(await c.sendTestNotification(), isTrue);
     expect(service.shown.single.id, 17999);
-    expect(service.shown.single.title, 'FitFlow test reminder');
+    expect(service.shown.single.title, 'Home Workout test reminder');
     expect(service.shown.single.body, 'Notifications are working.');
     expect(c.state.preferences, prefsBefore);
     expect(service.scheduled, scheduleBefore);

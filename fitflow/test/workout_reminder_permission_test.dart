@@ -132,7 +132,7 @@ void main() {
           'fitflow_workout_reminders_v1');
       expect(LocalWorkoutReminderNotificationService.channelName, 'Workout reminders');
       expect(LocalWorkoutReminderNotificationService.channelDescription,
-          'Reminders for your FitFlow workout schedule.');
+          'Reminders for your Home Workout workout schedule.');
       expect(workoutReminderPayload, 'workout_reminder');
     });
   });

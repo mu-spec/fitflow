@@ -40,7 +40,7 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       await pumpApp(tester);
 
-      expect(find.text('Welcome to FitFlow'), findsOneWidget);
+      expect(find.text('Welcome to Home Workout'), findsOneWidget);
       expect(find.text('Movement Check'), findsNothing);
       expect(find.text('Your workout'), findsNothing);
     });
@@ -55,7 +55,7 @@ void main() {
       await pumpApp(tester);
 
       expect(find.text('Movement Check'), findsWidgets);
-      expect(find.text('Welcome to FitFlow'), findsNothing);
+      expect(find.text('Welcome to Home Workout'), findsNothing);
       expect(find.text('Your workout'), findsNothing);
     });
 
@@ -70,7 +70,7 @@ void main() {
       await pumpApp(tester);
 
       expect(find.text('Your workout'), findsOneWidget);
-      expect(find.text('Welcome to FitFlow'), findsNothing);
+      expect(find.text('Welcome to Home Workout'), findsNothing);
       expect(find.text('Movement Check'), findsNothing);
     });
 

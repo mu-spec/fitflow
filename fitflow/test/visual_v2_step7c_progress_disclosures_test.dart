@@ -270,7 +270,7 @@ void main() {
           find.descendant(
             of: recoveryFinder,
             matching: find.text(
-              'Time since each movement was trained in FitFlow, not a medical recovery measure.',
+              'Time since each movement was trained in Home Workout, not a medical recovery measure.',
             ),
           ),
           findsOneWidget,
@@ -339,7 +339,7 @@ void main() {
         );
         expect(
             find.text(
-                'Time since each movement was trained in FitFlow, not a medical recovery measure.'),
+                'Time since each movement was trained in Home Workout, not a medical recovery measure.'),
             findsOneWidget);
         expect(find.byType(Card), findsNothing);
         expect(tester.takeException(), isNull);

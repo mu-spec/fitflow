@@ -32,7 +32,7 @@ class AdaptiveProgressionApplyResult {
       "Couldn't update your workout tuning. Try again.";
 
   static const String rollbackIncompleteMessage =
-      "Couldn't update workout tuning. Restart FitFlow before trying again.";
+      "Couldn't update workout tuning. Restart Home Workout before trying again.";
 
   final bool success;
   final AdaptiveProgressionApplyStatus status;

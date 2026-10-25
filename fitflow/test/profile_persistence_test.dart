@@ -138,7 +138,7 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       await pumpApp(tester);
 
-      expect(find.text('Welcome to FitFlow'), findsOneWidget);
+      expect(find.text('Welcome to Home Workout'), findsOneWidget);
     });
 
     testWidgets('completing onboarding saves the profile', (tester) async {
@@ -164,7 +164,7 @@ void main() {
 
       // With user profile but no capability, should go to Movement Check
       expect(find.text('Movement Check'), findsWidgets);
-      expect(find.text('Welcome to FitFlow'), findsNothing);
+      expect(find.text('Welcome to Home Workout'), findsNothing);
     });
 
     testWidgets('malformed profile data falls back to onboarding', (
@@ -175,7 +175,7 @@ void main() {
       });
       await pumpApp(tester);
 
-      expect(find.text('Welcome to FitFlow'), findsOneWidget);
+      expect(find.text('Welcome to Home Workout'), findsOneWidget);
     });
 
     testWidgets('stored profile is exposed through the provider', (

@@ -65,7 +65,7 @@ void main() {
     expect(find.text(SplashScreen.recoveryTitle), findsOneWidget);
     expect(find.text(SplashScreen.recoveryBody), findsOneWidget);
     expect(find.text(SplashScreen.recoveryAction), findsOneWidget);
-    expect(find.text('Welcome to FitFlow'), findsNothing);
+    expect(find.text('Welcome to Home Workout'), findsNothing);
     expect(find.text('Movement Check'), findsNothing);
     expect(find.text('Your workout'), findsNothing);
     expect(await snapshot(), before);
@@ -191,7 +191,7 @@ void main() {
 
     expect(find.text('Movement Check'), findsWidgets);
     expect(find.text(SplashScreen.recoveryTitle), findsNothing);
-    expect(find.text('Welcome to FitFlow'), findsNothing);
+    expect(find.text('Welcome to Home Workout'), findsNothing);
     expect(await snapshot(), before,
         reason: 'a safe null load must not overwrite corrupt bytes');
     expect(tester.takeException(), isNull);

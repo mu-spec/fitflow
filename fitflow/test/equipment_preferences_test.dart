@@ -1,3 +1,4 @@
+import 'package:fitflow/features/onboarding/presentation/widgets/onboarding_choice.dart';
 import 'package:fitflow/app/app.dart';
 import 'package:fitflow/features/onboarding/data/onboarding_pages.dart';
 import 'package:flutter/material.dart';
@@ -31,13 +32,14 @@ void main() {
     }
   }
 
-  FilledButton continueButton(WidgetTester tester) => tester.widget<FilledButton>(
+  FilledButton continueButton(WidgetTester tester) =>
+      tester.widget<FilledButton>(
         find.widgetWithText(FilledButton, 'Continue'),
       );
 
   int selectedBoxCount(WidgetTester tester) => tester
-      .widgetList<CheckboxListTile>(find.byType(CheckboxListTile))
-      .where((tile) => tile.value == true)
+      .widgetList<OnboardingChoice>(find.byType(OnboardingChoice))
+      .where((tile) => tile.multiSelect && tile.selected)
       .length;
 
   group('Equipment step', () {
@@ -45,7 +47,7 @@ void main() {
       await launchOnboarding(tester);
       await advanceToStep(tester, 'equipment');
 
-      expect(find.text('What equipment do you have?'), findsOneWidget);
+      expect(find.text('Available equipment'), findsOneWidget);
       expect(continueButton(tester).onPressed, isNull);
     });
 
@@ -108,12 +110,12 @@ void main() {
 
       await tester.tap(find.text('Continue'));
       await tester.pumpAndSettle();
-      expect(find.text("Let's customize your workouts"), findsOneWidget);
+      expect(find.text("Your workout preferences"), findsOneWidget);
 
       await tester.tap(find.text('Back'));
       await tester.pumpAndSettle();
 
-      expect(find.text('What equipment do you have?'), findsOneWidget);
+      expect(find.text('Available equipment'), findsOneWidget);
       expect(selectedBoxCount(tester), 2);
     });
   });
@@ -123,7 +125,7 @@ void main() {
       await launchOnboarding(tester);
       await advanceToStep(tester, 'preferences');
 
-      expect(find.text("Let's customize your workouts"), findsOneWidget);
+      expect(find.text("Your workout preferences"), findsOneWidget);
       expect(
         find.text(
           'Preferences guide exercise selection; they are not medical advice.',
@@ -161,12 +163,12 @@ void main() {
 
       await tester.tap(find.text('Continue'));
       await tester.pumpAndSettle();
-      expect(find.text("You're ready"), findsOneWidget);
+      expect(find.text("One last step"), findsOneWidget);
 
       await tester.tap(find.text('Back'));
       await tester.pumpAndSettle();
 
-      expect(find.text("Let's customize your workouts"), findsOneWidget);
+      expect(find.text("Your workout preferences"), findsOneWidget);
       expect(selectedBoxCount(tester), 2);
     });
   });

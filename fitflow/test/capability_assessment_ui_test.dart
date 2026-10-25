@@ -60,14 +60,16 @@ void main() {
   }
 
   group('Assessment UI - Experience Prefill', () {
-    testWidgets('regularTraining prefill shows Level 3 for representative movements',
+    testWidgets(
+        'regularTraining prefill shows Level 3 for representative movements',
         (tester) async {
       await pumpToAssessment(tester);
 
       expect(find.text('Movement Check'), findsWidgets);
 
       // Push is visible first
-      expect(find.byKey(const ValueKey('assessment_card_push')), findsOneWidget);
+      expect(
+          find.byKey(const ValueKey('assessment_card_push')), findsOneWidget);
       expect(find.byKey(const ValueKey('level_push_level3')), findsOneWidget);
 
       // Scroll to pull, squat, core
@@ -90,7 +92,8 @@ void main() {
       expect(find.text('Movement Check'), findsWidgets);
 
       for (final item in CapabilityAssessmentCatalog.all) {
-        final cardKey = ValueKey('assessment_card_${item.movementPattern.name}');
+        final cardKey =
+            ValueKey('assessment_card_${item.movementPattern.name}');
         await scrollToKey(tester, cardKey);
         expect(
           find.byKey(cardKey),
@@ -100,8 +103,10 @@ void main() {
       }
 
       // Ensure no warmup/cooldown cards
-      expect(find.byKey(const ValueKey('assessment_card_warmup')), findsNothing);
-      expect(find.byKey(const ValueKey('assessment_card_cooldown')), findsNothing);
+      expect(
+          find.byKey(const ValueKey('assessment_card_warmup')), findsNothing);
+      expect(
+          find.byKey(const ValueKey('assessment_card_cooldown')), findsNothing);
 
       expect(CapabilityAssessmentCatalog.all.length, 10);
     });
@@ -129,6 +134,10 @@ void main() {
 
       // Verify via summary that changed movements show new levels
       await scrollToKey(tester, const Key('assessment_summary'));
+      await tester.tap(find.descendant(
+          of: find.byKey(const Key('assessment_summary')),
+          matching: find.byType(ExpansionTile)));
+      await tester.pumpAndSettle();
       // Summary should contain Push · Basic, Squat · Strong, Core · Just starting, Pull · Solid
       expect(find.textContaining('Push · Basic'), findsOneWidget);
       expect(find.textContaining('Squat · Strong'), findsOneWidget);
@@ -175,8 +184,7 @@ void main() {
       for (final entry in levelExpectations.entries) {
         final level = entry.key;
         final title = entry.value;
-        await tester.tap(
-            find.byKey(ValueKey('level_push_${level.name}')));
+        await tester.tap(find.byKey(ValueKey('level_push_${level.name}')));
         await tester.pump(const Duration(milliseconds: 300));
         expect(find.textContaining(title), findsWidgets);
       }

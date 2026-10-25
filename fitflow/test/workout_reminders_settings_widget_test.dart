@@ -196,7 +196,7 @@ void main() {
     expect(tester.widget<SwitchListTile>(toggle).value, isTrue);
     expect(
         find.text(
-            'Reminders are enabled in FitFlow, but notifications are blocked by Android.'),
+            'Reminders are enabled in Home Workout, but notifications are blocked by Android.'),
         findsOneWidget);
     expect(find.text('Open notification settings'), findsOneWidget);
     expect(service.cancelled, isEmpty);
@@ -207,7 +207,7 @@ void main() {
     expect(button.onPressed, isNull);
   });
 
-  testWidgets('disable cancels only the 7 FitFlow IDs and persists off',
+  testWidgets('disable cancels only the 7 Home Workout IDs and persists off',
       (tester) async {
     await pumpSection(tester);
     await flipToggle(tester);
@@ -317,7 +317,7 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
     expect(service.shown.map((s) => s.id), [WorkoutReminderIds.test]);
-    expect(service.shown.single.title, 'FitFlow test reminder');
+    expect(service.shown.single.title, 'Home Workout test reminder');
     expect(service.shown.single.body, 'Notifications are working.');
     expect(find.text('Test notification sent.'), findsOneWidget);
     expect(await storedReminderJson(), isNull);

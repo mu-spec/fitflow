@@ -561,7 +561,7 @@ void main() {
             expect(find.byKey(const ValueKey('v2_preview_summary')),
                 findsOneWidget);
             expect(find.byType(FitFlowV2WorkoutMedia), findsNothing);
-            expect(find.text('FITFLOW'), findsNothing);
+            expect(find.text('Home Workout'), findsNothing);
             expect(
                 tester
                     .widgetList<FitFlowExerciseImage>(

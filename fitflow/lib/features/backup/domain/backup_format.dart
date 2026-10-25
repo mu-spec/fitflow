@@ -70,6 +70,6 @@ class BackupFormat {
     String two(int v) => v.toString().padLeft(2, '0');
     final stamp = '${now.year.toString().padLeft(4, '0')}${two(now.month)}'
         '${two(now.day)}-${two(now.hour)}${two(now.minute)}${two(now.second)}';
-    return 'FitFlow-backup-$stamp.$fileExtension';
+    return 'Home Workout-backup-$stamp.$fileExtension';
   }
 }

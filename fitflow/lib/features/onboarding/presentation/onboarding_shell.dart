@@ -1,17 +1,11 @@
-import 'package:fitflow/core/design/fitflow_visual_v2.dart';
-import 'package:fitflow/core/design/fitflow_v2_setup.dart';
-import 'package:fitflow/core/accessibility/system_motion.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
-import 'package:fitflow/core/design/fitflow_motion.dart';
-import 'package:fitflow/core/design/fitflow_spacing.dart';
-import 'package:fitflow/core/design/fitflow_theme_extension.dart';
-import 'package:fitflow/core/design/widgets/fitflow_buttons.dart';
+import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
+import 'package:fitflow/features/workouts/presentation/workouts_theme.dart';
 import 'package:fitflow/features/onboarding/presentation/widgets/onboarding_progress.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:flutter/material.dart';
 
-/// Stable progress/actions; only the question content enters. On short windows
-/// actions join the scroll view so large text never consumes the content viewport.
+/// Readable questions and stable actions; short windows scroll as a whole.
 class OnboardingShell extends StatelessWidget {
   const OnboardingShell(
       {super.key,
@@ -35,97 +29,113 @@ class OnboardingShell extends StatelessWidget {
   final bool canGoBack, canContinue, saving;
   final VoidCallback onBack, onContinue;
 
+  // Editorial imagery illustrates setup, never a promised workout prescription.
+  static const _photos = [
+    'squat_bodyweight',
+    'lunge_reverse',
+    'pushup_wall',
+    'march_in_place',
+    'squat_chair',
+    'row_bent_over_dumbbell',
+    'hamstring_stretch_standing',
+    'single_leg_stand'
+  ];
+
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = FitFlowTheme.of(context);
-    final actions = FitFlowV2ActionSurface(
-      child: Row(children: [
-        FitFlowTertiaryButton(
-            label: context.l10n.back,
-            onPressed: canGoBack && !saving ? onBack : null),
-        const SizedBox(width: FitFlowSpace.sm),
-        Expanded(
-            child: FilledButton(
-          style: FitFlowV2ActionSurface.primaryStyle(context),
-          onPressed: canContinue && !saving ? onContinue : null,
-          child: Text(saving ? context.l10n.onboardingSaving : trailingLabel,
-              textAlign: TextAlign.center),
-        )),
-      ]),
-    );
-    Widget body() => TweenAnimationBuilder<double>(
-          key: ValueKey(step),
-          tween: Tween(begin: 0, end: 1),
-          duration: SystemMotion.standard(context),
-          curve: FitFlowMotion.standardCurve,
-          builder: (context, opacity, child) =>
-              Opacity(opacity: opacity, child: child),
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            Semantics(
-                header: true,
-                child: Text(title,
-                    style: step == 1
-                        ? theme.textTheme.headlineSmall
-                        : theme.textTheme.headlineMedium)),
-            if (description != null) ...[
-              const SizedBox(height: FitFlowSpace.xs),
-              Text(description!,
-                  style: theme.textTheme.bodyMedium
-                      ?.copyWith(color: colors.textSecondary)),
-            ],
-            if (instruction != null) ...[
-              const SizedBox(height: FitFlowSpace.sm),
-              Text(instruction!,
-                  style: theme.textTheme.labelMedium
-                      ?.copyWith(color: colors.textSecondary)),
-            ],
-            const SizedBox(height: FitFlowSpace.md),
-            content,
-            if (error != null) ...[
-              const SizedBox(height: FitFlowSpace.md),
-              Semantics(
-                  liveRegion: true,
-                  child: Text(error!,
-                      style: theme.textTheme.bodyMedium
-                          ?.copyWith(color: colors.error))),
-            ],
-          ]),
-        );
-    return Scaffold(
-        backgroundColor: FitFlowVisualV2.of(context).page,
-        body: SafeArea(
-            child: FitFlowMaxWidth(
-          maxWidth: FitFlowLayout.maxReadableWidth,
+  Widget build(BuildContext context) =>
+      WorkoutsTheme(child: Builder(builder: (context) {
+        final theme = Theme.of(context);
+        final actions = Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Row(children: [
+              TextButton(
+                  onPressed: canGoBack && !saving ? onBack : null,
+                  child: Text(context.l10n.back)),
+              const SizedBox(width: 12),
+              Expanded(
+                  child: FilledButton(
+                      onPressed: canContinue && !saving ? onContinue : null,
+                      child: Text(
+                          saving
+                              ? context.l10n.onboardingSaving
+                              : trailingLabel,
+                          textAlign: TextAlign.center))),
+            ]));
+        final photo = ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: FitFlowExerciseImage.hero(
+                exerciseId: _photos[(step - 1).clamp(0, 7)],
+                width: 112,
+                height: 84));
+        Widget body() =>
+            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              if (step == 1 || step == totalSteps) ...[
+                LayoutBuilder(builder: (context, constraints) {
+                  final width = constraints.maxWidth.clamp(0.0, 340.0);
+                  return Center(
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: FitFlowExerciseImage.hero(
+                              exerciseId: _photos[step - 1],
+                              width: width,
+                              height: width * .75)));
+                }),
+                const SizedBox(height: 16),
+                Semantics(
+                    header: true,
+                    child: Text(title, style: theme.textTheme.titleLarge)),
+              ] else
+                Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                  Expanded(
+                      child: Semantics(
+                          header: true,
+                          child:
+                              Text(title, style: theme.textTheme.titleLarge))),
+                  const SizedBox(width: 12),
+                  photo,
+                ]),
+              if (description != null) ...[
+                const SizedBox(height: 8),
+                Text(description!,
+                    style: theme.textTheme.bodyMedium
+                        ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+              ],
+              const SizedBox(height: 16),
+              content,
+              if (error != null) ...[
+                const SizedBox(height: 12),
+                Semantics(
+                    liveRegion: true,
+                    child: Text(error!,
+                        style: theme.textTheme.bodyMedium
+                            ?.copyWith(color: theme.colorScheme.error))),
+              ],
+              const SizedBox(height: 8),
+            ]);
+        return Scaffold(body: SafeArea(child: FitFlowMaxWidth(
           child: LayoutBuilder(builder: (context, constraints) {
-            final compact = constraints.maxWidth < 360;
-            final padding =
-                compact ? FitFlowSpace.md : FitFlowSpace.screenHorizontal;
-            final short = constraints.maxHeight < 400;
             final progress = Padding(
-              padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.md),
-              child: OnboardingProgress(step: step, totalSteps: totalSteps),
-            );
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: OnboardingProgress(step: step, totalSteps: totalSteps));
             return Padding(
-              padding: EdgeInsets.symmetric(horizontal: padding),
-              child: short
-                  ? SingleChildScrollView(
-                      key: ValueKey('short_$step'),
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [progress, body(), actions]))
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                          progress,
-                          Expanded(
-                              child: SingleChildScrollView(
-                                  key: ValueKey('step_$step'), child: body())),
-                          actions,
-                        ]),
-            );
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: constraints.maxHeight < 400
+                    ? SingleChildScrollView(
+                        key: ValueKey('short_$step'),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [progress, body(), actions]))
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                            progress,
+                            Expanded(
+                                child: SingleChildScrollView(
+                                    key: ValueKey('step_$step'),
+                                    child: body())),
+                            actions,
+                          ]));
           }),
         )));
-  }
+      }));
 }

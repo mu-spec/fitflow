@@ -8,13 +8,13 @@ class BackupCopy {
   // Settings entry
   static const settingsTitle = 'Backup & restore';
   static const settingsSubtitle =
-      'Save a copy of your FitFlow data or restore it on this device.';
+      'Save a copy of your Home Workout data or restore it on this device.';
 
   // Screen
   static const screenTitle = 'Backup & restore';
   static const storageNote =
-      'Your backup is stored wherever you choose. FitFlow does not upload it '
-      'to a FitFlow server.';
+      'Your backup is stored wherever you choose. Home Workout does not upload it '
+      'to a Home Workout server.';
   static const createTitle = 'Save a copy';
   static const createDescription =
       'Includes your profile, movement levels and progress, saved workout history, custom '
@@ -22,7 +22,7 @@ class BackupCopy {
   static const createButton = 'Create backup';
   static const restoreTitle = 'Restore from backup';
   static const restoreDescription =
-      'Replace the FitFlow data on this device with data from a backup file.';
+      'Replace the Home Workout data on this device with data from a backup file.';
   static const chooseFileButton = 'Choose backup file';
   static const privacyNote =
       'Backup files contain personal workout and preference data. Store them '
@@ -35,14 +35,14 @@ class BackupCopy {
   // Import validation
   static const fileTooLarge = 'This backup file is too large to import.';
   static const fileUnreadable =
-      "This file couldn't be read as a FitFlow backup.";
-  static const notFitFlowBackup = "This isn't a FitFlow backup file.";
+      "This file couldn't be read as a Home Workout backup.";
+  static const notFitFlowBackup = "This isn't a Home Workout backup file.";
   static const newerVersion =
-      "This backup was created by a newer FitFlow version and can't be "
+      "This backup was created by a newer Home Workout version and can't be "
       'restored here.';
   static const unsupportedVersion = "This backup format isn't supported.";
   static const invalidData =
-      "This backup contains data FitFlow can't restore safely.";
+      "This backup contains data Home Workout can't restore safely.";
 
   // Preview
   static const previewTitle = 'Backup contents';
@@ -64,9 +64,9 @@ class BackupCopy {
   static const chooseDifferentFile = 'Cancel preview';
 
   // Confirmation dialog
-  static const confirmTitle = 'Restore FitFlow backup?';
+  static const confirmTitle = 'Restore Home Workout backup?';
   static const confirmBody =
-      'This will replace FitFlow data currently stored on this device with '
+      'This will replace Home Workout data currently stored on this device with '
       'the data in this backup.';
   static const confirmNoMerge =
       'This restore does not merge the two sets of data.';
@@ -78,7 +78,7 @@ class BackupCopy {
   static const restoreSucceededRemindersAttention =
       'Your data was restored, but workout reminders need attention.';
   static const restoreFailedRolledBack =
-      'Restore failed. Your previous FitFlow data was kept.';
+      'Restore failed. Your previous Home Workout data was kept.';
   static const restoreFailedRollbackIncomplete =
       "Restore couldn't be completed. Some local data may need to be restored "
       'again from a backup.';

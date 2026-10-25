@@ -77,7 +77,7 @@ CustomPainter _painter(WidgetTester tester) {
 }
 
 void main() {
-  group('FitFlow V2 exercise visual descriptor', () {
+  group('Home Workout V2 exercise visual descriptor', () {
     test('all 88 canonical catalog exercises resolve from metadata', () {
       final exercises = ExerciseCatalog.all;
       expect(exercises, hasLength(88));

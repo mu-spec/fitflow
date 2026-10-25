@@ -152,7 +152,7 @@ void main() {
       }
       expect(
           find.text(
-              'Your backup is stored wherever you choose. FitFlow does not upload it to a FitFlow server.'),
+              'Your backup is stored wherever you choose. Home Workout does not upload it to a Home Workout server.'),
           findsOneWidget);
       final allText = tester
           .widgetList<Text>(find.byType(Text))
@@ -266,7 +266,7 @@ void main() {
       await tester.tap(find.byKey(BackupPreviewCard.restoreButtonKey));
       await tester.pumpAndSettle();
       expect(find.text(BackupCopy.confirmTitle), findsOneWidget);
-      expect(find.text('Restore FitFlow backup?'), findsOneWidget);
+      expect(find.text('Restore Home Workout backup?'), findsOneWidget);
       expect(
           find.descendant(
               of: find.byType(AlertDialog),

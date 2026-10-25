@@ -72,8 +72,13 @@ Future<void> completeOnboardingToHome(WidgetTester tester) async {
   await tester.pump(const Duration(milliseconds: 300));
   if (saveButton.evaluate().isNotEmpty) {
     await tester.tap(saveButton);
-    await tester.pump(const Duration(milliseconds: 500));
-    await tester.pump(const Duration(milliseconds: 500));
-    await tester.pump(const Duration(milliseconds: 500));
+    // The preparation stage awaits real bundled-image decoding before 100%.
+    for (var frame = 0; frame < 80; frame++) {
+      await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 10)));
+      await tester.pump(const Duration(milliseconds: 50));
+      if (find.text('Your workout').evaluate().isNotEmpty) break;
+    }
+    expect(find.text('Your workout'), findsOneWidget);
   }
 }

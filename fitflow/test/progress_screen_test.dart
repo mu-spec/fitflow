@@ -172,7 +172,7 @@ void main() {
 
       expect(
           find.text('Your workout').evaluate().isNotEmpty ||
-              find.text('FITFLOW').evaluate().isNotEmpty,
+              find.text('Home Workout').evaluate().isNotEmpty,
           true);
     });
 

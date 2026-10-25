@@ -86,7 +86,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200));
 
     expect(tester.takeException(), isNull);
-    expect(find.text('Welcome to FitFlow'), findsOneWidget);
+    expect(find.text('Welcome to Home Workout'), findsOneWidget);
     final after = {
       for (final key in prefs.getKeys()) key: prefs.getString(key),
     };

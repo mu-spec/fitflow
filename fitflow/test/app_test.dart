@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'helpers/test_helpers.dart';
 
 void main() {
-  testWidgets('FitFlow opens on the splash screen, then onboarding', (
+  testWidgets('Home Workout opens on the splash screen, then onboarding', (
     tester,
   ) async {
     SharedPreferences.setMockInitialValues({});
@@ -22,7 +22,7 @@ void main() {
 
     await waitUntilOnboarding(tester);
 
-    expect(find.text('Welcome to FitFlow'), findsOneWidget);
+    expect(find.text('Welcome to Home Workout'), findsOneWidget);
   });
 
   testWidgets('bottom navigation switches between the four tabs', (tester) async {

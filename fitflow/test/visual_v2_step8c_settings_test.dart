@@ -66,7 +66,7 @@ void main() {
       expect(find.text(BackupCopy.settingsTitle), findsOneWidget);
       expect(find.text(BackupCopy.settingsSubtitle), findsNothing);
       expect(find.text('Privacy Policy'), findsOneWidget);
-      expect(find.text('How FitFlow handles information on this device.'),
+      expect(find.text('How Home Workout handles information on this device.'),
           findsNothing);
       expect(find.text(SettingsScreen.localDataFooter), findsOneWidget);
 
@@ -113,10 +113,10 @@ void main() {
       }
       expect(
         find.text(
-            'This page describes how FitFlow handles information in this version of the app.'),
+            'This page describes how Home Workout handles information in this version of the app.'),
         findsOneWidget,
       );
-      expect(find.text('About FitFlow'), findsNothing);
+      expect(find.text('About Home Workout'), findsNothing);
 
       router.go(AppRoutes.settings);
       await _settle(tester);
