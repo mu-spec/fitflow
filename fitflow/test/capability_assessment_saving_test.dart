@@ -60,11 +60,27 @@ void main() {
 
   Future<void> waitForPreparedHome(WidgetTester tester) async {
     var sawComplete = false;
-    for (var frame = 0; frame < 80; frame++) {
+    var elapsedMs = 0;
+    double previousProgress = 0;
+    for (var frame = 0; frame < 180; frame++) {
       await tester.runAsync(
           () => Future<void>.delayed(const Duration(milliseconds: 10)));
       await tester.pump(const Duration(milliseconds: 50));
-      sawComplete = sawComplete || find.text('100%').evaluate().isNotEmpty;
+      elapsedMs += 50;
+      final rings = tester.widgetList<CircularProgressIndicator>(
+          find.byType(CircularProgressIndicator));
+      for (final ring in rings) {
+        if (ring.value case final progress?) {
+          expect(progress, greaterThanOrEqualTo(previousProgress));
+          previousProgress = progress;
+        }
+      }
+      if (find.text('100%').evaluate().isNotEmpty) {
+        expect(elapsedMs, greaterThanOrEqualTo(6000),
+            reason: 'Preparation must remain visible for six seconds.');
+        sawComplete = true;
+      }
+      if (elapsedMs < 6000) expect(find.text('Your workout'), findsNothing);
       if (find.text('Your workout').evaluate().isNotEmpty) break;
     }
     expect(sawComplete, isTrue,

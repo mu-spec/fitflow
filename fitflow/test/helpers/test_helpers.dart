@@ -73,7 +73,7 @@ Future<void> completeOnboardingToHome(WidgetTester tester) async {
   if (saveButton.evaluate().isNotEmpty) {
     await tester.tap(saveButton);
     // The preparation stage awaits real bundled-image decoding before 100%.
-    for (var frame = 0; frame < 80; frame++) {
+    for (var frame = 0; frame < 180; frame++) {
       await tester.runAsync(
           () => Future<void>.delayed(const Duration(milliseconds: 10)));
       await tester.pump(const Duration(milliseconds: 50));

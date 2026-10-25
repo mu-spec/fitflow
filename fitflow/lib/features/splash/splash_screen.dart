@@ -1,4 +1,5 @@
 import 'package:fitflow/app/router/app_routes.dart';
+import 'package:fitflow/features/workouts/presentation/workouts_theme.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/core/constants/app_constants.dart';
 import 'package:fitflow/core/persistence/shared_preferences_provider.dart';
@@ -116,43 +117,53 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: _loadFailed
-                ? _RecoveryBody(
-                    theme: theme,
-                    inFlight: _retryInFlight,
-                    onRetry: _retry,
-                  )
-                : Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        AppConstants.appName,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.displaySmall?.copyWith(
-                          color: theme.colorScheme.primary,
+    return WorkoutsTheme(child: Builder(builder: (context) {
+      final theme = Theme.of(context);
+      return Scaffold(
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: _loadFailed
+                  ? _RecoveryBody(
+                      theme: theme,
+                      inFlight: _retryInFlight,
+                      onRetry: _retry,
+                    )
+                  : SingleChildScrollView(
+                      child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ClipRRect(
+                            borderRadius: BorderRadius.circular(24),
+                            child: Image.asset(
+                                'assets/images/branding/home_workout_icon.png',
+                                width: 112,
+                                height: 112,
+                                excludeFromSemantics: true)),
+                        const SizedBox(height: 24),
+                        Text(
+                          AppConstants.appName,
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            color: theme.colorScheme.primary,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        AppConstants.tagline,
-                        textAlign: TextAlign.center,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
+                        const SizedBox(height: 8),
+                        Text(
+                          AppConstants.tagline,
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    )),
+            ),
           ),
         ),
-      ),
-    );
+      );
+    }));
   }
 }
 

@@ -11,6 +11,7 @@ import 'package:fitflow/features/workouts/domain/generation/workout_generator.da
 import 'package:fitflow/features/workouts/domain/generation/workout_generation_context.dart';
 import 'package:fitflow/features/workouts/application/workout_session_mode_controller.dart';
 import 'package:fitflow/features/onboarding/presentation/workout_preparation_view.dart';
+import 'package:fitflow/features/onboarding/presentation/setup_photo_background.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
 import 'package:fitflow/features/capability_assessment/presentation/capability_assessment_copy.dart';
 import 'package:fitflow/app/router/app_routes.dart';
@@ -47,8 +48,8 @@ class _AssessmentContent extends ConsumerStatefulWidget {
       _CapabilityAssessmentScreenState();
 }
 
-class _CapabilityAssessmentScreenState
-    extends ConsumerState<_AssessmentContent> {
+class _CapabilityAssessmentScreenState extends ConsumerState<_AssessmentContent>
+    with SingleTickerProviderStateMixin {
   CapabilityAssessmentState? _assessmentState;
   CapabilityAssessmentState? _initialState;
   bool _isSaving = false;
@@ -56,6 +57,21 @@ class _CapabilityAssessmentScreenState
   bool _hasInitialized = false;
   double _preparationProgress = 0;
   bool _preparationFailed = false;
+  late final AnimationController _preparationAnimation = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 6),
+  )..addListener(() {
+      if (mounted) {
+        setState(() => _preparationProgress =
+            (_preparationAnimation.value * .99).clamp(0.0, .99));
+      }
+    });
+
+  @override
+  void dispose() {
+    _preparationAnimation.dispose();
+    super.dispose();
+  }
 
   void _updateLevel(MovementPattern pattern, CapabilityLevel newLevel) {
     if (_assessmentState == null) return;
@@ -114,10 +130,15 @@ class _CapabilityAssessmentScreenState
     setState(() {
       _isSaving = true;
       _preparationFailed = false;
-      _preparationProgress = 1 / 3;
+      _preparationProgress = 0;
     });
+    // A six-second setup presentation, not download/byte progress. Never show
+    // 100% or navigate before the real local work succeeds.
+    final presentation = _preparationAnimation
+        .forward(from: 0)
+        .orCancel
+        .then<void>((_) {}, onError: (Object _) {});
     try {
-      // Stages represent completed local work, not a simulated download timer.
       await WidgetsBinding.instance.endOfFrame;
       if (!mounted) return;
       final user = await ref.read(userFitnessProfileProvider.future);
@@ -128,7 +149,7 @@ class _CapabilityAssessmentScreenState
           userProfile: user,
           capabilityProfile: capability,
           sessionMode: ref.read(workoutSessionModeProvider)));
-      setState(() => _preparationProgress = 2 / 3);
+
       await WidgetsBinding.instance.endOfFrame;
       if (!mounted) return;
       if (plan != null && plan.main.exercises.isNotEmpty) {
@@ -142,12 +163,16 @@ class _CapabilityAssessmentScreenState
         }
       }
       if (!mounted) return;
+      await presentation;
+      if (!mounted) return;
       setState(() => _preparationProgress = 1);
-      // Briefly display the completed state; no fabricated intermediate values.
+      // Leave the completed state visible before opening Home.
       await Future<void>.delayed(const Duration(milliseconds: 450));
       if (mounted) context.go(AppRoutes.home);
     } on Object {
-      if (mounted) setState(() => _preparationFailed = true);
+      if (!mounted) return;
+      _preparationAnimation.stop();
+      setState(() => _preparationFailed = true);
     }
   }
 
@@ -156,6 +181,8 @@ class _CapabilityAssessmentScreenState
     if (_isSaving) {
       return WorkoutPreparationView(
           progress: _preparationProgress,
+          saving:
+              !_preparationAnimation.isAnimating && _preparationProgress == 0,
           failed: _preparationFailed,
           onRetry: _prepareWorkout);
     }
@@ -221,7 +248,6 @@ class _CapabilityAssessmentScreenState
     final l10n = context.l10n;
     final text = Theme.of(context).textTheme;
     final colors = FitFlowTheme.of(context);
-    final v = FitFlowVisualV2.of(context);
     final save = FitFlowV2ActionSurface(
       child: FilledButton(
         key: const Key('save_and_continue_button'),
@@ -236,112 +262,117 @@ class _CapabilityAssessmentScreenState
       onPopInvokedWithResult: (didPop, result) {
         if (!didPop) context.go(AppRoutes.onboarding);
       },
-      child: Scaffold(
-        backgroundColor: v.page,
-        appBar: AppBar(
-          backgroundColor: v.page,
-          title: Text(l10n.movementCheckTitle, style: text.titleLarge),
-          leading: IconButton(
-              icon: const BackButtonIcon(),
-              onPressed: () => context.go(AppRoutes.onboarding),
-              tooltip: l10n.backToOnboarding),
-        ),
-        body: SafeArea(
-            child: FitFlowMaxWidth(
-          maxWidth: FitFlowLayout.maxReadableWidth,
-          child: LayoutBuilder(builder: (context, constraints) {
-            final short = constraints.maxHeight < 320;
-            final inset = 20.0;
-            final scroll = CustomScrollView(slivers: [
-              SliverToBoxAdapter(
-                  child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.md),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(l10n.assessmentBody, style: text.bodyMedium),
-                      const SizedBox(height: 12),
-                      FitFlowProgress(
-                          label: l10n.assessmentProgress(
-                              assessmentState.answeredCount,
-                              CapabilityAssessmentState.totalCount),
-                          value: assessmentState.answeredCount /
-                              CapabilityAssessmentState.totalCount),
-                      if (_errorMessage != null) ...[
-                        const SizedBox(height: FitFlowSpace.sm),
-                        Semantics(
-                            liveRegion: true,
-                            child: Text(_errorMessage!,
-                                style: text.bodyMedium
-                                    ?.copyWith(color: colors.error))),
-                      ],
-                    ]),
-              )),
-              SliverList.builder(
-                itemCount: CapabilityAssessmentCatalog.all.length,
-                itemBuilder: (context, index) {
-                  final item = CapabilityAssessmentCatalog.all[index];
-                  final currentAnswer =
-                      assessmentState.answerFor(item.movementPattern);
-                  final initialAnswer =
-                      initialState.answerFor(item.movementPattern);
-                  final isChanged = currentAnswer != null &&
-                      initialAnswer != null &&
-                      currentAnswer.selectedLevel !=
-                          initialAnswer.selectedLevel;
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: FitFlowSpace.sm),
-                    child: _MovementAssessmentCard(
-                      key: ValueKey(
-                          'assessment_card_${item.movementPattern.name}'),
-                      item: item,
-                      ordinal: index + 1,
-                      currentLevel: currentAnswer?.selectedLevel ??
-                          CapabilityLevel.level3,
-                      isChanged: isChanged,
-                      onLevelSelected: (level) =>
-                          _updateLevel(item.movementPattern, level),
-                    ),
-                  );
-                },
-              ),
-              SliverToBoxAdapter(
-                  child: Padding(
-                key: const Key('assessment_summary'),
-                padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.md),
-                child: ExpansionTile(
-                    tilePadding: EdgeInsets.zero,
-                    title:
-                        Text(l10n.assessmentSummary, style: text.titleMedium),
-                    children: [
-                      for (final item in CapabilityAssessmentCatalog.all)
-                        if (assessmentState.answerFor(item.movementPattern)
-                            case final answer?)
-                          Padding(
-                              padding: const EdgeInsets.only(
-                                  bottom: FitFlowSpace.xs),
-                              child: Text(
-                                  l10n.assessmentSummaryItem(
-                                      movementPatternLabel(
-                                          l10n, item.movementPattern),
-                                      assessmentChoice(
-                                          l10n, answer.selectedLevel)),
-                                  style: text.bodyMedium)),
-                    ]),
-              )),
-              if (short) SliverToBoxAdapter(child: save),
-            ]);
-            return Padding(
-              padding: EdgeInsets.symmetric(horizontal: inset),
-              child: short
-                  ? scroll
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [Expanded(child: scroll), save]),
-            );
-          }),
-        )),
-      ),
+      child: SetupPhotoBackground(
+          exerciseId: 'single_leg_stand',
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              surfaceTintColor: Colors.transparent,
+              title: Text(l10n.movementCheckTitle, style: text.titleLarge),
+              leading: IconButton(
+                  icon: const BackButtonIcon(),
+                  onPressed: () => context.go(AppRoutes.onboarding),
+                  tooltip: l10n.backToOnboarding),
+            ),
+            body: SafeArea(
+                child: FitFlowMaxWidth(
+              maxWidth: FitFlowLayout.maxReadableWidth,
+              child: LayoutBuilder(builder: (context, constraints) {
+                final short = constraints.maxHeight < 320;
+                final inset = 20.0;
+                final scroll = CustomScrollView(slivers: [
+                  SliverToBoxAdapter(
+                      child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(vertical: FitFlowSpace.md),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(l10n.assessmentBody, style: text.bodyMedium),
+                          const SizedBox(height: 12),
+                          FitFlowProgress(
+                              label: l10n.assessmentProgress(
+                                  assessmentState.answeredCount,
+                                  CapabilityAssessmentState.totalCount),
+                              value: assessmentState.answeredCount /
+                                  CapabilityAssessmentState.totalCount),
+                          if (_errorMessage != null) ...[
+                            const SizedBox(height: FitFlowSpace.sm),
+                            Semantics(
+                                liveRegion: true,
+                                child: Text(_errorMessage!,
+                                    style: text.bodyMedium
+                                        ?.copyWith(color: colors.error))),
+                          ],
+                        ]),
+                  )),
+                  SliverList.builder(
+                    itemCount: CapabilityAssessmentCatalog.all.length,
+                    itemBuilder: (context, index) {
+                      final item = CapabilityAssessmentCatalog.all[index];
+                      final currentAnswer =
+                          assessmentState.answerFor(item.movementPattern);
+                      final initialAnswer =
+                          initialState.answerFor(item.movementPattern);
+                      final isChanged = currentAnswer != null &&
+                          initialAnswer != null &&
+                          currentAnswer.selectedLevel !=
+                              initialAnswer.selectedLevel;
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: FitFlowSpace.sm),
+                        child: _MovementAssessmentCard(
+                          key: ValueKey(
+                              'assessment_card_${item.movementPattern.name}'),
+                          item: item,
+                          ordinal: index + 1,
+                          currentLevel: currentAnswer?.selectedLevel ??
+                              CapabilityLevel.level3,
+                          isChanged: isChanged,
+                          onLevelSelected: (level) =>
+                              _updateLevel(item.movementPattern, level),
+                        ),
+                      );
+                    },
+                  ),
+                  SliverToBoxAdapter(
+                      child: Padding(
+                    key: const Key('assessment_summary'),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: FitFlowSpace.md),
+                    child: ExpansionTile(
+                        tilePadding: EdgeInsets.zero,
+                        title: Text(l10n.assessmentSummary,
+                            style: text.titleMedium),
+                        children: [
+                          for (final item in CapabilityAssessmentCatalog.all)
+                            if (assessmentState.answerFor(item.movementPattern)
+                                case final answer?)
+                              Padding(
+                                  padding: const EdgeInsets.only(
+                                      bottom: FitFlowSpace.xs),
+                                  child: Text(
+                                      l10n.assessmentSummaryItem(
+                                          movementPatternLabel(
+                                              l10n, item.movementPattern),
+                                          assessmentChoice(
+                                              l10n, answer.selectedLevel)),
+                                      style: text.bodyMedium)),
+                        ]),
+                  )),
+                  if (short) SliverToBoxAdapter(child: save),
+                ]);
+                return Padding(
+                  padding: EdgeInsets.symmetric(horizontal: inset),
+                  child: short
+                      ? scroll
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [Expanded(child: scroll), save]),
+                );
+              }),
+            )),
+          )),
     );
   }
 }

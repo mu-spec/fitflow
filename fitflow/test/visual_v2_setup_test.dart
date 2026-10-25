@@ -78,6 +78,10 @@ void main() {
           };
           for (var step = 0; step < 8; step++) {
             expect(find.text('${step + 1} of 8'), findsOneWidget);
+            final backdrop = find.byKey(const Key('setup_fullscreen_photo'));
+            expect(backdrop, findsOneWidget);
+            expect(tester.getSize(backdrop), size);
+            expect(tester.widget<Image>(backdrop).fit, BoxFit.cover);
             for (var i = 0; i < 8; i++) {
               final segment = tester.widget<AnimatedContainer>(
                   find.byKey(ValueKey('setup_segment_$i')));
@@ -127,6 +131,9 @@ void main() {
               dark: dark,
               scale: scale));
           await tester.pumpAndSettle();
+          expect(
+              tester.getSize(find.byKey(const Key('setup_fullscreen_photo'))),
+              size);
           final defaults = CapabilityAssessmentState.fromExperienceLevel(
               backupProfile().experience);
           expect(CapabilityAssessmentCatalog.all.length, 10);

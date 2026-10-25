@@ -1,5 +1,5 @@
 import 'package:fitflow/core/design/fitflow_layout.dart';
-import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
+import 'setup_photo_background.dart';
 import 'package:fitflow/features/workouts/presentation/workouts_theme.dart';
 import 'package:fitflow/features/onboarding/presentation/widgets/onboarding_progress.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
@@ -61,39 +61,14 @@ class OnboardingShell extends StatelessWidget {
                               : trailingLabel,
                           textAlign: TextAlign.center))),
             ]));
-        final photo = ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: FitFlowExerciseImage.hero(
-                exerciseId: _photos[(step - 1).clamp(0, 7)],
-                width: 112,
-                height: 84));
         Widget body() =>
             Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-              if (step == 1 || step == totalSteps) ...[
-                LayoutBuilder(builder: (context, constraints) {
-                  final width = constraints.maxWidth.clamp(0.0, 340.0);
-                  return Center(
-                      child: ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: FitFlowExerciseImage.hero(
-                              exerciseId: _photos[step - 1],
-                              width: width,
-                              height: width * .75)));
-                }),
-                const SizedBox(height: 16),
-                Semantics(
-                    header: true,
-                    child: Text(title, style: theme.textTheme.titleLarge)),
-              ] else
-                Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                  Expanded(
-                      child: Semantics(
-                          header: true,
-                          child:
-                              Text(title, style: theme.textTheme.titleLarge))),
-                  const SizedBox(width: 12),
-                  photo,
-                ]),
+              const SizedBox(height: 16),
+              Semantics(
+                  header: true,
+                  child: Text(title,
+                      style: theme.textTheme.headlineSmall
+                          ?.copyWith(fontWeight: FontWeight.w600))),
               if (description != null) ...[
                 const SizedBox(height: 8),
                 Text(description!,
@@ -112,30 +87,36 @@ class OnboardingShell extends StatelessWidget {
               ],
               const SizedBox(height: 8),
             ]);
-        return Scaffold(body: SafeArea(child: FitFlowMaxWidth(
-          child: LayoutBuilder(builder: (context, constraints) {
-            final progress = Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                child: OnboardingProgress(step: step, totalSteps: totalSteps));
-            return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: constraints.maxHeight < 400
-                    ? SingleChildScrollView(
-                        key: ValueKey('short_$step'),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [progress, body(), actions]))
-                    : Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                            progress,
-                            Expanded(
-                                child: SingleChildScrollView(
-                                    key: ValueKey('step_$step'),
-                                    child: body())),
-                            actions,
-                          ]));
-          }),
-        )));
+        return SetupPhotoBackground(
+            exerciseId: _photos[(step - 1).clamp(0, 7)],
+            child: Scaffold(
+                backgroundColor: Colors.transparent,
+                body: SafeArea(child: FitFlowMaxWidth(
+                  child: LayoutBuilder(builder: (context, constraints) {
+                    final progress = Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: OnboardingProgress(
+                            step: step, totalSteps: totalSteps));
+                    return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: constraints.maxHeight < 400
+                            ? SingleChildScrollView(
+                                key: ValueKey('short_$step'),
+                                child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: [progress, body(), actions]))
+                            : Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                    progress,
+                                    Expanded(
+                                        child: SingleChildScrollView(
+                                            key: ValueKey('step_$step'),
+                                            child: body())),
+                                    actions,
+                                  ]));
+                  }),
+                ))));
       }));
 }

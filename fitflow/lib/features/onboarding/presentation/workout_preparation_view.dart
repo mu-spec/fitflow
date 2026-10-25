@@ -1,15 +1,17 @@
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:flutter/material.dart';
 
-/// Completed local setup stages, not a simulated download timer.
+/// Presentation-paced local setup. Completion is gated by successful preparation.
 class WorkoutPreparationView extends StatelessWidget {
   const WorkoutPreparationView(
       {super.key,
       required this.progress,
+      this.saving = false,
       required this.failed,
       required this.onRetry});
   final double progress;
   final bool failed;
+  final bool saving;
   final VoidCallback onRetry;
 
   @override
@@ -18,11 +20,9 @@ class WorkoutPreparationView extends StatelessWidget {
     final l = context.l10n;
     final stage = progress >= 1
         ? l.setupReady
-        : progress >= 2 / 3
-            ? l.setupLoadingMedia
-            : progress >= 1 / 3
-                ? l.setupGenerating
-                : l.setupSaving;
+        : saving
+            ? l.setupSaving
+            : l.setupPreparationLocal;
     final percent = '${(progress * 100).round()}%';
     return PopScope(
         canPop: false,
@@ -44,7 +44,7 @@ class WorkoutPreparationView extends StatelessWidget {
                                 Semantics(
                                     label: l.setupPreparing,
                                     value: percent,
-                                    liveRegion: true,
+                                    liveRegion: false,
                                     child: ExcludeSemantics(
                                         child: SizedBox.square(
                                             dimension: 184,
@@ -76,9 +76,6 @@ class WorkoutPreparationView extends StatelessWidget {
                                 Text(failed ? l.setupPreparationFailed : stage,
                                     textAlign: TextAlign.center,
                                     style: theme.textTheme.bodyMedium),
-                                const SizedBox(height: 8),
-                                Text(l.setupPreparationLocal,
-                                    style: theme.textTheme.bodySmall),
                                 if (failed) ...[
                                   const SizedBox(height: 20),
                                   FilledButton(

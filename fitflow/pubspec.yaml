@@ -29,8 +29,8 @@ dev_dependencies:
 flutter:
   generate: true
   uses-material-design: true
-  # Photography is pending delivery. These directories contain no demo images.
   assets:
+    - assets/images/branding/
     - assets/images/exercises/thumb/
     - assets/images/exercises/hero/
     - assets/images/programs/
