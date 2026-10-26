@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/workouts/presentation/workouts_theme.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
@@ -7,6 +8,7 @@ import 'package:fitflow/features/onboarding/state/user_fitness_profile_controlle
 import 'package:fitflow/features/splash/startup_destination.dart';
 import 'package:fitflow/features/workouts/state/capability_profile_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -23,6 +25,8 @@ class SplashScreen extends ConsumerStatefulWidget {
 }
 
 class _SplashScreenState extends ConsumerState<SplashScreen> {
+  final _brandReady = Completer<void>();
+  Timer? _brandTimer;
   bool _navigated = false;
   bool _loadFailed = false;
   bool _retryInFlight = false;
@@ -30,8 +34,20 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    _brandTimer = Timer(AppConstants.splashDelay, _finishBrandPresentation);
     // ignore: discarded_futures
     _loadAndRoute(invalidate: false);
+  }
+
+  void _finishBrandPresentation() {
+    _brandTimer?.cancel();
+    if (!_brandReady.isCompleted) _brandReady.complete();
+  }
+
+  @override
+  void dispose() {
+    _finishBrandPresentation();
+    super.dispose();
   }
 
   /// Loads one persisted startup value independently, converting thrown
@@ -65,7 +81,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   /// Splash → load required persisted state concurrently → deterministic
-  /// routing with no artificial delay:
+  /// routing after the minimum brand presentation (errors appear immediately):
   /// No UserFitnessProfile → Onboarding
   /// UserFitnessProfile + no CapabilityProfile → Capability Assessment
   /// Both valid → Home
@@ -97,12 +113,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     );
 
     if (destination == StartupDestination.recovery) {
+      _finishBrandPresentation();
       setState(() => _loadFailed = true);
       return;
     }
 
-    _navigated = true;
+    await _brandReady.future;
     if (!mounted) return;
+    _navigated = true;
     switch (destination) {
       case StartupDestination.onboarding:
         context.go(AppRoutes.onboarding);
@@ -119,50 +137,66 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   Widget build(BuildContext context) {
     return WorkoutsTheme(child: Builder(builder: (context) {
       final theme = Theme.of(context);
-      return Scaffold(
-        body: SafeArea(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: _loadFailed
-                  ? _RecoveryBody(
-                      theme: theme,
-                      inFlight: _retryInFlight,
-                      onRetry: _retry,
-                    )
-                  : SingleChildScrollView(
-                      child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ClipRRect(
-                            borderRadius: BorderRadius.circular(24),
-                            child: Image.asset(
-                                'assets/images/branding/home_workout_icon.png',
-                                width: 112,
-                                height: 112,
-                                excludeFromSemantics: true)),
-                        const SizedBox(height: 24),
-                        Text(
-                          AppConstants.appName,
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.headlineSmall?.copyWith(
-                            color: theme.colorScheme.primary,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          AppConstants.tagline,
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    )),
+      return AnnotatedRegion<SystemUiOverlayStyle>(
+          value: _loadFailed && theme.brightness == Brightness.light
+              ? SystemUiOverlayStyle.dark
+              : SystemUiOverlayStyle.light,
+          child: Scaffold(
+            backgroundColor: _loadFailed
+                ? theme.scaffoldBackgroundColor
+                : const Color(0xFF202526),
+            body: SafeArea(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: _loadFailed
+                      ? _RecoveryBody(
+                          theme: theme,
+                          inFlight: _retryInFlight,
+                          onRetry: _retry,
+                        )
+                      : SingleChildScrollView(
+                          child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ClipRRect(
+                                borderRadius: BorderRadius.circular(32),
+                                child: Image.asset(
+                                    'assets/images/branding/home_workout_icon.png',
+                                    width: 156,
+                                    height: 156,
+                                    excludeFromSemantics: true)),
+                            const SizedBox(height: 28),
+                            Text(
+                              AppConstants.appName,
+                              textAlign: TextAlign.center,
+                              style: theme.textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: -.7,
+                                color: const Color(0xFFF3F4EE),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              AppConstants.tagline,
+                              textAlign: TextAlign.center,
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: const Color(0xFFC4CBC3),
+                              ),
+                            ),
+                            const SizedBox(height: 28),
+                            Container(
+                                width: 44,
+                                height: 4,
+                                decoration: BoxDecoration(
+                                    color: const Color(0xFFD4E779),
+                                    borderRadius: BorderRadius.circular(2))),
+                          ],
+                        )),
+                ),
+              ),
             ),
-          ),
-        ),
-      );
+          ));
     }));
   }
 }

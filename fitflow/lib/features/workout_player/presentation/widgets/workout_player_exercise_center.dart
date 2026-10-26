@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'pilot_exercise_demonstration.dart';
 
 import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_time_estimator.dart';
@@ -70,12 +71,22 @@ class WorkoutPlayerExerciseCenter extends StatelessWidget {
           return Center(
               child: ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: FitFlowExerciseImage.hero(
-              key: const ValueKey('v2_player_media'),
-              exerciseId: prescription.exercise.id,
-              width: width,
-              height: width * 3 / 4,
-            ),
+            child:
+                PilotExerciseDemonstration.supports(prescription.exercise.id) &&
+                        !MediaQuery.disableAnimationsOf(context)
+                    ? PilotExerciseDemonstration(
+                        key: const ValueKey('v2_player_media'),
+                        exerciseId: prescription.exercise.id,
+                        running: state.phase == WorkoutPlayerPhase.work &&
+                            !state.isPaused,
+                        width: width,
+                        height: width * 3 / 4)
+                    : FitFlowExerciseImage.hero(
+                        key: const ValueKey('v2_player_media'),
+                        exerciseId: prescription.exercise.id,
+                        width: width,
+                        height: width * 3 / 4,
+                      ),
           ));
         }),
         const SizedBox(height: 8),

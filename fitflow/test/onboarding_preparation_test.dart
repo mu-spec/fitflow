@@ -71,6 +71,18 @@ void main() {
             expect(
                 tester.widget<CircularProgressIndicator>(ring).value, progress);
             expect(tester.getSize(ring).width, tester.getSize(ring).height);
+            expect(tester.getCenter(ring).dx, closeTo(size.width / 2, .5));
+            final group =
+                find.ancestor(of: ring, matching: find.byType(Column)).first;
+            final bounds = tester.getRect(group);
+            if (bounds.height <= size.height - 96) {
+              expect(bounds.center.dy, closeTo(size.height / 2, .5));
+            } else {
+              // Large text can exceed the safe viewport and must scroll.
+              await tester.ensureVisible(find.text('Preparing your workout'));
+              expect(find.text('Preparing your workout').hitTestable(),
+                  findsOneWidget);
+            }
             expect(find.text('${(progress * 100).round()}%'), findsOneWidget);
             expect(find.text('Home Workout'), findsOneWidget);
             expect(find.byType(FilledButton), findsNothing);

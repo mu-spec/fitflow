@@ -2,6 +2,7 @@ import 'package:fitflow/features/onboarding/data/workout_preference.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/features/onboarding/presentation/widgets/onboarding_choice.dart';
+import 'setup_photo_background.dart';
 import 'package:fitflow/features/onboarding/state/onboarding_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
@@ -23,12 +24,13 @@ class PreferencesStepContent extends ConsumerWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(bottom: FitFlowSpace.sm),
-          child: Text(
+          child: SetupPhotoPanel(
+              child: Text(
             context.l10n.onboardingPreferencesNote,
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
-          ),
+          )),
         ),
         for (final preference in WorkoutPreference.values)
           OnboardingChoice(

@@ -1,3 +1,4 @@
+import 'package:fitflow/core/constants/app_constants.dart';
 import 'package:fitflow/app/app.dart';
 import 'package:fitflow/features/onboarding/data/experience_level.dart';
 import 'package:fitflow/features/onboarding/data/fitness_goal.dart';
@@ -37,7 +38,7 @@ void main() {
         child: FitFlowApp(),
       ),
     );
-    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pump(AppConstants.splashDelay);
     await tester.pump(const Duration(milliseconds: 800));
     await tester.pump(const Duration(milliseconds: 500));
   }

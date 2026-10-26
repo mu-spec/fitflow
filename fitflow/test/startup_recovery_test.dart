@@ -1,3 +1,4 @@
+import 'package:fitflow/core/constants/app_constants.dart';
 import 'dart:async';
 
 import 'package:fitflow/app/app.dart';
@@ -187,6 +188,7 @@ void main() {
 
     await tester.pumpWidget(const ProviderScope(child: FitFlowApp()));
     await tester.pump();
+    await tester.pump(AppConstants.splashDelay);
     await tester.pump(const Duration(milliseconds: 100));
 
     expect(find.text('Movement Check'), findsWidgets);

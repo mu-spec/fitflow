@@ -1,3 +1,4 @@
+import 'package:fitflow/core/constants/app_constants.dart';
 import 'dart:convert';
 
 import 'package:fitflow/app/app.dart';
@@ -30,12 +31,25 @@ void main() {
       ),
     );
     // Wait for splash delay + routing
-    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pump(AppConstants.splashDelay);
     await tester.pump(const Duration(milliseconds: 800));
     await tester.pump(const Duration(milliseconds: 500));
   }
 
   group('Splash Routing Matrix', () {
+    testWidgets('brand stays for 5.5 seconds before successful routing',
+        (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      await tester.pumpWidget(const ProviderScope(child: FitFlowApp()));
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 5));
+      expect(find.text('Workouts that adapt to you.'), findsOneWidget);
+      expect(find.text('Welcome to Home Workout'), findsNothing);
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(find.text('Welcome to Home Workout'), findsOneWidget);
+    });
+
     testWidgets('Case A: No UserFitnessProfile → Onboarding', (tester) async {
       SharedPreferences.setMockInitialValues({});
       await pumpApp(tester);
@@ -45,7 +59,8 @@ void main() {
       expect(find.text('Your workout'), findsNothing);
     });
 
-    testWidgets('Case B: UserFitnessProfile exists, Capability missing → Movement Check',
+    testWidgets(
+        'Case B: UserFitnessProfile exists, Capability missing → Movement Check',
         (tester) async {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
@@ -99,7 +114,8 @@ void main() {
       }
       final incompleteProfile = CapabilityProfile.fromMap(
         Map.fromEntries(
-          nineMap.entries.map((e) => MapEntry(e.key as dynamic, e.value as dynamic)),
+          nineMap.entries
+              .map((e) => MapEntry(e.key as dynamic, e.value as dynamic)),
         ),
       );
 
@@ -115,7 +131,7 @@ void main() {
           child: FitFlowApp(),
         ),
       );
-      await tester.pump(const Duration(milliseconds: 800));
+      await tester.pump(AppConstants.splashDelay);
       await tester.pump(const Duration(milliseconds: 800));
       await tester.pump(const Duration(milliseconds: 500));
 

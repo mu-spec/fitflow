@@ -11,7 +11,6 @@ class SetupPhotoBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
     final surface = Theme.of(context).colorScheme.surface;
     final asset = ExerciseMediaRegistry.lookup(exerciseId)?.hero;
     return Stack(fit: StackFit.expand, children: [
@@ -23,20 +22,34 @@ class SetupPhotoBackground extends StatelessWidget {
                 fit: BoxFit.cover,
                 alignment: Alignment.center,
                 errorBuilder: (_, __, ___) => ColoredBox(color: surface))),
-      // A continuous scrim keeps questions readable even over bright clothing.
+      // Keep the athlete vivid. Text has its own readable panel instead of
+      // washing the entire photograph out with a continuous opaque scrim.
       DecoratedBox(
           decoration: BoxDecoration(
               gradient: LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          surface.withValues(alpha: dark ? .82 : .88),
-          surface.withValues(alpha: dark ? .78 : .76),
-          surface.withValues(alpha: dark ? .90 : .92)
+          surface.withValues(alpha: .40),
+          surface.withValues(alpha: .04),
+          surface.withValues(alpha: .04),
+          surface.withValues(alpha: .90)
         ],
-        stops: const [0, .48, 1],
+        stops: const [0, .35, .78, 1],
       ))),
       child,
     ]);
   }
+}
+
+/// Local contrast protection; light and dark choices retain the selected theme.
+class SetupPhotoPanel extends StatelessWidget {
+  const SetupPhotoPanel({super.key, required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Material(
+      color: Theme.of(context).colorScheme.surface.withValues(alpha: .96),
+      borderRadius: BorderRadius.circular(16),
+      child: Padding(padding: const EdgeInsets.all(12), child: child));
 }

@@ -1,3 +1,4 @@
+import 'package:fitflow/features/workout_player/presentation/widgets/pilot_exercise_demonstration.dart';
 import 'dart:io';
 import 'dart:ui' as ui;
 
@@ -273,12 +274,12 @@ Future<_Harness> _pump(
     child: _app(const SizedBox.shrink(),
         router: router, size: size, dark: dark, scale: scale, reduced: reduced),
   ));
-  await tester.pumpAndSettle();
+  await _settle(tester);
   if (!preview) {
     // Match real launches: push a session on an existing navigation stack,
     // rather than synthesizing a declarative deep-link exit topology.
     router.push<void>('/session');
-    await tester.pumpAndSettle();
+    await _settle(tester);
   }
   return harness;
 }
@@ -291,7 +292,7 @@ Finder _button(String label) => find.ancestor(
 Future<void> _reachable(WidgetTester tester, Finder finder, Size size) async {
   expect(finder, findsOneWidget);
   await tester.ensureVisible(finder);
-  await tester.pumpAndSettle();
+  await _settle(tester);
   final rect = tester.getRect(finder);
   expect(rect.width, greaterThanOrEqualTo(48));
   expect(rect.height, greaterThanOrEqualTo(48));
@@ -300,11 +301,36 @@ Future<void> _reachable(WidgetTester tester, Finder finder, Size size) async {
   expect(finder.hitTestable(), findsOneWidget);
 }
 
+// A demonstration repeats while work is active; wait for UI transitions without
+// waiting for the illustration to stop. Domain timers remain test-controlled.
+Future<void> _settle(WidgetTester tester) async {
+  await tester.pump();
+  final moving = tester
+      .widgetList<PilotExerciseDemonstration>(
+          find.byType(PilotExerciseDemonstration))
+      .any((w) => w.running);
+  if (moving) {
+    await tester.pump(const Duration(milliseconds: 600));
+    await tester.pump();
+  } else {
+    await tester.pumpAndSettle();
+  }
+}
+
+String _mediaExerciseId(Widget widget) => switch (widget) {
+      FitFlowExerciseImage(:final exerciseId) => exerciseId,
+      PilotExerciseDemonstration(:final exerciseId) => exerciseId,
+      _ => throw StateError('Expected exercise media'),
+    };
+
+Finder get _playerMedia => find.byWidgetPredicate(
+    (w) => w is FitFlowExerciseImage || w is PilotExerciseDemonstration);
+
 Future<void> _tap(WidgetTester tester, String label, Size size) async {
   final finder = _button(label);
   await _reachable(tester, finder, size);
   await tester.tap(finder);
-  await tester.pumpAndSettle();
+  await _settle(tester);
 }
 
 Future<void> _capture(WidgetTester tester, String name) async {
@@ -342,7 +368,7 @@ void main() {
             final primary = find.byKey(const ValueKey('player_primary_action'));
             double? actionY;
             Future<void> check() async {
-              await tester.pumpAndSettle();
+              await _settle(tester);
               final viewport = Offset.zero & size;
               final photoRect = tester.getRect(photo);
               final target = find.byType(WorkoutCountdown).evaluate().isNotEmpty
@@ -440,7 +466,7 @@ void main() {
             }
             expect(c.state.phase, WorkoutPlayerPhase.rest);
             await check();
-            expect(tester.widget<FitFlowExerciseImage>(photo).exerciseId,
+            expect(_mediaExerciseId(tester.widget(photo)),
                 c.state.currentPrescription.exercise.id);
             expect(
                 find.text('${_l.flowNextSet(2, 2)} · $target'), findsOneWidget);
@@ -482,7 +508,7 @@ void main() {
           final c = h.controller;
           await _tap(tester, _l.beginWorkout, size);
           await _tap(tester, _l.flowPause, size);
-          expect(find.byType(FitFlowExerciseImage), findsOneWidget);
+          expect(_playerMedia, findsOneWidget);
           final photo = tester
               .widget<FitFlowExerciseImage>(find.byType(FitFlowExerciseImage));
           expect(photo.width / photo.height, closeTo(4 / 3, .001));
@@ -495,7 +521,7 @@ void main() {
           for (var i = 0; i < 30; i++) {
             c.tick();
           }
-          await tester.pumpAndSettle();
+          await _settle(tester);
           await _reachable(tester, _button(_l.skipRest), size);
           expect(tester.takeException(), isNull);
         });
@@ -523,7 +549,8 @@ void main() {
             expect(fact(_l.homeSession), findsOneWidget);
             expect(fact(_l.flowTarget(20)), findsNothing);
             expect(
-                fact('${_l.flowEstimate(plannedDuration(_l, h.plan.estimatedDuration))} \u00b7 '
+                fact(
+                    '${_l.flowEstimate(plannedDuration(_l, h.plan.estimatedDuration))} \u00b7 '
                     '${_l.flowCount(h.plan.totalExerciseCount)}'),
                 findsOneWidget);
             expect(fact(_l.flowNoEquipment), findsOneWidget);
@@ -639,7 +666,7 @@ void main() {
                   timed: timed, size: size, dark: dark, scale: scale);
               final c = h.controller;
               c.beginWorkout();
-              await tester.pumpAndSettle();
+              await _settle(tester);
               expect(find.byType(WorkoutPlayerExerciseCenter), findsOneWidget);
               expect(find.byKey(const ValueKey('v2_player_focus')),
                   findsOneWidget);
@@ -653,7 +680,7 @@ void main() {
                           find.byType(LinearProgressIndicator))
                       .value,
                   c.state.progressFraction);
-              expect(find.byType(FitFlowExerciseImage), findsOneWidget);
+              expect(_playerMedia, findsOneWidget);
               expect(find.text(_l.skipRest), findsNothing);
               expect(find.text(_l.skipTransition), findsNothing);
               expect(find.text(_l.flowDetails), findsNothing);
@@ -662,10 +689,10 @@ void main() {
                           .element(find.byType(WorkoutPlayerExerciseCenter)))
                       .scale(16),
                   16 * scale);
-              final media = tester.widget<FitFlowExerciseImage>(
-                  find.byType(FitFlowExerciseImage));
-              expect(media.exerciseId, c.state.currentPrescription.exercise.id);
-              expect(media.width / media.height, closeTo(4 / 3, .001));
+              expect(_mediaExerciseId(tester.widget(_playerMedia)),
+                  c.state.currentPrescription.exercise.id);
+              final mediaSize = tester.getSize(_playerMedia);
+              expect(mediaSize.width / mediaSize.height, closeTo(4 / 3, .001));
               if (timed) {
                 expect(find.byType(WorkoutCountdown), findsOneWidget);
                 expect(find.text(countdown(const Duration(seconds: 30))),
@@ -713,7 +740,7 @@ void main() {
                 expect(c.state.completedSets, 1);
                 expect(c.state.phase, WorkoutPlayerPhase.rest);
                 expect(find.byType(WorkoutPlayerRestView), findsOneWidget);
-                expect(find.byType(FitFlowExerciseImage), findsOneWidget);
+                expect(_playerMedia, findsOneWidget);
               }
               expect(h.history.saved, isEmpty);
               expect(h.completions, 0);
@@ -732,7 +759,7 @@ void main() {
       final h = await _pump(tester, timed: false, autoStartTimer: true);
       final c = h.controller;
       c.beginWorkout();
-      await tester.pumpAndSettle();
+      await _settle(tester);
       final prescription = c.state.currentPrescription;
       expect(c.hasActiveTimer, isFalse);
       await tester.pump(const Duration(minutes: 2));
@@ -788,14 +815,14 @@ void main() {
             await tester.scrollUntilVisible(explanation, 100,
                 scrollable: find.descendant(
                     of: list, matching: find.byType(Scrollable)));
-            await tester.pumpAndSettle();
+            await _settle(tester);
             expect(explanation.hitTestable(), findsOneWidget);
             await tester.scrollUntilVisible(find.text(_l.cancel), -100,
                 scrollable: find.descendant(
                     of: list, matching: find.byType(Scrollable)));
-            await tester.pumpAndSettle();
+            await _settle(tester);
             await tester.tap(find.text(_l.cancel));
-            await tester.pumpAndSettle();
+            await _settle(tester);
             expect(picker, findsNothing);
             expect(h.controller.state, same(state));
             expect(tester.takeException(), isNull);
@@ -820,7 +847,7 @@ void main() {
         expect(c.state, same(ready));
         await _tap(tester, _l.beginWorkout, const Size(320, 700));
         await _tap(tester, _l.flowPause, const Size(320, 700));
-        expect(find.byType(FitFlowExerciseImage), findsOneWidget);
+        expect(_playerMedia, findsOneWidget);
         final paused = c.state;
         await tester.pump(const Duration(seconds: 2));
         expect(c.state, same(paused));
@@ -833,7 +860,7 @@ void main() {
         (tester) async {
       final h = await _pump(tester, timed: false);
       h.controller.beginWorkout();
-      await tester.pumpAndSettle();
+      await _settle(tester);
       Future<void> activate(String label) async {
         final button = _button(label);
         await _reachable(tester, button, const Size(390, 844));
@@ -842,7 +869,7 @@ void main() {
             .requestFocus();
         await tester.pump();
         await tester.sendKeyEvent(LogicalKeyboardKey.enter);
-        await tester.pumpAndSettle();
+        await _settle(tester);
       }
 
       await activate(_l.pause);
@@ -864,7 +891,7 @@ void main() {
       final tile = find.descendant(of: first, matching: find.byType(ListTile));
       await _reachable(tester, tile, const Size(390, 844));
       await tester.tap(tile);
-      await tester.pumpAndSettle();
+      await _settle(tester);
       expect(find.text('Native detail route'), findsOneWidget);
       expect(
           GoRouterState.of(tester.element(find.text('Native detail route')))
@@ -872,7 +899,7 @@ void main() {
               .path,
           AppRoutes.exerciseDetail(id));
       h.router.pop();
-      await tester.pumpAndSettle();
+      await _settle(tester);
       expect(
           tester
               .widgetList<WorkoutPreviewExerciseRow>(
@@ -892,14 +919,14 @@ void main() {
       expect(find.text(_l.flowPreviewHelp), findsNothing);
       final disclosure = find.byKey(const Key('preview_details'));
       await tester.ensureVisible(disclosure);
-      await tester.pumpAndSettle();
+      await _settle(tester);
       await tester.tap(find.text(_l.flowPreviewDetails));
-      await tester.pumpAndSettle();
+      await _settle(tester);
       expect(find.text(_l.flowPreviewHelp), findsOneWidget);
       expect(find.text(_l.flowAdaptiveNote), findsOneWidget);
       final lastRow = find.byType(WorkoutPreviewExerciseRow).last;
       await tester.ensureVisible(lastRow);
-      await tester.pumpAndSettle();
+      await _settle(tester);
       expect(tester.getBottomRight(lastRow).dy,
           lessThanOrEqualTo(tester.getTopLeft(start).dy));
       expect(start.hitTestable(), findsOneWidget);
@@ -915,7 +942,7 @@ void main() {
       Focus.of(tester.element(label)).requestFocus();
       await tester.pump();
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
-      await tester.pumpAndSettle();
+      await _settle(tester);
       expect(find.byType(WorkoutPlayerScreen), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
@@ -940,7 +967,7 @@ void main() {
                 of: summary, matching: find.text(sessionModeLabel(_l, mode))),
             findsOneWidget);
         await tester.tap(find.text(_l.flowPreviewDetails));
-        await tester.pumpAndSettle();
+        await _settle(tester);
         expect(
             find.descendant(
                 of: summary,
@@ -973,7 +1000,7 @@ void main() {
         final c = h.controller;
         final sessionId = c.sessionId;
         c.beginWorkout();
-        await tester.pumpAndSettle();
+        await _settle(tester);
         expect(
             tester
                 .widget<WorkoutPlayerSessionView>(
@@ -990,7 +1017,7 @@ void main() {
                     find.byType(WorkoutPlayerSessionView))
                 .plan,
             h.plan);
-        expect(find.byType(FitFlowExerciseImage), findsOneWidget);
+        expect(_playerMedia, findsOneWidget);
         expect(h.history.saved, isEmpty);
         expect(tester.takeException(), isNull);
       });
@@ -1002,10 +1029,10 @@ void main() {
       final h = await _pump(tester, timed: false);
       final c = h.controller;
       c.beginWorkout();
-      await tester.pumpAndSettle();
+      await _settle(tester);
       await _tap(tester, _l.setComplete, const Size(390, 844));
       expect(c.state.phase, WorkoutPlayerPhase.rest);
-      expect(find.byType(FitFlowExerciseImage), findsOneWidget);
+      expect(_playerMedia, findsOneWidget);
       await _tap(tester, _l.skipRest, const Size(390, 844));
       expect(c.state.phase, WorkoutPlayerPhase.work);
       expect(find.textContaining(_l.flowSet(2, 2)), findsOneWidget);
@@ -1053,7 +1080,7 @@ void main() {
       final h = await _pump(tester);
       final c = h.controller;
       c.beginWorkout();
-      await tester.pumpAndSettle();
+      await _settle(tester);
       final original = c.state.currentPrescription;
       final remaining = c.state.remaining;
       final option = c.getReplacementOptions().first;
@@ -1072,9 +1099,9 @@ void main() {
       }
       expect(c.state.remaining, remaining);
       h.router.pop();
-      await tester.pumpAndSettle();
+      await _settle(tester);
       expect(c.replaceCurrentExercise(option), isTrue);
-      await tester.pumpAndSettle();
+      await _settle(tester);
       expect(find.text(option.exercise.name), findsOneWidget);
       expect(
           find.text(_l.flowReplaced(original.exercise.name)), findsOneWidget);
@@ -1091,7 +1118,7 @@ void main() {
         (tester) async {
       final h = await _pump(tester, timed: false);
       h.controller.beginWorkout();
-      await tester.pumpAndSettle();
+      await _settle(tester);
       await _tap(tester, _l.pause, const Size(390, 844));
       final id = h.controller.state.currentPrescription.exercise.id;
       await _tap(tester, _l.flowDetails, const Size(390, 844));
@@ -1102,7 +1129,7 @@ void main() {
               .path,
           '/session/exercise/$id');
       h.router.pop();
-      await tester.pumpAndSettle();
+      await _settle(tester);
       expect(h.controller.state.isPaused, isTrue);
       expect(find.byType(WorkoutPlayerExerciseCenter), findsOneWidget);
       expect(tester.takeException(), isNull);
@@ -1113,7 +1140,7 @@ void main() {
       final h = await _pump(tester);
       final c = h.controller;
       c.beginWorkout();
-      await tester.pumpAndSettle();
+      await _settle(tester);
       final position = c.state.exerciseIndex;
       final remaining = c.state.remaining;
       final spoken = List<String>.of(h.coach.spoken);
@@ -1121,14 +1148,14 @@ void main() {
       await _reachable(
           tester, find.byTooltip(_l.flowMute), const Size(390, 844));
       await tester.tap(find.byTooltip(_l.flowMute));
-      await tester.pumpAndSettle();
+      await _settle(tester);
       expect(c.state.voiceEnabled, isFalse);
       expect(h.coach.stopCalls, stops + 1);
       expect(h.coach.spoken, spoken);
       expect(c.state.remaining, remaining);
       expect(c.state.exerciseIndex, position);
       await tester.tap(find.byTooltip(_l.flowVoice));
-      await tester.pumpAndSettle();
+      await _settle(tester);
       expect(c.state.voiceEnabled, isTrue);
       expect(h.coach.spoken, spoken);
       expect(c.state.remaining, remaining);
@@ -1143,15 +1170,15 @@ void main() {
         final c = h.controller;
         c.beginWorkout();
         if (paused) c.pause();
-        await tester.pumpAndSettle();
+        await _settle(tester);
         await tester.tap(find.byType(BackButton));
-        await tester.pumpAndSettle();
+        await _settle(tester);
         expect(find.text(_l.flowExitTitle), findsOneWidget);
         await _tap(tester, _l.flowKeepGoing, const Size(390, 844));
         expect(c.state.isPaused, paused);
         expect(find.byType(WorkoutPlayerExerciseCenter), findsOneWidget);
         await tester.tap(find.byType(BackButton));
-        await tester.pumpAndSettle();
+        await _settle(tester);
         await _tap(tester, _l.flowExit, const Size(390, 844));
         expect(find.byType(WorkoutPlayerSessionView), findsNothing);
         expect(find.text('Test root'), findsOneWidget);
@@ -1170,7 +1197,7 @@ void main() {
       c.tick();
       c.toggleVoice();
       c.pause();
-      await tester.pumpAndSettle();
+      await _settle(tester);
       final state = c.state;
       final sessionId = c.sessionId;
       for (final size in _sizes) {
@@ -1184,7 +1211,7 @@ void main() {
               dark: true,
               reduced: true),
         ));
-        await tester.pumpAndSettle();
+        await _settle(tester);
         expect(identical(h.controller, c), isTrue);
         expect(c.sessionId, sessionId);
         expect(c.state, same(state));
@@ -1200,10 +1227,10 @@ void main() {
         (tester) async {
       final h = await _pump(tester, timed: false);
       final c = h.controller;
-      expect(find.byType(FitFlowExerciseImage), findsOneWidget);
+      expect(_playerMedia, findsOneWidget);
       c.beginWorkout();
-      await tester.pumpAndSettle();
-      expect(find.byType(FitFlowExerciseImage), findsOneWidget);
+      await _settle(tester);
+      expect(_playerMedia, findsOneWidget);
       for (var i = 0;
           i < 200 && c.state.phase != WorkoutPlayerPhase.completed;
           i++) {
@@ -1227,13 +1254,13 @@ void main() {
         }
       }
       expect(c.state.phase, WorkoutPlayerPhase.completed);
-      await tester.pumpAndSettle();
+      await _settle(tester);
       expect(find.byType(WorkoutPlayerCompletedView), findsOneWidget);
-      expect(find.byType(FitFlowExerciseImage), findsNothing);
+      expect(_playerMedia, findsNothing);
       expect(h.history.saved, hasLength(1));
       expect(h.completions, 1);
       await tester.pump();
-      await tester.pumpAndSettle();
+      await _settle(tester);
       expect(h.history.saved, hasLength(1));
       expect(h.completions, 1);
       expect(tester.takeException(), isNull);
@@ -1279,7 +1306,7 @@ void main() {
                   label: 'Decorative artwork',
                   child: const Text('Decorative text'))),
         ]))));
-        await tester.pumpAndSettle();
+        await _settle(tester);
         expect(find.bySemanticsLabel('Real exercise name'), findsOneWidget);
         expect(find.bySemanticsLabel(RegExp('Decorative')), findsNothing);
         expect(
@@ -1306,7 +1333,7 @@ void main() {
         final h = await _pump(tester);
         final c = h.controller;
         c.beginWorkout();
-        await tester.pumpAndSettle();
+        await _settle(tester);
         expect(find.bySemanticsLabel(c.state.currentPrescription.exercise.name),
             findsOneWidget);
         expect(find.bySemanticsLabel(_l.flowExercisePosition(1, 2)),
@@ -1385,7 +1412,7 @@ void main() {
       final h = await _pump(tester,
           reduced: true, size: const Size(900, 320), scale: 2);
       h.controller.beginWorkout();
-      await tester.pumpAndSettle();
+      await _settle(tester);
       expect(find.byWidgetPredicate((w) => w is TweenAnimationBuilder<double>),
           findsNothing);
       final media = find.byType(FitFlowExerciseImage);
@@ -1419,7 +1446,7 @@ void main() {
             budget: plan.timeBudget.warmup),
         WorkoutPreviewExerciseRow(prescription: plan.warmup.exercises.first),
       ]))));
-      await tester.pumpAndSettle();
+      await _settle(tester);
       final row = tester.widget<WorkoutPreviewExerciseRow>(
           find.byType(WorkoutPreviewExerciseRow));
       expect(row.visualV2, isFalse);

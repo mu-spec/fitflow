@@ -64,26 +64,32 @@ class OnboardingShell extends StatelessWidget {
         Widget body() =>
             Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
               const SizedBox(height: 16),
-              Semantics(
-                  header: true,
-                  child: Text(title,
-                      style: theme.textTheme.headlineSmall
-                          ?.copyWith(fontWeight: FontWeight.w600))),
-              if (description != null) ...[
-                const SizedBox(height: 8),
-                Text(description!,
-                    style: theme.textTheme.bodyMedium
-                        ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-              ],
+              SetupPhotoPanel(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                    Semantics(
+                        header: true,
+                        child: Text(title,
+                            style: theme.textTheme.headlineSmall
+                                ?.copyWith(fontWeight: FontWeight.w600))),
+                    if (description != null) ...[
+                      const SizedBox(height: 8),
+                      Text(description!,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant)),
+                    ],
+                  ])),
               const SizedBox(height: 16),
               content,
               if (error != null) ...[
                 const SizedBox(height: 12),
                 Semantics(
                     liveRegion: true,
-                    child: Text(error!,
-                        style: theme.textTheme.bodyMedium
-                            ?.copyWith(color: theme.colorScheme.error))),
+                    child: SetupPhotoPanel(
+                        child: Text(error!,
+                            style: theme.textTheme.bodyMedium
+                                ?.copyWith(color: theme.colorScheme.error)))),
               ],
               const SizedBox(height: 8),
             ]);
@@ -95,8 +101,9 @@ class OnboardingShell extends StatelessWidget {
                   child: LayoutBuilder(builder: (context, constraints) {
                     final progress = Padding(
                         padding: const EdgeInsets.symmetric(vertical: 12),
-                        child: OnboardingProgress(
-                            step: step, totalSteps: totalSteps));
+                        child: SetupPhotoPanel(
+                            child: OnboardingProgress(
+                                step: step, totalSteps: totalSteps)));
                     return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: constraints.maxHeight < 400

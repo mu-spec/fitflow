@@ -267,7 +267,7 @@ class _CapabilityAssessmentScreenState extends ConsumerState<_AssessmentContent>
           child: Scaffold(
             backgroundColor: Colors.transparent,
             appBar: AppBar(
-              backgroundColor: Colors.transparent,
+              backgroundColor: Theme.of(context).colorScheme.surface,
               surfaceTintColor: Colors.transparent,
               title: Text(l10n.movementCheckTitle, style: text.titleLarge),
               leading: IconButton(
@@ -286,9 +286,10 @@ class _CapabilityAssessmentScreenState extends ConsumerState<_AssessmentContent>
                       child: Padding(
                     padding:
                         const EdgeInsets.symmetric(vertical: FitFlowSpace.md),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
+                    child: SetupPhotoPanel(
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
                           Text(l10n.assessmentBody, style: text.bodyMedium),
                           const SizedBox(height: 12),
                           FitFlowProgress(
@@ -305,7 +306,7 @@ class _CapabilityAssessmentScreenState extends ConsumerState<_AssessmentContent>
                                     style: text.bodyMedium
                                         ?.copyWith(color: colors.error))),
                           ],
-                        ]),
+                        ])),
                   )),
                   SliverList.builder(
                     itemCount: CapabilityAssessmentCatalog.all.length,
@@ -340,11 +341,12 @@ class _CapabilityAssessmentScreenState extends ConsumerState<_AssessmentContent>
                     key: const Key('assessment_summary'),
                     padding:
                         const EdgeInsets.symmetric(vertical: FitFlowSpace.md),
-                    child: ExpansionTile(
-                        tilePadding: EdgeInsets.zero,
-                        title: Text(l10n.assessmentSummary,
-                            style: text.titleMedium),
-                        children: [
+                    child: SetupPhotoPanel(
+                        child: ExpansionTile(
+                            tilePadding: EdgeInsets.zero,
+                            title: Text(l10n.assessmentSummary,
+                                style: text.titleMedium),
+                            children: [
                           for (final item in CapabilityAssessmentCatalog.all)
                             if (assessmentState.answerFor(item.movementPattern)
                                 case final answer?)
@@ -358,7 +360,7 @@ class _CapabilityAssessmentScreenState extends ConsumerState<_AssessmentContent>
                                           assessmentChoice(
                                               l10n, answer.selectedLevel)),
                                       style: text.bodyMedium)),
-                        ]),
+                        ])),
                   )),
                   if (short) SliverToBoxAdapter(child: save),
                 ]);
@@ -410,8 +412,9 @@ class _MovementAssessmentCard extends StatelessWidget {
       MovementPattern.balance => 'single_leg_stand',
       _ => 'arm_circles',
     };
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      const Divider(height: 24),
+    return SetupPhotoPanel(
+        child:
+            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Row(children: [
         ClipRRect(
             borderRadius: BorderRadius.circular(10),
@@ -466,6 +469,6 @@ class _MovementAssessmentCard extends StatelessWidget {
                 child: Text(assessmentExamples(l10n, item.movementPattern),
                     style: text.bodySmall))
           ]),
-    ]);
+    ]));
   }
 }

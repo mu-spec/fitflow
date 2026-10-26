@@ -1,3 +1,4 @@
+import 'setup_photo_background.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
@@ -100,7 +101,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       'environment' => const EnvironmentStepContent(),
       'equipment' => const EquipmentStepContent(),
       'preferences' => const PreferencesStepContent(),
-      'ready' => Text(body ?? ''),
+      'ready' => SetupPhotoPanel(child: Text(body ?? '')),
       _ => const SizedBox.shrink(),
     };
   }
