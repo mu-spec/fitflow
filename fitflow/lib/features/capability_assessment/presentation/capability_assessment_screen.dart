@@ -242,6 +242,10 @@ class _CapabilityAssessmentScreenState extends ConsumerState<_AssessmentContent>
       _hasInitialized = true;
     }
 
+    return SetupPhotoTheme(child: Builder(builder: _buildAssessment));
+  }
+
+  Widget _buildAssessment(BuildContext context) {
     final assessmentState = _assessmentState!;
     final initialState = _initialState!;
 
@@ -267,7 +271,7 @@ class _CapabilityAssessmentScreenState extends ConsumerState<_AssessmentContent>
           child: Scaffold(
             backgroundColor: Colors.transparent,
             appBar: AppBar(
-              backgroundColor: Theme.of(context).colorScheme.surface,
+              backgroundColor: Colors.black.withValues(alpha: .58),
               surfaceTintColor: Colors.transparent,
               title: Text(l10n.movementCheckTitle, style: text.titleLarge),
               leading: IconButton(

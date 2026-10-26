@@ -42,6 +42,11 @@ void main() {
           final icon = tester.widget<Image>(find.byType(Image));
           expect((icon.image as AssetImage).assetName,
               'assets/images/branding/home_workout_icon.png');
+          final initialSize = tester.getSize(find.byType(Image));
+          expect(initialSize, const Size(156, 156));
+          await tester.pump(const Duration(seconds: 2));
+          expect(tester.getSize(find.byType(Image)), initialSize,
+              reason: 'Brand must not grow after its first Flutter frame');
           expect(tester.takeException(), isNull);
           await tester.pumpWidget(const SizedBox.shrink());
         });

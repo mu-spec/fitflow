@@ -1,5 +1,27 @@
 import 'package:fitflow/core/design/media/exercise_media_registry.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fitflow/features/workouts/presentation/workouts_theme.dart';
+
+/// Foreground contrast for photographic setup only; does not save or change the
+/// user's appearance preference, nor affect preparation or other app screens.
+class SetupPhotoTheme extends StatelessWidget {
+  const SetupPhotoTheme({super.key, required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final base = Theme.of(context);
+    return Theme(
+        data: base.copyWith(
+            brightness: Brightness.dark,
+            colorScheme:
+                base.colorScheme.copyWith(brightness: Brightness.dark)),
+        child: AnnotatedRegion<SystemUiOverlayStyle>(
+            value: SystemUiOverlayStyle.light,
+            child: WorkoutsTheme(child: child)));
+  }
+}
 
 /// Decorative setup photography, not an exercise demonstration or prescription.
 /// The backdrop fills the viewport; the foreground keeps its own scroll/safe area.
@@ -22,18 +44,18 @@ class SetupPhotoBackground extends StatelessWidget {
                 fit: BoxFit.cover,
                 alignment: Alignment.center,
                 errorBuilder: (_, __, ___) => ColoredBox(color: surface))),
-      // Keep the athlete vivid. Text has its own readable panel instead of
-      // washing the entire photograph out with a continuous opaque scrim.
+      // A dark tonal scrim preserves photographic color. Translucent foregrounds
+      // provide local contrast without hiding the athlete behind white cards.
       DecoratedBox(
           decoration: BoxDecoration(
               gradient: LinearGradient(
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
         colors: [
-          surface.withValues(alpha: .40),
-          surface.withValues(alpha: .04),
-          surface.withValues(alpha: .04),
-          surface.withValues(alpha: .90)
+          Colors.black.withValues(alpha: .50),
+          Colors.black.withValues(alpha: .25),
+          Colors.black.withValues(alpha: .25),
+          Colors.black.withValues(alpha: .72)
         ],
         stops: const [0, .35, .78, 1],
       ))),
@@ -42,14 +64,14 @@ class SetupPhotoBackground extends StatelessWidget {
   }
 }
 
-/// Local contrast protection; light and dark choices retain the selected theme.
+/// See-through contrast protection on the photographic setup surface.
 class SetupPhotoPanel extends StatelessWidget {
   const SetupPhotoPanel({super.key, required this.child});
   final Widget child;
 
   @override
   Widget build(BuildContext context) => Material(
-      color: Theme.of(context).colorScheme.surface.withValues(alpha: .96),
+      color: Colors.black.withValues(alpha: .58),
       borderRadius: BorderRadius.circular(16),
       child: Padding(padding: const EdgeInsets.all(12), child: child));
 }

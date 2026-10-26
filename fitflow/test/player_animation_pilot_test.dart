@@ -54,6 +54,36 @@ PilotCharacterPainter painter(WidgetTester tester) => tester
     .painter! as PilotCharacterPainter;
 
 void main() {
+  test('front-facing march alternates the opposite arm with each knee', () {
+    final right = PilotCharacterPose(.25, squat: false);
+    final left = PilotCharacterPose(.75, squat: false);
+    expect(right.ankle(-1).dy, 260);
+    expect(right.ankle(1).dy, lessThan(260));
+    expect(right.hand(-1).dy, lessThan(right.hand(1).dy));
+    expect(left.ankle(1).dy, 260);
+    expect(left.ankle(-1).dy, lessThan(260));
+    expect(left.hand(1).dy, lessThan(left.hand(-1).dy));
+    for (var i = 0; i <= 32; i++) {
+      final pose = PilotCharacterPose(i / 32, squat: false);
+      expect(pose.ankle(-1).dy == 260 || pose.ankle(1).dy == 260, isTrue,
+          reason: 'Marching always keeps one foot grounded');
+      expect(pose.knee(-1).dx, lessThan(pose.knee(1).dx));
+    }
+  });
+  test('squat plants both feet and keeps leg lengths through the full cycle',
+      () {
+    for (var i = 0; i <= 32; i++) {
+      final pose = PilotCharacterPose(i / 32, squat: true);
+      for (final side in [-1.0, 1.0]) {
+        expect(pose.ankle(side), Offset(200 + side * 35, 260));
+        expect((pose.knee(side) - pose.hip(side)).distance,
+            closeTo(PilotCharacterPose.squatLegLength, .001));
+        expect((pose.ankle(side) - pose.knee(side)).distance,
+            closeTo(PilotCharacterPose.squatLegLength, .001));
+      }
+      expect(pose.knee(-1).dx, lessThan(pose.knee(1).dx));
+    }
+  });
   for (final id in ['march_in_place', 'squat_bodyweight']) {
     testWidgets('$id artwork follows work/pause without driving the session',
         (tester) async {

@@ -88,8 +88,53 @@ class _DemonstrationState extends State<PilotExerciseDemonstration>
                       squat: widget.exerciseId == 'squat_bodyweight')))));
 }
 
-/// An original shaded vector character with fixed limb lengths and planted
-/// support feet. Orthographic side view keeps the squat's contacts readable.
+/// Front-facing pose data for the illustrated pilot. The support foot stays on
+/// the ground; a lifted knee and its opposite arm move together. Squat feet stay
+/// planted and the knees bend outward, rather than overlapping in profile.
+class PilotCharacterPose {
+  PilotCharacterPose(double phase, {required this.squat})
+      : angle = phase * math.pi * 2;
+  final bool squat;
+  final double angle;
+  static final squatLegLength = math.sqrt(96 * 96 + 22 * 22) / 2;
+  double get depth => squat ? (1 - math.cos(angle)) / 2 : 0;
+  Offset get pelvis => Offset(200, 164 + 33 * depth);
+  Offset get shoulders => Offset(200, 94 + 33 * depth);
+  double lift(double side) => squat ? 0 : math.max(0, side * math.sin(angle));
+  Offset hip(double side) => pelvis.translate(side * 13, 0);
+  Offset ankle(double side) => squat
+      ? Offset(200 + side * 35, 260)
+      : Offset(200 + side * (23 + 5 * lift(side)), 260 - 43 * lift(side));
+  Offset knee(double side) {
+    if (!squat) {
+      return Offset(200 + side * (18 + 8 * lift(side)), 212 - 43 * lift(side));
+    }
+    // Two equal-length segments, with the knee on the outward solution.
+    final h = hip(side);
+    final foot = ankle(side);
+    final delta = foot - h;
+    final bend = math.sqrt(math.max(
+        0, squatLegLength * squatLegLength - delta.distanceSquared / 4));
+    return (h + foot) / 2 +
+        Offset(delta.dy, -delta.dx) / delta.distance * bend * side;
+  }
+
+  Offset shoulder(double side) => shoulders.translate(side * 28, 1);
+  Offset elbow(double side) {
+    final forward = squat ? depth : lift(-side);
+    return shoulders.translate(side * (43 - 6 * forward), 29 - 7 * forward);
+  }
+
+  Offset hand(double side) {
+    final forward = squat ? depth : lift(-side);
+    return shoulders.translate(
+        side * (40 - (squat ? 34 : 21) * forward), 62 - 48 * forward);
+  }
+}
+
+/// A front-facing athletic illustration, not a realistic 3D avatar. Tapered
+/// silhouettes, a wider shoulder line and separated limbs replace the old
+/// tubular profile. This painter has no access to workout state or timers.
 class PilotCharacterPainter extends CustomPainter {
   PilotCharacterPainter({required this.motion, required this.squat})
       : super(repaint: motion);
@@ -99,163 +144,233 @@ class PilotCharacterPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     canvas.save();
-    canvas.scale(size.width / 400, size.height / 300);
+    // Uniform scaling also keeps proportions intact in nonstandard hosts.
+    final scale = math.min(size.width / 400, size.height / 300);
+    canvas.drawRect(
+        Offset.zero & size, Paint()..color = const Color(0xFFE7EBE6));
+    canvas.translate(
+        (size.width - 400 * scale) / 2, (size.height - 300 * scale) / 2);
+    canvas.scale(scale);
     canvas.drawRect(
         const Rect.fromLTWH(0, 0, 400, 300),
         Paint()
           ..shader = ui.Gradient.linear(
               const Offset(0, 0),
               const Offset(400, 300),
-              [const Color(0xFFE8ECE6), const Color(0xFFBCC8C2)]));
-    canvas.drawOval(const Rect.fromLTWH(135, 263, 140, 12),
-        Paint()..color = const Color(0xFF60756B).withValues(alpha: .20));
-    final angle = motion.value * math.pi * 2;
-    final depth = squat ? (1 - math.cos(angle)) / 2 : 0.0;
-    final hip = Offset(194 - depth * 34, 165 + depth * 34);
-    final shoulder = Offset(196 - depth * 7, 94 + depth * 42);
+              [const Color(0xFFF0F2ED), const Color(0xFFCCD5CF)]));
+    canvas.drawOval(const Rect.fromLTWH(128, 264, 144, 10),
+        Paint()..color = const Color(0xFF53675E).withValues(alpha: .18));
+    final pose = PilotCharacterPose(motion.value, squat: squat);
+    const skin = Color(0xFFC08A68);
+    const skinLight = Color(0xFFE5B18C);
+    const pants = Color(0xFF344349);
 
-    void limb(Offset a, Offset b, double width, Color shade, Color highlight) {
-      canvas.drawLine(
-          a,
-          b,
-          Paint()
-            ..strokeCap = StrokeCap.round
-            ..strokeWidth = width
-            ..color = shade);
-      canvas.drawLine(
-          a.translate(-width * .13, 0),
-          b.translate(-width * .13, 0),
-          Paint()
-            ..strokeCap = StrokeCap.round
-            ..strokeWidth = width * .65
-            ..shader = ui.Gradient.linear(a, b, [highlight, shade]));
-    }
-
-    Offset kneeFor(Offset h, Offset ankle) {
-      final delta = ankle - h;
-      final distance = delta.distance;
-      final midpoint = (h + ankle) / 2;
-      final bend = math.sqrt(math.max(0, 50 * 50 - distance * distance / 4));
-      return midpoint + Offset(delta.dy, -delta.dx) / distance * bend;
-    }
-
-    void shoe(Offset ankle, bool rear) {
+    void segment(Offset a, Offset b, double startWidth, double endWidth,
+        Color dark, Color light) {
+      final direction = b - a;
+      final normal = Offset(-direction.dy, direction.dx) / direction.distance;
+      final a1 = a + normal * startWidth / 2;
+      final a2 = a - normal * startWidth / 2;
+      final b1 = b + normal * endWidth / 2;
+      final b2 = b - normal * endWidth / 2;
       final path = Path()
-        ..moveTo(ankle.dx - 8, ankle.dy - 5)
-        ..lineTo(ankle.dx + 7, ankle.dy - 5)
+        ..moveTo(a1.dx, a1.dy)
+        ..quadraticBezierTo((a1.dx + b1.dx) / 2 + normal.dx * 2,
+            (a1.dy + b1.dy) / 2 + normal.dy * 2, b1.dx, b1.dy)
         ..quadraticBezierTo(
-            ankle.dx + 13, ankle.dy + 1, ankle.dx + 23, ankle.dy + 2)
+            b.dx + direction.dx * .08, b.dy + direction.dy * .08, b2.dx, b2.dy)
+        ..lineTo(a2.dx, a2.dy)
         ..quadraticBezierTo(
-            ankle.dx + 28, ankle.dy + 7, ankle.dx + 21, ankle.dy + 8)
-        ..lineTo(ankle.dx - 9, ankle.dy + 8)
+            a.dx - direction.dx * .10, a.dy - direction.dy * .10, a1.dx, a1.dy)
+        ..close();
+      canvas.drawPath(
+          path, Paint()..shader = ui.Gradient.linear(a1, a2, [light, dark]));
+    }
+
+    void foot(double side) {
+      final a = pose.ankle(side);
+      final toe = a.translate(side * 3, 9);
+      final shoe = Path()
+        ..moveTo(a.dx - 7, a.dy - 5)
+        ..quadraticBezierTo(a.dx, a.dy - 8, a.dx + 7, a.dy - 5)
+        ..lineTo(toe.dx + 11, toe.dy - 1)
+        ..quadraticBezierTo(toe.dx + 12, toe.dy + 5, toe.dx, toe.dy + 5)
+        ..quadraticBezierTo(toe.dx - 12, toe.dy + 5, toe.dx - 11, toe.dy - 1)
+        ..close();
+      canvas.drawPath(shoe, Paint()..color = const Color(0xFFF8F9F4));
+      canvas.drawLine(
+          toe.translate(-9, 4),
+          toe.translate(9, 4),
+          Paint()
+            ..color = pants
+            ..strokeWidth = 2
+            ..strokeCap = StrokeCap.round);
+      for (var i = 0; i < 3; i++) {
+        canvas.drawLine(
+            a.translate(-4, -1 + i * 2),
+            a.translate(4, -1 + i * 2),
+            Paint()
+              ..color = const Color(0xFF778681)
+              ..strokeWidth = 1);
+      }
+    }
+
+    // Continuous silhouette around each joint avoids disconnected cylinders
+    // and sharp caps when a knee or elbow changes direction.
+    void chain(Offset a, Offset joint, Offset b, double wa, double wj,
+        double wb, Color dark, Color light) {
+      Offset normal(Offset delta) =>
+          Offset(-delta.dy, delta.dx) / delta.distance;
+      final na = normal(joint - a);
+      final nb = normal(b - joint);
+      final average = na + nb;
+      final nj = average / average.distance;
+      final a1 = a + na * wa / 2;
+      final a2 = a - na * wa / 2;
+      final j1 = joint + nj * wj / 2;
+      final j2 = joint - nj * wj / 2;
+      final b1 = b + nb * wb / 2;
+      final b2 = b - nb * wb / 2;
+      final path = Path()
+        ..moveTo(a1.dx, a1.dy)
+        ..quadraticBezierTo(j1.dx, j1.dy, j1.dx, j1.dy)
+        ..lineTo(b1.dx, b1.dy)
+        ..quadraticBezierTo(b.dx, b.dy + 3, b2.dx, b2.dy)
+        ..lineTo(j2.dx, j2.dy)
+        ..lineTo(a2.dx, a2.dy)
+        ..quadraticBezierTo(a.dx, a.dy - 5, a1.dx, a1.dy)
         ..close();
       canvas.drawPath(
           path,
           Paint()
-            ..color = rear ? const Color(0xFF3B4847) : const Color(0xFF202526));
+            ..shader = ui.Gradient.linear(
+                a1.translate(-8, 0), a2.translate(8, 0), [light, dark]));
+    }
+
+    void leg(double side) {
+      chain(pose.hip(side), pose.knee(side), pose.ankle(side), 24, 18, 9, pants,
+          const Color(0xFF53666B));
+      foot(side);
+    }
+
+    void arm(double side) {
+      final s = pose.shoulder(side);
+      final e = pose.elbow(side);
+      final h = pose.hand(side);
+      chain(s, e, h, 16, 12, 7, skin, skinLight);
+      canvas.drawOval(
+          Rect.fromCenter(center: h.translate(0, 3), width: 10, height: 14),
+          Paint()..color = skinLight);
       canvas.drawLine(
-          ankle.translate(-7, 7),
-          ankle.translate(22, 7),
+          h.translate(side * 3, 0),
+          h.translate(side * 4, 5),
           Paint()
-            ..strokeWidth = 3
-            ..strokeCap = StrokeCap.round
-            ..color = const Color(0xFFF3F4EE));
-      canvas.drawLine(
-          ankle.translate(1, -1),
-          ankle.translate(10, 1),
-          Paint()
-            ..strokeWidth = 3
-            ..color = const Color(0xFFD4E779));
+            ..color = skin
+            ..strokeWidth = 1.5
+            ..strokeCap = StrokeCap.round);
     }
 
-    void leg(bool rear) {
-      final h = hip.translate(rear ? -6 : 6, 0);
-      late final Offset knee, ankle;
-      if (squat) {
-        ankle = Offset(rear ? 186 : 204, 262);
-        knee = kneeFor(h, ankle);
-      } else {
-        final lift = math.max(0.0, math.sin(angle + (rear ? math.pi : 0)));
-        final rotation = lift * 1.05;
-        knee = h + Offset(math.sin(rotation) * 49, math.cos(rotation) * 49);
-        ankle = knee + const Offset(-2, 48);
-      }
-      final skin = rear ? const Color(0xFFAA785E) : const Color(0xFFC99170);
-      limb(knee, ankle, 13, skin, const Color(0xFFE9B48C));
-      limb(h, knee, 23, const Color(0xFF303D40),
-          rear ? const Color(0xFF435052) : const Color(0xFF59696B));
-      shoe(ankle, rear);
-    }
-
-    void arm(bool rear) {
-      final s = shoulder.translate(rear ? -7 : 7, 3);
-      final swing = squat ? depth : -math.sin(angle + (rear ? math.pi : 0));
-      final elbow = squat
-          ? Offset.lerp(
-              s + const Offset(-2, 35), s + const Offset(37, 5), depth)!
-          : s + Offset(17 * swing, 33 - 4 * swing.abs());
-      final hand = squat
-          ? Offset.lerp(
-              elbow + const Offset(4, 27), elbow + const Offset(30, -5), depth)!
-          : elbow + Offset(21 + 10 * swing, -15 - 8 * swing);
-      final skin = rear ? const Color(0xFFAA785E) : const Color(0xFFC99170);
-      limb(s, elbow, 14, skin, const Color(0xFFE9B48C));
-      limb(elbow, hand, 11, skin, const Color(0xFFE9B48C));
-      canvas.drawOval(Rect.fromCenter(center: hand, width: 12, height: 15),
-          Paint()..color = skin);
-    }
-
-    arm(true);
-    leg(true);
-    leg(false);
-    // Torso follows the hip/shoulder skeleton without scaling limb lengths.
+    leg(-1);
+    leg(1);
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(
+            Rect.fromCenter(
+                center: pose.pelvis.translate(0, -1), width: 40, height: 23),
+            const Radius.circular(8)),
+        Paint()
+          ..shader = ui.Gradient.linear(pose.pelvis.translate(-20, 0),
+              pose.pelvis.translate(20, 0), [const Color(0xFF53666B), pants]));
+    arm(-1);
+    arm(1);
+    final s = pose.shoulders;
+    final h = pose.pelvis;
+    // Fitted short-sleeve shirt with a continuous shoulder/waist silhouette.
     final torso = Path()
-      ..moveTo(shoulder.dx - 16, shoulder.dy - 5)
-      ..quadraticBezierTo(
-          shoulder.dx + 3, shoulder.dy - 12, shoulder.dx + 18, shoulder.dy)
-      ..lineTo(hip.dx + 17, hip.dy - 1)
-      ..quadraticBezierTo(hip.dx, hip.dy + 9, hip.dx - 19, hip.dy - 1)
+      ..moveTo(s.dx - 10, s.dy - 9)
+      ..lineTo(s.dx - 29, s.dy - 3)
+      ..quadraticBezierTo(s.dx - 34, s.dy + 3, s.dx - 36, s.dy + 14)
+      ..lineTo(s.dx - 24, s.dy + 19)
+      ..lineTo(h.dx - 19, h.dy - 5)
+      ..quadraticBezierTo(h.dx, h.dy + 3, h.dx + 19, h.dy - 5)
+      ..lineTo(s.dx + 24, s.dy + 19)
+      ..lineTo(s.dx + 36, s.dy + 14)
+      ..quadraticBezierTo(s.dx + 34, s.dy + 3, s.dx + 29, s.dy - 3)
+      ..lineTo(s.dx + 10, s.dy - 9)
       ..close();
     canvas.drawPath(
         torso,
         Paint()
           ..shader = ui.Gradient.linear(
-              shoulder.translate(-16, 0),
-              hip.translate(20, 0),
-              [const Color(0xFFE3EFAB), const Color(0xFFACBF58)]));
-    limb(shoulder.translate(1, -9), shoulder.translate(2, -20), 14,
-        const Color(0xFFBE8767), const Color(0xFFE9B48C));
-    final head = shoulder + const Offset(2, -35);
-    canvas.drawOval(
-        Rect.fromCenter(center: head, width: 30, height: 39),
+              s.translate(-30, 0),
+              s.translate(35, 40),
+              [const Color(0xFFDFEC9B), const Color(0xFFA8BD55)]));
+    canvas.drawPath(
+        Path()
+          ..moveTo(s.dx - 18, s.dy + 23)
+          ..quadraticBezierTo(s.dx - 10, s.dy + 38, h.dx - 15, h.dy - 11),
         Paint()
-          ..shader = ui.Gradient.linear(
-              head.translate(-15, 0),
-              head.translate(15, 0),
-              [const Color(0xFFC18A68), const Color(0xFFEAC09B)]));
-    // Small profile nose, hairline, ear and eye preserve a human silhouette.
+          ..color = const Color(0xFF91A746).withValues(alpha: .45)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.5);
+    // Neck and face are centered: the viewer sees both eyes and shoulders.
+    segment(s.translate(0, -20), s.translate(0, -7), 13, 16, skin, skinLight);
+    final head = s.translate(0, -32);
+    for (final side in [-1.0, 1.0]) {
+      canvas.drawOval(
+          Rect.fromCenter(
+              center: head.translate(side * 15, 0), width: 6, height: 10),
+          Paint()..color = skin);
+    }
+    final face = Path()
+      ..moveTo(head.dx - 15, head.dy - 10)
+      ..quadraticBezierTo(head.dx, head.dy - 26, head.dx + 15, head.dy - 10)
+      ..lineTo(head.dx + 13, head.dy + 9)
+      ..quadraticBezierTo(head.dx + 8, head.dy + 19, head.dx, head.dy + 19)
+      ..quadraticBezierTo(head.dx - 8, head.dy + 19, head.dx - 13, head.dy + 9)
+      ..close();
+    canvas.drawPath(
+        face,
+        Paint()
+          ..shader = ui.Gradient.linear(head.translate(-16, 0),
+              head.translate(16, 0), [skin, skinLight]));
     canvas.drawPath(
         Path()
-          ..moveTo(head.dx + 12, head.dy - 2)
-          ..lineTo(head.dx + 18, head.dy + 6)
-          ..lineTo(head.dx + 11, head.dy + 8)
+          ..moveTo(head.dx - 15, head.dy - 2)
+          ..cubicTo(head.dx - 22, head.dy - 28, head.dx + 20, head.dy - 29,
+              head.dx + 16, head.dy - 3)
+          ..lineTo(head.dx + 11, head.dy - 11)
+          ..quadraticBezierTo(
+              head.dx - 1, head.dy - 7, head.dx - 10, head.dy - 12)
           ..close(),
-        Paint()..color = const Color(0xFFEAC09B));
-    canvas.drawPath(
-        Path()
-          ..moveTo(head.dx - 15, head.dy + 2)
-          ..cubicTo(head.dx - 21, head.dy - 25, head.dx + 18, head.dy - 29,
-              head.dx + 15, head.dy - 9)
-          ..lineTo(head.dx + 1, head.dy - 13)
-          ..lineTo(head.dx - 8, head.dy + 3)
-          ..close(),
-        Paint()..color = const Color(0xFF303032));
-    canvas.drawOval(
-        Rect.fromCenter(center: head.translate(-5, 2), width: 7, height: 11),
-        Paint()..color = const Color(0xFFD6A07D));
-    canvas.drawCircle(
-        head.translate(10, -2), 1.3, Paint()..color = const Color(0xFF303032));
-    arm(false);
+        Paint()..color = const Color(0xFF303735));
+    for (final side in [-1.0, 1.0]) {
+      canvas.drawCircle(head.translate(side * 6, -1), 1.1,
+          Paint()..color = const Color(0xFF333B38));
+    }
+    canvas.drawLine(
+        head.translate(0, 1),
+        head.translate(-1, 6),
+        Paint()
+          ..color = skin
+          ..strokeWidth = 1.2);
+    canvas.drawLine(
+        head.translate(-4, 11),
+        head.translate(4, 11),
+        Paint()
+          ..color = const Color(0xFF8A5B47)
+          ..strokeWidth = 1.2);
+    // Forward forearms cross in front of the shirt, never behind the torso.
+    for (final side in [-1.0, 1.0]) {
+      if ((squat && pose.depth > .2) || (!squat && pose.lift(-side) > .2)) {
+        final e = pose.elbow(side);
+        final hand = pose.hand(side);
+        segment(e, hand, 12, 7, skin, skinLight);
+        canvas.drawOval(
+            Rect.fromCenter(
+                center: hand.translate(0, 3), width: 10, height: 14),
+            Paint()..color = skinLight);
+      }
+    }
     canvas.restore();
   }
 

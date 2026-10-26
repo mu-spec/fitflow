@@ -33,8 +33,8 @@ class OnboardingChoice extends StatelessWidget {
               : context.l10n.choiceNotSelected,
           child: Material(
               color: selected
-                  ? colors.primaryContainer.withValues(alpha: .95)
-                  : colors.surfaceContainerLow.withValues(alpha: .97),
+                  ? Colors.black.withValues(alpha: .68)
+                  : Colors.black.withValues(alpha: .58),
               borderRadius: BorderRadius.circular(12),
               child: InkWell(
                 onTap: onSelected,

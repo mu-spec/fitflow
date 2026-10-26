@@ -21,6 +21,7 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:fitflow/features/onboarding/presentation/setup_photo_background.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'helpers/part6_quality_helpers.dart' as qa;
 import 'helpers/backup_test_helpers.dart';
@@ -54,6 +55,52 @@ class PendingCapabilitySave extends CapabilityProfileController {
 }
 
 void main() {
+  for (final dark in [false, true]) {
+    testWidgets('photo choices retain contrast without opaque cards dark=$dark',
+        (tester) async {
+      await tester.pumpWidget(qa.part6Host(
+          dark: dark,
+          child: SetupPhotoTheme(
+              child: SetupPhotoBackground(
+                  exerciseId: 'march_in_place',
+                  child: Scaffold(
+                      backgroundColor: Colors.transparent,
+                      body: SetupPhotoPanel(
+                          child: OnboardingChoice(
+                              label: 'TEST choice',
+                              selected: false,
+                              onSelected: () {})))))));
+      final context = tester.element(find.byType(OnboardingChoice));
+      final label = Theme.of(context).colorScheme.onSurfaceVariant;
+      // Worst-case white photograph under the weakest scrim and one panel.
+      final choice = tester.widget<Material>(find
+          .descendant(
+              of: find.byType(OnboardingChoice),
+              matching: find.byType(Material))
+          .first);
+      final gradient = tester
+          .widgetList<DecoratedBox>(find.byType(DecoratedBox))
+          .map((box) => box.decoration)
+          .whereType<BoxDecoration>()
+          .map((box) => box.gradient)
+          .whereType<LinearGradient>()
+          .first;
+      final weakest = gradient.colors.reduce((a, b) => a.a < b.a ? a : b);
+      final background = Color.alphaBlend(
+          choice.color!, Color.alphaBlend(weakest, Colors.white));
+      expect(
+          (label.computeLuminance() + .05) /
+              (background.computeLuminance() + .05),
+          greaterThanOrEqualTo(4.5));
+      for (final material in tester.widgetList<Material>(find.descendant(
+          of: find.byType(SetupPhotoPanel), matching: find.byType(Material)))) {
+        if (material.color != null) {
+          expect(material.color!.a, lessThan(.7));
+        }
+      }
+      expect(tester.takeException(), isNull);
+    });
+  }
   for (final size in qa.part6Sizes) {
     for (final dark in [false, true]) {
       for (final scale in [1.0, 2.0]) {

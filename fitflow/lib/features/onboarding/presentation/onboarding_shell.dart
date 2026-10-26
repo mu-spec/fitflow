@@ -1,6 +1,5 @@
 import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'setup_photo_background.dart';
-import 'package:fitflow/features/workouts/presentation/workouts_theme.dart';
 import 'package:fitflow/features/onboarding/presentation/widgets/onboarding_progress.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +42,7 @@ class OnboardingShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) =>
-      WorkoutsTheme(child: Builder(builder: (context) {
+      SetupPhotoTheme(child: Builder(builder: (context) {
         final theme = Theme.of(context);
         final actions = Padding(
             padding: const EdgeInsets.symmetric(vertical: 12),
