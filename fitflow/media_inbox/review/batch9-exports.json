@@ -1,0 +1,306 @@
+[
+  {
+    "id": "world_greatest_stretch",
+    "path": "assets/images/exercises/hero/world_greatest_stretch.webp",
+    "source": "media_inbox\\world_greatest_stretch.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 80136,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "860d708b3a3665477b2852af927aa8e53205a5bd769d06774b4ba5ff99a7723a"
+  },
+  {
+    "id": "world_greatest_stretch",
+    "path": "assets/images/exercises/thumb/world_greatest_stretch.webp",
+    "source": "media_inbox\\world_greatest_stretch.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 12396,
+    "crop": [
+      180,
+      -30,
+      1320,
+      1110
+    ],
+    "quality": 95,
+    "sha256": "2dce7c4bad58c210067366097afdedc1c5ca0785c7e98b3961d71d14cdc488f6"
+  },
+  {
+    "id": "pushup_diamond",
+    "path": "assets/images/exercises/hero/pushup_diamond.webp",
+    "source": "media_inbox\\pushup_diamond.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 140496,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "4f8375e5e1c7f21ec862ce4c4af7fa560db9c35c18bbe63a831f0fa0c1e1a9f9"
+  },
+  {
+    "id": "pushup_diamond",
+    "path": "assets/images/exercises/thumb/pushup_diamond.webp",
+    "source": "media_inbox\\pushup_diamond.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 17356,
+    "crop": [
+      60,
+      -87,
+      1320,
+      1173
+    ],
+    "quality": 95,
+    "sha256": "a64725875d7eac9ac77352f7dec78f24cb398f4f3d02c1fafbf46ca6b1805a3f"
+  },
+  {
+    "id": "pushup_down_dog",
+    "path": "assets/images/exercises/hero/pushup_down_dog.webp",
+    "source": "media_inbox\\pushup_down_dog.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 95722,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "22bdf54b65410e74ed4f088dea6bfb0b6d3736b6cc52fcb3b2c899efefd97ea5"
+  },
+  {
+    "id": "pushup_down_dog",
+    "path": "assets/images/exercises/thumb/pushup_down_dog.webp",
+    "source": "media_inbox\\pushup_down_dog.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 13146,
+    "crop": [
+      140,
+      -40,
+      1260,
+      1080
+    ],
+    "quality": 95,
+    "sha256": "2e86fd0fa70502dfcee99a6be7e8838256c58bfdda2c7386a18abf77e53dc159"
+  },
+  {
+    "id": "wall_shoulder_press",
+    "path": "assets/images/exercises/hero/wall_shoulder_press.webp",
+    "source": "media_inbox\\wall_shoulder_press.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 71574,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "a3596fbb85e405884975e28d29cc66756b5073c5da39135354a60272d2a6280f"
+  },
+  {
+    "id": "wall_shoulder_press",
+    "path": "assets/images/exercises/thumb/wall_shoulder_press.webp",
+    "source": "media_inbox\\wall_shoulder_press.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 10568,
+    "crop": [
+      180,
+      0,
+      1266,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "127b62eb6ba7ba442841d6dd2db3d36ae8912d0efb0d297480385c7f1dd4bc66"
+  },
+  {
+    "id": "dip_chair",
+    "path": "assets/images/exercises/hero/dip_chair.webp",
+    "source": "media_inbox\\dip_chair.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 91708,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "8e079151200b48f1a23dff6d24d6a5a418bbd442c7af71f8208c4ae862586540"
+  },
+  {
+    "id": "dip_chair",
+    "path": "assets/images/exercises/thumb/dip_chair.webp",
+    "source": "media_inbox\\dip_chair.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 11474,
+    "crop": [
+      50,
+      -92,
+      1320,
+      1178
+    ],
+    "quality": 95,
+    "sha256": "06138f274eaf2b71e3dba10faab7b7e2721c9688558b128f05fa418374898c35"
+  },
+  {
+    "id": "squat_sumo",
+    "path": "assets/images/exercises/hero/squat_sumo.webp",
+    "source": "media_inbox\\squat_sumo.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 112480,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "d1965ae5c2d3b902ae016b09f7b385b671c970a6513fc52c17f3694963517072"
+  },
+  {
+    "id": "squat_sumo",
+    "path": "assets/images/exercises/thumb/squat_sumo.webp",
+    "source": "media_inbox\\squat_sumo.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 15892,
+    "crop": [
+      180,
+      0,
+      1266,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "c3cc03d0a4c5bd651c19eb414080a644dc22cf0dbdcfabeb199a3d14de85e172"
+  },
+  {
+    "id": "squat_pulse",
+    "path": "assets/images/exercises/hero/squat_pulse.webp",
+    "source": "media_inbox\\squat_pulse.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 107408,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "a8a47d8ebeef461dbfeb9fef85a36b9446e6ed80aeffea63643c06375d91ae90"
+  },
+  {
+    "id": "squat_pulse",
+    "path": "assets/images/exercises/thumb/squat_pulse.webp",
+    "source": "media_inbox\\squat_pulse.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 14758,
+    "crop": [
+      180,
+      0,
+      1266,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "6cd994dcd679fe21a2048d3ed0ef46cfcc66461854dcdd5d6ce009865774888d"
+  },
+  {
+    "id": "lunge_curtsy",
+    "path": "assets/images/exercises/hero/lunge_curtsy.webp",
+    "source": "media_inbox\\lunge_curtsy.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 115196,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "67790f8f1c81be37b1cc8e7f4400de1625fcd1e3dce6b32e6497164323509492"
+  },
+  {
+    "id": "lunge_curtsy",
+    "path": "assets/images/exercises/thumb/lunge_curtsy.webp",
+    "source": "media_inbox\\lunge_curtsy.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 14822,
+    "crop": [
+      180,
+      0,
+      1266,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "6f26d6ead06c021499fc7d409aff224d61321250c4d315e83925f58e45834f58"
+  }
+]

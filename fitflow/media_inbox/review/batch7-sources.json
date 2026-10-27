@@ -1,0 +1,90 @@
+[
+  {
+    "id": "fire_hydrant",
+    "original": "C:\\Users\\PMLS\\Downloads\\Studio fire hydrant exercise-1.png",
+    "saved": "media_inbox\\fire_hydrant.png",
+    "dimensions": [
+      1448,
+      1086
+    ],
+    "bytes": 2143494,
+    "sha256": "7f4113d61d5328b4da60627ed5e2367702e4742fbc019f08357d01b924fb3cf0"
+  },
+  {
+    "id": "pushup_pike",
+    "original": "C:\\Users\\PMLS\\Downloads\\Controlled Pike Push-Up Descent-3.png",
+    "saved": "media_inbox\\pushup_pike.png",
+    "dimensions": [
+      1448,
+      1086
+    ],
+    "bytes": 2104615,
+    "sha256": "4d0eb74700c6936c17fe00ad1582bfd5818253269c41c565c6dc4856ba4e13a3"
+  },
+  {
+    "id": "pushup_close_grip",
+    "original": "C:\\Users\\PMLS\\Downloads\\Controlled Close-Grip Push-Up-4.png",
+    "saved": "media_inbox\\pushup_close_grip.png",
+    "dimensions": [
+      1448,
+      1086
+    ],
+    "bytes": 2078738,
+    "sha256": "7310a2dfe35cb811cb14c68a56a872fb67502c18eb525d396411a3bfb93ffe95"
+  },
+  {
+    "id": "pushup_wide",
+    "original": "C:\\Users\\PMLS\\Downloads\\Controlled wide push-up in studio-2.png",
+    "saved": "media_inbox\\pushup_wide.png",
+    "dimensions": [
+      1448,
+      1086
+    ],
+    "bytes": 2199571,
+    "sha256": "d9525e512aa1fd28cac794d768afb8fca28f409d982c85b5a5fee37a7125d10d"
+  },
+  {
+    "id": "shoulder_tap",
+    "original": "C:\\Users\\PMLS\\Downloads\\High plank shoulder tap-5.png",
+    "saved": "media_inbox\\shoulder_tap.png",
+    "dimensions": [
+      1448,
+      1086
+    ],
+    "bytes": 2198726,
+    "sha256": "b75e5c09cf6706bf78cf83787eec4ddc428a01c8e77769aacb8da93926df0176"
+  },
+  {
+    "id": "plank_up_down",
+    "original": "C:\\Users\\PMLS\\Downloads\\Mixed-support plank transition-6.png",
+    "saved": "media_inbox\\plank_up_down.png",
+    "dimensions": [
+      1448,
+      1086
+    ],
+    "bytes": 2118045,
+    "sha256": "3453de0216f1fa4aa6886410022d9e2e531dd62ae69d77660e834cb105e49015"
+  },
+  {
+    "id": "step_jack",
+    "original": "C:\\Users\\PMLS\\Downloads\\Low-impact step jack-7.png",
+    "saved": "media_inbox\\step_jack.png",
+    "dimensions": [
+      1448,
+      1086
+    ],
+    "bytes": 1948159,
+    "sha256": "891505c0084062a2b1454652768827e4ba34e062adb8400d542d38c13477f7c2"
+  },
+  {
+    "id": "butt_kicks",
+    "original": "C:\\Users\\PMLS\\Downloads\\Athlete Performing Butt Kicks-8.png",
+    "saved": "media_inbox\\butt_kicks.png",
+    "dimensions": [
+      1448,
+      1086
+    ],
+    "bytes": 1942396,
+    "sha256": "a34e87f9b03f805cd2e4f7cbe743a70888be0a53811db378cab447484e3852f9"
+  }
+]

@@ -1,0 +1,306 @@
+[
+  {
+    "id": "cat_cow",
+    "path": "assets/images/exercises/hero/cat_cow.webp",
+    "source": "cat_cow.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 73226,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "6dddbaf3480e140ad826d080dab3057cdbf66378444c334824d0f259ea218a45"
+  },
+  {
+    "id": "cat_cow",
+    "path": "assets/images/exercises/thumb/cat_cow.webp",
+    "source": "cat_cow.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 10414,
+    "crop": [
+      100,
+      -70,
+      1300,
+      1130
+    ],
+    "quality": 95,
+    "sha256": "5d9f154b4776a732e532bfae968ae192a696fcdef4d1a697a9f3de3cf307ca42"
+  },
+  {
+    "id": "childs_pose",
+    "path": "assets/images/exercises/hero/childs_pose.webp",
+    "source": "childs_pose.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 97006,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "d7fe26d157658a4399f0c94c5faef337971335281b6137220a97e94ecf828ef1"
+  },
+  {
+    "id": "childs_pose",
+    "path": "assets/images/exercises/thumb/childs_pose.webp",
+    "source": "childs_pose.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 10446,
+    "crop": [
+      70,
+      -90,
+      1390,
+      1230
+    ],
+    "quality": 95,
+    "sha256": "2e9597737b8a09ca40b424d1b475bef8667b2033456c556ae1b1d7f0c324c6c8"
+  },
+  {
+    "id": "hamstring_stretch_standing",
+    "path": "assets/images/exercises/hero/hamstring_stretch_standing.webp",
+    "source": "hamstring_stretch_standing.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 81610,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "30b687158310b52224b4b483c2607cdf92fdaa8aa7f3cf94cfcecf9523c781c0"
+  },
+  {
+    "id": "hamstring_stretch_standing",
+    "path": "assets/images/exercises/thumb/hamstring_stretch_standing.webp",
+    "source": "hamstring_stretch_standing.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 10838,
+    "crop": [
+      180,
+      0,
+      1266,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "90bfa192f35b16d14afe7ee5da9f1c51d49ce8f7d66ef9d5d56810de86025202"
+  },
+  {
+    "id": "thoracic_rotation",
+    "path": "assets/images/exercises/hero/thoracic_rotation.webp",
+    "source": "thoracic_rotation.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 100620,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "d2c7baf245606641ebe5ab6f78d2eecbd55b9fa706c90b98ba180b2bbcbb469a"
+  },
+  {
+    "id": "thoracic_rotation",
+    "path": "assets/images/exercises/thumb/thoracic_rotation.webp",
+    "source": "thoracic_rotation.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 10852,
+    "crop": [
+      50,
+      -130,
+      1410,
+      1230
+    ],
+    "quality": 95,
+    "sha256": "989a1e47dcf44a75bb38897790580039774d36b6c38a1600730bbbe11cdb0e35"
+  },
+  {
+    "id": "good_morning",
+    "path": "assets/images/exercises/hero/good_morning.webp",
+    "source": "good_morning.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 87488,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "202983091707056f0a4ce64d2b7c403e9642a560db223934881d12ac23b9da07"
+  },
+  {
+    "id": "good_morning",
+    "path": "assets/images/exercises/thumb/good_morning.webp",
+    "source": "good_morning.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 11408,
+    "crop": [
+      180,
+      0,
+      1266,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "5b8de5541a30388f7ce2f3cb0d517d38bb6eaa9a9cf21ebe3ea83c83694cd718"
+  },
+  {
+    "id": "hip_hinge",
+    "path": "assets/images/exercises/hero/hip_hinge.webp",
+    "source": "hip_hinge.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 76076,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "85e7acfd04cf231c7fc2fa8a76d0ee95ed538260650220c9f9c71fb97539b02a"
+  },
+  {
+    "id": "hip_hinge",
+    "path": "assets/images/exercises/thumb/hip_hinge.webp",
+    "source": "hip_hinge.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 10348,
+    "crop": [
+      180,
+      0,
+      1266,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "50ac1256bf06b64f71804822362f6386a2272f870cca5495044079bf7ba9ccbc"
+  },
+  {
+    "id": "hip_hinge_single_leg",
+    "path": "assets/images/exercises/hero/hip_hinge_single_leg.webp",
+    "source": "hip_hinge_single_leg.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 75180,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "a251872c01e99b421e32ed58d023cf09de580a535598deda7664e28a0895b9a8"
+  },
+  {
+    "id": "hip_hinge_single_leg",
+    "path": "assets/images/exercises/thumb/hip_hinge_single_leg.webp",
+    "source": "hip_hinge_single_leg.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 8584,
+    "crop": [
+      60,
+      -80,
+      1340,
+      1200
+    ],
+    "quality": 95,
+    "sha256": "6856d113b7fc05c764a0778010abf34690b30f19db0bc66eacd38f8a1a7f0acf"
+  },
+  {
+    "id": "donkey_kick",
+    "path": "assets/images/exercises/hero/donkey_kick.webp",
+    "source": "donkey_kick.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 83814,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "d4b047f030ca789e8fc190fd4a8375348285f78a8863546cbd9b0c9cb143bdb1"
+  },
+  {
+    "id": "donkey_kick",
+    "path": "assets/images/exercises/thumb/donkey_kick.webp",
+    "source": "donkey_kick.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 10448,
+    "crop": [
+      90,
+      -65,
+      1350,
+      1195
+    ],
+    "quality": 95,
+    "sha256": "31978229d8976a93366d160153b42e3a1f8587468346fa051de015f70eb88f33"
+  }
+]

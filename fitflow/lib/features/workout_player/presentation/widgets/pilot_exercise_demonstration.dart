@@ -3,8 +3,9 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
-/// Two-exercise illustrated pilot. This clock animates artwork only: it never
-/// counts repetitions, changes prescriptions, or calls the workout controller.
+/// Remaining marching illustration pilot. Squats use the shared Lottie renderer.
+/// This clock animates artwork only: it never counts repetitions, changes
+/// prescriptions, or calls the workout controller.
 class PilotExerciseDemonstration extends StatefulWidget {
   const PilotExerciseDemonstration(
       {super.key,
@@ -16,8 +17,7 @@ class PilotExerciseDemonstration extends StatefulWidget {
   final bool running;
   final double width, height;
 
-  static bool supports(String id) =>
-      id == 'march_in_place' || id == 'squat_bodyweight';
+  static bool supports(String id) => id == 'march_in_place';
 
   @override
   State<PilotExerciseDemonstration> createState() => _DemonstrationState();

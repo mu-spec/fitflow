@@ -1,0 +1,306 @@
+[
+  {
+    "id": "lunge_lateral",
+    "path": "assets/images/exercises/hero/lunge_lateral.webp",
+    "source": "media_inbox\\lunge_lateral.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 86276,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "30bc2bf10a66a6baa27ceb2df5a658c32b3a4494f5f013d49704cefd2aadc013"
+  },
+  {
+    "id": "lunge_lateral",
+    "path": "assets/images/exercises/thumb/lunge_lateral.webp",
+    "source": "media_inbox\\lunge_lateral.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 13500,
+    "crop": [
+      170,
+      0,
+      1270,
+      1100
+    ],
+    "quality": 95,
+    "sha256": "5b0e10473eb439714d04f7d020d18b2fc3b84ca2e6156813a59cc604352c6bd7"
+  },
+  {
+    "id": "bridge_march",
+    "path": "assets/images/exercises/hero/bridge_march.webp",
+    "source": "media_inbox\\bridge_march.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 97308,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "5a4498df35050cc2769653519f6dbf8038c1d260f05c8450171655ef75c31d50"
+  },
+  {
+    "id": "bridge_march",
+    "path": "assets/images/exercises/thumb/bridge_march.webp",
+    "source": "media_inbox\\bridge_march.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 11412,
+    "crop": [
+      30,
+      -137,
+      1390,
+      1223
+    ],
+    "quality": 95,
+    "sha256": "b416ae560f422ad45406448a126f5b8d3b51e63858046b27a73c9a8b0d717c8f"
+  },
+  {
+    "id": "frog_pump",
+    "path": "assets/images/exercises/hero/frog_pump.webp",
+    "source": "media_inbox\\frog_pump.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 112876,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "0e9f129a014eac31d54ae45d3e97fc8a025bf544cee697ec632c391c6fa9a938"
+  },
+  {
+    "id": "frog_pump",
+    "path": "assets/images/exercises/thumb/frog_pump.webp",
+    "source": "media_inbox\\frog_pump.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 12152,
+    "crop": [
+      40,
+      -137,
+      1400,
+      1223
+    ],
+    "quality": 95,
+    "sha256": "2b3af31e97d98b7a0a9e0442782a286280b95a3f65dc9da81047b3f7a5ac66de"
+  },
+  {
+    "id": "plank_reach",
+    "path": "assets/images/exercises/hero/plank_reach.webp",
+    "source": "media_inbox\\plank_reach.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 78004,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "f6cc226e8d4cc9d12e06b4e1182353cd15253f797ca8793d52be51736a54146c"
+  },
+  {
+    "id": "plank_reach",
+    "path": "assets/images/exercises/thumb/plank_reach.webp",
+    "source": "media_inbox\\plank_reach.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 10326,
+    "crop": [
+      20,
+      -122,
+      1350,
+      1208
+    ],
+    "quality": 95,
+    "sha256": "b244fd54bbade5e6437a16bf2cc617a77b23f61626dd29604ea1d2ef56ee851a"
+  },
+  {
+    "id": "plank_side_knee",
+    "path": "assets/images/exercises/hero/plank_side_knee.webp",
+    "source": "media_inbox\\plank_side_knee.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 101904,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "ae42d1e21909eb038393e4e713f98ae29c0cc76c4d9aa4d292444b12316a511c"
+  },
+  {
+    "id": "plank_side_knee",
+    "path": "assets/images/exercises/thumb/plank_side_knee.webp",
+    "source": "media_inbox\\plank_side_knee.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 13046,
+    "crop": [
+      70,
+      -112,
+      1370,
+      1188
+    ],
+    "quality": 95,
+    "sha256": "8573a9a5d908e984d49875623fe7883e7e130ae2934268a15189ee82604450b7"
+  },
+  {
+    "id": "russian_twist",
+    "path": "assets/images/exercises/hero/russian_twist.webp",
+    "source": "media_inbox\\russian_twist.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 103248,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "cfd7a27f0ff8f313ccf07074b9294d2eff8ca6bd7a5ecf015e3a34280e8d9be0"
+  },
+  {
+    "id": "russian_twist",
+    "path": "assets/images/exercises/thumb/russian_twist.webp",
+    "source": "media_inbox\\russian_twist.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 14352,
+    "crop": [
+      180,
+      -47,
+      1340,
+      1113
+    ],
+    "quality": 95,
+    "sha256": "dec650d431aeb0e01ae123f88b29aa5987eb9f6cb598c64b672d1659ed1e371b"
+  },
+  {
+    "id": "leg_raise",
+    "path": "assets/images/exercises/hero/leg_raise.webp",
+    "source": "media_inbox\\leg_raise.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 74918,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "12c19c0fc2bb2b5bb0e4a0ce15c514203a07fe67521d5e3a1baa7984c59fa0d4"
+  },
+  {
+    "id": "leg_raise",
+    "path": "assets/images/exercises/thumb/leg_raise.webp",
+    "source": "media_inbox\\leg_raise.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 10270,
+    "crop": [
+      100,
+      -82,
+      1350,
+      1168
+    ],
+    "quality": 95,
+    "sha256": "b57d00847395f1ab0c4827b407a5fb7c47e6157b142b1fa24fe4b6fc450ace9a"
+  },
+  {
+    "id": "flutter_kicks",
+    "path": "assets/images/exercises/hero/flutter_kicks.webp",
+    "source": "media_inbox\\flutter_kicks.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 72934,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "a937252329117f1936439dca77fdd9e27de807228c9dae1ccdef1cee2bb7090a"
+  },
+  {
+    "id": "flutter_kicks",
+    "path": "assets/images/exercises/thumb/flutter_kicks.webp",
+    "source": "media_inbox\\flutter_kicks.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 8280,
+    "crop": [
+      0,
+      -181,
+      1448,
+      1267
+    ],
+    "quality": 95,
+    "sha256": "0ed40c5fb402f4f712db5d5b14cd9e965600c74ec21018ddebf94a910941bb8c"
+  }
+]

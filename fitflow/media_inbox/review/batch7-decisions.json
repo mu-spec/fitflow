@@ -1,0 +1,14 @@
+{
+  "accepted": [
+    "fire_hydrant",
+    "pushup_close_grip",
+    "pushup_wide",
+    "shoulder_tap",
+    "plank_up_down",
+    "butt_kicks"
+  ],
+  "rejected": {
+    "pushup_pike": "Crown/hair meets mat; head clearance and non-weight-bearing head position unclear.",
+    "step_jack": "Sideways foot appears heel-raised; whole-foot planted contact unclear."
+  }
+}

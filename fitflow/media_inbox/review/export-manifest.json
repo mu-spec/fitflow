@@ -1,0 +1,218 @@
+[
+  {
+    "id": "pushup_wall",
+    "source": "ChatGPT Image Oct 16, 2026, 10_09_36 PM-1.png",
+    "source_sha256": "52104456f27e0b3735d218a198c60daf9b09e7b39cf69725edefd95407709115",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/pushup_wall.webp",
+    "width": 960,
+    "height": 720,
+    "bytes": 89992,
+    "sha256": "9620094e8144fe0a7274b9667e1eb2812fba8e31950ea70dbecab3bcc435e5f6",
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93
+  },
+  {
+    "id": "pushup_wall",
+    "source": "ChatGPT Image Oct 16, 2026, 10_09_36 PM-1.png",
+    "source_sha256": "52104456f27e0b3735d218a198c60daf9b09e7b39cf69725edefd95407709115",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/pushup_wall.webp",
+    "width": 256,
+    "height": 256,
+    "bytes": 16612,
+    "sha256": "9c05386c73bfd8a2df25359c426842ea5f5876e488aade949c5391b2cc33cb8f",
+    "crop": [
+      130,
+      0,
+      1216,
+      1086
+    ],
+    "quality": 95
+  },
+  {
+    "id": "pushup_standard",
+    "source": "ChatGPT Image Oct 16, 2026, 10_09_47 PM-2.png",
+    "source_sha256": "1b364dc87a23bfad0312394b3e38d5b03e2703a433b6077572424dc1e345646f",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/pushup_standard.webp",
+    "width": 960,
+    "height": 720,
+    "bytes": 84456,
+    "sha256": "a50be7986e53f91cc59ed305c0a5fc9e093d187c61e96f125a84e03bb8ec89d9",
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93
+  },
+  {
+    "id": "pushup_standard",
+    "source": "ChatGPT Image Oct 16, 2026, 10_09_47 PM-2.png",
+    "source_sha256": "1b364dc87a23bfad0312394b3e38d5b03e2703a433b6077572424dc1e345646f",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/pushup_standard.webp",
+    "width": 256,
+    "height": 256,
+    "bytes": 14264,
+    "sha256": "25738b2dd86fe745bf858d5b55ff3494a9035c0a11ceced08132b804d70df2a9",
+    "crop": [
+      55,
+      -130,
+      1375,
+      1190
+    ],
+    "quality": 95
+  },
+  {
+    "id": "squat_bodyweight",
+    "source": "ChatGPT Image Oct 16, 2026, 10_10_02 PM-3.png",
+    "source_sha256": "2de587c4292e622b7e6e54f8a4b1e12fdb060115e12ff6fc0f7fcea3d66738b0",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/squat_bodyweight.webp",
+    "width": 960,
+    "height": 720,
+    "bytes": 99104,
+    "sha256": "affc20f5ad9e5c66bfb446f429d9dd2fdd56b9603dddc063249d2a952e522098",
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93
+  },
+  {
+    "id": "squat_bodyweight",
+    "source": "ChatGPT Image Oct 16, 2026, 10_10_02 PM-3.png",
+    "source_sha256": "2de587c4292e622b7e6e54f8a4b1e12fdb060115e12ff6fc0f7fcea3d66738b0",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/squat_bodyweight.webp",
+    "width": 256,
+    "height": 256,
+    "bytes": 18154,
+    "sha256": "3c450e83998debe8732651151b3925f8c5eb3d6f1508e91d0986254c4ea68a9f",
+    "crop": [
+      300,
+      90,
+      1220,
+      1010
+    ],
+    "quality": 95
+  },
+  {
+    "id": "lunge_reverse",
+    "source": "ChatGPT Image Oct 16, 2026, 10_10_12 PM-4.png",
+    "source_sha256": "c2d62a01379ec27ce2cbf5b08d37f9c759b9ca878c8c0483565f9819a9dd4352",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/lunge_reverse.webp",
+    "width": 960,
+    "height": 720,
+    "bytes": 100672,
+    "sha256": "c3fee689be2bdbe2d19181f5f85829b69fbff4f53dd53a49dfc202b9fba82d5e",
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93
+  },
+  {
+    "id": "lunge_reverse",
+    "source": "ChatGPT Image Oct 16, 2026, 10_10_12 PM-4.png",
+    "source_sha256": "c2d62a01379ec27ce2cbf5b08d37f9c759b9ca878c8c0483565f9819a9dd4352",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/lunge_reverse.webp",
+    "width": 256,
+    "height": 256,
+    "bytes": 18262,
+    "sha256": "7ccf495ac4422ba47da578b812e1366a4edf3ac8a3e8012e4004759cfd21137f",
+    "crop": [
+      210,
+      20,
+      1230,
+      1040
+    ],
+    "quality": 95
+  },
+  {
+    "id": "plank_forearm",
+    "source": "ChatGPT Image Oct 16, 2026, 10_10_24 PM-5.png",
+    "source_sha256": "b91bb9f4e259fa9825292e03f8eddef416e84e86e3f8ce76884d03d87a0684a4",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/plank_forearm.webp",
+    "width": 960,
+    "height": 720,
+    "bytes": 86870,
+    "sha256": "3797f130206d1a294bc88ff616eeb7272a6ba2d58f90414b7b8584f0a7440f19",
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93
+  },
+  {
+    "id": "plank_forearm",
+    "source": "ChatGPT Image Oct 16, 2026, 10_10_24 PM-5.png",
+    "source_sha256": "b91bb9f4e259fa9825292e03f8eddef416e84e86e3f8ce76884d03d87a0684a4",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/plank_forearm.webp",
+    "width": 256,
+    "height": 256,
+    "bytes": 14828,
+    "sha256": "a649fce9d5c4b01b12372f562445b379d8a90f565ac0594d7be3e0095643e1fc",
+    "crop": [
+      65,
+      -130,
+      1385,
+      1190
+    ],
+    "quality": 95
+  },
+  {
+    "id": "arm_circles",
+    "source": "ChatGPT Image Oct 16, 2026, 10_10_28 PM-6.png",
+    "source_sha256": "477f2e788c8625aca10250b34501b35b52b9320b767b51b5bdb66cf449de304d",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/arm_circles.webp",
+    "width": 960,
+    "height": 720,
+    "bytes": 72358,
+    "sha256": "9291e7abafb09d12cbdfdd14619115e51ecc1c69a7e65e75f5d8b73360c77672",
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93
+  },
+  {
+    "id": "arm_circles",
+    "source": "ChatGPT Image Oct 16, 2026, 10_10_28 PM-6.png",
+    "source_sha256": "477f2e788c8625aca10250b34501b35b52b9320b767b51b5bdb66cf449de304d",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/arm_circles.webp",
+    "width": 256,
+    "height": 256,
+    "bytes": 12958,
+    "sha256": "0bbd06fd63ea6f39301b4418cd2320c5263dd0b6ae32c4cefeb4cd2787f9914f",
+    "crop": [
+      160,
+      0,
+      1246,
+      1086
+    ],
+    "quality": 95
+  }
+]

@@ -1,0 +1,290 @@
+[
+  {
+    "id": "pushup_incline",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/pushup_incline.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 129680,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "4b427f4a8df94aef40fa9a63b98d23115731be991eac0133d9e56d8bd041997f"
+  },
+  {
+    "id": "pushup_incline",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/pushup_incline.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 13110,
+    "crop": [
+      0,
+      -181,
+      1448,
+      1267
+    ],
+    "quality": 95,
+    "sha256": "5ebafe3325375876252826e0fa27ddcfb7d0a6afdc61e940da2ef710d4e2fb4b"
+  },
+  {
+    "id": "pushup_knee",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/pushup_knee.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 107834,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "da2069b86463335f287d9e0460d0628f06e2aba68658bbe986e8e709bd5dc968"
+  },
+  {
+    "id": "pushup_knee",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/pushup_knee.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 13116,
+    "crop": [
+      20,
+      -120,
+      1380,
+      1240
+    ],
+    "quality": 95,
+    "sha256": "134b1219056a48152c53d81edb9102fcb86cf844704ee0ba2f36d1e3ed91df20"
+  },
+  {
+    "id": "pushup_decline",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/pushup_decline.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 120450,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "d7f4286049a421f522969cfe28185628028e667e29e5f2bf750e5d52168ed7a1"
+  },
+  {
+    "id": "pushup_decline",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/pushup_decline.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 13744,
+    "crop": [
+      0,
+      -181,
+      1448,
+      1267
+    ],
+    "quality": 95,
+    "sha256": "9afd7b589a0a57958c5378b9ed6a118506b7db2a7b81f6e58c11ec175e50dcc2"
+  },
+  {
+    "id": "squat_chair",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/squat_chair.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 89182,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "d531601101fbce92897314a54c01ad1b7024bde34b0f493baf2d5df287ee3735"
+  },
+  {
+    "id": "squat_chair",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/squat_chair.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 12624,
+    "crop": [
+      170,
+      0,
+      1256,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "56d0a4b02dcf9aa3a31d5c647a32ba9a1c06e7b86eae70025152bdfeed19c14c"
+  },
+  {
+    "id": "squat_partial",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/squat_partial.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 89916,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "f87cbfae14d8522453d5521249f5e61a107ba3e984f2d4b7d170f2f116d23a6e"
+  },
+  {
+    "id": "squat_partial",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/squat_partial.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 12702,
+    "crop": [
+      270,
+      70,
+      1210,
+      1010
+    ],
+    "quality": 95,
+    "sha256": "1e6bd8d165c67dfaf2c58b423e9c39c8ea3e9f68de0a85612396ceb11a8f089b"
+  },
+  {
+    "id": "squat_tempo",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/squat_tempo.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 92536,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "3c3f97ae8544856c9cd318bd3de8a276dc65babde1734205332c33b5a4b4a92a"
+  },
+  {
+    "id": "squat_tempo",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/squat_tempo.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 12658,
+    "crop": [
+      270,
+      60,
+      1210,
+      1000
+    ],
+    "quality": 95,
+    "sha256": "1eb760a009f612eca43f0c1a0b5ca07bcc130ee028c77f68ce58977a8a6b4500"
+  },
+  {
+    "id": "wall_sit",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/wall_sit.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 80268,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "d8b3d3b2f6c1ffab728b7b0a8c8164504510717272686c4c2af55683edd2db2a"
+  },
+  {
+    "id": "wall_sit",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/wall_sit.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 11254,
+    "crop": [
+      250,
+      0,
+      1250,
+      1000
+    ],
+    "quality": 95,
+    "sha256": "04b0111e53bbe712a13678abc494e84d5d07a0a3390a773623264e75730fbae2"
+  },
+  {
+    "id": "dead_bug",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/dead_bug.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 97674,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "cf7a60698387c3b69e4ebc7b863a8a7f5316f45d8a7b12d904ddd81aa2af3e90"
+  },
+  {
+    "id": "dead_bug",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/dead_bug.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 9744,
+    "crop": [
+      40,
+      -170,
+      1400,
+      1190
+    ],
+    "quality": 95,
+    "sha256": "6df35a3eaa55b37597c53bce1a2b46b7c08404a810b42f3c99411b8591391a16"
+  }
+]

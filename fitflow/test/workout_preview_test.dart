@@ -1,3 +1,4 @@
+import 'package:fitflow/features/workout_preview/presentation/widgets/workout_preview_exercise_row.dart';
 import 'package:fitflow/features/workout_preview/presentation/widgets/workout_preview_section_header.dart';
 import 'dart:async';
 
@@ -105,6 +106,11 @@ Widget buildWithRouter({required List<Override> overrides, required GoRouter rou
     overrides: overrides,
     child: MaterialApp.router(
       theme: AppTheme.light,
+      // Navigation/prescription tests use reduced motion; looping media has
+      // separate playback coverage and must not block pumpAndSettle.
+      builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(disableAnimations: true),
+          child: child!),
       routerConfig: router,
     ),
   );
@@ -115,9 +121,28 @@ Widget buildPreviewOnly({required List<Override> overrides}) {
     overrides: overrides,
     child: MaterialApp(
       theme: AppTheme.light,
+      // Navigation/prescription tests use reduced motion; looping media has
+      // separate playback coverage and must not block pumpAndSettle.
+      builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(disableAnimations: true),
+          child: child!),
       home: const WorkoutPreviewScreen(),
     ),
   );
+}
+
+Future<void> revealPreview(WidgetTester tester, Finder target) async {
+  final scrollable = find.descendant(of: find.byKey(const Key('preview_scroll')),
+      matching: find.byType(Scrollable)).first;
+  await tester.scrollUntilVisible(target, 180, scrollable: scrollable);
+  await tester.pumpAndSettle();
+}
+
+double previewContentY(WidgetTester tester, Finder target) {
+  final scrollable = find.descendant(of: find.byKey(const Key('preview_scroll')),
+      matching: find.byType(Scrollable)).first;
+  return tester.getTopLeft(target).dy +
+      tester.state<ScrollableState>(scrollable).position.pixels;
 }
 
 void main() {
@@ -138,7 +163,10 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: overrides,
-          child: MaterialApp(theme: AppTheme.light, home: const HomeScreen()),
+          child: MaterialApp(theme: AppTheme.light,
+              builder: (context, child) => MediaQuery(
+                  data: MediaQuery.of(context).copyWith(disableAnimations: true),
+                  child: child!), home: const HomeScreen()),
         ),
       );
       await tester.pumpAndSettle();
@@ -242,22 +270,16 @@ void main() {
       await tester.pumpWidget(buildPreviewOnly(overrides: overrides));
       await tester.pumpAndSettle();
 
-      // Find section headers in order
-      final warmupFinder = find.textContaining('Warm-up');
-      final mainFinder = find.textContaining('Main workout');
-      final cooldownFinder = find.textContaining('Cooldown');
-
-      expect(warmupFinder, findsWidgets);
-      expect(mainFinder, findsWidgets);
-      expect(cooldownFinder, findsWidgets);
-
-      // Get y positions
-      final warmupTop = tester.getTopLeft(warmupFinder.first).dy;
-      final mainTop = tester.getTopLeft(mainFinder.first).dy;
-      final cooldownTop = tester.getTopLeft(cooldownFinder.first).dy;
-
-      expect(warmupTop < mainTop, true, reason: 'Warm-up should be before Main');
-      expect(mainTop < cooldownTop, true, reason: 'Main should be before Cooldown');
+      final positions = <double>[];
+      for (final label in ['Warm-up', 'Main workout', 'Cooldown']) {
+        final header = find.byWidgetPredicate((w) =>
+            w is WorkoutPreviewSectionHeader && w.title == label);
+        await revealPreview(tester, header);
+        expect(header, findsOneWidget);
+        positions.add(previewContentY(tester, header));
+      }
+      expect(positions[0], lessThan(positions[1]));
+      expect(positions[1], lessThan(positions[2]));
     });
 
     testWidgets('every generated prescription appears in correct order', (tester) async {
@@ -279,30 +301,20 @@ void main() {
       await tester.pumpWidget(buildPreviewOnly(overrides: overrides));
       await tester.pumpAndSettle();
 
-      // Check that each exercise name appears and in order
-      final allPrescriptions = expectedPlan.allPrescriptions;
-      // Find all exercise names in order by checking positions
-      List<double> positions = [];
-      for (final pres in allPrescriptions) {
-        final finder = find.text(pres.exercise.name);
-        // Exercise name may appear multiple times? But IDs unique, names may be similar but we check existence
-        expect(finder, findsWidgets, reason: 'Exercise ${pres.exercise.name} should appear');
-        // Get first occurrence position
-        try {
-          final top = tester.getTopLeft(finder.first).dy;
-          positions.add(top);
-        } catch (_) {
-          // If not visible due to scroll, scroll until visible
-          await tester.scrollUntilVisible(finder, 100);
-          await tester.pumpAndSettle();
-          positions.add(tester.getTopLeft(finder.first).dy);
-        }
+      final positions = <double>[];
+      for (var i = 0; i < expectedPlan.allPrescriptions.length; i++) {
+        final row = find.byWidgetPredicate((w) =>
+            w is WorkoutPreviewExerciseRow && w.sequenceNumber == i + 1);
+        await revealPreview(tester, row);
+        final rendered = tester.widget<WorkoutPreviewExerciseRow>(row);
+        expect(rendered.prescription, expectedPlan.allPrescriptions[i]);
+        expect(find.descendant(of: row,
+            matching: find.text(expectedPlan.allPrescriptions[i].exercise.name)),
+            findsOneWidget);
+        positions.add(previewContentY(tester, row));
       }
-
-      // Verify positions are increasing (order preserved)
-      for (int i = 1; i < positions.length; i++) {
-        expect(positions[i] >= positions[i - 1], true,
-            reason: 'Prescription order should be preserved: ${allPrescriptions[i - 1].exercise.name} before ${allPrescriptions[i].exercise.name}');
+      for (var i = 1; i < positions.length; i++) {
+        expect(positions[i], greaterThan(positions[i - 1]));
       }
     });
 
@@ -392,13 +404,15 @@ void main() {
       // Budget remains exact data without competing with the section estimate.
       final plan = WorkoutGenerator.generateCatalog(WorkoutGenerationContext(
         userProfile: userProfile, capabilityProfile: capabilityProfile))!;
-      final headers = tester.widgetList<WorkoutPreviewSectionHeader>(find.byType(WorkoutPreviewSectionHeader)).toList();
+      final headers = <WorkoutPreviewSectionHeader>[];
+      for (final title in ['Warm-up', 'Main workout', 'Cooldown']) {
+        final finder = find.byWidgetPredicate((w) =>
+            w is WorkoutPreviewSectionHeader && w.title == title);
+        await revealPreview(tester, finder);
+        headers.add(tester.widget<WorkoutPreviewSectionHeader>(finder));
+      }
       expect(headers.map((h) => h.budget), [plan.timeBudget.warmup, plan.timeBudget.main, plan.timeBudget.cooldown]);
       expect(headers.map((h) => h.planned?.total), [plan.warmupEstimate?.total, plan.mainEstimate?.total, plan.cooldownEstimate?.total]);
-
-      // Verify that planned times are truthful: we can check that warmup estimate total is displayed
-      // Since formatting may be "2 min" etc, we just check that the widget exists
-      expect(find.textContaining('Warm-up'), findsWidgets);
     });
 
     testWidgets('equipment formatting handles none correctly', (tester) async {
@@ -610,6 +624,11 @@ void main() {
             data: const MediaQueryData(textScaler: TextScaler.linear(1.5)),
             child: MaterialApp(
               theme: AppTheme.light,
+      // Navigation/prescription tests use reduced motion; looping media has
+      // separate playback coverage and must not block pumpAndSettle.
+      builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(disableAnimations: true),
+          child: child!),
               home: const WorkoutPreviewScreen(),
             ),
           ),

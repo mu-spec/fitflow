@@ -1,0 +1,20 @@
+{
+  "assets\\images\\exercises\\hero\\arm_circles.webp": "9291e7abafb09d12cbdfdd14619115e51ecc1c69a7e65e75f5d8b73360c77672",
+  "assets\\images\\exercises\\hero\\hip_flexor_stretch.webp": "b8a77637238ae03593308e0d356dab331fa7446d36fe156b712b5fe1819186b2",
+  "assets\\images\\exercises\\hero\\lunge_reverse.webp": "c3fee689be2bdbe2d19181f5f85829b69fbff4f53dd53a49dfc202b9fba82d5e",
+  "assets\\images\\exercises\\hero\\plank_forearm.webp": "3797f130206d1a294bc88ff616eeb7272a6ba2d58f90414b7b8584f0a7440f19",
+  "assets\\images\\exercises\\hero\\pushup_standard.webp": "a50be7986e53f91cc59ed305c0a5fc9e093d187c61e96f125a84e03bb8ec89d9",
+  "assets\\images\\exercises\\hero\\pushup_wall.webp": "9620094e8144fe0a7274b9667e1eb2812fba8e31950ea70dbecab3bcc435e5f6",
+  "assets\\images\\exercises\\hero\\row_bent_over_dumbbell.webp": "14120ab5a98513ce17e9cb9292aa0581d196191ca93f7ea473fbf00b0c19c2ad",
+  "assets\\images\\exercises\\hero\\squat_bodyweight.webp": "affc20f5ad9e5c66bfb446f429d9dd2fdd56b9603dddc063249d2a952e522098",
+  "assets\\images\\exercises\\thumb\\arm_circles.webp": "0bbd06fd63ea6f39301b4418cd2320c5263dd0b6ae32c4cefeb4cd2787f9914f",
+  "assets\\images\\exercises\\thumb\\hip_flexor_stretch.webp": "ef05ef2eb959b63ecd0d710f2496afd04bc15ec38a139dee6f2f56fed10fdbde",
+  "assets\\images\\exercises\\thumb\\lunge_reverse.webp": "7ccf495ac4422ba47da578b812e1366a4edf3ac8a3e8012e4004759cfd21137f",
+  "assets\\images\\exercises\\thumb\\plank_forearm.webp": "a649fce9d5c4b01b12372f562445b379d8a90f565ac0594d7be3e0095643e1fc",
+  "assets\\images\\exercises\\thumb\\pushup_standard.webp": "25738b2dd86fe745bf858d5b55ff3494a9035c0a11ceced08132b804d70df2a9",
+  "assets\\images\\exercises\\thumb\\pushup_wall.webp": "9c05386c73bfd8a2df25359c426842ea5f5876e488aade949c5391b2cc33cb8f",
+  "assets\\images\\exercises\\thumb\\row_bent_over_dumbbell.webp": "361e25a615e2b3ee6daea69f28ed77929e5cff132ddd4e1972227e4456d12f0e",
+  "assets\\images\\exercises\\thumb\\squat_bodyweight.webp": "3c450e83998debe8732651151b3925f8c5eb3d6f1508e91d0986254c4ea68a9f",
+  "android\\app\\build.gradle.kts": "56f573db8c8567453cd73aacab2d2764b1a180b8e83a685b436182f6129ccddd",
+  "android\\gradle.properties": "bee9cf5b0a21284a673adcc1450b74a28eae39dc4cd3bd0d69e32a785e571738"
+}

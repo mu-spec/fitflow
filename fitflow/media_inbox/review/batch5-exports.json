@@ -1,0 +1,306 @@
+[
+  {
+    "id": "row_doorway",
+    "source": "row_doorway_v3.png",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/row_doorway.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 77904,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "bacd580bfa4f25646a0fbfef1e58fb80f3487cbc70abf30eba4d03d83d9d5f16"
+  },
+  {
+    "id": "row_doorway",
+    "source": "row_doorway_v3.png",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/row_doorway.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 13454,
+    "crop": [
+      180,
+      0,
+      1266,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "0f16794febccfe4c1113116d54601a5fd62759705ebc5496ccce908601cc6a52"
+  },
+  {
+    "id": "reverse_snow_angel",
+    "source": "reverse_snow_angel_v2.png",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/reverse_snow_angel.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 73982,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "5949f5021e6cb7d50ab28278879d53935a101fba224fee932454f37edb518cbb"
+  },
+  {
+    "id": "reverse_snow_angel",
+    "source": "reverse_snow_angel_v2.png",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/reverse_snow_angel.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 9296,
+    "crop": [
+      0,
+      -181,
+      1448,
+      1267
+    ],
+    "quality": 95,
+    "sha256": "a2c271334bd0b0f64a7897a1b0a27255a06d9f3bf0b7d3c81099c7e421cca42a"
+  },
+  {
+    "id": "calf_raise",
+    "source": "calf_raise.png",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/calf_raise.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 59222,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "5515e905e82911c23617f99d6e18aeb3d95f1943561610215d11d36d629c1841"
+  },
+  {
+    "id": "calf_raise",
+    "source": "calf_raise.png",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/calf_raise.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 8858,
+    "crop": [
+      180,
+      0,
+      1266,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "0903304e3afa5f252a00928e0779369adcef027e39e65696218dab23dce04a82"
+  },
+  {
+    "id": "bird_dog",
+    "source": "bird_dog.png",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/bird_dog.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 62984,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "81dbb57a73dec3fdc61c9f3b8499e24329215db32d911368041673ecbb43b867"
+  },
+  {
+    "id": "bird_dog",
+    "source": "bird_dog.png",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/bird_dog.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 7986,
+    "crop": [
+      0,
+      -181,
+      1448,
+      1267
+    ],
+    "quality": 95,
+    "sha256": "10bdc7bdef85a64d22781a2875d544750202024449bb02c656ae395a46294605"
+  },
+  {
+    "id": "bicycle_crunch",
+    "source": "bicycle_crunch.png",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/bicycle_crunch.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 95858,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "c0b09b9b5f72badf336e2bf6079b863dbb2bdde1dd82d0be5c039625594a0720"
+  },
+  {
+    "id": "bicycle_crunch",
+    "source": "bicycle_crunch.png",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/bicycle_crunch.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 10520,
+    "crop": [
+      0,
+      -181,
+      1448,
+      1267
+    ],
+    "quality": 95,
+    "sha256": "3b654349205c3121bbf4159299e7fcd1badd862ca3cd949c70bff04b9eb69e0e"
+  },
+  {
+    "id": "heel_taps",
+    "source": "heel_taps.png",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/heel_taps.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 113276,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "e82f0e99defb6d86c5541c8f4907fd8120c9285dd854b338a9259f92a736aece"
+  },
+  {
+    "id": "heel_taps",
+    "source": "heel_taps.png",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/heel_taps.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 16312,
+    "crop": [
+      55,
+      -130,
+      1415,
+      1230
+    ],
+    "quality": 95,
+    "sha256": "05d494b754d8c364a9540afaf7aaf3f64a684da44ba711993a3010fb6794a7bb"
+  },
+  {
+    "id": "reverse_crunch",
+    "source": "reverse_crunch.png",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/reverse_crunch.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 127102,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "3341e72b7f6dfddb4f15eaf9cb47e6684d700a8321c5d3fcd29a6c686325cf54"
+  },
+  {
+    "id": "reverse_crunch",
+    "source": "reverse_crunch.png",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/reverse_crunch.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 17734,
+    "crop": [
+      140,
+      -80,
+      1420,
+      1200
+    ],
+    "quality": 95,
+    "sha256": "f59d7fe710f93952813a558448ecaae2f80583f186eb7b51f0395ed31c77c6f9"
+  },
+  {
+    "id": "mountain_climbers",
+    "source": "mountain_climbers.png",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/mountain_climbers.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 103990,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "8f31e68a74aafbc6a87fcdd44d560295febb2fa06849ca17ba6671de97314487"
+  },
+  {
+    "id": "mountain_climbers",
+    "source": "mountain_climbers.png",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/mountain_climbers.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 16826,
+    "crop": [
+      90,
+      -100,
+      1370,
+      1180
+    ],
+    "quality": 95,
+    "sha256": "e6e3d664c6cd01b71b746c04d0b2145d5772368d9085146926c02ae89101eb71"
+  }
+]

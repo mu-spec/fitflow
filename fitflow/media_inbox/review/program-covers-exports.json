@@ -1,0 +1,107 @@
+[
+  {
+    "id": "balanced_foundations",
+    "original": "C:\\Users\\PMLS\\Downloads\\Balanced full-body reverse lunge-1.png",
+    "saved": "media_inbox\\programs\\balanced_foundations.png",
+    "source_dimensions": [
+      1448,
+      1086
+    ],
+    "source_bytes": 2164412,
+    "source_sha256": "8d70980eaa55af90f58d50231a255eebed0a876bd29a6a0c5bd915072f756aa1",
+    "path": "assets/images/programs/balanced_foundations.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 114192,
+    "sha256": "6e303088928e11ee1f9015b2a9f6f1c93e314a0f45b50a076c81d58f6096f1e7",
+    "quality": 93,
+    "crop": "none",
+    "review": "Accepted as program identity photography; anatomy, supports and full composition reviewed."
+  },
+  {
+    "id": "strength_foundations",
+    "original": "C:\\Users\\PMLS\\Downloads\\Controlled push-up strength foundations-2.png",
+    "saved": "media_inbox\\programs\\strength_foundations.png",
+    "source_dimensions": [
+      1448,
+      1086
+    ],
+    "source_bytes": 1990792,
+    "source_sha256": "3a4dae9d1cf6be3c0aabfaa3365803a565ad21c096dc0f2fcebfabebab94ace5",
+    "path": "assets/images/programs/strength_foundations.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 86684,
+    "sha256": "8a20578ee6179d9a98fa26790a47191de7826b04f25d22a39030baf3d8107e61",
+    "quality": 93,
+    "crop": "none",
+    "review": "Accepted as program identity photography; anatomy, supports and full composition reviewed."
+  },
+  {
+    "id": "endurance_builder",
+    "original": "C:\\Users\\PMLS\\Downloads\\High-knee drive for endurance-5.png",
+    "saved": "media_inbox\\programs\\endurance_builder.png",
+    "source_dimensions": [
+      1448,
+      1086
+    ],
+    "source_bytes": 1919291,
+    "source_sha256": "3490c7d5c4c69a22e4e6a1a1d4a6fda932a9a454488995644b26ca6e0e6bc49d",
+    "path": "assets/images/programs/endurance_builder.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 81814,
+    "sha256": "0a480777aac2658fd59f72af04b04e7743b97483af8cb043a32c583ebffba1cb",
+    "quality": 93,
+    "crop": "none",
+    "review": "Accepted as program identity photography; anatomy, supports and full composition reviewed."
+  },
+  {
+    "id": "mobility_movement",
+    "original": "C:\\Users\\PMLS\\Downloads\\Calm Hip Flexor Stretch-4.png",
+    "saved": "media_inbox\\programs\\mobility_movement.png",
+    "source_dimensions": [
+      1448,
+      1086
+    ],
+    "source_bytes": 1979676,
+    "source_sha256": "79c49089f0ed268db7d8665d34229e68ddb54c437cd98b21df82206379244186",
+    "path": "assets/images/programs/mobility_movement.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 95584,
+    "sha256": "38dc2b37513d24dced616cb502a909f4492d2818b719dfa50088c6387cd72afd",
+    "quality": 93,
+    "crop": "none",
+    "review": "Accepted as program identity photography; anatomy, supports and full composition reviewed."
+  },
+  {
+    "id": "stay_active_starter",
+    "original": "C:\\Users\\PMLS\\Downloads\\Gentle Steps, Everyday Strength-3.png",
+    "saved": "media_inbox\\programs\\stay_active_starter.png",
+    "source_dimensions": [
+      1448,
+      1086
+    ],
+    "source_bytes": 2104100,
+    "source_sha256": "2756e592320a133b98ec650e407486ce07500dce4eea177415c9235cd2fdc77d",
+    "path": "assets/images/programs/stay_active_starter.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 103948,
+    "sha256": "0cf8b4751cde263813cc93a06d5a184c15acfd149ed9b96d0748dbf49bc679a2",
+    "quality": 93,
+    "crop": "none",
+    "review": "Accepted as program identity photography; anatomy, supports and full composition reviewed."
+  }
+]

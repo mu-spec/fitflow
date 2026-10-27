@@ -130,59 +130,63 @@ class _PreviewContent extends ConsumerWidget {
                     label: Text(context.l10n.startWorkout),
                   ));
               final content = <Widget>[
-                WorkoutPreviewSummaryCard(
-                    plan: plan,
-                    userProfile: userProfile,
-                    effectiveDuration:
-                        generationContext.effectiveWorkoutDuration,
-                    sessionMode: sessionMode),
-                const SizedBox(height: FitFlowSpace.md),
-                WorkoutPreviewSectionHeader(
-                    title: context.l10n.flowWarmup,
-                    exerciseCount: plan.warmup.exerciseCount,
-                    planned: plan.warmupEstimate,
-                    budget: plan.timeBudget.warmup,
-                    visualV2: true,
-                    compactPreview: true),
+                SliverToBoxAdapter(
+                    child: WorkoutPreviewSummaryCard(
+                        plan: plan,
+                        userProfile: userProfile,
+                        effectiveDuration:
+                            generationContext.effectiveWorkoutDuration,
+                        sessionMode: sessionMode)),
+                const SliverToBoxAdapter(
+                    child: SizedBox(height: FitFlowSpace.md)),
+                SliverToBoxAdapter(
+                    child: WorkoutPreviewSectionHeader(
+                        title: context.l10n.flowWarmup,
+                        exerciseCount: plan.warmup.exerciseCount,
+                        planned: plan.warmupEstimate,
+                        budget: plan.timeBudget.warmup,
+                        visualV2: true,
+                        compactPreview: true)),
                 _buildExerciseList(context, plan.warmup.exercises),
-                const SizedBox(height: FitFlowSpace.md),
-                WorkoutPreviewSectionHeader(
-                    title: context.l10n.flowMain,
-                    exerciseCount: plan.main.exerciseCount,
-                    planned: plan.mainEstimate,
-                    budget: plan.timeBudget.main,
-                    visualV2: true,
-                    compactPreview: true),
+                const SliverToBoxAdapter(
+                    child: SizedBox(height: FitFlowSpace.md)),
+                SliverToBoxAdapter(
+                    child: WorkoutPreviewSectionHeader(
+                        title: context.l10n.flowMain,
+                        exerciseCount: plan.main.exerciseCount,
+                        planned: plan.mainEstimate,
+                        budget: plan.timeBudget.main,
+                        visualV2: true,
+                        compactPreview: true)),
                 _buildExerciseList(context, plan.main.exercises,
                     startIndex: plan.warmup.exerciseCount),
-                const SizedBox(height: FitFlowSpace.md),
-                WorkoutPreviewSectionHeader(
-                    title: context.l10n.flowCooldown,
-                    exerciseCount: plan.cooldown.exerciseCount,
-                    planned: plan.cooldownEstimate,
-                    budget: plan.timeBudget.cooldown,
-                    visualV2: true,
-                    compactPreview: true),
+                const SliverToBoxAdapter(
+                    child: SizedBox(height: FitFlowSpace.md)),
+                SliverToBoxAdapter(
+                    child: WorkoutPreviewSectionHeader(
+                        title: context.l10n.flowCooldown,
+                        exerciseCount: plan.cooldown.exerciseCount,
+                        planned: plan.cooldownEstimate,
+                        budget: plan.timeBudget.cooldown,
+                        visualV2: true,
+                        compactPreview: true)),
                 _buildExerciseList(context, plan.cooldown.exercises,
                     startIndex:
                         plan.warmup.exerciseCount + plan.main.exerciseCount),
-                const SizedBox(height: FitFlowSpace.md),
+                const SliverToBoxAdapter(
+                    child: SizedBox(height: FitFlowSpace.md)),
               ];
               if (constraints.maxHeight < 320) {
-                return SingleChildScrollView(
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [...content, start]));
+                return CustomScrollView(
+                    slivers: [...content, SliverToBoxAdapter(child: start)]);
               }
               return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Expanded(
-                        child: SingleChildScrollView(
+                        child: CustomScrollView(
                             key: const Key('preview_scroll'),
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: content))),
+                            slivers: content)),
                     const SizedBox(height: FitFlowSpace.sm),
                     start,
                   ]);
@@ -194,13 +198,12 @@ class _PreviewContent extends ConsumerWidget {
   Widget _buildExerciseList(
           BuildContext context, List<WorkoutExercisePrescription> prescriptions,
           {int startIndex = 0}) =>
-      Column(children: [
-        for (var i = 0; i < prescriptions.length; i++)
-          WorkoutPreviewExerciseRow(
-            prescription: prescriptions[i],
-            visualV2: true,
-            compactPreview: true,
-            sequenceNumber: startIndex + i + 1,
-          )
-      ]);
+      SliverList.builder(
+          itemCount: prescriptions.length,
+          itemBuilder: (context, i) => WorkoutPreviewExerciseRow(
+                prescription: prescriptions[i],
+                visualV2: true,
+                compactPreview: true,
+                sequenceNumber: startIndex + i + 1,
+              ));
 }

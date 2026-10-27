@@ -1,0 +1,14 @@
+{
+  "accepted": [
+    "row_towel",
+    "superman",
+    "prone_y_raise",
+    "lunge_forward",
+    "squat_split_static",
+    "squat_split_bulgarian"
+  ],
+  "rejected": {
+    "row_doorway": "Near forefoot and its floor contact hidden by wall; planted-foot setup cannot be fully validated.",
+    "reverse_snow_angel": "Head and upper chest elevated; grounded rib/neutral neck setup with forehead just above floor is not clearly demonstrated."
+  }
+}

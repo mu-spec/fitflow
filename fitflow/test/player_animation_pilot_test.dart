@@ -84,7 +84,7 @@ void main() {
       expect(pose.knee(-1).dx, lessThan(pose.knee(1).dx));
     }
   });
-  for (final id in ['march_in_place', 'squat_bodyweight']) {
+  for (final id in ['march_in_place']) {
     testWidgets('$id artwork follows work/pause without driving the session',
         (tester) async {
       final controller =

@@ -1,0 +1,290 @@
+[
+  {
+    "id": "plank_knee",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/plank_knee.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 75642,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "f5917bc6873a17c349a2a30f8c1030e42cdfa1539e4b493740c8e00d9151f8d4"
+  },
+  {
+    "id": "plank_knee",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/plank_knee.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 9272,
+    "crop": [
+      140,
+      -90,
+      1380,
+      1150
+    ],
+    "quality": 95,
+    "sha256": "e4dabaa964d15d3a1cdafb8781c6d0092b6eb5952f5af949cac79cc2abc27992"
+  },
+  {
+    "id": "plank_side",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/plank_side.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 71012,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "806f85b0fa063092d6c80e7bfa4ddc17b9af4983e8623f1cacc123f3d95b88fa"
+  },
+  {
+    "id": "plank_side",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/plank_side.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 9752,
+    "crop": [
+      80,
+      -110,
+      1360,
+      1170
+    ],
+    "quality": 95,
+    "sha256": "0d6a16943a2003e648f64229c39dc076619a76c3f30335433190e04bbdaace70"
+  },
+  {
+    "id": "hollow_hold",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/hollow_hold.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 75516,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "1ac76bc0a130ae64bb3b30dc752f39046f0e4463f27e6b0dc4ee66d3a4c9da26"
+  },
+  {
+    "id": "hollow_hold",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/hollow_hold.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 7700,
+    "crop": [
+      0,
+      -181,
+      1448,
+      1267
+    ],
+    "quality": 95,
+    "sha256": "16257c2d0de7c9819917fb3dc240a8be15c83352bb6893dee612a3fa70742cdb"
+  },
+  {
+    "id": "bridge_glute",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/bridge_glute.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 75258,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "0b79da56da013dbade18e7b9624a12115e980ef504bd78519fe306468cade417"
+  },
+  {
+    "id": "bridge_glute",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/bridge_glute.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 9908,
+    "crop": [
+      40,
+      -120,
+      1400,
+      1240
+    ],
+    "quality": 95,
+    "sha256": "8e8a9f34484c23426a64d8fae890e773eefbab664e446b49ceea2487f956dd44"
+  },
+  {
+    "id": "bridge_single_leg",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/bridge_single_leg.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 84318,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "ead91f9a2a9ee8594b7a0cf429fb54498144c2f8e1a37dac58c1db90f5c4dacd"
+  },
+  {
+    "id": "bridge_single_leg",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/bridge_single_leg.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 10848,
+    "crop": [
+      95,
+      -80,
+      1335,
+      1160
+    ],
+    "quality": 95,
+    "sha256": "68d49c09301f6c13de5adaa3e16c08edd09c60971ba9e652d26b6fedf8ed6bd0"
+  },
+  {
+    "id": "march_in_place",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/march_in_place.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 74596,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "21ecadda7fd17fcc74dabd35bcee381f411269e3640f58b6670744c9268a6b86"
+  },
+  {
+    "id": "march_in_place",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/march_in_place.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 9536,
+    "crop": [
+      181,
+      0,
+      1267,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "4382fdb9faee75ade6c3df5e2e8ada35e174a4128a8889b520ac1d6c44571a45"
+  },
+  {
+    "id": "high_knees",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/high_knees.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 82572,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "1e81763a89e25928f53ccd91e28ff782371c0705d1e5f882067780680c3a871e"
+  },
+  {
+    "id": "high_knees",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/high_knees.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 11438,
+    "crop": [
+      181,
+      0,
+      1267,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "f91f4df8e5137b3ce8a69e1de386c1cee335fa3e196156be30d2ee5a64428561"
+  },
+  {
+    "id": "jumping_jacks",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/jumping_jacks.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 62436,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "9bb542ac2ec1cbadb74c79dc307f81365fd376642ca5a823a4f94a6535f0a55b"
+  },
+  {
+    "id": "jumping_jacks",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/jumping_jacks.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 8960,
+    "crop": [
+      181,
+      0,
+      1267,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "a68c8a85a704b8f3e1d9816d9bbd64ff283a8cc34bbf5b00935ab52b104dcfad"
+  }
+]

@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'pilot_exercise_demonstration.dart';
+import 'pushup_lottie_demonstration.dart';
 
 import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_time_estimator.dart';
@@ -71,8 +72,17 @@ class WorkoutPlayerExerciseCenter extends StatelessWidget {
           return Center(
               child: ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child:
-                PilotExerciseDemonstration.supports(prescription.exercise.id) &&
+            child: prescription.exercise.id == 'pushup_standard' &&
+                    !MediaQuery.disableAnimationsOf(context)
+                ? PushupLottieDemonstration(
+                    key: const ValueKey('v2_player_media'),
+                    width: width,
+                    height: width * 3 / 4,
+                    animate:
+                        (ready || state.phase == WorkoutPlayerPhase.work) &&
+                            !state.isPaused)
+                : PilotExerciseDemonstration.supports(
+                            prescription.exercise.id) &&
                         !MediaQuery.disableAnimationsOf(context)
                     ? PilotExerciseDemonstration(
                         key: const ValueKey('v2_player_media'),
@@ -82,6 +92,9 @@ class WorkoutPlayerExerciseCenter extends StatelessWidget {
                         width: width,
                         height: width * 3 / 4)
                     : FitFlowExerciseImage.hero(
+                        animate:
+                            (ready || state.phase == WorkoutPlayerPhase.work) &&
+                                !state.isPaused,
                         key: const ValueKey('v2_player_media'),
                         exerciseId: prescription.exercise.id,
                         width: width,

@@ -900,12 +900,16 @@ void main() {
           AppRoutes.exerciseDetail(id));
       h.router.pop();
       await _settle(tester);
-      expect(
-          tester
-              .widgetList<WorkoutPreviewExerciseRow>(
-                  find.byType(WorkoutPreviewExerciseRow))
-              .map((r) => r.prescription),
-          h.plan.allPrescriptions);
+      final scrollable = find.descendant(
+          of: find.byKey(const Key('preview_scroll')),
+          matching: find.byType(Scrollable));
+      for (var i = 0; i < h.plan.allPrescriptions.length; i++) {
+        final row = find.byWidgetPredicate((w) =>
+            w is WorkoutPreviewExerciseRow && w.sequenceNumber == i + 1);
+        await tester.scrollUntilVisible(row, 180, scrollable: scrollable);
+        expect(tester.widget<WorkoutPreviewExerciseRow>(row).prescription,
+            h.plan.allPrescriptions[i]);
+      }
       expect(find.byKey(const Key('preview_start')), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
@@ -913,7 +917,7 @@ void main() {
     testWidgets(
         'Preview disclosure keeps replacement rule and final rows clear of Start',
         (tester) async {
-      await _pump(tester,
+      final h = await _pump(tester,
           preview: true, size: const Size(320, 700), dark: true, scale: 2);
       final start = find.byKey(const Key('preview_start'));
       expect(find.text(_l.flowPreviewHelp), findsNothing);
@@ -924,8 +928,13 @@ void main() {
       await _settle(tester);
       expect(find.text(_l.flowPreviewHelp), findsOneWidget);
       expect(find.text(_l.flowAdaptiveNote), findsOneWidget);
-      final lastRow = find.byType(WorkoutPreviewExerciseRow).last;
-      await tester.ensureVisible(lastRow);
+      final lastRow = find.byWidgetPredicate((w) =>
+          w is WorkoutPreviewExerciseRow &&
+          w.sequenceNumber == h.plan.allPrescriptions.length);
+      await tester.scrollUntilVisible(lastRow, 220,
+          scrollable: find.descendant(
+              of: find.byKey(const Key('preview_scroll')),
+              matching: find.byType(Scrollable)));
       await _settle(tester);
       expect(tester.getBottomRight(lastRow).dy,
           lessThanOrEqualTo(tester.getTopLeft(start).dy));

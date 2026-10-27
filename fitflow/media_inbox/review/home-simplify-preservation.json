@@ -1,0 +1,27 @@
+{
+    "UnchangedMediaAssets":  181,
+    "ChangedTrackedFiles":  [
+                                "test/workout_player_completion_test.dart",
+                                "lib/features/home/presentation/home_screen.dart",
+                                "lib/features/home/presentation/widgets/home_workout_hero_card.dart",
+                                "test/visual_v2_home_test.dart",
+                                "test/home_dashboard_test.dart",
+                                "test/app_test.dart",
+                                "lib/features/home/presentation/widgets/home_session_mode_widgets.dart",
+                                "test/workout_preview_test.dart",
+                                "lib/l10n/app_en.arb",
+                                "lib/features/home/presentation/widgets/home_personalization_card.dart",
+                                "test/splash_routing_test.dart",
+                                "lib/l10n/app_localizations.dart",
+                                "test/home_session_mode_widget_test.dart",
+                                "test/progress_screen_test.dart",
+                                "test/startup_recovery_test.dart",
+                                "test/startup_destination_test.dart",
+                                "test/capability_assessment_saving_test.dart",
+                                "test/user_fitness_profile_test.dart",
+                                "lib/features/home/presentation/widgets/home_header.dart",
+                                "lib/l10n/app_localizations_en.dart"
+                            ],
+    "BaselineCommit":  "968fde97805325fb298db79878652c7607ac051b",
+    "Commit":  "26847d1f49c4c7b7593e2886e72e985a9f773e13"
+}

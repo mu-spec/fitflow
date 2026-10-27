@@ -90,14 +90,15 @@ tasks.configureEach {
             if (!hasReleaseSigning) {
                 throw GradleException(releaseSigningMessage)
             }
-            val store = signingConfigs.getByName("release").storeFile
-            if (store == null || !store.exists()) {
-                throw GradleException(
-                    "Upload keystore not found at '${store?.path}'. " +
-                        "Check storeFile in android/key.properties. " +
-                        "FitFlow will not sign a release build with the debug key.",
-                )
-            }
+           val storePath = keystoreProperties.getProperty("storeFile")?.trim().orEmpty()
+val store = if (storePath.isNotEmpty()) file(storePath) else null
+if (store == null || !store.exists()) {
+    throw GradleException(
+        "Upload keystore not found at '${store?.path}'. " +
+            "Check storeFile in android/key.properties. " +
+            "FitFlow will not sign a release build with the debug key.",
+    )
+}
         }
     }
 }

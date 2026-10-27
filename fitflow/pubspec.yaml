@@ -20,6 +20,7 @@ dependencies:
   timezone: ^0.11.1
   flutter_timezone: ^5.1.0
   file_picker: ^13.1.0
+  lottie: ^3.6.1
 
 dev_dependencies:
   flutter_test:
@@ -30,6 +31,14 @@ flutter:
   generate: true
   uses-material-design: true
   assets:
+    - assets/animations/BODYWEIGHT_SQUAT_LICENSE.md
+    - assets/animations/bodyweight_squat.json
+    - assets/animations/pushup_incline.json
+    - assets/animations/pushup_decline.json
+    - assets/animations/knee_pushup.json
+    - assets/animations/pushup.json
+    - assets/animations/cobra.json
+    - assets/animations/lunge.json
     - assets/images/branding/
     - assets/images/exercises/thumb/
     - assets/images/exercises/hero/

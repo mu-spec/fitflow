@@ -1,0 +1,230 @@
+[
+  {
+    "id": "fire_hydrant",
+    "path": "assets/images/exercises/hero/fire_hydrant.webp",
+    "source": "fire_hydrant.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 99942,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "0fcb64197e615b8d5f3abd2a513619c18379045066a54539b70d09885fa6f901"
+  },
+  {
+    "id": "fire_hydrant",
+    "path": "assets/images/exercises/thumb/fire_hydrant.webp",
+    "source": "fire_hydrant.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 13880,
+    "crop": [
+      130,
+      -60,
+      1350,
+      1160
+    ],
+    "quality": 95,
+    "sha256": "6e743393340e27a6cb5c853eb8b8d07a4056a151bc53d24ee6b223b25090ccfa"
+  },
+  {
+    "id": "pushup_close_grip",
+    "path": "assets/images/exercises/hero/pushup_close_grip.webp",
+    "source": "pushup_close_grip.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 86470,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "a53d7f73259e3344cec22ba879f6f97974a7d6544264da2a1d3c8575dd36e068"
+  },
+  {
+    "id": "pushup_close_grip",
+    "path": "assets/images/exercises/thumb/pushup_close_grip.webp",
+    "source": "pushup_close_grip.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 11346,
+    "crop": [
+      40,
+      -100,
+      1320,
+      1180
+    ],
+    "quality": 95,
+    "sha256": "62cf0d90a72fd0798e3275021f66245ea30677256409f41e4f9b42b7aaa8ba15"
+  },
+  {
+    "id": "pushup_wide",
+    "path": "assets/images/exercises/hero/pushup_wide.webp",
+    "source": "pushup_wide.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 113040,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "ade750f1943a3c5147a8e227650b5320446c864cec518449b1a1e63f3754564f"
+  },
+  {
+    "id": "pushup_wide",
+    "path": "assets/images/exercises/thumb/pushup_wide.webp",
+    "source": "pushup_wide.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 13108,
+    "crop": [
+      110,
+      -110,
+      1390,
+      1170
+    ],
+    "quality": 95,
+    "sha256": "34db69b10448f8ba313c5939cf77964451c72b0320010a4073dfa0d0970fcaf5"
+  },
+  {
+    "id": "shoulder_tap",
+    "path": "assets/images/exercises/hero/shoulder_tap.webp",
+    "source": "shoulder_tap.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 104880,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "1ce6b74e73f2f3f399729ef7a904ca0a6307122413e4bae278237ab7bcb28baf"
+  },
+  {
+    "id": "shoulder_tap",
+    "path": "assets/images/exercises/thumb/shoulder_tap.webp",
+    "source": "shoulder_tap.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 14090,
+    "crop": [
+      130,
+      -60,
+      1350,
+      1160
+    ],
+    "quality": 95,
+    "sha256": "5ed98defe2b988b16b3fd51c4402e31d1d00a4e9d00405dd93ab8f02ef120ee1"
+  },
+  {
+    "id": "plank_up_down",
+    "path": "assets/images/exercises/hero/plank_up_down.webp",
+    "source": "plank_up_down.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 94750,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "e87b8dd1f5dd9401aff38aa97d49ddda3fe8778cb11a5a5c280eb3053e12a398"
+  },
+  {
+    "id": "plank_up_down",
+    "path": "assets/images/exercises/thumb/plank_up_down.webp",
+    "source": "plank_up_down.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 11346,
+    "crop": [
+      30,
+      -140,
+      1390,
+      1220
+    ],
+    "quality": 95,
+    "sha256": "807903cc8b0a107ce1ebcdb2b1f3d9ad3537dc93d753e332e068dceba0ad208a"
+  },
+  {
+    "id": "butt_kicks",
+    "path": "assets/images/exercises/hero/butt_kicks.webp",
+    "source": "butt_kicks.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 71752,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "46206c498510fde780f54420d18a5654cdcfb7d3ddc60d4c8b164aa89f44cba2"
+  },
+  {
+    "id": "butt_kicks",
+    "path": "assets/images/exercises/thumb/butt_kicks.webp",
+    "source": "butt_kicks.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 10308,
+    "crop": [
+      180,
+      0,
+      1266,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "df73e1a2a1d9361a6bd24860e918385926a88114f1b042667840a4e6ec231671"
+  }
+]

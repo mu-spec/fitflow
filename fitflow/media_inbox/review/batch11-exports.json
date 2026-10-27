@@ -1,0 +1,306 @@
+[
+  {
+    "id": "burpee_low_impact",
+    "path": "assets/images/exercises/hero/burpee_low_impact.webp",
+    "source": "media_inbox\\burpee_low_impact.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 92094,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "176735ff5e6e2368d566a5fee5faf79bf6f068be0266e6d833d2c7f62a534d42"
+  },
+  {
+    "id": "burpee_low_impact",
+    "path": "assets/images/exercises/thumb/burpee_low_impact.webp",
+    "source": "media_inbox\\burpee_low_impact.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 12240,
+    "crop": [
+      150,
+      -57,
+      1350,
+      1143
+    ],
+    "quality": 95,
+    "sha256": "9d6c4203640cbe7854453ec741ca467336cabdaf61640eb5341db77d63a2d7db"
+  },
+  {
+    "id": "fast_feet",
+    "path": "assets/images/exercises/hero/fast_feet.webp",
+    "source": "media_inbox\\fast_feet.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 63380,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "2a9fd641ce3801c4bc20bc74c31c5ee8fc08f8e7913834d7e01dabdfab093bb5"
+  },
+  {
+    "id": "fast_feet",
+    "path": "assets/images/exercises/thumb/fast_feet.webp",
+    "source": "media_inbox\\fast_feet.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 9970,
+    "crop": [
+      180,
+      0,
+      1266,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "df671117030eaf8d544d52137e676a5dbe3f46653037d84b0a2b559ed7efc527"
+  },
+  {
+    "id": "mountain_climber_standing",
+    "path": "assets/images/exercises/hero/mountain_climber_standing.webp",
+    "source": "media_inbox\\mountain_climber_standing.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 56164,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "b918159c4e56f9a1ef12a688bf7d0b0e725959da2cea4be04d9b160c2afce61c"
+  },
+  {
+    "id": "mountain_climber_standing",
+    "path": "assets/images/exercises/thumb/mountain_climber_standing.webp",
+    "source": "media_inbox\\mountain_climber_standing.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 9014,
+    "crop": [
+      180,
+      0,
+      1266,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "13e643cb143c655d2d79bdcdafe5266ed98e361b0bf4f1798a3e66a94ff5be14"
+  },
+  {
+    "id": "cobra_stretch",
+    "path": "assets/images/exercises/hero/cobra_stretch.webp",
+    "source": "media_inbox\\cobra_stretch.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 74298,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "b9b42a3050635c41ef4d23fc7e8b09c2aa03d9e5861a8b3b2ea53b7d25af1362"
+  },
+  {
+    "id": "cobra_stretch",
+    "path": "assets/images/exercises/thumb/cobra_stretch.webp",
+    "source": "media_inbox\\cobra_stretch.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 9216,
+    "crop": [
+      10,
+      -157,
+      1410,
+      1243
+    ],
+    "quality": 95,
+    "sha256": "9a6bffdabb9e95d31c153ba8013865389938aaf8db1aa9b37e996856c8e208f2"
+  },
+  {
+    "id": "figure_four_stretch",
+    "path": "assets/images/exercises/hero/figure_four_stretch.webp",
+    "source": "media_inbox\\figure_four_stretch.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 101186,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "b6c4576c00409e87a92643de85c381fc6fe546fc942aaa09cd6a95344d3ed818"
+  },
+  {
+    "id": "figure_four_stretch",
+    "path": "assets/images/exercises/thumb/figure_four_stretch.webp",
+    "source": "media_inbox\\figure_four_stretch.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 12846,
+    "crop": [
+      60,
+      -82,
+      1310,
+      1168
+    ],
+    "quality": 95,
+    "sha256": "ff6fc42e6fb2ca5ca45a687ac816088e3ea7c4c2ac6d7e941ed3b1f810bdf0ed"
+  },
+  {
+    "id": "pull_apart_resistance_band",
+    "path": "assets/images/exercises/hero/pull_apart_resistance_band.webp",
+    "source": "media_inbox\\pull_apart_resistance_band.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 68854,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "9dd2dc841e229e4d2d28ad9c8bef39882df141558dd9444b6fbab16284bf61ec"
+  },
+  {
+    "id": "pull_apart_resistance_band",
+    "path": "assets/images/exercises/thumb/pull_apart_resistance_band.webp",
+    "source": "media_inbox\\pull_apart_resistance_band.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 9754,
+    "crop": [
+      180,
+      0,
+      1266,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "62f9cf2f2a5fecf68987762ea479edea89bfde079c52eef4213ea5011d87543b"
+  },
+  {
+    "id": "row_resistance_band",
+    "path": "assets/images/exercises/hero/row_resistance_band.webp",
+    "source": "media_inbox\\row_resistance_band_v2.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 90574,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "237b42c597c333875ba2a1bf6cc92230b675853f9d5de98df77d15dcfe22ca9a"
+  },
+  {
+    "id": "row_resistance_band",
+    "path": "assets/images/exercises/thumb/row_resistance_band.webp",
+    "source": "media_inbox\\row_resistance_band_v2.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 13486,
+    "crop": [
+      300,
+      0,
+      1386,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "09fa86d8f929e10e854716b3902b23c81fed0bc9c193af69fcfde4bfca41fd5c"
+  },
+  {
+    "id": "squat_goblet_dumbbell",
+    "path": "assets/images/exercises/hero/squat_goblet_dumbbell.webp",
+    "source": "media_inbox\\squat_goblet_dumbbell.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 97230,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "30801fb1992e35407899213c3641dfeb02998339dfc7664e9d6c1e226adf30ab"
+  },
+  {
+    "id": "squat_goblet_dumbbell",
+    "path": "assets/images/exercises/thumb/squat_goblet_dumbbell.webp",
+    "source": "media_inbox\\squat_goblet_dumbbell.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 13258,
+    "crop": [
+      180,
+      0,
+      1266,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "77aa362abd8b016ec787b43b6a30db4abb12e48ffa2c6a18e3dd545e0f52fdf7"
+  }
+]

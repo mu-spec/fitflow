@@ -1,0 +1,306 @@
+[
+  {
+    "id": "pushup_pike",
+    "path": "assets/images/exercises/hero/pushup_pike.webp",
+    "source": "pushup_pike_v2.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 104872,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "78dabde2eadd7718237e75d85d1d0175d65add6250d4b9cb6be6dfedf5bd2cf9"
+  },
+  {
+    "id": "pushup_pike",
+    "path": "assets/images/exercises/thumb/pushup_pike.webp",
+    "source": "pushup_pike_v2.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 14966,
+    "crop": [
+      100,
+      -70,
+      1300,
+      1130
+    ],
+    "quality": 95,
+    "sha256": "b9a9721054f5a02a8f875134043ab8ab39a8b05101862dc929f826832c106616"
+  },
+  {
+    "id": "step_jack",
+    "path": "assets/images/exercises/hero/step_jack.webp",
+    "source": "step_jack_v2.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 93640,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "26b3add0b9f5b423d292db063ccb5fb74c1ab3249b15781c71df8556946ba6a1"
+  },
+  {
+    "id": "step_jack",
+    "path": "assets/images/exercises/thumb/step_jack.webp",
+    "source": "step_jack_v2.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 10622,
+    "crop": [
+      144,
+      -37,
+      1304,
+      1123
+    ],
+    "quality": 95,
+    "sha256": "9e8cf5b95258beafb39cbec189ac7f4a7cb4b138f16f1f28a942235d406da188"
+  },
+  {
+    "id": "skater_step",
+    "path": "assets/images/exercises/hero/skater_step.webp",
+    "source": "skater_step.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 96768,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "a91e9c68c4fd62c67d9d9236520862c06b4bca01282ebb088c48a86da0da1d70"
+  },
+  {
+    "id": "skater_step",
+    "path": "assets/images/exercises/thumb/skater_step.webp",
+    "source": "skater_step.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 12774,
+    "crop": [
+      180,
+      0,
+      1266,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "d5f0c5995ffa12a51eafeef144ef22e4ed1c1d3f0e0d5891fb05ff4cbe5a722d"
+  },
+  {
+    "id": "squat_knee_drive",
+    "path": "assets/images/exercises/hero/squat_knee_drive.webp",
+    "source": "squat_knee_drive.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 85328,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "623492e441b364ba5b043c717bde28b571ef284f7a2ecde289530b453242e192"
+  },
+  {
+    "id": "squat_knee_drive",
+    "path": "assets/images/exercises/thumb/squat_knee_drive.webp",
+    "source": "squat_knee_drive.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 11526,
+    "crop": [
+      180,
+      0,
+      1266,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "31e7d11fde4067727aee6938a068d4bf6d9659d21cbe03980c6672632fb907d0"
+  },
+  {
+    "id": "shadow_boxing",
+    "path": "assets/images/exercises/hero/shadow_boxing.webp",
+    "source": "shadow_boxing.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 77266,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "6b91259879d0a6e3dc96aa9d3833bff819f611969947d488c91d5ee7729b934f"
+  },
+  {
+    "id": "shadow_boxing",
+    "path": "assets/images/exercises/thumb/shadow_boxing.webp",
+    "source": "shadow_boxing.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 10510,
+    "crop": [
+      180,
+      0,
+      1266,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "38cf5fc08ed2384f3af0b24a89841646e2fee563320fcd16733b8ffa865e07de"
+  },
+  {
+    "id": "single_leg_stand",
+    "path": "assets/images/exercises/hero/single_leg_stand.webp",
+    "source": "single_leg_stand.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 74516,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "49f1c68f93db292de0ad1593e27bf4fc6e23e1b8596315c15bc430bdcabaff58"
+  },
+  {
+    "id": "single_leg_stand",
+    "path": "assets/images/exercises/thumb/single_leg_stand.webp",
+    "source": "single_leg_stand.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 10394,
+    "crop": [
+      180,
+      0,
+      1266,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "812c2217625aea585c55a1aab210aa0cfdd8476ef0b2b4a44dd712d18a0518f1"
+  },
+  {
+    "id": "standing_knee_raise",
+    "path": "assets/images/exercises/hero/standing_knee_raise.webp",
+    "source": "standing_knee_raise.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 82944,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "4533e7422970e294ea9e4070a1a4a12e4755ab2038bf397e589f538010be01f7"
+  },
+  {
+    "id": "standing_knee_raise",
+    "path": "assets/images/exercises/thumb/standing_knee_raise.webp",
+    "source": "standing_knee_raise.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 11150,
+    "crop": [
+      180,
+      0,
+      1266,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "6deb3f1c92268f9e7f5504776fc085ce37cc29e92df5307167f3de8ac9556e53"
+  },
+  {
+    "id": "ankle_circles",
+    "path": "assets/images/exercises/hero/ankle_circles.webp",
+    "source": "ankle_circles.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 78418,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "5ccf615e3f9a42d9bf1674113bffff43a1a635e4657b95f7c458da0593f06323"
+  },
+  {
+    "id": "ankle_circles",
+    "path": "assets/images/exercises/thumb/ankle_circles.webp",
+    "source": "ankle_circles.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 10526,
+    "crop": [
+      180,
+      0,
+      1266,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "79e9284f61e685042b3de38ecf37b2df3748d1a70199f2310772310ee6103a0b"
+  }
+]

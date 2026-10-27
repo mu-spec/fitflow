@@ -1,0 +1,14 @@
+{
+  "commit": "b68c513132d0b903ccf5baecd733be775b08a1fb",
+  "exercise_pairs": 88,
+  "exercise_assets_preserved": 176,
+  "program_covers": 5,
+  "total_verified_committed_assets": 181,
+  "cover_bytes": 482222,
+  "targeted_tests_passed": 16,
+  "targeted_skips": 0,
+  "explicit_gate_suite_passed": 8,
+  "explicit_gate_skips": 0,
+  "gate_executed": true,
+  "baseline_hashes_preserved": 821
+}

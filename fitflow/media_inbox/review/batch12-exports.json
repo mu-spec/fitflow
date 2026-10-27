@@ -1,0 +1,154 @@
+[
+  {
+    "id": "deadlift_kettlebell",
+    "path": "assets/images/exercises/hero/deadlift_kettlebell.webp",
+    "source": "media_inbox\\deadlift_kettlebell.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 91832,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "6a5b7c971b7f78ace9f176d674c01fd51eac5f4ef2f28afe0b057c99f8aeaaa0"
+  },
+  {
+    "id": "deadlift_kettlebell",
+    "path": "assets/images/exercises/thumb/deadlift_kettlebell.webp",
+    "source": "media_inbox\\deadlift_kettlebell.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 13180,
+    "crop": [
+      180,
+      0,
+      1266,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "e6bce0874f5bfc2be162fd01e4a829b3cd57e7b4c3fc6c15a8e02d7e6b7eedfb"
+  },
+  {
+    "id": "squat_goblet_kettlebell",
+    "path": "assets/images/exercises/hero/squat_goblet_kettlebell.webp",
+    "source": "media_inbox\\squat_goblet_kettlebell.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 113690,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "afb6f8b4bbc6b916eb110f69af222153a40150a0ba2c947533844df2ffde73b6"
+  },
+  {
+    "id": "squat_goblet_kettlebell",
+    "path": "assets/images/exercises/thumb/squat_goblet_kettlebell.webp",
+    "source": "media_inbox\\squat_goblet_kettlebell.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 17000,
+    "crop": [
+      180,
+      0,
+      1266,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "726773723c67be47e9eb9ef8a20ba28c5459c8a299b0ceb822d94debfc42cb39"
+  },
+  {
+    "id": "dead_hang_pullup_bar",
+    "path": "assets/images/exercises/hero/dead_hang_pullup_bar.webp",
+    "source": "media_inbox\\dead_hang_pullup_bar.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 85162,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "b26f1d35c767c158793bfd99e13df8351da238a41c39eee43a4cb295688ebca8"
+  },
+  {
+    "id": "dead_hang_pullup_bar",
+    "path": "assets/images/exercises/thumb/dead_hang_pullup_bar.webp",
+    "source": "media_inbox\\dead_hang_pullup_bar.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 12114,
+    "crop": [
+      180,
+      0,
+      1266,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "93ed8c2283fe921ef384aa9124ab9cf801bd3620f40ea6cefaaa9bc88e81515b"
+  },
+  {
+    "id": "scapular_pullup",
+    "path": "assets/images/exercises/hero/scapular_pullup.webp",
+    "source": "media_inbox\\scapular_pullup.png",
+    "variant": "hero",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 77900,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "be766b7e1442fe6450b4786292f32623e9efbdbae2f7a26e9dbe15bd7357ae88"
+  },
+  {
+    "id": "scapular_pullup",
+    "path": "assets/images/exercises/thumb/scapular_pullup.webp",
+    "source": "media_inbox\\scapular_pullup.png",
+    "variant": "thumb",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 13638,
+    "crop": [
+      180,
+      0,
+      1266,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "8cbc724fe12c151164a2c03c76f3c0b7619a9dab667d69ed4f3e06ec0b90a4a8"
+  }
+]

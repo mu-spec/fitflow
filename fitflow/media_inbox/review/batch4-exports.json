@@ -1,0 +1,218 @@
+[
+  {
+    "id": "row_towel",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/row_towel.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 124190,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "e8e223df017694eed62de92ac37903495d0a0c29355cf4303368594d8394ea92"
+  },
+  {
+    "id": "row_towel",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/row_towel.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 17332,
+    "crop": [
+      160,
+      -20,
+      1320,
+      1140
+    ],
+    "quality": 95,
+    "sha256": "50cbf9f5aab0ec3c6f613293b1a230e8850eee9483c2e84700f59abb09922060"
+  },
+  {
+    "id": "superman",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/superman.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 109928,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "9fd46a364e8d5369f3191a620c8af2876168f83578a857d91439187815261c20"
+  },
+  {
+    "id": "superman",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/superman.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 10422,
+    "crop": [
+      0,
+      -181,
+      1448,
+      1267
+    ],
+    "quality": 95,
+    "sha256": "423d5d236015e17fb1bf45e8ac4c8f3df230cb68c7bb7b890fa50349015ec0cf"
+  },
+  {
+    "id": "prone_y_raise",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/prone_y_raise.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 130176,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "fc6b002152fec74ceca197c61038abdadd46d845f143ea5c96e1bbe4763396f9"
+  },
+  {
+    "id": "prone_y_raise",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/prone_y_raise.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 12730,
+    "crop": [
+      0,
+      -181,
+      1448,
+      1267
+    ],
+    "quality": 95,
+    "sha256": "57623f80e161173e8c9fa363e028b587f1aadd0b50b7a3c5c2d6c0f9e8c325f9"
+  },
+  {
+    "id": "lunge_forward",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/lunge_forward.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 98284,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "bac8e29e2e4d94d4ffe1d015450c52cdf72cfdc499ba284676f64de23f43ef4e"
+  },
+  {
+    "id": "lunge_forward",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/lunge_forward.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 13236,
+    "crop": [
+      200,
+      0,
+      1286,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "7f433dd5ff32110a5398737a64c4d19dd494d7b9dde3faaa97aacde8eebfc4d4"
+  },
+  {
+    "id": "squat_split_static",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/squat_split_static.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 89720,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "b1fed7060ed726214683c93e92abd4de14b57cedb243a32ac0c8ffc9b3c32218"
+  },
+  {
+    "id": "squat_split_static",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/squat_split_static.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 13956,
+    "crop": [
+      220,
+      10,
+      1250,
+      1040
+    ],
+    "quality": 95,
+    "sha256": "982d0964887c7bda863c45ef0f97d6263e90fd0e2ffe7237096ba21d9e055417"
+  },
+  {
+    "id": "squat_split_bulgarian",
+    "variant": "hero",
+    "path": "assets/images/exercises/hero/squat_split_bulgarian.webp",
+    "dimensions": [
+      960,
+      720
+    ],
+    "bytes": 110762,
+    "crop": [
+      0,
+      0,
+      1448,
+      1086
+    ],
+    "quality": 93,
+    "sha256": "7d1e8249226eb0d0d4324c2b596f29e3464b71d38dd0a4100d83dd3fee9a2ece"
+  },
+  {
+    "id": "squat_split_bulgarian",
+    "variant": "thumb",
+    "path": "assets/images/exercises/thumb/squat_split_bulgarian.webp",
+    "dimensions": [
+      256,
+      256
+    ],
+    "bytes": 13756,
+    "crop": [
+      330,
+      0,
+      1416,
+      1086
+    ],
+    "quality": 95,
+    "sha256": "6cbc3b6c3d2186385d25edfc399c53020b6a1e063597ccf77a84ab5fff26fece"
+  }
+]

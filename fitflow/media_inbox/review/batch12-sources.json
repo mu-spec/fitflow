@@ -1,0 +1,46 @@
+[
+  {
+    "id": "deadlift_kettlebell",
+    "original": "C:\\Users\\PMLS\\Downloads\\Kettlebell deadlift in lower hinge-3.png",
+    "saved": "media_inbox\\deadlift_kettlebell.png",
+    "dimensions": [
+      1448,
+      1086
+    ],
+    "bytes": 2034830,
+    "sha256": "b1b6331e702a5ef96481fe99b2ab973b0dd9231fe79f86d94fe861882a87e57e"
+  },
+  {
+    "id": "squat_goblet_kettlebell",
+    "original": "C:\\Users\\PMLS\\Downloads\\Kettlebell goblet squat demonstration-1.png",
+    "saved": "media_inbox\\squat_goblet_kettlebell.png",
+    "dimensions": [
+      1448,
+      1086
+    ],
+    "bytes": 2172226,
+    "sha256": "0f04cd37357bd58475b85a2012bf23c4ba34c3a1ed9e2efee1a71bbb84e8d3b8"
+  },
+  {
+    "id": "dead_hang_pullup_bar",
+    "original": "C:\\Users\\PMLS\\Downloads\\Still dead hang on pull-up bar-2.png",
+    "saved": "media_inbox\\dead_hang_pullup_bar.png",
+    "dimensions": [
+      1448,
+      1086
+    ],
+    "bytes": 2006199,
+    "sha256": "b46cf0a000c0971fabceab97ac1e5e457c47eb4cf33111d50c33a3615d1ca49f"
+  },
+  {
+    "id": "scapular_pullup",
+    "original": "C:\\Users\\PMLS\\Downloads\\Scapular pull-up hold on a bar-4.png",
+    "saved": "media_inbox\\scapular_pullup.png",
+    "dimensions": [
+      1448,
+      1086
+    ],
+    "bytes": 1908765,
+    "sha256": "6d6a94a0326ff1d595d98dd44699b5aeb7ce8bf7999bca7c9fb29429236037c1"
+  }
+]

@@ -1,0 +1,110 @@
+[
+  {
+    "id": "burpee_low_impact",
+    "original": "C:\\Users\\PMLS\\Downloads\\Grounded low-impact burpee step-back-1.png",
+    "saved": "media_inbox\\burpee_low_impact.png",
+    "dimensions": [
+      1448,
+      1086
+    ],
+    "bytes": 2111616,
+    "sha256": "f8a369ec6efbbc09a2ab46daf36d3f6bdaae359fc5211afa76bafb237382db7d",
+    "export_candidate": true
+  },
+  {
+    "id": "fast_feet",
+    "original": "C:\\Users\\PMLS\\Downloads\\Athlete in Fast Feet Drill-2.png",
+    "saved": "media_inbox\\fast_feet.png",
+    "dimensions": [
+      1448,
+      1086
+    ],
+    "bytes": 1866680,
+    "sha256": "6ac6d729415f02b8166df3642bb780c42e814fe8cd331e9d0ccb2ad952fa2975",
+    "export_candidate": true
+  },
+  {
+    "id": "mountain_climber_standing",
+    "original": "C:\\Users\\PMLS\\Downloads\\Standing Mountain Climber Fitness Portrait-3.png",
+    "saved": "media_inbox\\mountain_climber_standing.png",
+    "dimensions": [
+      1448,
+      1086
+    ],
+    "bytes": 1913647,
+    "sha256": "3a91eb6d18711babbeba5e96b1074bf89cc8d994803274f76b24fed8bbc462cf",
+    "export_candidate": true
+  },
+  {
+    "id": "cobra_stretch",
+    "original": "C:\\Users\\PMLS\\Downloads\\Gentle low cobra stretch on charcoal mat-4.png",
+    "saved": "media_inbox\\cobra_stretch.png",
+    "dimensions": [
+      1448,
+      1086
+    ],
+    "bytes": 1954937,
+    "sha256": "1fe3fb5bffae51b974fe9fe7dff7d5aa1b80c35da0fedfa22bc26a585fa1401a",
+    "export_candidate": true
+  },
+  {
+    "id": "figure_four_stretch",
+    "original": "C:\\Users\\PMLS\\Downloads\\Supine figure-four stretch-5.png",
+    "saved": "media_inbox\\figure_four_stretch.png",
+    "dimensions": [
+      1448,
+      1086
+    ],
+    "bytes": 2159688,
+    "sha256": "d4d99b48d2c72d4f3fe9ffc90f3f1613e6c155d5c6e8744e98a08882a9644bdb",
+    "export_candidate": true
+  },
+  {
+    "id": "pull_apart_resistance_band",
+    "original": "C:\\Users\\PMLS\\Downloads\\Standing resistance band pull-apart-6.png",
+    "saved": "media_inbox\\pull_apart_resistance_band.png",
+    "dimensions": [
+      1448,
+      1086
+    ],
+    "bytes": 1914807,
+    "sha256": "fe25f09178cc8a06d6990f5810302386e556c34fd3aabc51a01bd5f36f392fd6",
+    "export_candidate": true
+  },
+  {
+    "id": "row_resistance_band",
+    "original": "C:\\Users\\PMLS\\Downloads\\Standing Resistance Band Row-7.png",
+    "saved": "media_inbox\\row_resistance_band.png",
+    "dimensions": [
+      1448,
+      1086
+    ],
+    "bytes": 2060869,
+    "sha256": "697eb671bc6a0e58c8b0f4ddc608c9395a5b125181f3b2de13f7102d2f0bee6e",
+    "export_candidate": false
+  },
+  {
+    "id": "row_resistance_band",
+    "original": "C:\\Users\\PMLS\\Downloads\\Standing Band Row With Forward Hinge-9.png",
+    "saved": "media_inbox\\row_resistance_band_v2.png",
+    "dimensions": [
+      1448,
+      1086
+    ],
+    "bytes": 1962715,
+    "sha256": "942df9763977a58f24002a74d9575fb02bbb2e44bc5f0d1bebff9d3cd2c87bdd",
+    "export_candidate": true
+  },
+  {
+    "id": "squat_goblet_dumbbell",
+    "original": "C:\\Users\\PMLS\\Downloads\\Athlete Demonstrating a Dumbbell Goblet Squat-8.png",
+    "saved": "media_inbox\\squat_goblet_dumbbell.png",
+    "dimensions": [
+      1448,
+      1086
+    ],
+    "bytes": 2193599,
+    "sha256": "a3c5d051bbc097d33017f3490b7aab38ec89540983710634bb6ef5d97a1df975",
+    "export_candidate": true
+  }
+]
