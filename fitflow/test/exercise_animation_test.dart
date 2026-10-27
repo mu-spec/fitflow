@@ -20,7 +20,9 @@ void main() {
           'pushup_decline',
           'cobra_stretch',
           'lunge_forward',
-          'squat_bodyweight'
+          'squat_bodyweight',
+          'pushup_pike',
+          'squat_goblet_dumbbell',
         ]));
     for (final id in ExerciseAnimationRegistry.assets.keys) {
       expect(ExerciseCatalog.byId(id), isNotNull);
@@ -32,6 +34,8 @@ void main() {
       'squat_partial',
       'jumping_jacks',
       'squat_split_static',
+      'deadlift_kettlebell',
+      'squat_goblet_kettlebell',
       'unknown'
     ]) {
       expect(ExerciseAnimationRegistry.assetFor(id), isNull);

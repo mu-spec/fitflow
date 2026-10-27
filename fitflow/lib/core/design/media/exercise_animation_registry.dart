@@ -10,6 +10,9 @@ abstract final class ExerciseAnimationRegistry {
     'pushup_standard': 'assets/animations/pushup.json',
     'cobra_stretch': 'assets/animations/cobra.json',
     'lunge_forward': 'assets/animations/lunge.json',
+    'pushup_pike': 'assets/animations/vital/pushup_pike.webp',
+    'squat_goblet_dumbbell':
+        'assets/animations/vital/squat_goblet_dumbbell.webp',
   };
 
   static String? assetFor(String exerciseId) => assets[exerciseId];

@@ -39,6 +39,9 @@ flutter:
     - assets/animations/pushup.json
     - assets/animations/cobra.json
     - assets/animations/lunge.json
+    - assets/animations/vital/pushup_pike.webp
+    - assets/animations/vital/squat_goblet_dumbbell.webp
+    - assets/animations/vital/NOTICE.md
     - assets/images/branding/
     - assets/images/exercises/thumb/
     - assets/images/exercises/hero/

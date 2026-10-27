@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:lottie/lottie.dart';
 
-/// Shared registered exercise animation. The cached composition is loaded only while
+/// Shared registered exercise animation. Media is loaded only while
 /// visible; it never controls session timing or exercise prescriptions.
 class ExerciseAnimation extends StatefulWidget {
   const ExerciseAnimation(
@@ -119,6 +119,41 @@ class _ExerciseAnimationState extends State<ExerciseAnimation>
         height: widget.height);
   }
 
+  Widget _animation(String asset) {
+    if (asset.endsWith('.webp')) {
+      // Flutter's multiframe image stream freezes its current frame under
+      // TickerMode. Reuse the same pause/lifecycle gate as the Lottie renderer;
+      // there is no additional workout clock or video controller.
+      return TickerMode(
+        enabled: widget.animate && _foreground,
+        child: Image.asset(
+          asset,
+          key: ValueKey(asset),
+          width: widget.width,
+          height: widget.height,
+          fit: BoxFit.contain,
+          cacheWidth: (widget.width * MediaQuery.devicePixelRatioOf(context))
+              .ceil()
+              .clamp(1, 480),
+          excludeFromSemantics: true,
+          frameBuilder: (context, child, frame, synchronous) =>
+              frame == null ? _photo() : child,
+          errorBuilder: (context, error, stackTrace) => _photo(),
+        ),
+      );
+    }
+    return Lottie.asset(asset,
+        key: ValueKey(asset),
+        width: widget.width,
+        height: widget.height,
+        fit: BoxFit.contain,
+        repeat: true,
+        animate: widget.animate && _foreground,
+        frameBuilder: (context, child, composition) =>
+            composition == null ? _photo() : child,
+        errorBuilder: (context, error, stackTrace) => _photo());
+  }
+
   @override
   Widget build(BuildContext context) {
     final asset = ExerciseAnimationRegistry.assetFor(widget.exerciseId);
@@ -136,17 +171,7 @@ class _ExerciseAnimationState extends State<ExerciseAnimation>
                 child: ColoredBox(
                     color: FitFlowTheme.of(context).subtleSurface,
                     child: _visible && enabled && asset != null
-                        ? Lottie.asset(asset,
-                            key: ValueKey(asset),
-                            width: widget.width,
-                            height: widget.height,
-                            fit: BoxFit.contain,
-                            repeat: true,
-                            animate: widget.animate && _foreground,
-                            frameBuilder: (context, child, composition) =>
-                                composition == null ? _photo() : child,
-                            errorBuilder: (context, error, stackTrace) =>
-                                _photo())
+                        ? _animation(asset)
                         : _photo()))));
   }
 }
