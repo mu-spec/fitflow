@@ -42,6 +42,7 @@ flutter:
     - assets/animations/vital/pushup_pike.webp
     - assets/animations/vital/squat_goblet_dumbbell.webp
     - assets/animations/vital/NOTICE.md
+    - assets/animations/open_exercise_figures/
     - assets/images/branding/
     - assets/images/exercises/thumb/
     - assets/images/exercises/hero/

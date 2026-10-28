@@ -1,0 +1,71 @@
+{
+  "view": "front",
+  "anchor": [
+    "hip",
+    [
+      0,
+      0.97
+    ]
+  ],
+  "poses": [
+    {
+      "torso": 0,
+      "arms": [
+        176,
+        178
+      ],
+      "legs": [
+        182,
+        182,
+        120
+      ],
+      "lift": -0.011
+    },
+    {
+      "torso": 0,
+      "arms": [
+        90,
+        90
+      ],
+      "legs": [
+        171,
+        172,
+        145
+      ],
+      "lift": 0.1
+    },
+    {
+      "torso": 0,
+      "arms": [
+        25,
+        12
+      ],
+      "legs": [
+        160,
+        162,
+        165
+      ],
+      "lift": -0.025
+    },
+    {
+      "torso": 0,
+      "arms": [
+        90,
+        90
+      ],
+      "legs": [
+        171,
+        172,
+        145
+      ],
+      "lift": 0.1
+    }
+  ],
+  "muscles": [
+    "cardiovascular system"
+  ],
+  "secondary": [
+    "quadriceps",
+    "calves"
+  ]
+}

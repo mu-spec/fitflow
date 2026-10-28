@@ -76,6 +76,12 @@ void main() {
       final expected = ExerciseCatalog.byId('pushup_standard')!;
       await tester.pumpWidget(
         MaterialApp(
+          // This test checks detail content, not playback. Exercise demos loop
+          // indefinitely, so use the supported reduced-motion photo fallback.
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(disableAnimations: true),
+            child: child!,
+          ),
           home: ExerciseDetailScreen(exerciseId: expected.id),
         ),
       );

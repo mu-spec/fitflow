@@ -31,6 +31,15 @@ ui.Image currentFrame(WidgetTester tester, String id) => tester
     .image!;
 
 void main() {
+  // Flutter keeps decoded animated images in a process-wide cache. Widget-test
+  // frame clocks restart between tests, so reusing a previous test's completer
+  // can leave its timestamps in the future and spuriously freeze playback.
+  setUp(() {
+    final cache = PaintingBinding.instance.imageCache;
+    cache.clear();
+    cache.clearLiveImages();
+  });
+
   for (final id in ids) {
     testWidgets('$id bundled loop preserves full frame and source duration',
         (tester) async {
@@ -150,7 +159,9 @@ void main() {
       (tester) async {
     final scroll = ScrollController();
     addTearDown(scroll.dispose);
-    await tester.pumpWidget(MaterialApp(home: Scaffold(body: SingleChildScrollView(
+    await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+            body: SingleChildScrollView(
       controller: scroll,
       child: const Column(children: [
         FitFlowExerciseImage.thumbnail(exerciseId: 'pushup_pike'),

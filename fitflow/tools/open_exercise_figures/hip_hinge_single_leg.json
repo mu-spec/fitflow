@@ -1,0 +1,52 @@
+{
+  "view": "side",
+  "equipment": [],
+  "poses": [
+    {
+      "torso": 0,
+      "arms": [
+        180,
+        180
+      ],
+      "legs": {
+        "near": [
+          180,
+          180,
+          95
+        ],
+        "far": [
+          198,
+          203,
+          105
+        ]
+      }
+    },
+    {
+      "torso": 85,
+      "arms": [
+        180,
+        180
+      ],
+      "legs": {
+        "near": [
+          170,
+          186,
+          95
+        ],
+        "far": [
+          262,
+          264,
+          180
+        ]
+      },
+      "head": 75
+    }
+  ],
+  "muscles": [
+    "glutes"
+  ],
+  "secondary": [
+    "hamstrings",
+    "lower back"
+  ]
+}

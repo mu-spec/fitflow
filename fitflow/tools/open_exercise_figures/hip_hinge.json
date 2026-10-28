@@ -1,0 +1,39 @@
+{
+  "view": "side",
+  "equipment": [],
+  "poses": [
+    {
+      "torso": 0,
+      "arms": [
+        180,
+        180,
+        180
+      ],
+      "legs": [
+        180,
+        180,
+        95
+      ]
+    },
+    {
+      "torso": 65,
+      "arms": [
+        245,
+        245,
+        245
+      ],
+      "legs": [
+        165,
+        184,
+        95
+      ],
+      "head": 60
+    }
+  ],
+  "muscles": [
+    "hamstrings"
+  ],
+  "secondary": [
+    "lower back"
+  ]
+}

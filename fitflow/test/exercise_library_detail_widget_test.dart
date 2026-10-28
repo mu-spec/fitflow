@@ -36,6 +36,12 @@ void main() {
           data: MediaQueryData(textScaler: TextScaler.linear(textScale)),
           child: MaterialApp.router(
             theme: dark ? AppTheme.dark : AppTheme.light,
+            // Layout and navigation assertions do not need looping demos.
+            // Reduced motion also lets pumpAndSettle wait for route transitions.
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(context).copyWith(disableAnimations: true),
+              child: child!,
+            ),
             routerConfig: router,
           ),
         ),

@@ -75,8 +75,12 @@ void main() {
         expect(before, const Size(320, 240));
         expect(find.bySemanticsLabel('Wall Push-Up'), findsOneWidget);
         expect(tester.takeException(), isNull);
-        expect(bundle.requests.where((p) => p.endsWith('.webp')).toSet(),
-            {'assets/images/exercises/hero/pushup_wall.webp'});
+        // The wall push-up is now animated. A missing animation must fall
+        // back to the registered photo, then to the neutral placeholder.
+        expect(bundle.requests.where((p) => p.endsWith('.webp')).toSet(), {
+          'assets/animations/open_exercise_figures/pushup_wall.webp',
+          'assets/images/exercises/hero/pushup_wall.webp',
+        });
       } finally {
         semantics.dispose();
       }
@@ -112,8 +116,12 @@ void main() {
       await tester
           .pumpWidget(_host(FitFlowExerciseImage.hero(exerciseId: id), bundle));
       await tester.pumpAndSettle();
-      final image = tester.widget<Image>(find.byType(Image));
-      expect(image.key, ValueKey('assets/images/exercises/hero/$id.webp'));
+      // A missing animated asset can coexist in the tree with its photo
+      // fallback, so select the photo by its key rather than by Image type.
+      final photo =
+          find.byKey(ValueKey('assets/images/exercises/hero/$id.webp'));
+      expect(photo, findsOneWidget);
+      final image = tester.widget<Image>(photo);
       expect(image.gaplessPlayback, isFalse);
     }
     await tester.pumpWidget(

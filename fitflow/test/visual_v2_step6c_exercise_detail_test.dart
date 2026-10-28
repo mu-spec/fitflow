@@ -41,6 +41,12 @@ Future<void> _pumpDetail(
       ),
       child: MaterialApp(
         theme: AppTheme.light,
+        // These are static detail/layout tests. Exercise playback is covered
+        // separately; reduced motion selects the production photo fallback.
+        builder: (context, child) => MediaQuery(
+          data: MediaQuery.of(context).copyWith(disableAnimations: true),
+          child: child!,
+        ),
         home: Theme(
           data: brightness == Brightness.dark ? AppTheme.dark : AppTheme.light,
           child: ExerciseDetailScreen(exerciseId: exerciseId),
@@ -53,7 +59,7 @@ Future<void> _pumpDetail(
 }
 
 void main() {
-  testWidgets('all eight pilot heroes decode their own bundled photography',
+  testWidgets('all eight pilot heroes decode their reduced-motion photos',
       (tester) async {
     addTearDown(tester.view.reset);
     const ids = [
@@ -279,6 +285,10 @@ void main() {
       await tester.pumpWidget(
         MaterialApp.router(
           theme: AppTheme.light,
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(disableAnimations: true),
+            child: child!,
+          ),
           routerConfig: router,
         ),
       );
@@ -440,8 +450,7 @@ void main() {
     expect(find.byType(ExerciseProgressionSection), findsNothing);
     // pushup_pike has registered production photography, so its hero renders;
     // the unknown-ID case below still covers the missing-media fallback.
-    expect(
-        find.byKey(const ValueKey('exercise_detail_media')), findsOneWidget);
+    expect(find.byKey(const ValueKey('exercise_detail_media')), findsOneWidget);
     expect(find.byType(FitFlowExerciseImage), findsOneWidget);
     expect(find.text(ExerciseCatalog.byId('pushup_pike')!.shortDescription!),
         findsOneWidget);

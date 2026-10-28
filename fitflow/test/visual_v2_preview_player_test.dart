@@ -1,4 +1,6 @@
+import 'package:fitflow/core/design/media/exercise_animation.dart';
 import 'package:fitflow/features/workout_player/presentation/widgets/pilot_exercise_demonstration.dart';
+import 'package:fitflow/features/workout_player/presentation/widgets/pushup_lottie_demonstration.dart';
 import 'dart:io';
 import 'dart:ui' as ui;
 
@@ -309,7 +311,11 @@ Future<void> _settle(WidgetTester tester) async {
       .widgetList<PilotExerciseDemonstration>(
           find.byType(PilotExerciseDemonstration))
       .any((w) => w.running);
-  if (moving) {
+  // Registered Lottie/WebP demos can loop in preview rows as well as the
+  // player. They deliberately do not settle, even when the pilot is absent.
+  final registeredDemo = find.byType(ExerciseAnimation).evaluate().isNotEmpty ||
+      find.byType(PushupLottieDemonstration).evaluate().isNotEmpty;
+  if (moving || registeredDemo) {
     await tester.pump(const Duration(milliseconds: 600));
     await tester.pump();
   } else {
@@ -567,9 +573,9 @@ void main() {
             final details = find.text(_l.flowPreviewDetails);
             expect(find.text(_l.flowPreviewHelp), findsNothing);
             await tester.ensureVisible(details);
-            await tester.pumpAndSettle();
+            await _settle(tester);
             await tester.tap(details);
-            await tester.pumpAndSettle();
+            await _settle(tester);
             expect(fact(_l.flowTarget(20)), findsOneWidget);
             expect(
                 fact(fitnessGoalLabel(
@@ -582,62 +588,84 @@ void main() {
             expect(find.text(_l.flowPreviewHelp), findsOneWidget);
             await tester.ensureVisible(details);
             await tester.tap(details);
-            await tester.pumpAndSettle();
+            await _settle(tester);
             expect(fact(_l.flowTarget(20)), findsNothing);
 
             expect(find.byKey(const ValueKey('v2_preview_summary')),
                 findsOneWidget);
             expect(find.byType(FitFlowV2WorkoutMedia), findsNothing);
             expect(find.text('Home Workout'), findsNothing);
-            expect(
-                tester
-                    .widgetList<FitFlowExerciseImage>(
-                        find.byType(FitFlowExerciseImage))
-                    .map((image) => image.exerciseId),
-                h.plan.allPrescriptions.map((p) => p.exercise.id));
-            final rows = tester
-                .widgetList<WorkoutPreviewExerciseRow>(
-                    find.byType(WorkoutPreviewExerciseRow))
-                .toList();
-            expect(rows.map((r) => r.prescription), h.plan.allPrescriptions);
-            expect(rows.map((r) => r.sequenceNumber),
-                List.generate(h.plan.totalExerciseCount, (i) => i + 1));
-            expect(rows.every((r) => r.visualV2), isTrue);
-            final rowFinders = find.byType(WorkoutPreviewExerciseRow);
-            for (var i = 0; i < rows.length; i++) {
-              expect(
-                  find.descendant(
-                      of: rowFinders.at(i),
-                      matching: find.text(rows[i].prescription.exercise.name)),
-                  findsOneWidget);
-              expect(
-                  find.descendant(
-                      of: rowFinders.at(i),
-                      matching:
-                          find.text(workloadLabel(_l, rows[i].prescription))),
-                  findsOneWidget);
-            }
-            final sections = tester
-                .widgetList<WorkoutPreviewSectionHeader>(
-                    find.byType(WorkoutPreviewSectionHeader))
-                .toList();
-            expect(sections.map((s) => s.title),
-                [_l.flowWarmup, _l.flowMain, _l.flowCooldown]);
-            expect(sections.map((s) => s.exerciseCount), [
-              h.plan.warmup.exerciseCount,
-              h.plan.main.exerciseCount,
-              h.plan.cooldown.exerciseCount
-            ]);
             expect(MediaQuery.textScalerOf(tester.element(summary)).scale(16),
                 16 * scale);
             if (size == const Size(390, 844) && scale == 1) {
               await _capture(tester, 'preview_390_${dark ? 'dark' : 'light'}');
             }
+            // Preview sections and rows are lazy slivers. Visit every header
+            // and prescription in order rather than requiring all to be mounted
+            // simultaneously in the first viewport.
+            final previewScroll = find
+                .descendant(
+                  of: find.byType(WorkoutPreviewScreen),
+                  matching: find.byType(Scrollable),
+                )
+                .first;
+            final groups = [
+              (_l.flowWarmup, h.plan.warmup),
+              (_l.flowMain, h.plan.main),
+              (_l.flowCooldown, h.plan.cooldown),
+            ];
+            var sequence = 0;
+            for (final (title, section) in groups) {
+              final header = find.byWidgetPredicate((widget) =>
+                  widget is WorkoutPreviewSectionHeader &&
+                  widget.title == title);
+              await tester.scrollUntilVisible(header, 180,
+                  scrollable: previewScroll);
+              await _settle(tester);
+              expect(
+                  tester
+                      .widget<WorkoutPreviewSectionHeader>(header)
+                      .exerciseCount,
+                  section.exerciseCount);
+              for (final expected in section.exercises) {
+                sequence++;
+                final row = find.byWidgetPredicate((widget) =>
+                    widget is WorkoutPreviewExerciseRow &&
+                    widget.sequenceNumber == sequence);
+                await tester.scrollUntilVisible(row, 180,
+                    scrollable: previewScroll);
+                await _settle(tester);
+                final actual = tester.widget<WorkoutPreviewExerciseRow>(row);
+                expect(actual.prescription, expected);
+                expect(actual.sequenceNumber, sequence);
+                expect(actual.visualV2, isTrue);
+                final media = find.descendant(
+                    of: row, matching: find.byType(FitFlowExerciseImage));
+                expect(tester.widget<FitFlowExerciseImage>(media).exerciseId,
+                    expected.exercise.id);
+                expect(
+                    find.descendant(
+                        of: row, matching: find.text(expected.exercise.name)),
+                    findsOneWidget);
+                expect(
+                    find.descendant(
+                        of: row,
+                        matching: find.text(workloadLabel(_l, expected))),
+                    findsOneWidget);
+              }
+            }
+            expect(sequence, h.plan.totalExerciseCount);
             final start = find.byKey(const Key('preview_start'));
+            if (start.evaluate().isEmpty) {
+              // In short landscape the start button is itself a lazy sliver.
+              await tester.scrollUntilVisible(start, 180,
+                  scrollable: previewScroll);
+              await _settle(tester);
+            }
             expect(find.text(_l.startWorkout), findsOneWidget);
             await _reachable(tester, start, size);
             await tester.tap(start);
-            await tester.pumpAndSettle();
+            await _settle(tester);
             expect(find.byType(WorkoutPlayerScreen), findsOneWidget);
             expect(
                 GoRouterState.of(
@@ -904,8 +932,8 @@ void main() {
           of: find.byKey(const Key('preview_scroll')),
           matching: find.byType(Scrollable));
       for (var i = 0; i < h.plan.allPrescriptions.length; i++) {
-        final row = find.byWidgetPredicate((w) =>
-            w is WorkoutPreviewExerciseRow && w.sequenceNumber == i + 1);
+        final row = find.byWidgetPredicate(
+            (w) => w is WorkoutPreviewExerciseRow && w.sequenceNumber == i + 1);
         await tester.scrollUntilVisible(row, 180, scrollable: scrollable);
         expect(tester.widget<WorkoutPreviewExerciseRow>(row).prescription,
             h.plan.allPrescriptions[i]);

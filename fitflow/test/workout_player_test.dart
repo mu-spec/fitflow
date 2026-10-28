@@ -105,11 +105,19 @@ GoRouter createRouterWithPlayer({required List<Override> overrides, String initi
   );
 }
 
+// These tests exercise workout controls and routing rather than demo playback.
+// Looping media never settles, so use its supported reduced-motion fallback.
+Widget _withoutDemoMotion(BuildContext context, Widget? child) => MediaQuery(
+      data: MediaQuery.of(context).copyWith(disableAnimations: true),
+      child: child!,
+    );
+
 Widget buildWithRouter({required List<Override> overrides, required GoRouter router}) {
   return ProviderScope(
     overrides: overrides,
     child: MaterialApp.router(
       theme: AppTheme.light,
+      builder: _withoutDemoMotion,
       routerConfig: router,
     ),
   );
@@ -120,6 +128,7 @@ Widget buildPlayerOnly({required List<Override> overrides}) {
     overrides: overrides,
     child: MaterialApp(
       theme: AppTheme.light,
+      builder: _withoutDemoMotion,
       home: const WorkoutPlayerScreen(),
     ),
   );
@@ -130,6 +139,7 @@ Widget buildPreviewOnly({required List<Override> overrides}) {
     overrides: overrides,
     child: MaterialApp(
       theme: AppTheme.light,
+      builder: _withoutDemoMotion,
       home: const WorkoutPreviewScreen(),
     ),
   );
@@ -182,7 +192,7 @@ void main() {
       await tester.tap(find.text('Start workout'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Workout player'), findsOneWidget);
+      expect(find.byType(WorkoutPlayerScreen), findsOneWidget);
       // Should show ready or work
       expect(find.textContaining('Ready to begin').evaluate().isNotEmpty || find.textContaining('Set').evaluate().isNotEmpty, true);
     });

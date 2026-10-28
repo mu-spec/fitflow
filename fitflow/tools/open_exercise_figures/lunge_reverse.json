@@ -1,0 +1,52 @@
+{
+  "view": "side",
+  "anchor": [
+    "nearAnkle",
+    [
+      0.33,
+      0.09
+    ]
+  ],
+  "poses": [
+    {
+      "torso": 0,
+      "arms": [
+        200,
+        160,
+        160
+      ],
+      "legs": [
+        180,
+        180,
+        95
+      ]
+    },
+    {
+      "torso": 2,
+      "arms": [
+        202,
+        162,
+        162
+      ],
+      "legs": {
+        "near": [
+          90.8,
+          181.2,
+          95
+        ],
+        "far": [
+          185,
+          285,
+          175
+        ]
+      }
+    }
+  ],
+  "muscles": [
+    "glutes"
+  ],
+  "secondary": [
+    "quadriceps",
+    "hamstrings"
+  ]
+}
