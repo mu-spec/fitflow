@@ -44,13 +44,13 @@ class HomeWorkoutHeroCard extends StatelessWidget {
         plan.main.exercises.isEmpty ? null : plan.main.exercises.first.exercise;
 
     final introduction = Padding(
-      padding: const EdgeInsets.only(top: FitFlowSpace.sm),
+      padding: const EdgeInsets.all(FitFlowSpace.md),
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Semantics(
             header: true,
             child: Text(l.homeSession,
                 style: text.titleLarge?.copyWith(
-                    color: colors.textPrimary, fontWeight: FontWeight.w500))),
+                    color: colors.textPrimary, fontWeight: FontWeight.w600))),
         const SizedBox(height: FitFlowSpace.xs),
         Wrap(
             spacing: FitFlowSpace.md,
@@ -78,23 +78,32 @@ class HomeWorkoutHeroCard extends StatelessWidget {
       ]),
     );
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      if (featured != null)
-        LayoutBuilder(builder: (context, constraints) {
-          final width = constraints.maxWidth.clamp(0.0, maxPhotoHeight * 4 / 3);
-          return Center(
-              child: ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: FitFlowExerciseImage.hero(
-              key: const ValueKey('home_workout_photo'),
-              exerciseId: featured.id,
-              width: width,
-              height: width * 3 / 4,
-              decorative: false,
-              semanticLabel: featured.name,
-            ),
-          ));
-        }),
-      introduction,
+      Material(
+        color: colors.surface,
+        borderRadius: BorderRadius.circular(24),
+        clipBehavior: Clip.antiAlias,
+        child:
+            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          if (featured != null)
+            LayoutBuilder(builder: (context, constraints) {
+              final width =
+                  constraints.maxWidth.clamp(0.0, maxPhotoHeight * 4 / 3);
+              return Center(
+                  child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: FitFlowExerciseImage.hero(
+                  key: const ValueKey('home_workout_photo'),
+                  exerciseId: featured.id,
+                  width: width,
+                  height: width * 3 / 4,
+                  decorative: false,
+                  semanticLabel: featured.name,
+                ),
+              ));
+            }),
+          introduction,
+        ]),
+      ),
       const SizedBox(height: FitFlowSpace.sm),
       const HomeSessionModeControl(),
     ]);

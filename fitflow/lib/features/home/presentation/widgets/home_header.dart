@@ -22,7 +22,7 @@ class HomeHeader extends StatelessWidget {
                   style: Theme.of(context)
                       .textTheme
                       .titleLarge
-                      ?.copyWith(fontSize: 21, fontWeight: FontWeight.w500))),
+                      ?.copyWith(fontSize: 28, fontWeight: FontWeight.w700))),
         ],
       );
 }

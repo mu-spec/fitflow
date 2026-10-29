@@ -1,6 +1,5 @@
 import 'package:fitflow/core/accessibility/system_motion.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
-import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:flutter/material.dart';
 
 class FitFlowNavDestination {
@@ -44,21 +43,23 @@ class FitFlowNavigationShell extends StatelessWidget {
       return Scaffold(
         body: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           if (expanded)
-            _FitFlowNavigationRail(
+            _NavigationAppearance(
+                child: _FitFlowNavigationRail(
               destinations: destinations,
               selectedIndex: selectedIndex,
               onSelected: onSelected,
-            ),
+            )),
           Expanded(child: body),
         ]),
         bottomNavigationBar: expanded
             ? null
-            : _FitFlowBottomBar(
+            : _NavigationAppearance(
+                child: _FitFlowBottomBar(
                 minHeight: bottomBarMinHeight,
                 destinations: destinations,
                 selectedIndex: selectedIndex,
                 onSelected: onSelected,
-              ),
+              )),
       );
     });
   }
@@ -79,10 +80,10 @@ class _FitFlowBottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = FitFlowTheme.of(context);
+    final theme = Theme.of(context);
     return DecoratedBox(
       decoration: BoxDecoration(
-        border: Border(top: BorderSide(color: theme.divider)),
+        border: Border(top: BorderSide(color: theme.dividerColor)),
       ),
       child: NavigationBar(
         animationDuration: SystemMotion.standard(context),
@@ -117,14 +118,14 @@ class _FitFlowNavigationRail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = FitFlowTheme.of(context);
+    final theme = Theme.of(context);
     return SafeArea(
       right: false,
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: Theme.of(context).navigationRailTheme.backgroundColor ??
               Theme.of(context).colorScheme.surface,
-          border: Border(right: BorderSide(color: theme.divider)),
+          border: Border(right: BorderSide(color: theme.dividerColor)),
         ),
         child: SingleChildScrollView(
           child: IntrinsicHeight(
@@ -149,6 +150,57 @@ class _FitFlowNavigationRail extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Scope the chrome independently: unfinished branch screens retain their theme.
+class _NavigationAppearance extends StatelessWidget {
+  const _NavigationAppearance({required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final base = Theme.of(context);
+    final dark = base.brightness == Brightness.dark;
+    final surface = dark ? const Color(0xFF282D2F) : Colors.white;
+    final selected = dark ? const Color(0xFFF6F7F4) : const Color(0xFF171918);
+    final inactive = dark ? const Color(0xFFBDC3C6) : const Color(0xFF606467);
+    return Theme(
+      data: base.copyWith(
+        dividerColor: dark ? const Color(0xFF454D50) : const Color(0xFFDFE2E4),
+        navigationBarTheme: base.navigationBarTheme.copyWith(
+          backgroundColor: surface,
+          surfaceTintColor: Colors.transparent,
+          indicatorColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: WidgetStateProperty.resolveWith((states) => IconThemeData(
+                color:
+                    states.contains(WidgetState.selected) ? selected : inactive,
+                size: 24,
+              )),
+          labelTextStyle: WidgetStateProperty.resolveWith(
+              (states) => base.textTheme.labelMedium!.copyWith(
+                    color: states.contains(WidgetState.selected)
+                        ? selected
+                        : inactive,
+                    fontWeight: states.contains(WidgetState.selected)
+                        ? FontWeight.w600
+                        : FontWeight.w400,
+                  )),
+        ),
+        navigationRailTheme: base.navigationRailTheme.copyWith(
+          backgroundColor: surface,
+          indicatorColor: Colors.transparent,
+          selectedIconTheme: IconThemeData(color: selected, size: 24),
+          unselectedIconTheme: IconThemeData(color: inactive, size: 24),
+          selectedLabelTextStyle: base.textTheme.labelMedium
+              ?.copyWith(color: selected, fontWeight: FontWeight.w600),
+          unselectedLabelTextStyle:
+              base.textTheme.labelMedium?.copyWith(color: inactive),
+        ),
+      ),
+      child: child,
     );
   }
 }

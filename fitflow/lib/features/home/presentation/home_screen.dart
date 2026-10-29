@@ -111,60 +111,94 @@ class _HomeContent extends ConsumerWidget {
     // Presentation only: the same generated plan, mode and comeback policy.
     return Scaffold(
         backgroundColor: FitFlowVisualV2.of(context).page,
-        body: SafeArea(child: LayoutBuilder(builder: (context, constraints) {
-          const inset = FitFlowSpace.md;
-          return SingleChildScrollView(
-              child: FitFlowMaxWidth(
-                  child: Padding(
-            padding: EdgeInsets.symmetric(
-                horizontal: inset, vertical: FitFlowSpace.md),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const HomeHeader(),
-                  const SizedBox(height: FitFlowSpace.md),
-                  if (plan == null) ...[
-                    HomeEmptyStates.noWorkoutAvailable(context,
-                        userProfile: userProfile),
-                    const SizedBox(height: FitFlowSpace.md),
-                    const HomeSessionModeControl(),
-                  ] else
-                    TweenAnimationBuilder<double>(
-                      tween: Tween(begin: 0, end: 1),
-                      duration: SystemMotion.standard(context),
-                      curve: FitFlowMotion.standardCurve,
-                      builder: (_, value, child) =>
-                          Opacity(opacity: value, child: child),
-                      child: HomeWorkoutHeroCard(
-                          plan: plan,
-                          userProfile: userProfile,
-                          effectiveDuration:
-                              generationContext.effectiveWorkoutDuration,
-                          sessionMode: sessionMode,
-                          maxPhotoHeight:
-                              MediaQuery.textScalerOf(context).scale(16) > 24
-                                  ? 330
-                                  : (constraints.maxHeight - 260)
-                                      .clamp(160.0, 330.0)),
-                    ),
-                  if (showComebackSuggestion) ...[
-                    const SizedBox(height: FitFlowSpace.lg),
-                    const ComebackSuggestionCard(),
-                  ],
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: FitFlowSpace.sm),
-                    child: Divider(),
-                  ),
-                  HomePersonalizationCard(userProfile: userProfile, plan: plan),
-                  const SizedBox(height: FitFlowSpace.xs),
-                  TextButton(
-                      onPressed: () => context.go(AppRoutes.exerciseLibrary),
-                      child: Row(children: [
-                        Expanded(child: Text(context.l10n.homeBrowse)),
-                        const Icon(Icons.arrow_forward_rounded, size: 20),
-                      ])),
-                ]),
-          )));
-        })));
+        body: DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                stops: const [0, .48, 1],
+                colors: Theme.of(context).brightness == Brightness.dark
+                    ? const [
+                        Color(0xFF354323),
+                        Color(0xFF1B1F20),
+                        Color(0xFF1B1F20)
+                      ]
+                    : const [
+                        Color(0xFFD6FF86),
+                        Color(0xFFF2F3F5),
+                        Color(0xFFF2F3F5)
+                      ],
+              ),
+            ),
+            child:
+                SafeArea(child: LayoutBuilder(builder: (context, constraints) {
+              const inset = FitFlowSpace.md;
+              return SingleChildScrollView(
+                  child: FitFlowMaxWidth(
+                      child: Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: inset, vertical: FitFlowSpace.md),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const HomeHeader(),
+                      const SizedBox(height: FitFlowSpace.md),
+                      if (plan == null) ...[
+                        HomeEmptyStates.noWorkoutAvailable(context,
+                            userProfile: userProfile),
+                        const SizedBox(height: FitFlowSpace.md),
+                        const HomeSessionModeControl(),
+                      ] else
+                        TweenAnimationBuilder<double>(
+                          tween: Tween(begin: 0, end: 1),
+                          duration: SystemMotion.standard(context),
+                          curve: FitFlowMotion.standardCurve,
+                          builder: (_, value, child) =>
+                              Opacity(opacity: value, child: child),
+                          child: HomeWorkoutHeroCard(
+                              plan: plan,
+                              userProfile: userProfile,
+                              effectiveDuration:
+                                  generationContext.effectiveWorkoutDuration,
+                              sessionMode: sessionMode,
+                              maxPhotoHeight:
+                                  MediaQuery.textScalerOf(context).scale(16) >
+                                          24
+                                      ? 330
+                                      : (constraints.maxHeight - 342)
+                                          .clamp(160.0, 330.0)),
+                        ),
+                      if (showComebackSuggestion) ...[
+                        const SizedBox(height: FitFlowSpace.lg),
+                        const ComebackSuggestionCard(),
+                      ],
+                      const SizedBox(height: FitFlowSpace.sm),
+                      Material(
+                        color: Theme.of(context).colorScheme.surfaceContainer,
+                        borderRadius: BorderRadius.circular(20),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 4),
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                HomePersonalizationCard(
+                                    userProfile: userProfile, plan: plan),
+                                const Divider(height: 1),
+                                TextButton(
+                                    onPressed: () =>
+                                        context.go(AppRoutes.exerciseLibrary),
+                                    child: Row(children: [
+                                      Expanded(
+                                          child: Text(context.l10n.homeBrowse)),
+                                      const Icon(Icons.arrow_forward_rounded,
+                                          size: 20),
+                                    ])),
+                              ]),
+                        ),
+                      ),
+                    ]),
+              )));
+            }))));
   }
 }

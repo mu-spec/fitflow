@@ -78,9 +78,9 @@ void main() {
             final colors = FitFlowTheme.of(hero);
             final theme = Theme.of(hero);
             expect(theme.scaffoldBackgroundColor,
-                dark ? const Color(0xFF202526) : const Color(0xFFF3F4EE));
-            expect(colors.surface,
-                dark ? const Color(0xFF303737) : const Color(0xFFE4E8DD));
+                dark ? const Color(0xFF1B1F20) : const Color(0xFFF2F3F5));
+            expect(
+                colors.surface, dark ? const Color(0xFF282D2F) : Colors.white);
             double contrast(Color a, Color b) {
               final l = [a.computeLuminance(), b.computeLuminance()]..sort();
               return (l.last + .05) / (l.first + .05);
@@ -93,8 +93,9 @@ void main() {
             final buttonStyle = theme.filledButtonTheme.style!;
             final fill = buttonStyle.backgroundColor!.resolve({})!;
             final ink = buttonStyle.foregroundColor!.resolve({})!;
-            expect(fill, const Color(0xFFD4E779));
-            expect(ink, const Color(0xFF202526));
+            expect(
+                fill, dark ? const Color(0xFFC8FA63) : const Color(0xFF171918));
+            expect(ink, dark ? const Color(0xFF171918) : Colors.white);
             expect(contrast(ink, fill), greaterThanOrEqualTo(4.5));
             final cta = find.widgetWithText(FilledButton, 'View workout');
             final nav = find.byType(NavigationBar);
@@ -111,6 +112,11 @@ void main() {
                       tester.getRect(find.text('Adaptive Full Session')).top));
             }
             if (nav.evaluate().isNotEmpty) {
+              final navTheme = Theme.of(tester.element(nav)).navigationBarTheme;
+              expect(navTheme.indicatorColor, Colors.transparent);
+              expect(navTheme.iconTheme!.resolve({WidgetState.selected})!.color,
+                  dark ? const Color(0xFFF6F7F4) : const Color(0xFF171918));
+
               expect(Theme.of(tester.element(nav)).colorScheme.primary,
                   (dark ? AppTheme.dark : AppTheme.light).colorScheme.primary);
             }
