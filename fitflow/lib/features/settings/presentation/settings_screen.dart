@@ -33,6 +33,8 @@ class SettingsScreen extends StatelessWidget {
       'Home Workout works without an account. Your workout data is stored on this device unless you create a backup.';
 
   static const Key privacyPolicyTileKey = Key('privacy_policy_settings_tile');
+  static const Key exerciseArtworkCreditsTileKey =
+      Key('exercise_artwork_credits_settings_tile');
 
   @override
   Widget build(BuildContext context) =>
@@ -191,6 +193,7 @@ class _SettingsScreenState extends ConsumerState<_SettingsScreenContent> {
                       ),
                       UtilityHeading(l.utilityAbout),
                       const _PrivacyPolicyEntry(),
+                      const _ExerciseArtworkCreditsEntry(),
                     ],
                   ),
                   const SizedBox(height: FitFlowSpace.md),
@@ -251,6 +254,30 @@ class _PrivacyPolicyEntry extends StatelessWidget {
         child: Icon(Icons.chevron_right_rounded),
       ),
       onTap: () => context.go(AppRoutes.privacyPolicy),
+    );
+  }
+}
+
+class _ExerciseArtworkCreditsEntry extends StatelessWidget {
+  const _ExerciseArtworkCreditsEntry();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return ListTile(
+      key: SettingsScreen.exerciseArtworkCreditsTileKey,
+      minVerticalPadding: FitFlowSpace.xs,
+      contentPadding: EdgeInsets.zero,
+      leading: ExcludeSemantics(
+        child: Icon(Icons.animation_outlined, color: theme.colorScheme.primary),
+      ),
+      title: Text('Exercise artwork credits',
+          style: theme.textTheme.titleMedium
+              ?.copyWith(fontWeight: FontWeight.w500)),
+      trailing: const ExcludeSemantics(
+        child: Icon(Icons.chevron_right_rounded),
+      ),
+      onTap: () => context.go(AppRoutes.exerciseArtworkCredits),
     );
   }
 }

@@ -90,7 +90,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Inhale as you lower; exhale as you press.",
       tags: {"bodyweight", "elevated_hands"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "pushup_knee",
@@ -208,7 +208,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Inhale down; exhale as you press.",
       tags: {"bodyweight", "elevated_feet"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "squat_chair",
@@ -361,7 +361,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Inhale slowly while lowering; exhale as you rise.",
       tags: {"bodyweight", "tempo"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "wall_sit",
@@ -394,7 +394,7 @@ abstract final class ExerciseCatalog {
           "Breathe steadily throughout; do not hold your breath.",
       tags: {"bodyweight", "isometric", "wall_support"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "dead_bug",
@@ -548,7 +548,7 @@ abstract final class ExerciseCatalog {
         "duration_per_side"
       },
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "hollow_hold",
@@ -582,7 +582,7 @@ abstract final class ExerciseCatalog {
           "Use small, steady breaths rather than holding your breath.",
       tags: {"bodyweight", "isometric"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "bridge_glute",
@@ -658,7 +658,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Exhale to lift; inhale to lower.",
       tags: {"bodyweight", "unilateral", "reps_per_side"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "march_in_place",
@@ -732,7 +732,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Breathe rhythmically; avoid breath holding.",
       tags: {"bodyweight", "jumping", "running_in_place"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "jumping_jacks",
@@ -843,7 +843,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Exhale while pulling; inhale while releasing.",
       tags: {"self_resisted", "seated_on_floor"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "reverse_snow_angel",
@@ -914,7 +914,7 @@ abstract final class ExerciseCatalog {
           "Exhale during the gentle lift; inhale while lowering.",
       tags: {"bodyweight", "prone", "back_extension"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "prone_y_raise",
@@ -947,7 +947,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Exhale as hands lift; inhale as they lower.",
       tags: {"bodyweight", "prone", "shoulder_control"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "lunge_reverse",
@@ -1069,7 +1069,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Inhale down; exhale up.",
       tags: {"bodyweight", "unilateral", "reps_per_side", "balance_demand"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "squat_split_bulgarian",
@@ -1115,7 +1115,7 @@ abstract final class ExerciseCatalog {
         "balance_demand"
       },
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "calf_raise",
@@ -1219,7 +1219,7 @@ abstract final class ExerciseCatalog {
           "Exhale with each rotation; inhale through the transition.",
       tags: {"bodyweight", "alternating", "reps_per_side"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "heel_taps",
@@ -1253,7 +1253,7 @@ abstract final class ExerciseCatalog {
           "Exhale on each reach; inhale returning toward center.",
       tags: {"bodyweight", "alternating", "reps_per_side", "heel_reach"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "reverse_crunch",
@@ -1325,7 +1325,7 @@ abstract final class ExerciseCatalog {
           "Breathe rhythmically throughout rather than holding your breath.",
       tags: {"bodyweight", "dynamic_core", "jumping"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "cat_cow",
@@ -1393,7 +1393,7 @@ abstract final class ExerciseCatalog {
           "Take slow breaths into the back and sides of your ribs.",
       tags: {"bodyweight", "static_stretch", "deep_knee_flexion"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "hip_flexor_stretch",
@@ -1431,7 +1431,7 @@ abstract final class ExerciseCatalog {
         "floor_contact"
       },
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "hamstring_stretch_standing",
@@ -1464,7 +1464,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Breathe slowly and evenly throughout each hold.",
       tags: {"bodyweight", "static_stretch", "duration_per_side"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "thoracic_rotation",
@@ -1497,7 +1497,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Exhale as you open; inhale as you return.",
       tags: {"bodyweight", "dynamic_mobility", "reps_per_side"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "good_morning",
@@ -1534,7 +1534,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Inhale as you hinge back; exhale as you drive hips forward to stand.",
       tags: {"bodyweight", "hip_hinge", "hamstring_focus"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "hip_hinge",
@@ -1616,7 +1616,7 @@ abstract final class ExerciseCatalog {
         "hip_hinge"
       },
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "donkey_kick",
@@ -1653,7 +1653,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Exhale as you kick back; inhale as you lower.",
       tags: {"bodyweight", "quadruped", "reps_per_side"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "fire_hydrant",
@@ -1690,7 +1690,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Exhale as you lift the knee outward; inhale as you lower.",
       tags: {"bodyweight", "quadruped", "reps_per_side", "hip_abduction"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "pushup_pike",
@@ -1760,7 +1760,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Inhale while lowering; exhale while pressing.",
       tags: {"bodyweight", "triceps_emphasis", "narrow_hands"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "pushup_wide",
@@ -1793,7 +1793,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Inhale on the descent; exhale on the press.",
       tags: {"bodyweight", "chest_emphasis", "wide_hands"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "shoulder_tap",
@@ -1832,7 +1832,7 @@ abstract final class ExerciseCatalog {
         "shoulder_stability"
       },
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "plank_up_down",
@@ -1870,7 +1870,7 @@ abstract final class ExerciseCatalog {
           "Breathe rhythmically; exhale as you press to high plank, inhale as you lower.",
       tags: {"bodyweight", "dynamic_plank", "wrist_loaded", "shoulder_stability"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "step_jack",
@@ -1948,7 +1948,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Breathe rhythmically through the jog; avoid holding breath.",
       tags: {"bodyweight", "running_in_place", "cardio"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "skater_step",
@@ -1986,7 +1986,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Breathe steadily with the lateral rhythm.",
       tags: {"bodyweight", "lateral", "no_jumping", "cardio"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "squat_knee_drive",
@@ -2030,7 +2030,7 @@ abstract final class ExerciseCatalog {
         "squat_plus_knee"
       },
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "shadow_boxing",
@@ -2068,7 +2068,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Exhale with each punch; inhale as you return to guard.",
       tags: {"bodyweight", "no_jumping", "cardio", "boxing"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "single_leg_stand",
@@ -2101,7 +2101,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Breathe slowly and evenly throughout each hold.",
       tags: {"bodyweight", "balance", "duration_per_side", "quiet_hold"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "standing_knee_raise",
@@ -2139,7 +2139,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Exhale as you lift the knee; inhale as you lower.",
       tags: {"bodyweight", "balance", "reps_per_side", "controlled"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "ankle_circles",
@@ -2172,7 +2172,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Breathe naturally at a relaxed pace.",
       tags: {"bodyweight", "mobility", "reps_per_side", "ankle_mobility"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "arm_circles",
@@ -2251,7 +2251,7 @@ abstract final class ExerciseCatalog {
         "lunge_plus_rotation"
       },
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
 
     Exercise(
@@ -2288,7 +2288,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Inhale while lowering; exhale while pressing.",
       tags: {"bodyweight", "triceps_emphasis", "narrow_hands", "diamond"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "pushup_down_dog",
@@ -2326,7 +2326,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Inhale down in the push-up; exhale to press up and again as hips lift to downward dog.",
       tags: {"bodyweight", "push_plus_mobility", "flow", "push_and_stretch"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "wall_shoulder_press",
@@ -2359,7 +2359,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Exhale as you press arms overhead; inhale as you lower.",
       tags: {"bodyweight", "wall_support", "shoulder_emphasis", "posture"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "dip_chair",
@@ -2392,7 +2392,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Inhale as you lower; exhale as you press up.",
       tags: {"chair_supported", "triceps_emphasis", "wrist_loaded", "push"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "squat_sumo",
@@ -2425,7 +2425,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Inhale as you lower; exhale to stand.",
       tags: {"bodyweight", "wide_stance", "sumo", "glute_emphasis"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "squat_pulse",
@@ -2458,7 +2458,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Breathe steadily; exhale during each small pulse up, inhale lowering.",
       tags: {"bodyweight", "pulse", "isometric", "time_under_tension"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "lunge_curtsy",
@@ -2503,7 +2503,7 @@ abstract final class ExerciseCatalog {
         "lateral_angled"
       },
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "lunge_lateral",
@@ -2543,7 +2543,7 @@ abstract final class ExerciseCatalog {
         "hip_mobility"
       },
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "bridge_march",
@@ -2585,7 +2585,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Exhale as you lift the knee; inhale as you lower.",
       tags: {"bodyweight", "unilateral", "reps_per_side", "march", "hip_stability"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "frog_pump",
@@ -2618,7 +2618,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Exhale as hips rise; inhale as you lower.",
       tags: {"bodyweight", "hip_external_rotation", "glute_emphasis"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "plank_reach",
@@ -2657,7 +2657,7 @@ abstract final class ExerciseCatalog {
         "shoulder_stability"
       },
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "plank_side_knee",
@@ -2697,7 +2697,7 @@ abstract final class ExerciseCatalog {
         "modified"
       },
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "russian_twist",
@@ -2730,7 +2730,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Exhale with each rotation; inhale through the center.",
       tags: {"bodyweight", "seated", "rotation", "reps_per_side", "oblique_emphasis"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "leg_raise",
@@ -2763,7 +2763,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Exhale as you lift; inhale as you lower.",
       tags: {"bodyweight", "hip_flexion", "supine"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "flutter_kicks",
@@ -2796,7 +2796,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Breathe steadily and avoid holding your breath.",
       tags: {"bodyweight", "flutter", "core_endurance", "supine"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "burpee_low_impact",
@@ -2834,7 +2834,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Inhale to squat and place hands; exhale to step to plank and again to stand.",
       tags: {"bodyweight", "no_jumping", "low_impact", "burpee", "step_back", "full_body"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "fast_feet",
@@ -2867,7 +2867,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Breathe quickly but rhythmically; do not hold your breath.",
       tags: {"bodyweight", "cardio", "quick_feet", "low_step"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "mountain_climber_standing",
@@ -2912,7 +2912,7 @@ abstract final class ExerciseCatalog {
         "cardio"
       },
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "cobra_stretch",
@@ -2984,7 +2984,7 @@ abstract final class ExerciseCatalog {
         "cooldown"
       },
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "pull_apart_resistance_band",
@@ -3017,7 +3017,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Exhale as you pull the band apart; inhale on the return.",
       tags: {"resistance_band", "shoulder_emphasis", "pull"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "row_resistance_band",
@@ -3050,7 +3050,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Exhale as you row the band in; inhale as the arms extend.",
       tags: {"resistance_band", "back_emphasis", "pull"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "squat_goblet_dumbbell",
@@ -3087,7 +3087,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Inhale on the way down; exhale as you drive back up.",
       tags: {"dumbbell", "squat", "loaded"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "row_bent_over_dumbbell",
@@ -3120,7 +3120,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Exhale as you row up; inhale as you lower the weights.",
       tags: {"dumbbell", "back_emphasis", "pull"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "deadlift_kettlebell",
@@ -3157,7 +3157,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Inhale at the bottom; exhale as you stand up with the kettlebell.",
       tags: {"kettlebell", "hinge", "loaded"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "squat_goblet_kettlebell",
@@ -3194,7 +3194,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Inhale on the descent; exhale as you stand up.",
       tags: {"kettlebell", "squat", "loaded"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "dead_hang_pullup_bar",
@@ -3231,7 +3231,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Breathe steadily throughout the hang; do not hold your breath.",
       tags: {"pullup_bar", "hanging", "grip_emphasis"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
     Exercise(
       id: "scapular_pullup",
@@ -3268,7 +3268,7 @@ abstract final class ExerciseCatalog {
       breathingGuidance: "Exhale as you draw the shoulder blades down; inhale as you lower.",
       tags: {"pullup_bar", "hanging", "pull"},
       assetPath: null,
-      active: true,
+      active: false,  // Hidden for launch 25
     ),
 
   ]);

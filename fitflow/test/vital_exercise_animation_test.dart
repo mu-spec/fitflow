@@ -10,7 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'player_animation_pilot_test.dart' as fixtures;
 
-const ids = ['pushup_pike', 'squat_goblet_dumbbell'];
+const ids = ['pushup_pike'];
 
 Finder animation(String id) =>
     find.byKey(ValueKey(ExerciseAnimationRegistry.assetFor(id)!));

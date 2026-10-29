@@ -75,10 +75,9 @@ void main() {
         expect(before, const Size(320, 240));
         expect(find.bySemanticsLabel('Wall Push-Up'), findsOneWidget);
         expect(tester.takeException(), isNull);
-        // The wall push-up is now animated. A missing animation must fall
-        // back to the registered photo, then to the neutral placeholder.
+        // pushup_wall is a still exercise (not animated in launch 25).
+        // A missing photo falls back to the neutral placeholder.
         expect(bundle.requests.where((p) => p.endsWith('.webp')).toSet(), {
-          'assets/animations/open_exercise_figures/pushup_wall.webp',
           'assets/images/exercises/hero/pushup_wall.webp',
         });
       } finally {

@@ -24,6 +24,9 @@ class AppRoutes {
   /// In-app privacy policy, nested under Settings.
   static const String privacyPolicy = '$settings/privacy-policy';
 
+  /// Offline exercise artwork credits and license, nested under Settings.
+  static const String exerciseArtworkCredits = '$settings/exercise-artwork-credits';
+
   static String exerciseDetail(String exerciseId) =>
       '/workouts/exercise-library/$exerciseId';
 

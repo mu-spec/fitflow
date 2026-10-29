@@ -1,8 +1,11 @@
+import 'dart:ui' as ui;
+
 import 'package:fitflow/app/config/app_theme.dart';
 import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
+import 'package:fitflow/core/design/media/fitflow_media_image.dart';
+import 'package:fitflow/core/design/media/exercise_animation_registry.dart';
 import 'package:fitflow/features/workout_player/application/workout_player_controller.dart';
 import 'package:fitflow/features/workout_player/domain/workout_player_phase.dart';
-import 'package:fitflow/features/workout_player/presentation/widgets/pilot_exercise_demonstration.dart';
 import 'package:fitflow/features/workout_player/presentation/widgets/workout_player_exercise_center.dart';
 import 'package:fitflow/features/workouts/data/exercise_catalog.dart';
 import 'package:fitflow/features/workouts/domain/workout/workout_exercise_prescription.dart';
@@ -49,149 +52,114 @@ Widget host(Widget child,
                             padding: const EdgeInsets.all(16),
                             child: child))))));
 
-PilotCharacterPainter painter(WidgetTester tester) => tester
-    .widget<CustomPaint>(find.byKey(const ValueKey('pilot_character_canvas')))
-    .painter! as PilotCharacterPainter;
+// The original painter is no longer selected by the player. March uses the
+// same registered athlete as the library, while retaining the old Ready/pause
+// behavior and keeping the workout clock independent of the visual loop.
+Finder marchImage() =>
+    find.byKey(ValueKey(ExerciseAnimationRegistry.assetFor('march_in_place')!));
+
+Future<void> pumpImageFrames(WidgetTester tester, {int count = 16}) async {
+  for (var i = 0; i < count; i++) {
+    await tester
+        .runAsync(() => Future<void>.delayed(const Duration(milliseconds: 20)));
+    await tester.pump(const Duration(milliseconds: 50));
+  }
+}
+
+ui.Image marchFrame(WidgetTester tester) => tester
+    .widget<RawImage>(
+        find.descendant(of: marchImage(), matching: find.byType(RawImage)))
+    .image!;
+
+Future<void> expectMarchAdvance(WidgetTester tester) async {
+  final frame = marchFrame(tester).clone();
+  try {
+    var changed = false;
+    for (var i = 0; i < 40 && !changed; i++) {
+      await pumpImageFrames(tester, count: 1);
+      changed = !marchFrame(tester).isCloneOf(frame);
+    }
+    expect(changed, isTrue);
+  } finally {
+    frame.dispose();
+  }
+}
 
 void main() {
-  test('front-facing march alternates the opposite arm with each knee', () {
-    final right = PilotCharacterPose(.25, squat: false);
-    final left = PilotCharacterPose(.75, squat: false);
-    expect(right.ankle(-1).dy, 260);
-    expect(right.ankle(1).dy, lessThan(260));
-    expect(right.hand(-1).dy, lessThan(right.hand(1).dy));
-    expect(left.ankle(1).dy, 260);
-    expect(left.ankle(-1).dy, lessThan(260));
-    expect(left.hand(1).dy, lessThan(left.hand(-1).dy));
-    for (var i = 0; i <= 32; i++) {
-      final pose = PilotCharacterPose(i / 32, squat: false);
-      expect(pose.ankle(-1).dy == 260 || pose.ankle(1).dy == 260, isTrue,
-          reason: 'Marching always keeps one foot grounded');
-      expect(pose.knee(-1).dx, lessThan(pose.knee(1).dx));
-    }
+  setUp(() {
+    PaintingBinding.instance.imageCache.clear();
+    PaintingBinding.instance.imageCache.clearLiveImages();
   });
-  test('squat plants both feet and keeps leg lengths through the full cycle',
-      () {
-    for (var i = 0; i <= 32; i++) {
-      final pose = PilotCharacterPose(i / 32, squat: true);
-      for (final side in [-1.0, 1.0]) {
-        expect(pose.ankle(side), Offset(200 + side * 35, 260));
-        expect((pose.knee(side) - pose.hip(side)).distance,
-            closeTo(PilotCharacterPose.squatLegLength, .001));
-        expect((pose.ankle(side) - pose.knee(side)).distance,
-            closeTo(PilotCharacterPose.squatLegLength, .001));
-      }
-      expect(pose.knee(-1).dx, lessThan(pose.knee(1).dx));
-    }
-  });
-  for (final id in ['march_in_place']) {
-    testWidgets('$id artwork follows work/pause without driving the session',
-        (tester) async {
-      final controller =
-          WorkoutPlayerController(plan: plan(id), autoStartTimer: false);
-      addTearDown(controller.dispose);
-      Future<void> show() => tester.pumpWidget(
-          host(WorkoutPlayerExerciseCenter(state: controller.state)));
-      await show();
-      expect(painter(tester).motion.value, 0);
-      await tester.pump(const Duration(seconds: 1));
-      expect(painter(tester).motion.value, 0);
-      expect(controller.state.phase, WorkoutPlayerPhase.ready);
-      controller.beginWorkout();
-      await show();
-      await tester.pump();
-      final session = controller.state;
-      await tester.pump(const Duration(milliseconds: 600));
-      expect(painter(tester).motion.value, greaterThan(0));
-      expect(controller.state, session,
-          reason: 'Artwork must not advance time, reps or sets');
-      controller.pause();
-      await show();
-      final frozen = painter(tester).motion.value;
-      await tester.pump(const Duration(seconds: 1));
-      expect(painter(tester).motion.value, frozen);
-      controller.resume();
-      await show();
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 250));
-      expect(painter(tester).motion.value, greaterThan(frozen));
-      if (controller.state.isTimedExercise) {
-        final seconds = controller.state.remaining.inSeconds;
-        for (var i = 0; i < seconds; i++) {
-          controller.tick();
-        }
-      } else {
-        controller.completeSet();
-      }
-      await show();
-      expect(
-          tester
-              .widget<PilotExerciseDemonstration>(
-                  find.byType(PilotExerciseDemonstration))
-              .running,
-          isFalse);
-      final resting = painter(tester).motion.value;
-      await tester.pump(const Duration(seconds: 1));
-      expect(painter(tester).motion.value, resting);
-      await tester.pumpWidget(const SizedBox.shrink());
-      expect(tester.takeException(), isNull);
-    });
-  }
 
-  testWidgets(
-      'only exact pilot IDs animate; reduced motion keeps registered photos',
+  testWidgets('march uses the shared athlete and retains player phase behavior',
       (tester) async {
-    for (final id in [
-      'march_in_place',
-      'squat_bodyweight',
-      'arm_circles',
-      'squat_partial'
-    ]) {
-      final controller =
-          WorkoutPlayerController(plan: plan(id), autoStartTimer: false);
-      for (final reduced in [false, true]) {
-        await tester.pumpWidget(host(
-            WorkoutPlayerExerciseCenter(state: controller.state),
-            reduced: reduced));
-        final animated = !reduced && PilotExerciseDemonstration.supports(id);
-        expect(find.byType(PilotExerciseDemonstration),
-            animated ? findsOneWidget : findsNothing);
-        if (!animated) {
-          expect(
-              tester
-                  .widget<FitFlowExerciseImage>(
-                      find.byType(FitFlowExerciseImage))
-                  .exerciseId,
-              id);
-        }
-      }
-      controller.dispose();
+    final controller = WorkoutPlayerController(
+        plan: plan('march_in_place'), autoStartTimer: false);
+    addTearDown(controller.dispose);
+    Future<void> show() async {
+      await tester.pumpWidget(
+          host(WorkoutPlayerExerciseCenter(state: controller.state)));
+      await pumpImageFrames(tester);
     }
+
+    Future<void> frozen() async {
+      final image = marchFrame(tester).clone();
+      final state = controller.state;
+      try {
+        await pumpImageFrames(tester);
+        expect(marchFrame(tester).isCloneOf(image), isTrue);
+        expect(controller.state, same(state));
+      } finally {
+        image.dispose();
+      }
+    }
+
+    await show();
+    expect(marchImage(), findsOneWidget);
+    expect(controller.state.phase, WorkoutPlayerPhase.ready);
+    await frozen();
+    controller.beginWorkout();
+    await show();
+    final state = controller.state;
+    await expectMarchAdvance(tester);
+    expect(controller.state, same(state));
+    controller.pause();
+    await show();
+    await frozen();
+    controller.resume();
+    await show();
+    await expectMarchAdvance(tester);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    await tester.pump();
+    await frozen();
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+    await show();
+    if (controller.state.isTimedExercise) {
+      final seconds = controller.state.remaining.inSeconds;
+      for (var i = 0; i < seconds; i++) {
+        controller.tick();
+      }
+    } else {
+      controller.completeSet();
+    }
+    await show();
+    await frozen();
+    await tester.pumpWidget(const SizedBox.shrink());
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('visual loop freezes while backgrounded and under TickerMode',
+  testWidgets('march reduced motion keeps the static photo fallback',
       (tester) async {
-    Widget scene(bool enabled) => host(TickerMode(
-        enabled: enabled,
-        child: const PilotExerciseDemonstration(
-            exerciseId: 'march_in_place',
-            running: true,
-            width: 320,
-            height: 240)));
-    await tester.pumpWidget(scene(true));
+    final controller = WorkoutPlayerController(
+        plan: plan('march_in_place'), autoStartTimer: false);
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(host(
+        WorkoutPlayerExerciseCenter(state: controller.state),
+        reduced: true));
     await tester.pump();
-    await tester.pump(const Duration(milliseconds: 500));
-    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
-    final frozen = painter(tester).motion.value;
-    await tester.pump(const Duration(seconds: 2));
-    expect(painter(tester).motion.value, frozen);
-    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
-    await tester.pumpWidget(scene(false));
-    final hidden = painter(tester).motion.value;
-    await tester.pump(const Duration(seconds: 2));
-    expect(painter(tester).motion.value, hidden);
-    await tester.pumpWidget(const SizedBox.shrink());
+    expect(find.byType(FitFlowExerciseImage), findsOneWidget);
+    expect(marchImage(), findsNothing);
+    expect(find.byType(FitFlowMediaImage), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -202,7 +170,7 @@ void main() {
   ]) {
     for (final dark in [false, true]) {
       for (final scale in [1.0, 2.0]) {
-        testWidgets('pilot layout $size dark=$dark scale=$scale',
+        testWidgets('march layout $size dark=$dark scale=$scale',
             (tester) async {
           tester.view.physicalSize = size;
           tester.view.devicePixelRatio = 1;
@@ -216,7 +184,7 @@ void main() {
               dark: dark,
               scale: scale));
           final bounds =
-              tester.getRect(find.byType(PilotExerciseDemonstration));
+              tester.getRect(find.byKey(const ValueKey('v2_player_media')));
           expect(bounds.width / bounds.height, closeTo(4 / 3, .001));
           expect(bounds.left, greaterThanOrEqualTo(0));
           expect(bounds.right, lessThanOrEqualTo(size.width));

@@ -1,0 +1,35 @@
+{
+  "view": "side",
+  "anchor": [
+    "nearWrist",
+    [
+      0,
+      2.25
+    ]
+  ],
+  "equipment": [
+    {
+      "type": "pullupBar",
+      "at": [
+        0,
+        2.25
+      ],
+      "length": 0.9
+    }
+  ],
+  "poses": [
+    {
+      "torso": 0,
+      "arms": [
+        15,
+        15,
+        15
+      ],
+      "legs": [
+        180,
+        180,
+        95
+      ]
+    }
+  ]
+}

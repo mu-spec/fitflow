@@ -1,0 +1,4 @@
+node_modules/
+frames/
+character_parts/
+package-lock.json

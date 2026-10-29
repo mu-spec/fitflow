@@ -1,0 +1,9 @@
+{
+  "private": true,
+  "name": "fitflow-illustrated-athletes-authoring",
+  "description": "Optional offline authoring tools; not a runtime app dependency",
+  "dependencies": {
+    "lottie-web": "5.13.0",
+    "puppeteer": "24.24.1"
+  }
+}

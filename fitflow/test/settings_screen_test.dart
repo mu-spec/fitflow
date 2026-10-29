@@ -5,6 +5,7 @@ import 'package:fitflow/features/backup/presentation/backup_restore_screen.dart'
 import 'package:fitflow/features/backup/presentation/widgets/backup_restore_settings_entry.dart';
 import 'package:fitflow/features/settings/data/appearance_mode.dart';
 import 'package:fitflow/features/settings/data/appearance_storage.dart';
+import 'package:fitflow/features/settings/presentation/exercise_artwork_credits_screen.dart';
 import 'package:fitflow/features/settings/presentation/settings_screen.dart';
 import 'package:fitflow/features/settings/state/appearance_controller.dart';
 import 'package:flutter/material.dart';
@@ -127,6 +128,23 @@ void main() {
       expect(
           find.byKey(BackupRestoreScreen.chooseFileButtonKey), findsOneWidget);
       expect(AppRoutes.backupRestore, '/profile/settings/backup-restore');
+    });
+
+    testWidgets('exercise artwork credits open with the bundled license',
+        (tester) async {
+      await pumpSettings(tester);
+      final tile = find.byKey(SettingsScreen.exerciseArtworkCreditsTileKey);
+      await tester.ensureVisible(tile);
+      await settleProfileFrames(tester, 3);
+      await tester.tap(tile);
+      await settleProfileFrames(tester);
+      expect(find.text(ExerciseArtworkCreditsScreen.title), findsOneWidget);
+      final notice = tester.widget<SelectableText>(find.byType(SelectableText));
+      expect(notice.data, contains('Dinh Bui Xuan'));
+      expect(notice.data, contains('Lottie Simple License'));
+      expect(notice.data, contains('Permission is hereby granted'));
+      expect(AppRoutes.exerciseArtworkCredits,
+          '/profile/settings/exercise-artwork-credits');
     });
 
     testWidgets('reminders section remains interactive', (tester) async {

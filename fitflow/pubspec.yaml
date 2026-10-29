@@ -31,18 +31,13 @@ flutter:
   generate: true
   uses-material-design: true
   assets:
-    - assets/animations/BODYWEIGHT_SQUAT_LICENSE.md
-    - assets/animations/bodyweight_squat.json
-    - assets/animations/pushup_incline.json
-    - assets/animations/pushup_decline.json
-    - assets/animations/knee_pushup.json
-    - assets/animations/pushup.json
-    - assets/animations/cobra.json
-    - assets/animations/lunge.json
-    - assets/animations/vital/pushup_pike.webp
-    - assets/animations/vital/squat_goblet_dumbbell.webp
-    - assets/animations/vital/NOTICE.md
-    - assets/animations/open_exercise_figures/
+    - assets/animations/illustrated_athletes/
+    - assets/animations/real_people/
+    - assets/animations/real_people/NOTICE.md
+    - assets/animations/real_people/LICENSE-CC-BY-SA-4.0.txt
+    - assets/animations/real_people/LICENSE-LOTTIE-SIMPLE.md
+    - assets/animations/open_exercise_figures/NOTICE.md
+    - assets/animations/open_exercise_figures/LICENSE-CC0.txt
     - assets/images/branding/
     - assets/images/exercises/thumb/
     - assets/images/exercises/hero/

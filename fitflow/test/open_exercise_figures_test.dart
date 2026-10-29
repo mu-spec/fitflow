@@ -14,8 +14,6 @@ import 'player_animation_pilot_test.dart' as fixtures;
 
 const addedIds = [
   'pushup_wall',
-  'squat_tempo',
-  'squat_pulse',
   'bird_dog',
   'donkey_kick',
   'lunge_reverse',
@@ -27,11 +25,9 @@ const addedIds = [
   'plank_reach',
   'march_in_place',
   'mountain_climber_standing',
-  'squat_partial',
   'dead_bug',
   'bridge_glute',
   'bridge_single_leg',
-  'jumping_jacks',
   'squat_split_static',
   'calf_raise',
   'reverse_crunch',
@@ -42,6 +38,19 @@ const addedIds = [
   'fast_feet',
   'row_bent_over_dumbbell',
   'squat_goblet_kettlebell',
+  'squat_goblet_dumbbell',
+  'lunge_forward',
+  'squat_chair',
+  'shoulder_tap',
+  'superman',
+  'row_resistance_band',
+  'deadlift_kettlebell',
+  'squat_split_bulgarian',
+  'dip_chair',
+  'butt_kicks',
+  'row_towel',
+  'squat_knee_drive',
+  'scapular_pullup',
 ];
 
 Finder animation(String id) =>
@@ -86,13 +95,13 @@ void main() {
     cache.clearLiveImages();
   });
 
-  testWidgets('all selected figures are bundled, looping, decodable WebPs',
+  testWidgets('all retargeted figures are bundled, looping, decodable WebPs',
       (tester) async {
     await tester.runAsync(() async {
       for (final id in addedIds) {
         expect(ExerciseCatalog.byId(id), isNotNull, reason: id);
         final asset = ExerciseAnimationRegistry.assetFor(id);
-        expect(asset, 'assets/animations/open_exercise_figures/$id.webp');
+        expect(asset, 'assets/animations/illustrated_athletes/$id.webp');
         final bytes = await rootBundle.load(asset!);
         final codec =
             await ui.instantiateImageCodec(bytes.buffer.asUint8List());
@@ -110,29 +119,6 @@ void main() {
         } finally {
           codec.dispose();
         }
-      }
-    });
-  });
-
-  testWidgets('tempo squat retains its slow descent, pause and faster rise',
-      (tester) async {
-    await tester.runAsync(() async {
-      final path = ExerciseAnimationRegistry.assetFor('squat_tempo')!;
-      final bytes = await rootBundle.load(path);
-      final codec = await ui.instantiateImageCodec(bytes.buffer.asUint8List());
-      try {
-        final durations = <int>[];
-        for (var i = 0; i < codec.frameCount; i++) {
-          final frame = await codec.getNextFrame();
-          durations.add(frame.duration.inMilliseconds);
-          frame.image.dispose();
-        }
-        expect(durations.length, 30);
-        expect(durations.take(15).reduce((a, b) => a + b), 3000);
-        expect(durations[15], 1000);
-        expect(durations.skip(16).reduce((a, b) => a + b), 994);
-      } finally {
-        codec.dispose();
       }
     });
   });

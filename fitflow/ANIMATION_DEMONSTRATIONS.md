@@ -1,38 +1,64 @@
-# Exercise demonstration integration
+# Temporary exercise media: GIF plus still references
 
-## Current coverage
+The project is using the user's chosen temporary approach while they consider a
+paid exercise pack later. **This is not an 88-GIF library.**
 
-This is a partial implementation of the requested approximately 80 exercise demonstrations. The catalog has 88 exercises. The existing exact-ID animation registry now covers **38** of them: nine existing animations plus **29 newly bundled Open Exercise Figures**. The other **50** exercises continue to use their existing photographs; they have not been assigned look-alike animations. Some remaining entries are static holds or stretches, for which a continuously moving loop can be misleading.
+## Current default selection
 
-The new animations are available in the shared exercise image component used by the library, exercise details and workout player. The existing custom March in Place player pilot remains in use in the player; the newly registered march figure is used by other shared-media surfaces. Each new WebP is bundled with the app and plays offline. Workout prescriptions, reps and timers are not driven by the animations.
+| FitFlow exercise | Media in app | Status |
+| --- | --- | --- |
+| Bodyweight Squat (`squat_bodyweight`) | Offline real-person GIF, 360 × 360, 68 frames | The user approved the visual style. This is a prototype, not a professional form or likeness/publicity-rights clearance. |
+| Jumping Jacks (`jumping_jacks`) | The existing illustrated Lottie JSON | Preserved byte-for-byte; not replaced by a GIF. |
+| Other **86** exercise IDs | Existing exercise-specific still references | A visible **Still image** badge identifies a hero still in exercise detail and the workout player. It is not a moving demonstration. |
 
-The implementation honors the existing reduced-motion, app-lifecycle, visibility, pause and photo-fallback behavior. A missing or disabled demonstration falls back to the registered photograph, and a missing photograph falls back to the existing neutral placeholder.
+The stills and their individual poses have not all been professionally reviewed.
+Users should read the app's existing exercise instructions; no still by itself
+shows a complete movement. Camera angle, grip, equipment, range and form still
+need qualified review before publication. Old candidate animations remain as
+source material, but none of the rejected candidates are selected in the
+runtime registry.
 
-## New figure IDs
+## How it works
 
-`squat_partial`, `dead_bug`, `bridge_glute`, `bridge_single_leg`, `jumping_jacks`, `squat_split_static`, `calf_raise`, `reverse_crunch`, `mountain_climbers`, `bridge_march`, `flutter_kicks`, `leg_raise`, `fast_feet`, `row_bent_over_dumbbell`, `squat_goblet_kettlebell`, `pushup_wall`, `squat_tempo`, `squat_pulse`, `bird_dog`, `donkey_kick`, `lunge_reverse`, `good_morning`, `hip_hinge`, `hip_hinge_single_leg`, `high_knees`, `standing_knee_raise`, `plank_reach`, `march_in_place`, and `mountain_climber_standing`.
+- `ExerciseAnimationRegistry` maps exact catalog IDs to local media; there is no
+  name-based guessing. It currently selects only the squat GIF and the original
+  Jumping Jacks Lottie.
+- The existing shared `FitFlowExerciseImage` is used throughout the app,
+  including detail screens, the player, library, workout preview, and history.
+  GIF and animated WebP assets use Flutter's built-in image decoder. Lottie is
+  retained for Jumping Jacks. No network service is required.
+- Animated images pause with the workout player and on backgrounding. Reduced
+  motion uses stills. Missing or corrupt motion assets fall back to a labeled
+  still; Bodyweight Squat uses a still of the same person. Media never owns or
+  changes workout time, reps, sets, prescriptions or exercise selection.
+- The badge sits inside the existing image bounds so it does not move workout
+  controls. Thumbnails are not overlaid with text; the large exercise reference
+  is labeled where it is used to understand the movement.
+- Older animations are retained in the repository for provenance; their
+  inclusion in the asset bundle does **not** mean they are selected in the app.
 
-## Remaining photograph-only IDs
+## Credits and release checks
 
-`squat_chair`, `wall_sit`, `plank_knee`, `plank_forearm`, `plank_side`, `hollow_hold`, `row_doorway`, `row_towel`, `reverse_snow_angel`, `superman`, `prone_y_raise`, `squat_split_bulgarian`, `bicycle_crunch`, `heel_taps`, `cat_cow`, `childs_pose`, `hip_flexor_stretch`, `hamstring_stretch_standing`, `thoracic_rotation`, `fire_hydrant`, `pushup_close_grip`, `pushup_wide`, `shoulder_tap`, `plank_up_down`, `step_jack`, `butt_kicks`, `skater_step`, `squat_knee_drive`, `shadow_boxing`, `single_leg_stand`, `ankle_circles`, `arm_circles`, `world_greatest_stretch`, `pushup_diamond`, `pushup_down_dog`, `wall_shoulder_press`, `dip_chair`, `squat_sumo`, `lunge_curtsy`, `lunge_lateral`, `frog_pump`, `plank_side_knee`, `russian_twist`, `burpee_low_impact`, `figure_four_stretch`, `pull_apart_resistance_band`, `row_resistance_band`, `deadlift_kettlebell`, `dead_hang_pullup_bar`, and `scapular_pullup`.
+The Bodyweight Squats GIF is an adaptation of the work credited to Danielflefil,
+licensed CC BY-SA 4.0. The source, changes, license and full license text are
+bundled in `assets/animations/real_people/`, and **Settings → Exercise artwork
+credits** displays the notice offline. Copyright licensing is not the same as
+confirmation of the depicted person's likeness/publicity rights. Confirm those
+rights and obtain qualified technique review before public or commercial release.
+Do not describe the user's approval of the look as professional certification.
 
-## Form and rights
+## Adding a future paid GIF or WebP pack
 
-The figures were compared visually with the catalog descriptions, and some were adapted or authored using the upstream rig. **They have not been reviewed by a qualified exercise professional and should not be represented as professionally validated or guaranteed injury-safe.** A professional should review the animations and written instructions together before relying on them for coaching. Stylized figures cannot show every relevant form cue, grip, depth, joint angle or individual modification.
+1. Confirm that the purchase terms permit bundled, offline in-app use and
+   distribution on the intended platforms. Preserve any required notices.
+2. Review each motion against the exact FitFlow ID, instructions, equipment,
+   framing and complete movement. Do not match solely by title.
+3. Add each approved local `.gif`, animated `.webp` or `.json` Lottie to a
+   bundled asset directory and add the exact ID and path to
+   `ExerciseAnimationRegistry.assets`. Add a matching still to
+   `ExerciseAnimationRegistry.posters` when available.
+4. Update credits and run the focused media, fallback, player and accessibility
+   tests. Check the actual result on Android/iOS devices before release.
 
-The new figures are derived from the CC0 Open Exercise Figures project; see `assets/animations/open_exercise_figures/NOTICE.md` and `LICENSE-CC0.txt` for the source, revision, adaptations and limitations. The pre-existing Vital animations are subject to their separate terms documented in `assets/animations/vital/NOTICE.md`; do not assume their individual media files are CC0. Reproduction instructions for the locally generated figures are in `tools/open_exercise_figures/README.md`.
-
-## Run and verify
-
-From the app directory, with Flutter and an Android SDK/device or emulator installed:
-
-```sh
-flutter pub get
-flutter analyze --no-pub
-flutter test --no-pub --concurrency=1 test/open_exercise_figures_test.dart test/exercise_animation_test.dart test/vital_exercise_animation_test.dart test/player_animation_pilot_test.dart
-flutter run
-```
-
-The focused tests cover bundled animation codecs, shared media, fallbacks, reduced motion, representative timed and rep-based player behavior, pauses and lifecycle. They do not replace visual review on a physical device or expert form review. Some older screen tests use reduced motion so their UI transition checks do not wait indefinitely for a looping demonstration.
-
-The project checkout intentionally omits the original `media_inbox/` directory (the app's already-optimized packaged media is present). It can be recovered separately from the selected GitHub branch if needed.
+There is currently no generic video-player implementation or automatic paid-pack
+importer; a future MP4 pack would need an appropriate player and license review.

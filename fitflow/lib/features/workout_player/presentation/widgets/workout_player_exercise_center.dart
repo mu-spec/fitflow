@@ -1,5 +1,4 @@
 import 'dart:math' as math;
-import 'pilot_exercise_demonstration.dart';
 import 'pushup_lottie_demonstration.dart';
 
 import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
@@ -81,25 +80,18 @@ class WorkoutPlayerExerciseCenter extends StatelessWidget {
                     animate:
                         (ready || state.phase == WorkoutPlayerPhase.work) &&
                             !state.isPaused)
-                : PilotExerciseDemonstration.supports(
-                            prescription.exercise.id) &&
-                        !MediaQuery.disableAnimationsOf(context)
-                    ? PilotExerciseDemonstration(
-                        key: const ValueKey('v2_player_media'),
-                        exerciseId: prescription.exercise.id,
-                        running: state.phase == WorkoutPlayerPhase.work &&
-                            !state.isPaused,
-                        width: width,
-                        height: width * 3 / 4)
-                    : FitFlowExerciseImage.hero(
-                        animate:
-                            (ready || state.phase == WorkoutPlayerPhase.work) &&
-                                !state.isPaused,
-                        key: const ValueKey('v2_player_media'),
-                        exerciseId: prescription.exercise.id,
-                        width: width,
-                        height: width * 3 / 4,
-                      ),
+                : FitFlowExerciseImage.hero(
+                    // The former march pilot was still during Ready. Keep
+                    // that behavior when using the shared athlete asset.
+                    animate: ((ready &&
+                                prescription.exercise.id != 'march_in_place') ||
+                            state.phase == WorkoutPlayerPhase.work) &&
+                        !state.isPaused,
+                    key: const ValueKey('v2_player_media'),
+                    exerciseId: prescription.exercise.id,
+                    width: width,
+                    height: width * 3 / 4,
+                  ),
           ));
         }),
         const SizedBox(height: 8),

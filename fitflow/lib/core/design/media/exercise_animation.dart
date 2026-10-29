@@ -50,7 +50,6 @@ class _ExerciseAnimationState extends State<ExerciseAnimation>
       position.removeListener(_scheduleVisibility);
     }
     _positions.clear();
-    // Include outer scrolling for bounded sections inside another scroll view.
     context.visitAncestorElements((element) {
       if (element is StatefulElement && element.state is ScrollableState) {
         _positions.add((element.state as ScrollableState).position);
@@ -120,10 +119,7 @@ class _ExerciseAnimationState extends State<ExerciseAnimation>
   }
 
   Widget _animation(String asset) {
-    if (asset.endsWith('.webp')) {
-      // Flutter's multiframe image stream freezes its current frame under
-      // TickerMode. Reuse the same pause/lifecycle gate as the Lottie renderer;
-      // there is no additional workout clock or video controller.
+    if (asset.endsWith('.webp') || asset.endsWith('.gif')) {
       return TickerMode(
         enabled: widget.animate && _foreground,
         child: Image.asset(

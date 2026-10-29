@@ -1,0 +1,91 @@
+Creative Commons Attribution-ShareAlike 4.0 International Public License
+
+By exercising the Licensed Rights (defined below), You accept and agree to be
+bound by the terms and conditions of this Creative Commons Attribution-ShareAlike
+4.0 International Public License ("Public License").
+
+Section 1 – Definitions.
+
+a. Licensed Material means the artistic or literary work, database, or other
+material to which the Licensor applied this Public License.
+
+b. Licensed Rights means the rights granted to You subject to the terms and
+conditions of this Public License, which are limited to all Copyright and
+Similar Rights that apply to Your use of the Licensed Material and that the
+Licensor has authority to license.
+
+c. Adapted Material means material subject to Copyright and Similar Rights that
+is derived from or based upon the Licensed Material and in which the Licensed
+Material is translated, altered, arranged, transformed, or otherwise modified.
+
+d. Adapter's License means the license You apply to Your Copyright and Similar
+Rights in Your contributions to Adapted Material.
+
+Section 2 – Scope.
+
+a. License grant. Subject to the terms and conditions of this Public License,
+the Licensor hereby grants You a worldwide, royalty-free, non-sublicensable,
+non-exclusive, irrevocable license to exercise the Licensed Rights in the
+Licensed Material to:
+
+   i. reproduce and Share the Licensed Material, in whole or in part; and
+   ii. produce, reproduce, and Share Adapted Material.
+
+b. Exceptions and Limitations. For the avoidance of doubt, where Exceptions and
+Limitations apply to Your use, this Public License does not apply, and You do
+not need to comply with its terms and conditions.
+
+c. Term. The term of this Public License is specified in Section 6(a).
+
+d. Media and formats; technical modifications allowed. The Licensor authorizes
+You to exercise the Licensed Rights in all media and formats whether now known
+or hereafter created, and to make technical modifications necessary to do so.
+
+e. Downstream recipients. Every recipient of the Licensed Material automatically
+receives an offer from the Licensor to exercise the Licensed Rights under the
+terms and conditions of this Public License.
+
+Section 3 – License Conditions.
+
+Your exercise of the Licensed Rights is expressly made subject to the following
+conditions:
+
+a. Attribution. You must:
+
+   i. give appropriate credit, provide a link to the license, and indicate if
+      changes were made. You may do so in any reasonable manner, but not in
+      any way that suggests the licensor endorses You or Your use.
+
+   ii. indicate if You modified the Licensed Material and retain an indication
+       of any previous modifications.
+
+b. ShareAlike. If You Share Adapted Material You produce, the Adapter's License
+You apply must be a Creative Commons license with the same license elements,
+this version or later, or a BY-SA Compatible License.
+
+Section 4 – Sui Generis Database Rights.
+
+Section 5 – Term of License.
+
+a. This Public License applies for the term of the Copyright and Similar Rights
+licensed here. However, if You fail to comply with this Public License, then
+Your rights under this Public License terminate automatically.
+
+b. Where Your right to use the Licensed Material has terminated under Section
+5(a), it reinstates: automatically as of the date the violation is cured, or
+upon express reinstatement by the Licensor.
+
+Section 6 – Disclaimer of Warranties and Limitation of Liability.
+
+The Licensor offers the Licensed Material as-is and as-available, and makes no
+representations or warranties of any kind concerning the Licensed Material.
+
+Section 7 – Termination.
+
+Section 8 – Interpretation.
+
+For the avoidance of doubt, this Public License does not, and shall not be
+interpreted to, restrict or condition any use that would otherwise be permitted
+by applicable law.
+
+Source: https://creativecommons.org/licenses/by-sa/4.0/
