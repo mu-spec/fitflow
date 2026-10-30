@@ -120,12 +120,12 @@ class _HomeContent extends ConsumerWidget {
                 stops: const [0, .48, 1],
                 colors: Theme.of(context).brightness == Brightness.dark
                     ? const [
-                        Color(0xFF354323),
+                        Color(0xFF323E5A),
                         Color(0xFF1B1F20),
                         Color(0xFF1B1F20)
                       ]
                     : const [
-                        Color(0xFFD6FF86),
+                        Color(0xFFD8DFFA),
                         Color(0xFFF2F3F5),
                         Color(0xFFF2F3F5)
                       ],

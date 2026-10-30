@@ -53,8 +53,13 @@ class HomeActivityStrip extends StatelessWidget {
                     padding:
                         const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
                     decoration: BoxDecoration(
-                        color: colors.surfaceContainer,
-                        borderRadius: BorderRadius.circular(24)),
+                      border: Border(
+                          bottom: BorderSide(
+                        color:
+                            isToday ? colors.onSurface : colors.outlineVariant,
+                        width: isToday ? 3 : 1,
+                      )),
+                    ),
                     child: Column(children: [
                       Text(
                           FitFlowLocaleFormat.shortWeekday(
@@ -62,17 +67,10 @@ class HomeActivityStrip extends StatelessWidget {
                           style: text.bodySmall),
                       const SizedBox(height: 4),
                       Container(
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                              color: isToday
-                                  ? const Color(0xFFC8FA63)
-                                  : Colors.transparent,
-                              shape: BoxShape.circle),
+                          padding: const EdgeInsets.symmetric(vertical: 2),
                           child: Text(material.formatDecimal(date.day),
                               style: text.bodyMedium?.copyWith(
-                                  color: isToday
-                                      ? const Color(0xFF171918)
-                                      : colors.onSurface,
+                                  color: colors.onSurface,
                                   fontWeight: FontWeight.w600))),
                       const SizedBox(height: 2),
                       Icon(
@@ -96,6 +94,15 @@ class HomeActivityStrip extends StatelessWidget {
 /// Browse actual catalog programs, without implying a recommendation or enrollment.
 class HomeProgramsShelf extends StatelessWidget {
   const HomeProgramsShelf({super.key});
+
+  // Each actual program has a distinct editorial color, not a status color.
+  static Color cardColor(String id, bool dark) => switch (id) {
+        'balanced_foundations' => Color(dark ? 0xFF493A32 : 0xFFFFDFC8),
+        'strength_foundations' => Color(dark ? 0xFF303D54 : 0xFFD9E5FF),
+        'endurance_builder' => Color(dark ? 0xFF29453D : 0xFFCDEEE0),
+        'mobility_movement' => Color(dark ? 0xFF403650 : 0xFFE7DBFA),
+        _ => Color(dark ? 0xFF4B3540 : 0xFFF8DCE6),
+      };
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
@@ -112,34 +119,44 @@ class HomeProgramsShelf extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(right: 12),
               child: SizedBox(
-                width: 164,
+                width: 184,
                 child: Material(
-                  color: theme.colorScheme.surfaceContainer,
+                  color: cardColor(
+                      program.id, theme.brightness == Brightness.dark),
                   borderRadius: BorderRadius.circular(20),
                   clipBehavior: Clip.antiAlias,
                   child: InkWell(
                     key: ValueKey('home_program_${program.id}'),
                     onTap: () =>
                         context.push(AppRoutes.programDetail(program.id)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: FitFlowProgramImage(
-                                    programId: program.id,
-                                    width: 144,
-                                    height: 108)),
-                            const SizedBox(height: 8),
-                            Text(program.name,
-                                style: theme.textTheme.titleSmall),
-                            const SizedBox(height: 4),
-                            Text(l.trainingProgramWeeks(program.weekCount),
-                                style: theme.textTheme.bodySmall),
-                          ]),
-                    ),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          FitFlowProgramImage(
+                              programId: program.id, width: 184, height: 138),
+                          Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(program.name,
+                                        style: theme.textTheme.titleSmall
+                                            ?.copyWith(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600)),
+                                    const SizedBox(height: 8),
+                                    Row(children: [
+                                      Expanded(
+                                          child: Text(
+                                              l.trainingProgramWeeks(
+                                                  program.weekCount),
+                                              style:
+                                                  theme.textTheme.bodySmall)),
+                                      const Icon(Icons.arrow_forward_rounded,
+                                          size: 18),
+                                    ]),
+                                  ])),
+                        ]),
                   ),
                 ),
               ),
@@ -160,7 +177,8 @@ class _SectionHeading extends StatelessWidget {
             child: Semantics(
                 header: true,
                 child: Text(label,
-                    style: Theme.of(context).textTheme.titleMedium))),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontSize: 18, fontWeight: FontWeight.w600)))),
         Semantics(
             label: label,
             child: TextButton(

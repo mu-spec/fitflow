@@ -6,7 +6,7 @@ import 'package:fitflow/features/programs/domain/adaptive_program_catalog.dart';
 import 'dart:ui' as ui;
 
 import 'package:fitflow/app/router/app_router.dart';
-import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
+import 'package:fitflow/core/design/media/fitflow_media_image.dart';
 import 'package:fitflow/core/design/media/exercise_media_registry.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fitflow/app/router/app_routes.dart';
@@ -138,14 +138,19 @@ void main() {
             final workout = tester
                 .widget<HomeWorkoutHeroCard>(find.byType(HomeWorkoutHeroCard))
                 .plan;
-            final photo = tester.widget<FitFlowExerciseImage>(
+            final photo = tester.widget<FitFlowMediaImage>(
                 find.byKey(const ValueKey('home_workout_photo')));
-            expect(photo.exerciseId, workout.main.exercises.first.exercise.id);
+            expect(
+                photo.asset?.path,
+                ExerciseMediaRegistry.lookup(
+                        workout.main.exercises.first.exercise.id)!
+                    .hero
+                    .path);
             expect(photo.semanticLabel,
                 workout.main.exercises.first.exercise.name);
             expect(photo.decorative, isFalse);
             expect(photo.width / photo.height, closeTo(4 / 3, .001));
-            expect(ExerciseMediaRegistry.lookup(photo.exerciseId), isNotNull);
+            expect(photo.asset, isNotNull);
             if ((size == const Size(390, 844) && scale == 1) ||
                 (size == const Size(320, 700) && scale == 2 && dark)) {
               await captureHome(tester,
@@ -167,6 +172,13 @@ void main() {
                 greaterThanOrEqualTo(4.5));
             expect(contrast(colors.textSecondary, colors.background),
                 greaterThanOrEqualTo(4.5));
+            for (final program in AdaptiveProgramCatalog.all) {
+              final cardColor = HomeProgramsShelf.cardColor(program.id, dark);
+              expect(contrast(colors.textPrimary, cardColor),
+                  greaterThanOrEqualTo(4.5));
+              expect(contrast(colors.textSecondary, cardColor),
+                  greaterThanOrEqualTo(4.5));
+            }
             final buttonStyle = theme.filledButtonTheme.style!;
             final fill = buttonStyle.backgroundColor!.resolve({})!;
             final ink = buttonStyle.foregroundColor!.resolve({})!;
@@ -305,9 +317,14 @@ void main() {
     await tester.pumpAndSettle();
     final hero =
         tester.widget<HomeWorkoutHeroCard>(find.byType(HomeWorkoutHeroCard));
-    final photo =
-        tester.widget<FitFlowExerciseImage>(find.byType(FitFlowExerciseImage));
-    expect(photo.exerciseId, hero.plan.main.exercises.first.exercise.id);
+    final photo = tester.widget<FitFlowMediaImage>(
+        find.byKey(const ValueKey('home_workout_photo')));
+    expect(
+        photo.asset?.path,
+        ExerciseMediaRegistry.lookup(
+                hero.plan.main.exercises.first.exercise.id)!
+            .hero
+            .path);
     expect(find.text('Temporary for this workout'), findsOneWidget);
     final browse = find.text('Browse exercises');
     await tester.ensureVisible(browse);

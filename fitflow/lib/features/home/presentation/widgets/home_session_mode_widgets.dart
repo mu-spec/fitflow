@@ -27,7 +27,7 @@ class HomeSessionModeControl extends ConsumerWidget {
     final accent = emphasized ? v.action : colors.brand;
     final modeLabel = Row(children: [
       ExcludeSemantics(
-          child: Icon(Icons.tune_outlined, color: accent, size: 20)),
+          child: Icon(Icons.tune_rounded, color: accent, size: 20)),
       const SizedBox(width: FitFlowSpace.xs),
       Expanded(
           child:

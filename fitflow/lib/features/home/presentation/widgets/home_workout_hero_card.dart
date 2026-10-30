@@ -1,7 +1,8 @@
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_theme_extension.dart';
-import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
+import 'package:fitflow/core/design/media/exercise_media_registry.dart';
+import 'package:fitflow/core/design/media/fitflow_media_image.dart';
 import 'package:fitflow/core/design/widgets/fitflow_buttons.dart';
 import 'package:fitflow/features/home/presentation/widgets/home_session_mode_widgets.dart';
 import 'package:fitflow/features/onboarding/data/user_fitness_profile.dart';
@@ -62,9 +63,9 @@ class HomeWorkoutHeroCard extends StatelessWidget {
     );
     Widget photo(double width) => ClipRRect(
           borderRadius: BorderRadius.circular(14),
-          child: FitFlowExerciseImage.hero(
+          child: FitFlowMediaImage(
             key: const ValueKey('home_workout_photo'),
-            exerciseId: featured!.id,
+            asset: ExerciseMediaRegistry.lookup(featured!.id)?.hero,
             width: width,
             height: width * 3 / 4,
             decorative: false,

@@ -33,22 +33,22 @@ class MainShell extends StatelessWidget {
       destinations: [
         FitFlowNavDestination(
           icon: Icons.home_outlined,
-          selectedIcon: Icons.home,
+          selectedIcon: Icons.home_rounded,
           label: l10n.navHome,
         ),
         FitFlowNavDestination(
-          icon: Icons.fitness_center_outlined,
-          selectedIcon: Icons.fitness_center,
+          icon: Icons.grid_view_outlined,
+          selectedIcon: Icons.grid_view_rounded,
           label: l10n.navWorkouts,
         ),
         FitFlowNavDestination(
-          icon: Icons.insights_outlined,
-          selectedIcon: Icons.insights,
+          icon: Icons.bar_chart_outlined,
+          selectedIcon: Icons.bar_chart_rounded,
           label: l10n.navProgress,
         ),
         FitFlowNavDestination(
-          icon: Icons.person_outline,
-          selectedIcon: Icons.person,
+          icon: Icons.account_circle_outlined,
+          selectedIcon: Icons.account_circle_rounded,
           label: l10n.navProfile,
         ),
       ],
