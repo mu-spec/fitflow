@@ -9,6 +9,23 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get homeActivity => 'Your activity';
+
+  @override
+  String get homeSeeAll => 'See all';
+
+  @override
+  String homeActivityDay(String date, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count completed workouts',
+      one: '1 completed workout',
+    );
+    return '$date: $_temp0';
+  }
+
+  @override
   String get appTitle => 'Home Workout';
 
   @override

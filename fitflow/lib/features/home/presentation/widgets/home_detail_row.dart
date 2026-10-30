@@ -17,7 +17,7 @@ class HomeDetailRow extends StatelessWidget {
             style: text.bodySmall
                 ?.copyWith(color: FitFlowTheme.of(context).textSecondary));
         final valueWidget = Text(value, style: text.bodyMedium);
-        if (constraints.maxWidth < 300 ||
+        if (constraints.maxWidth < 240 ||
             MediaQuery.textScalerOf(context).scale(16) > 22) {
           return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -28,7 +28,7 @@ class HomeDetailRow extends StatelessWidget {
               ]);
         }
         return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          SizedBox(width: 104, child: labelWidget),
+          SizedBox(width: 88, child: labelWidget),
           const SizedBox(width: FitFlowSpace.sm),
           Expanded(child: valueWidget),
         ]);

@@ -36,3 +36,11 @@ Scoped Flutter analysis: passed. Focused Home/dashboard/mode/design-system tests
 Final verification after the last color adjustments: scoped analysis passed with no issues (17.2 seconds); the Home matrix and design-system tests passed again (56 tests). This rerun is a subset of the 86 focused tests above.
 
 Physical device review remains required for actual font rendering, photography balance, scrolling and TalkBack. No APK/AAB, Gradle, screenshots, full suite, push or merge.
+
+## Home organization revision — 30 October 2026
+
+Device feedback requested the reference's discovery organization, rather than an oversized workout hero. Home now starts with seven local calendar dates and actual saved-completion markers, followed by a compact generated-workout card and its existing Preview action. A horizontal shelf displays the five real programs with their exact registered covers, names and week counts. Activity and Programs link to their existing destinations. Browse exercises remains visible outside the collapsed setup disclosure; its label/value rows now fit side by side on normal small phones and stack at large text sizes.
+
+Workout generation, mode adjustment, Comeback behavior, metadata, saved preferences, media and neighboring screens are unchanged. The activity strip distinguishes today's date from saved completions and excludes future-dated records.
+
+Validation: final scoped analysis passed with no issues. All 76 unique focused Home/dashboard/mode tests passed, including the responsive matrix, Preview/Library navigation, details expansion, actual activity dates, exact program-cover mapping and all program destinations. One new test initially failed due to an undisposed semantics test handle; after correcting test cleanup, only that failed test was rerun and passed. The matrix covers both themes, normal/enlarged text and representative 360x640, 360x800 and 412x915 layouts. Device review remains pending; no screenshots or APK were generated.

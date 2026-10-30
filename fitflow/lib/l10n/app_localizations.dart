@@ -94,6 +94,24 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[Locale('en')];
 
+  /// No description provided for @homeActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Your activity'**
+  String get homeActivity;
+
+  /// No description provided for @homeSeeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'See all'**
+  String get homeSeeAll;
+
+  /// No description provided for @homeActivityDay.
+  ///
+  /// In en, this message translates to:
+  /// **'{date}: {count, plural, =1{1 completed workout} other{{count} completed workouts}}'**
+  String homeActivityDay(String date, int count);
+
   /// Application title
   ///
   /// In en, this message translates to:

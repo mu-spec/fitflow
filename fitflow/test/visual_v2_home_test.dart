@@ -1,4 +1,8 @@
 import 'dart:io';
+import 'package:fitflow/features/home/presentation/widgets/home_discovery_sections.dart';
+import 'package:fitflow/features/workouts/domain/history/completed_workout.dart';
+import 'package:fitflow/core/design/media/fitflow_program_image.dart';
+import 'package:fitflow/features/programs/domain/adaptive_program_catalog.dart';
 import 'dart:ui' as ui;
 
 import 'package:fitflow/app/router/app_router.dart';
@@ -17,6 +21,79 @@ import 'package:flutter_test/flutter_test.dart';
 import 'helpers/part6_quality_helpers.dart' as qa;
 
 void main() {
+  testWidgets(
+      'Home activity marks actual local completions, not future records',
+      (tester) async {
+    final semantics = tester.ensureSemantics();
+    final today = DateTime(2026, 10, 30, 12);
+    CompletedWorkout entry(String id, DateTime date) => CompletedWorkout(
+        id: id,
+        completedAt: date,
+        totalExerciseCount: 1,
+        totalSetCount: 1,
+        warmup: const [],
+        main: const [],
+        cooldown: const []);
+    await tester.pumpWidget(qa.part6Host(
+        child: Scaffold(
+            body: HomeActivityStrip(now: today, history: [
+      entry('today', today.subtract(const Duration(hours: 1))),
+      entry('yesterday', DateTime(2026, 10, 29, 23).toUtc()),
+      entry('future', today.add(const Duration(hours: 1))),
+      entry('old', DateTime(2026, 10, 20)),
+    ]))));
+    expect(find.byIcon(Icons.check_circle), findsNWidgets(2));
+    expect(find.byIcon(Icons.circle_outlined), findsNWidgets(5));
+    expect(
+        tester
+            .getSemantics(find.byKey(const ValueKey('home_activity_day_6')))
+            .label,
+        contains('1 completed workout'));
+    expect(tester.takeException(), isNull);
+    semantics.dispose();
+  });
+
+  testWidgets('Home programs use canonical covers and open each exact program',
+      (tester) async {
+    for (final program in AdaptiveProgramCatalog.all) {
+      await qa.seedPart6();
+      final router = await qa.part6Route(tester, AppRoutes.home);
+      final card = find.byKey(ValueKey('home_program_${program.id}'));
+      final image = tester.widget<FitFlowProgramImage>(find.descendant(
+          of: card, matching: find.byType(FitFlowProgramImage)));
+      expect(image.programId, program.id);
+      expect(image.width / image.height, closeTo(4 / 3, .001));
+      await tester.ensureVisible(card);
+      await tester.pumpAndSettle();
+      await tester.tap(card);
+      await tester.pumpAndSettle();
+      expect(router.state.uri.path, AppRoutes.programDetail(program.id));
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+      router.dispose();
+    }
+  });
+
+  testWidgets('Home activity and Programs headings open existing destinations',
+      (tester) async {
+    for (final route in [AppRoutes.progress, AppRoutes.programs]) {
+      await qa.seedPart6();
+      final router = await qa.part6Route(tester, AppRoutes.home);
+      final action = find.descendant(
+          of: find.byType(route == AppRoutes.progress
+              ? HomeActivityStrip
+              : HomeProgramsShelf),
+          matching: find.text('See all'));
+      await tester.ensureVisible(action);
+      await tester.pumpAndSettle();
+      await tester.tap(action);
+      await tester.pumpAndSettle();
+      expect(router.state.uri.path, route);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+      router.dispose();
+    }
+  });
   setUpAll(() async {
     // Use already-installed SDK fonts for optional human-readable captures.
     // Ordinary widget tests retain Flutter's standard test font.
@@ -106,10 +183,12 @@ void main() {
               final imageRect = tester
                   .getRect(find.byKey(const ValueKey('home_workout_photo')));
               expect(imageRect.top, greaterThanOrEqualTo(24));
+              // The compact photo and title now share a row.
+              expect(imageRect.height, lessThanOrEqualTo(96));
               expect(
-                  imageRect.bottom,
-                  lessThanOrEqualTo(
-                      tester.getRect(find.text('Adaptive Full Session')).top));
+                  imageRect.right,
+                  lessThan(
+                      tester.getRect(find.text('Adaptive Full Session')).left));
             }
             if (nav.evaluate().isNotEmpty) {
               final navTheme = Theme.of(tester.element(nav)).navigationBarTheme;

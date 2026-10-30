@@ -1,3 +1,4 @@
+import 'package:fitflow/features/home/presentation/widgets/home_discovery_sections.dart';
 import 'package:fitflow/features/home/presentation/home_theme.dart';
 import 'package:fitflow/core/accessibility/system_motion.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
@@ -142,7 +143,22 @@ class _HomeContent extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       const HomeHeader(),
-                      const SizedBox(height: FitFlowSpace.md),
+                      const SizedBox(height: 8),
+                      if (history != null)
+                        HomeActivityStrip(history: history, now: DateTime.now())
+                      else
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: Text(historyAsync.hasError
+                              ? context.l10n.trainingHistoryError
+                              : context.l10n.trainingHistoryLoading),
+                        ),
+                      const SizedBox(height: 20),
+                      Semantics(
+                          header: true,
+                          child: Text(context.l10n.homeTitle,
+                              style: Theme.of(context).textTheme.titleMedium)),
+                      const SizedBox(height: 10),
                       if (plan == null) ...[
                         HomeEmptyStates.noWorkoutAvailable(context,
                             userProfile: userProfile),
@@ -160,19 +176,25 @@ class _HomeContent extends ConsumerWidget {
                               userProfile: userProfile,
                               effectiveDuration:
                                   generationContext.effectiveWorkoutDuration,
-                              sessionMode: sessionMode,
-                              maxPhotoHeight:
-                                  MediaQuery.textScalerOf(context).scale(16) >
-                                          24
-                                      ? 330
-                                      : (constraints.maxHeight - 342)
-                                          .clamp(160.0, 330.0)),
+                              sessionMode: sessionMode),
                         ),
                       if (showComebackSuggestion) ...[
                         const SizedBox(height: FitFlowSpace.lg),
                         const ComebackSuggestionCard(),
                       ],
-                      const SizedBox(height: FitFlowSpace.sm),
+                      const SizedBox(height: 12),
+                      const HomeProgramsShelf(),
+                      const SizedBox(height: 12),
+                      TextButton(
+                        onPressed: () => context.go(AppRoutes.exerciseLibrary),
+                        child: Row(children: [
+                          const Icon(Icons.fitness_center_outlined, size: 20),
+                          const SizedBox(width: 10),
+                          Expanded(child: Text(context.l10n.homeBrowse)),
+                          const Icon(Icons.arrow_forward_rounded, size: 20),
+                        ]),
+                      ),
+                      const SizedBox(height: 12),
                       Material(
                         color: Theme.of(context).colorScheme.surfaceContainer,
                         borderRadius: BorderRadius.circular(20),
@@ -184,16 +206,6 @@ class _HomeContent extends ConsumerWidget {
                               children: [
                                 HomePersonalizationCard(
                                     userProfile: userProfile, plan: plan),
-                                const Divider(height: 1),
-                                TextButton(
-                                    onPressed: () =>
-                                        context.go(AppRoutes.exerciseLibrary),
-                                    child: Row(children: [
-                                      Expanded(
-                                          child: Text(context.l10n.homeBrowse)),
-                                      const Icon(Icons.arrow_forward_rounded,
-                                          size: 20),
-                                    ])),
                               ]),
                         ),
                       ),

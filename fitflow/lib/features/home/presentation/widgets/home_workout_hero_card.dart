@@ -19,9 +19,7 @@ class HomeWorkoutHeroCard extends StatelessWidget {
       required this.plan,
       required this.userProfile,
       this.effectiveDuration,
-      this.maxPhotoHeight = 330,
       this.sessionMode = WorkoutSessionMode.standard});
-  final double maxPhotoHeight;
   final WorkoutPlan plan;
   final UserFitnessProfile userProfile;
   final WorkoutDuration? effectiveDuration;
@@ -43,66 +41,76 @@ class HomeWorkoutHeroCard extends StatelessWidget {
     final featured =
         plan.main.exercises.isEmpty ? null : plan.main.exercises.first.exercise;
 
-    final introduction = Padding(
-      padding: const EdgeInsets.all(FitFlowSpace.md),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+    final introduction = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         Semantics(
-            header: true,
-            child: Text(l.homeSession,
-                style: text.titleLarge?.copyWith(
-                    color: colors.textPrimary, fontWeight: FontWeight.w600))),
-        const SizedBox(height: FitFlowSpace.xs),
-        Wrap(
-            spacing: FitFlowSpace.md,
-            runSpacing: FitFlowSpace.xxs,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              Text(planned,
-                  key: const Key('home_planned'), style: text.bodyMedium),
-              Text(l.homeExercises(plan.totalExerciseCount),
-                  style:
-                      text.bodyMedium?.copyWith(color: colors.textSecondary)),
-            ]),
-        const SizedBox(height: FitFlowSpace.xxs),
+          header: true,
+          child: Text(l.homeSession,
+              style: text.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+        ),
+        const SizedBox(height: 6),
+        Text(planned, key: const Key('home_planned'), style: text.bodyMedium),
+        Text(l.homeExercises(plan.totalExerciseCount),
+            style: text.bodySmall?.copyWith(color: colors.textSecondary)),
+        const SizedBox(height: 4),
         Text('$minutes ${l.v2HomeTargetUnit}',
             key: const Key('home_target'),
             semanticsLabel: l.homeDurationTarget(minutes),
             style: text.bodySmall?.copyWith(color: colors.textSecondary)),
-        const SizedBox(height: FitFlowSpace.sm),
-        FitFlowPrimaryButton(
-            label: l.viewWorkout,
-            icon: Icons.arrow_forward_rounded,
-            semanticHint: l.viewWorkoutHint,
-            onPressed: () => context.push(AppRoutes.workoutPreview),
-            expand: true),
-      ]),
+      ],
     );
+    Widget photo(double width) => ClipRRect(
+          borderRadius: BorderRadius.circular(14),
+          child: FitFlowExerciseImage.hero(
+            key: const ValueKey('home_workout_photo'),
+            exerciseId: featured!.id,
+            width: width,
+            height: width * 3 / 4,
+            decorative: false,
+            semanticLabel: featured.name,
+          ),
+        );
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Material(
         color: colors.surface,
         borderRadius: BorderRadius.circular(24),
         clipBehavior: Clip.antiAlias,
-        child:
-            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          if (featured != null)
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             LayoutBuilder(builder: (context, constraints) {
-              final width =
-                  constraints.maxWidth.clamp(0.0, maxPhotoHeight * 4 / 3);
-              return Center(
-                  child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: FitFlowExerciseImage.hero(
-                  key: const ValueKey('home_workout_photo'),
-                  exerciseId: featured.id,
-                  width: width,
-                  height: width * 3 / 4,
-                  decorative: false,
-                  semanticLabel: featured.name,
-                ),
-              ));
+              if (featured == null) return introduction;
+              if (MediaQuery.textScalerOf(context).scale(16) > 24 ||
+                  constraints.maxWidth < 270) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    photo(128),
+                    const SizedBox(height: 12),
+                    introduction
+                  ],
+                );
+              }
+              return Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    photo(112),
+                    const SizedBox(width: 12),
+                    Expanded(child: introduction),
+                  ]);
             }),
-          introduction,
-        ]),
+            const SizedBox(height: 12),
+            FitFlowPrimaryButton(
+              label: l.viewWorkout,
+              icon: Icons.arrow_forward_rounded,
+              semanticHint: l.viewWorkoutHint,
+              onPressed: () => context.push(AppRoutes.workoutPreview),
+              expand: true,
+            ),
+          ]),
+        ),
       ),
       const SizedBox(height: FitFlowSpace.sm),
       const HomeSessionModeControl(),

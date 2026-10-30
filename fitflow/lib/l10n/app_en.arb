@@ -1,5 +1,9 @@
 {
   "@@locale": "en",
+  "homeActivity": "Your activity",
+  "homeSeeAll": "See all",
+  "homeActivityDay": "{date}: {count, plural, =1{1 completed workout} other{{count} completed workouts}}",
+  "@homeActivityDay": {"placeholders": {"date": {"type": "String"}, "count": {"type": "int"}}},
   "@@description": "English is the only complete FitFlow V1 locale. Do not add a locale until the consumer-facing experience, including instructional content, has a reviewed translation.",
   "appTitle": "Home Workout",
   "@appTitle": {
