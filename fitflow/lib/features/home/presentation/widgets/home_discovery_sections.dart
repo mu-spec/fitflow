@@ -6,6 +6,7 @@ import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/l10n/locale_format.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'home_photo_surface.dart';
 
 /// Seven local calendar dates ending today; only saved completions are marked.
 class HomeActivityStrip extends StatelessWidget {
@@ -18,7 +19,7 @@ class HomeActivityStrip extends StatelessWidget {
   Widget build(BuildContext context) {
     final local = now.toLocal();
     final today = DateTime(local.year, local.month, local.day);
-    final colors = Theme.of(context).colorScheme;
+
     final text = Theme.of(context).textTheme;
     final material = MaterialLocalizations.of(context);
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -29,63 +30,72 @@ class HomeActivityStrip extends StatelessWidget {
         final scaled = MediaQuery.textScalerOf(context).scale(14);
         final width = ((constraints.maxWidth - 36) / 7)
             .clamp(scaled > 20 ? 62.0 : 40.0, 80.0);
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(children: [
-            for (var index = 0; index < 7; index++) ...[
-              if (index > 0) const SizedBox(width: 6),
-              Builder(builder: (context) {
-                final date =
-                    DateTime(today.year, today.month, today.day - 6 + index);
-                final count = history.where((entry) {
-                  final saved = entry.completedAt.toLocal();
-                  return !entry.completedAt.isAfter(now) &&
-                      DateUtils.isSameDay(saved, date);
-                }).length;
-                final isToday = DateUtils.isSameDay(date, today);
-                return Semantics(
-                  label: context.l10n
-                      .homeActivityDay(material.formatFullDate(date), count),
-                  excludeSemantics: true,
-                  child: Container(
-                    key: ValueKey('home_activity_day_$index'),
-                    width: width,
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 8, horizontal: 2),
-                    decoration: BoxDecoration(
-                      border: Border(
-                          bottom: BorderSide(
-                        color:
-                            isToday ? colors.onSurface : colors.outlineVariant,
-                        width: isToday ? 3 : 1,
-                      )),
-                    ),
-                    child: Column(children: [
-                      Text(
-                          FitFlowLocaleFormat.shortWeekday(
-                              material, date.weekday),
-                          style: text.bodySmall),
-                      const SizedBox(height: 4),
-                      Container(
-                          padding: const EdgeInsets.symmetric(vertical: 2),
-                          child: Text(material.formatDecimal(date.day),
-                              style: text.bodyMedium?.copyWith(
-                                  color: colors.onSurface,
-                                  fontWeight: FontWeight.w600))),
-                      const SizedBox(height: 2),
-                      Icon(
-                          count > 0
-                              ? Icons.check_circle
-                              : Icons.circle_outlined,
-                          size: 12,
-                          color: count > 0 ? colors.primary : colors.outline),
-                    ]),
-                  ),
-                );
-              }),
-            ],
-          ]),
-        );
+        return Container(
+            decoration: BoxDecoration(
+                color: const Color(0xFF243454),
+                borderRadius: BorderRadius.circular(20)),
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(children: [
+                for (var index = 0; index < 7; index++) ...[
+                  if (index > 0) const SizedBox(width: 6),
+                  Builder(builder: (context) {
+                    final date = DateTime(
+                        today.year, today.month, today.day - 6 + index);
+                    final count = history.where((entry) {
+                      final saved = entry.completedAt.toLocal();
+                      return !entry.completedAt.isAfter(now) &&
+                          DateUtils.isSameDay(saved, date);
+                    }).length;
+                    final isToday = DateUtils.isSameDay(date, today);
+                    return Semantics(
+                      label: context.l10n.homeActivityDay(
+                          material.formatFullDate(date), count),
+                      excludeSemantics: true,
+                      child: Container(
+                        key: ValueKey('home_activity_day_$index'),
+                        width: width,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8, horizontal: 2),
+                        decoration: BoxDecoration(
+                          border: Border(
+                              bottom: BorderSide(
+                            color: isToday
+                                ? const Color(0xFFC8FA63)
+                                : Colors.transparent,
+                            width: isToday ? 3 : 1,
+                          )),
+                        ),
+                        child: Column(children: [
+                          Text(
+                              FitFlowLocaleFormat.shortWeekday(
+                                  material, date.weekday),
+                              style: text.bodySmall
+                                  ?.copyWith(color: Colors.white70)),
+                          const SizedBox(height: 4),
+                          Container(
+                              padding: const EdgeInsets.symmetric(vertical: 2),
+                              child: Text(material.formatDecimal(date.day),
+                                  style: text.bodyMedium?.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600))),
+                          const SizedBox(height: 2),
+                          Icon(
+                              count > 0
+                                  ? Icons.check_circle
+                                  : Icons.circle_outlined,
+                              size: 12,
+                              color: count > 0
+                                  ? const Color(0xFFC8FA63)
+                                  : Colors.white60),
+                        ]),
+                      ),
+                    );
+                  }),
+                ],
+              ]),
+            ));
       }),
     ]);
   }
@@ -97,11 +107,11 @@ class HomeProgramsShelf extends StatelessWidget {
 
   // Each actual program has a distinct editorial color, not a status color.
   static Color cardColor(String id, bool dark) => switch (id) {
-        'balanced_foundations' => Color(dark ? 0xFF493A32 : 0xFFFFDFC8),
-        'strength_foundations' => Color(dark ? 0xFF303D54 : 0xFFD9E5FF),
-        'endurance_builder' => Color(dark ? 0xFF29453D : 0xFFCDEEE0),
-        'mobility_movement' => Color(dark ? 0xFF403650 : 0xFFE7DBFA),
-        _ => Color(dark ? 0xFF4B3540 : 0xFFF8DCE6),
+        'balanced_foundations' => const Color(0xFF224AC5),
+        'strength_foundations' => const Color(0xFF6138AE),
+        'endurance_builder' => const Color(0xFF006C65),
+        'mobility_movement' => const Color(0xFFA63E18),
+        _ => const Color(0xFFAD285C),
       };
   @override
   Widget build(BuildContext context) {
@@ -111,58 +121,62 @@ class HomeProgramsShelf extends StatelessWidget {
       _SectionHeading(
           label: l.trainingProgramEntryTitle,
           onTap: () => context.go(AppRoutes.programs)),
-      SingleChildScrollView(
-        key: const Key('home_programs_shelf'),
-        scrollDirection: Axis.horizontal,
-        child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          for (final program in AdaptiveProgramCatalog.all)
-            Padding(
-              padding: const EdgeInsets.only(right: 12),
-              child: SizedBox(
-                width: 184,
-                child: Material(
-                  color: cardColor(
-                      program.id, theme.brightness == Brightness.dark),
-                  borderRadius: BorderRadius.circular(20),
-                  clipBehavior: Clip.antiAlias,
-                  child: InkWell(
-                    key: ValueKey('home_program_${program.id}'),
-                    onTap: () =>
-                        context.push(AppRoutes.programDetail(program.id)),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          FitFlowProgramImage(
-                              programId: program.id, width: 184, height: 138),
-                          Padding(
-                              padding: const EdgeInsets.all(12),
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(program.name,
-                                        style: theme.textTheme.titleSmall
-                                            ?.copyWith(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w600)),
-                                    const SizedBox(height: 8),
-                                    Row(children: [
-                                      Expanded(
-                                          child: Text(
-                                              l.trainingProgramWeeks(
-                                                  program.weekCount),
-                                              style:
-                                                  theme.textTheme.bodySmall)),
-                                      const Icon(Icons.arrow_forward_rounded,
-                                          size: 18),
-                                    ]),
-                                  ])),
-                        ]),
-                  ),
-                ),
-              ),
-            ),
-        ]),
-      ),
+      LayoutBuilder(builder: (context, constraints) {
+        final width = (constraints.maxWidth * .88).clamp(240.0, 360.0);
+        return SingleChildScrollView(
+          key: const Key('home_programs_shelf'),
+          scrollDirection: Axis.horizontal,
+          child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            for (final program in AdaptiveProgramCatalog.all)
+              Padding(
+                  padding: const EdgeInsets.only(right: 14),
+                  child: SizedBox(
+                    width: width,
+                    child: Material(
+                      borderRadius: BorderRadius.circular(24),
+                      clipBehavior: Clip.antiAlias,
+                      child: InkWell(
+                        key: ValueKey('home_program_${program.id}'),
+                        onTap: () =>
+                            context.push(AppRoutes.programDetail(program.id)),
+                        child: HomePhotoSurface(
+                          width: width,
+                          color: cardColor(
+                              program.id, theme.brightness == Brightness.dark),
+                          image: FitFlowProgramImage(
+                              programId: program.id,
+                              width: width,
+                              height: width * .75),
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(program.name,
+                                    style: theme.textTheme.titleLarge?.copyWith(
+                                        color: Colors.white,
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w700)),
+                                const SizedBox(height: 12),
+                                Row(children: [
+                                  const Icon(Icons.calendar_today_outlined,
+                                      color: Colors.white, size: 18),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                      child: Text(
+                                          l.trainingProgramWeeks(
+                                              program.weekCount),
+                                          style: theme.textTheme.bodyMedium
+                                              ?.copyWith(color: Colors.white))),
+                                  const Icon(Icons.arrow_forward_rounded,
+                                      color: Colors.white, size: 24),
+                                ]),
+                              ]),
+                        ),
+                      ),
+                    ),
+                  )),
+          ]),
+        );
+      }),
     ]);
   }
 }

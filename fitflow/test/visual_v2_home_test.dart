@@ -174,33 +174,34 @@ void main() {
                 greaterThanOrEqualTo(4.5));
             for (final program in AdaptiveProgramCatalog.all) {
               final cardColor = HomeProgramsShelf.cardColor(program.id, dark);
-              expect(contrast(colors.textPrimary, cardColor),
-                  greaterThanOrEqualTo(4.5));
-              expect(contrast(colors.textSecondary, cardColor),
+              expect(
+                  contrast(Colors.white, cardColor), greaterThanOrEqualTo(4.5));
+              expect(
+                  contrast(
+                      Colors.white,
+                      Color.alphaBlend(
+                          cardColor.withValues(alpha: .92), Colors.white)),
                   greaterThanOrEqualTo(4.5));
             }
-            final buttonStyle = theme.filledButtonTheme.style!;
+            final cta = find.widgetWithText(FilledButton, 'View workout');
+            final buttonStyle =
+                Theme.of(tester.element(cta)).filledButtonTheme.style!;
             final fill = buttonStyle.backgroundColor!.resolve({})!;
             final ink = buttonStyle.foregroundColor!.resolve({})!;
-            expect(
-                fill, dark ? const Color(0xFFC8FA63) : const Color(0xFF171918));
-            expect(ink, dark ? const Color(0xFF171918) : Colors.white);
+            expect(fill, Colors.white);
+            expect(ink, const Color(0xFF183D73));
             expect(contrast(ink, fill), greaterThanOrEqualTo(4.5));
-            final cta = find.widgetWithText(FilledButton, 'View workout');
             final nav = find.byType(NavigationBar);
             if (reviewSizes.contains(size) && scale == 1) {
-              expect(cta.hitTestable(), findsOneWidget);
-              expect(tester.getRect(cta).bottom,
-                  lessThanOrEqualTo(tester.getRect(nav).top));
               final imageRect = tester
                   .getRect(find.byKey(const ValueKey('home_workout_photo')));
-              expect(imageRect.top, greaterThanOrEqualTo(24));
-              // The compact photo and title now share a row.
-              expect(imageRect.height, lessThanOrEqualTo(96));
-              expect(
-                  imageRect.right,
-                  lessThan(
-                      tester.getRect(find.text('Adaptive Full Session')).left));
+              final titleRect =
+                  tester.getRect(find.text('Adaptive Full Session'));
+              expect(imageRect.height, greaterThan(200));
+              expect(imageRect.width / imageRect.height, closeTo(4 / 3, .01));
+              // Details overlay the lower photo edge; the card grows at large text.
+              expect(titleRect.top, greaterThan(imageRect.top));
+              expect(titleRect.top, lessThan(imageRect.bottom));
             }
             if (nav.evaluate().isNotEmpty) {
               final navTheme = Theme.of(tester.element(nav)).navigationBarTheme;

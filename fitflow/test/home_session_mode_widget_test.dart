@@ -117,8 +117,10 @@ void main() {
   group('Home Session Mode UI', () {
     testWidgets('shows current mode Standard by default', (tester) async {
       final overrides = [
-        userFitnessProfileProvider.overrideWith(() => FakeUserProfileController(createUserProfile())),
-        capabilityProfileProvider.overrideWith(() => FakeCapabilityController(createFullProfile(CapabilityLevel.level3))),
+        userFitnessProfileProvider
+            .overrideWith(() => FakeUserProfileController(createUserProfile())),
+        capabilityProfileProvider.overrideWith(() => FakeCapabilityController(
+            createFullProfile(CapabilityLevel.level3))),
         workoutHistoryProvider.overrideWith(() => FakeHistoryController([])),
       ];
       await tester.pumpWidget(buildHome(overrides: overrides));
@@ -131,8 +133,10 @@ void main() {
       final semantics = tester.ensureSemantics();
       try {
         final overrides = [
-          userFitnessProfileProvider.overrideWith(() => FakeUserProfileController(createUserProfile())),
-          capabilityProfileProvider.overrideWith(() => FakeCapabilityController(createFullProfile(CapabilityLevel.level3))),
+          userFitnessProfileProvider.overrideWith(
+              () => FakeUserProfileController(createUserProfile())),
+          capabilityProfileProvider.overrideWith(() => FakeCapabilityController(
+              createFullProfile(CapabilityLevel.level3))),
           workoutHistoryProvider.overrideWith(() => FakeHistoryController([])),
         ];
         await tester.pumpWidget(buildHome(overrides: overrides));
@@ -144,13 +148,18 @@ void main() {
       }
     });
 
-    testWidgets('tapping Adjust opens bottom sheet with options', (tester) async {
+    testWidgets('tapping Adjust opens bottom sheet with options',
+        (tester) async {
       final overrides = [
-        userFitnessProfileProvider.overrideWith(() => FakeUserProfileController(createUserProfile())),
-        capabilityProfileProvider.overrideWith(() => FakeCapabilityController(createFullProfile(CapabilityLevel.level3))),
+        userFitnessProfileProvider
+            .overrideWith(() => FakeUserProfileController(createUserProfile())),
+        capabilityProfileProvider.overrideWith(() => FakeCapabilityController(
+            createFullProfile(CapabilityLevel.level3))),
         workoutHistoryProvider.overrideWith(() => FakeHistoryController([])),
       ];
       await tester.pumpWidget(buildHome(overrides: overrides));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Adjust'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Adjust'));
       await tester.pumpAndSettle();
@@ -160,17 +169,23 @@ void main() {
       expect(find.text('Comeback'), findsWidgets);
       expect(find.text('Your normal adaptive workout.'), findsOneWidget);
       expect(find.text('A shorter, easier workout for today.'), findsOneWidget);
-      expect(find.text('A gentler return workout after time away.'), findsOneWidget);
-      expect(find.text("This doesn't change your movement levels."), findsWidgets);
+      expect(find.text('A gentler return workout after time away.'),
+          findsOneWidget);
+      expect(
+          find.text("This doesn't change your movement levels."), findsWidgets);
     });
 
     testWidgets('selecting Low Energy updates mode indicator', (tester) async {
       final overrides = [
-        userFitnessProfileProvider.overrideWith(() => FakeUserProfileController(createUserProfile())),
-        capabilityProfileProvider.overrideWith(() => FakeCapabilityController(createFullProfile(CapabilityLevel.level3))),
+        userFitnessProfileProvider
+            .overrideWith(() => FakeUserProfileController(createUserProfile())),
+        capabilityProfileProvider.overrideWith(() => FakeCapabilityController(
+            createFullProfile(CapabilityLevel.level3))),
         workoutHistoryProvider.overrideWith(() => FakeHistoryController([])),
       ];
       await tester.pumpWidget(buildHome(overrides: overrides));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Adjust'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Adjust'));
       await tester.pumpAndSettle();
@@ -182,13 +197,18 @@ void main() {
     testWidgets('hero shows effective duration for low energy', (tester) async {
       final container = ProviderContainer(
         overrides: [
-          userFitnessProfileProvider.overrideWith(() => FakeUserProfileController(createUserProfile(duration: WorkoutDuration.thirtyMinutes))),
-          capabilityProfileProvider.overrideWith(() => FakeCapabilityController(createFullProfile(CapabilityLevel.level3))),
+          userFitnessProfileProvider.overrideWith(() =>
+              FakeUserProfileController(
+                  createUserProfile(duration: WorkoutDuration.thirtyMinutes))),
+          capabilityProfileProvider.overrideWith(() => FakeCapabilityController(
+              createFullProfile(CapabilityLevel.level3))),
           workoutHistoryProvider.overrideWith(() => FakeHistoryController([])),
         ],
       );
       addTearDown(container.dispose);
-      container.read(workoutSessionModeProvider.notifier).selectMode(WorkoutSessionMode.lowEnergy);
+      container
+          .read(workoutSessionModeProvider.notifier)
+          .selectMode(WorkoutSessionMode.lowEnergy);
 
       await tester.pumpWidget(
         UncontrolledProviderScope(
@@ -207,13 +227,18 @@ void main() {
     testWidgets('hero shows effective duration for comeback', (tester) async {
       final container = ProviderContainer(
         overrides: [
-          userFitnessProfileProvider.overrideWith(() => FakeUserProfileController(createUserProfile(duration: WorkoutDuration.fortyFiveMinutes))),
-          capabilityProfileProvider.overrideWith(() => FakeCapabilityController(createFullProfile(CapabilityLevel.level3))),
+          userFitnessProfileProvider.overrideWith(() =>
+              FakeUserProfileController(createUserProfile(
+                  duration: WorkoutDuration.fortyFiveMinutes))),
+          capabilityProfileProvider.overrideWith(() => FakeCapabilityController(
+              createFullProfile(CapabilityLevel.level3))),
           workoutHistoryProvider.overrideWith(() => FakeHistoryController([])),
         ],
       );
       addTearDown(container.dispose);
-      container.read(workoutSessionModeProvider.notifier).selectMode(WorkoutSessionMode.comeback);
+      container
+          .read(workoutSessionModeProvider.notifier)
+          .selectMode(WorkoutSessionMode.comeback);
 
       await tester.pumpWidget(
         UncontrolledProviderScope(
@@ -232,13 +257,17 @@ void main() {
       final now = DateTime.now();
       final history = [makeWorkout(now.subtract(const Duration(days: 15)))];
       final overrides = [
-        userFitnessProfileProvider.overrideWith(() => FakeUserProfileController(createUserProfile())),
-        capabilityProfileProvider.overrideWith(() => FakeCapabilityController(createFullProfile(CapabilityLevel.level3))),
-        workoutHistoryProvider.overrideWith(() => FakeHistoryController(history)),
+        userFitnessProfileProvider
+            .overrideWith(() => FakeUserProfileController(createUserProfile())),
+        capabilityProfileProvider.overrideWith(() => FakeCapabilityController(
+            createFullProfile(CapabilityLevel.level3))),
+        workoutHistoryProvider
+            .overrideWith(() => FakeHistoryController(history)),
       ];
       await tester.pumpWidget(buildHome(overrides: overrides));
       await tester.pumpAndSettle();
-      expect(find.textContaining('Returning after some time away?'), findsOneWidget);
+      expect(find.textContaining('Returning after some time away?'),
+          findsOneWidget);
       expect(find.text('Use Comeback'), findsOneWidget);
     });
 
@@ -246,24 +275,32 @@ void main() {
       final now = DateTime.now();
       final history = [makeWorkout(now.subtract(const Duration(days: 5)))];
       final overrides = [
-        userFitnessProfileProvider.overrideWith(() => FakeUserProfileController(createUserProfile())),
-        capabilityProfileProvider.overrideWith(() => FakeCapabilityController(createFullProfile(CapabilityLevel.level3))),
-        workoutHistoryProvider.overrideWith(() => FakeHistoryController(history)),
+        userFitnessProfileProvider
+            .overrideWith(() => FakeUserProfileController(createUserProfile())),
+        capabilityProfileProvider.overrideWith(() => FakeCapabilityController(
+            createFullProfile(CapabilityLevel.level3))),
+        workoutHistoryProvider
+            .overrideWith(() => FakeHistoryController(history)),
       ];
       await tester.pumpWidget(buildHome(overrides: overrides));
       await tester.pumpAndSettle();
-      expect(find.textContaining('Returning after some time away?'), findsNothing);
+      expect(
+          find.textContaining('Returning after some time away?'), findsNothing);
     });
 
-    testWidgets('comeback suggestion not shown when no history', (tester) async {
+    testWidgets('comeback suggestion not shown when no history',
+        (tester) async {
       final overrides = [
-        userFitnessProfileProvider.overrideWith(() => FakeUserProfileController(createUserProfile())),
-        capabilityProfileProvider.overrideWith(() => FakeCapabilityController(createFullProfile(CapabilityLevel.level3))),
+        userFitnessProfileProvider
+            .overrideWith(() => FakeUserProfileController(createUserProfile())),
+        capabilityProfileProvider.overrideWith(() => FakeCapabilityController(
+            createFullProfile(CapabilityLevel.level3))),
         workoutHistoryProvider.overrideWith(() => FakeHistoryController([])),
       ];
       await tester.pumpWidget(buildHome(overrides: overrides));
       await tester.pumpAndSettle();
-      expect(find.textContaining('Returning after some time away?'), findsNothing);
+      expect(
+          find.textContaining('Returning after some time away?'), findsNothing);
     });
 
     testWidgets('Use Comeback action sets mode to comeback', (tester) async {
@@ -271,9 +308,12 @@ void main() {
       final history = [makeWorkout(now.subtract(const Duration(days: 20)))];
       final container = ProviderContainer(
         overrides: [
-          userFitnessProfileProvider.overrideWith(() => FakeUserProfileController(createUserProfile())),
-          capabilityProfileProvider.overrideWith(() => FakeCapabilityController(createFullProfile(CapabilityLevel.level3))),
-          workoutHistoryProvider.overrideWith(() => FakeHistoryController(history)),
+          userFitnessProfileProvider.overrideWith(
+              () => FakeUserProfileController(createUserProfile())),
+          capabilityProfileProvider.overrideWith(() => FakeCapabilityController(
+              createFullProfile(CapabilityLevel.level3))),
+          workoutHistoryProvider
+              .overrideWith(() => FakeHistoryController(history)),
         ],
       );
       addTearDown(container.dispose);
@@ -287,24 +327,30 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      expect(container.read(workoutSessionModeProvider), WorkoutSessionMode.standard);
+      expect(container.read(workoutSessionModeProvider),
+          WorkoutSessionMode.standard);
       await tester.ensureVisible(find.text('Use Comeback'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Use Comeback'), warnIfMissed: false);
       await tester.pumpAndSettle();
-      expect(container.read(workoutSessionModeProvider), WorkoutSessionMode.comeback);
+      expect(container.read(workoutSessionModeProvider),
+          WorkoutSessionMode.comeback);
     });
 
     testWidgets('temporary badge shows for low energy', (tester) async {
       final container = ProviderContainer(
         overrides: [
-          userFitnessProfileProvider.overrideWith(() => FakeUserProfileController(createUserProfile())),
-          capabilityProfileProvider.overrideWith(() => FakeCapabilityController(createFullProfile(CapabilityLevel.level3))),
+          userFitnessProfileProvider.overrideWith(
+              () => FakeUserProfileController(createUserProfile())),
+          capabilityProfileProvider.overrideWith(() => FakeCapabilityController(
+              createFullProfile(CapabilityLevel.level3))),
           workoutHistoryProvider.overrideWith(() => FakeHistoryController([])),
         ],
       );
       addTearDown(container.dispose);
-      container.read(workoutSessionModeProvider.notifier).selectMode(WorkoutSessionMode.lowEnergy);
+      container
+          .read(workoutSessionModeProvider.notifier)
+          .selectMode(WorkoutSessionMode.lowEnergy);
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
@@ -320,8 +366,10 @@ void main() {
 
     testWidgets('no temporary badge for standard', (tester) async {
       final overrides = [
-        userFitnessProfileProvider.overrideWith(() => FakeUserProfileController(createUserProfile())),
-        capabilityProfileProvider.overrideWith(() => FakeCapabilityController(createFullProfile(CapabilityLevel.level3))),
+        userFitnessProfileProvider
+            .overrideWith(() => FakeUserProfileController(createUserProfile())),
+        capabilityProfileProvider.overrideWith(() => FakeCapabilityController(
+            createFullProfile(CapabilityLevel.level3))),
         workoutHistoryProvider.overrideWith(() => FakeHistoryController([])),
       ];
       await tester.pumpWidget(buildHome(overrides: overrides));
@@ -329,13 +377,19 @@ void main() {
       expect(find.text('Temporary for this workout'), findsNothing);
     });
 
-    testWidgets('manual comeback always available via sheet even without suggestion', (tester) async {
+    testWidgets(
+        'manual comeback always available via sheet even without suggestion',
+        (tester) async {
       final overrides = [
-        userFitnessProfileProvider.overrideWith(() => FakeUserProfileController(createUserProfile())),
-        capabilityProfileProvider.overrideWith(() => FakeCapabilityController(createFullProfile(CapabilityLevel.level3))),
+        userFitnessProfileProvider
+            .overrideWith(() => FakeUserProfileController(createUserProfile())),
+        capabilityProfileProvider.overrideWith(() => FakeCapabilityController(
+            createFullProfile(CapabilityLevel.level3))),
         workoutHistoryProvider.overrideWith(() => FakeHistoryController([])),
       ];
       await tester.pumpWidget(buildHome(overrides: overrides));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Adjust'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Adjust'));
       await tester.pumpAndSettle();
@@ -346,13 +400,19 @@ void main() {
       final now = DateTime.now();
       final history = [makeWorkout(now.subtract(const Duration(days: 14)))];
       final overrides = [
-        userFitnessProfileProvider.overrideWith(() => FakeUserProfileController(createUserProfile())),
-        capabilityProfileProvider.overrideWith(() => FakeCapabilityController(createFullProfile(CapabilityLevel.level3))),
-        workoutHistoryProvider.overrideWith(() => FakeHistoryController(history)),
+        userFitnessProfileProvider
+            .overrideWith(() => FakeUserProfileController(createUserProfile())),
+        capabilityProfileProvider.overrideWith(() => FakeCapabilityController(
+            createFullProfile(CapabilityLevel.level3))),
+        workoutHistoryProvider
+            .overrideWith(() => FakeHistoryController(history)),
       ];
       await tester.pumpWidget(buildHome(overrides: overrides));
       await tester.pumpAndSettle();
-      expect(find.text('Returning after some time away? Comeback gives you a shorter, gentler session without changing your movement levels.'), findsOneWidget);
+      expect(
+          find.text(
+              'Returning after some time away? Comeback gives you a shorter, gentler session without changing your movement levels.'),
+          findsOneWidget);
     });
   });
 }

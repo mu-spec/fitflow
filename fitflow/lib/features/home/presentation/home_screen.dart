@@ -195,20 +195,8 @@ class _HomeContent extends ConsumerWidget {
                         ]),
                       ),
                       const SizedBox(height: 12),
-                      Material(
-                        color: Theme.of(context).colorScheme.surfaceContainer,
-                        borderRadius: BorderRadius.circular(20),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 4),
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                HomePersonalizationCard(
-                                    userProfile: userProfile, plan: plan),
-                              ]),
-                        ),
-                      ),
+                      HomePersonalizationCard(
+                          userProfile: userProfile, plan: plan),
                     ]),
               )));
             }))));

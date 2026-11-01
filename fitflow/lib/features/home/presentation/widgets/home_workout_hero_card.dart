@@ -1,6 +1,6 @@
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
-import 'package:fitflow/core/design/fitflow_theme_extension.dart';
+import 'home_photo_surface.dart';
 import 'package:fitflow/core/design/media/exercise_media_registry.dart';
 import 'package:fitflow/core/design/media/fitflow_media_image.dart';
 import 'package:fitflow/core/design/widgets/fitflow_buttons.dart';
@@ -29,8 +29,9 @@ class HomeWorkoutHeroCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final colors = FitFlowTheme.of(context);
-    final text = Theme.of(context).textTheme;
+    final text = Theme.of(context)
+        .textTheme
+        .apply(bodyColor: Colors.white, displayColor: Colors.white);
     final minutes = (effectiveDuration ?? userProfile.workoutDuration).minutes;
     final estimated = plan.estimatedDuration;
     final planned = estimated == null
@@ -48,17 +49,17 @@ class HomeWorkoutHeroCard extends StatelessWidget {
         Semantics(
           header: true,
           child: Text(l.homeSession,
-              style: text.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+              style: text.titleLarge
+                  ?.copyWith(fontSize: 22, fontWeight: FontWeight.w700)),
         ),
         const SizedBox(height: 6),
         Text(planned, key: const Key('home_planned'), style: text.bodyMedium),
-        Text(l.homeExercises(plan.totalExerciseCount),
-            style: text.bodySmall?.copyWith(color: colors.textSecondary)),
+        Text(l.homeExercises(plan.totalExerciseCount), style: text.bodyMedium),
         const SizedBox(height: 4),
         Text('$minutes ${l.v2HomeTargetUnit}',
             key: const Key('home_target'),
             semanticsLabel: l.homeDurationTarget(minutes),
-            style: text.bodySmall?.copyWith(color: colors.textSecondary)),
+            style: text.bodyMedium),
       ],
     );
     Widget photo(double width) => ClipRRect(
@@ -74,44 +75,42 @@ class HomeWorkoutHeroCard extends StatelessWidget {
         );
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Material(
-        color: colors.surface,
         borderRadius: BorderRadius.circular(24),
         clipBehavior: Clip.antiAlias,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child:
+        child: LayoutBuilder(builder: (context, constraints) {
+          final content =
               Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            LayoutBuilder(builder: (context, constraints) {
-              if (featured == null) return introduction;
-              if (MediaQuery.textScalerOf(context).scale(16) > 24 ||
-                  constraints.maxWidth < 270) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    photo(128),
-                    const SizedBox(height: 12),
-                    introduction
-                  ],
-                );
-              }
-              return Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    photo(112),
-                    const SizedBox(width: 12),
-                    Expanded(child: introduction),
-                  ]);
-            }),
-            const SizedBox(height: 12),
-            FitFlowPrimaryButton(
-              label: l.viewWorkout,
-              icon: Icons.arrow_forward_rounded,
-              semanticHint: l.viewWorkoutHint,
-              onPressed: () => context.push(AppRoutes.workoutPreview),
-              expand: true,
+            introduction,
+            const SizedBox(height: 16),
+            Theme(
+              data: Theme.of(context).copyWith(
+                  filledButtonTheme: FilledButtonThemeData(
+                style: FilledButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: const Color(0xFF183D73),
+                    minimumSize: const Size(48, 48)),
+              )),
+              child: FitFlowPrimaryButton(
+                label: l.viewWorkout,
+                icon: Icons.arrow_forward_rounded,
+                semanticHint: l.viewWorkoutHint,
+                onPressed: () => context.push(AppRoutes.workoutPreview),
+                expand: true,
+              ),
             ),
-          ]),
-        ),
+          ]);
+          if (featured == null) {
+            return ColoredBox(
+                color: const Color(0xFF183D73),
+                child:
+                    Padding(padding: const EdgeInsets.all(16), child: content));
+          }
+          return HomePhotoSurface(
+              width: constraints.maxWidth,
+              color: const Color(0xFF183D73),
+              image: photo(constraints.maxWidth),
+              child: content);
+        }),
       ),
       const SizedBox(height: FitFlowSpace.sm),
       const HomeSessionModeControl(),

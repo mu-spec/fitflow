@@ -53,23 +53,42 @@ class HomeSessionModeControl extends ConsumerWidget {
     ]);
     final adjust = TextButton(
         style: TextButton.styleFrom(
-            foregroundColor: accent,
+            foregroundColor: ink,
+            backgroundColor: emphasized
+                ? Colors.white12
+                : Theme.of(context).colorScheme.surfaceContainerHighest,
+            minimumSize: const Size(48, 48),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            shape: const StadiumBorder(),
             textStyle: text.labelLarge?.copyWith(fontWeight: FontWeight.w500)),
         onPressed: () => FitFlowSheet.show<void>(context,
             child: const ChooseWorkoutModeSheet()),
         child: Text(context.l10n.homeAdjust));
-    return LayoutBuilder(builder: (context, constraints) {
-      if (constraints.maxWidth < 280 ||
-          MediaQuery.textScalerOf(context).scale(16) > 22) {
-        return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              modeLabel,
-              Align(alignment: AlignmentDirectional.centerEnd, child: adjust),
-            ]);
-      }
-      return Row(children: [Expanded(child: modeLabel), adjust]);
-    });
+    return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: emphasized
+              ? Colors.white12
+              : Theme.of(context).colorScheme.surfaceContainer,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: LayoutBuilder(builder: (context, constraints) {
+          if (constraints.maxWidth < 280 ||
+              MediaQuery.textScalerOf(context).scale(16) > 22) {
+            return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  modeLabel,
+                  Align(
+                      alignment: AlignmentDirectional.centerEnd, child: adjust),
+                ]);
+          }
+          return Row(children: [
+            Expanded(child: modeLabel),
+            const SizedBox(width: 8),
+            adjust
+          ]);
+        }));
   }
 }
 
