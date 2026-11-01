@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:fitflow/features/home/presentation/widgets/home_discovery_sections.dart';
 import 'package:fitflow/features/workouts/domain/history/completed_workout.dart';
-import 'package:fitflow/core/design/media/fitflow_program_image.dart';
 import 'package:fitflow/features/programs/domain/adaptive_program_catalog.dart';
 import 'dart:ui' as ui;
 
@@ -59,10 +58,9 @@ void main() {
       await qa.seedPart6();
       final router = await qa.part6Route(tester, AppRoutes.home);
       final card = find.byKey(ValueKey('home_program_${program.id}'));
-      final image = tester.widget<FitFlowProgramImage>(find.descendant(
-          of: card, matching: find.byType(FitFlowProgramImage)));
-      expect(image.programId, program.id);
-      expect(image.width / image.height, closeTo(4 / 3, .001));
+      final image = tester.widget<Image>(find.descendant(of: card, matching: find.byType(Image)));
+      expect((image.image as AssetImage).assetName, 'assets/images/editorial/${program.id}_portrait.webp');
+      expect(image.fit, BoxFit.contain);
       await tester.ensureVisible(card);
       await tester.pumpAndSettle();
       await tester.tap(card);
@@ -199,9 +197,8 @@ void main() {
                   tester.getRect(find.text('Adaptive Full Session'));
               expect(imageRect.height, greaterThan(200));
               expect(imageRect.width / imageRect.height, closeTo(4 / 3, .01));
-              // Details overlay the lower photo edge; the card grows at large text.
-              expect(titleRect.top, greaterThan(imageRect.top));
-              expect(titleRect.top, lessThan(imageRect.bottom));
+              // Keep all text below the unobscured photograph.
+              expect(titleRect.top, greaterThanOrEqualTo(imageRect.bottom));
             }
             if (nav.evaluate().isNotEmpty) {
               final navTheme = Theme.of(tester.element(nav)).navigationBarTheme;
@@ -293,10 +290,7 @@ void main() {
                 'Collapsed');
             expect(find.byType(HomeMovementFocus), findsNothing);
             expect(find.text('Equipment'), findsNothing);
-            final browse = find.text('Browse exercises');
-            await tester.ensureVisible(browse);
-            await tester.pumpAndSettle();
-            expect(browse.hitTestable(), findsOneWidget);
+            expect(find.text('Browse exercises'), findsNothing);
             expect(tester.takeException(), isNull);
             await tester.pumpWidget(const SizedBox.shrink());
             router.dispose();
@@ -307,7 +301,7 @@ void main() {
       }
     }
   }
-  testWidgets('photo follows mode changes and Library action keeps its route',
+  testWidgets('photo follows mode changes without a duplicate Home Library shortcut',
       (tester) async {
     await qa.seedPart6();
     final router = await qa.part6Route(tester, AppRoutes.home);
@@ -327,11 +321,7 @@ void main() {
             .hero
             .path);
     expect(find.text('Temporary for this workout'), findsOneWidget);
-    final browse = find.text('Browse exercises');
-    await tester.ensureVisible(browse);
-    await tester.tap(browse);
-    await tester.pumpAndSettle();
-    expect(router.state.uri.path, AppRoutes.exerciseLibrary);
+    expect(find.text('Browse exercises'), findsNothing);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox.shrink());
     router.dispose();
@@ -351,6 +341,8 @@ void main() {
     await tester.tap(find.text('View workout'));
     await tester.pumpAndSettle();
     expect(router.state.uri.path, AppRoutes.workoutPreview);
+    await tester.drag(find.byType(CustomScrollView).first, const Offset(0, -400));
+    await tester.pumpAndSettle();
     final preview = tester.widget<WorkoutPreviewSummaryCard>(
         find.byType(WorkoutPreviewSummaryCard));
     expect(preview.plan.allPrescriptions.toList(),

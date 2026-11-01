@@ -1,3 +1,5 @@
+import 'package:fitflow/core/design/media/exercise_media_registry.dart';
+import 'package:fitflow/core/design/media/fitflow_media_image.dart';
 import 'package:fitflow/features/workout_preview/presentation/preview_theme.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
@@ -100,6 +102,11 @@ class _PreviewContent extends ConsumerWidget {
       );
     }
 
+    final featured = [
+      ...plan.main.exercises,
+      ...plan.warmup.exercises,
+      ...plan.cooldown.exercises
+    ].first.exercise;
     final v = FitFlowVisualV2.of(context);
     return Scaffold(
       backgroundColor: v.page,
@@ -130,6 +137,21 @@ class _PreviewContent extends ConsumerWidget {
                     label: Text(context.l10n.startWorkout),
                   ));
               final content = <Widget>[
+                SliverToBoxAdapter(
+                    child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: AspectRatio(
+                      aspectRatio: 4 / 3,
+                      child: FitFlowMediaImage(
+                        key: const Key('preview_workout_photo'),
+                        asset: ExerciseMediaRegistry.lookup(featured.id)?.hero,
+                        width: constraints.maxWidth,
+                        height: constraints.maxWidth * 3 / 4,
+                        decorative: false,
+                        semanticLabel: featured.name,
+                      )),
+                )),
+                const SliverToBoxAdapter(child: SizedBox(height: 16)),
                 SliverToBoxAdapter(
                     child: WorkoutPreviewSummaryCard(
                         plan: plan,

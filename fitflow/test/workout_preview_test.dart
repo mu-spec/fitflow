@@ -134,7 +134,12 @@ Widget buildPreviewOnly({required List<Override> overrides}) {
 Future<void> revealPreview(WidgetTester tester, Finder target) async {
   final scrollable = find.descendant(of: find.byKey(const Key('preview_scroll')),
       matching: find.byType(Scrollable)).first;
-  await tester.scrollUntilVisible(target, 180, scrollable: scrollable);
+  for (var attempt = 0; target.evaluate().isEmpty && attempt < 30; attempt++) {
+    await tester.drag(scrollable, const Offset(0, -180));
+    await tester.pumpAndSettle();
+  }
+  expect(target, findsWidgets);
+  await tester.ensureVisible(target.first);
   await tester.pumpAndSettle();
 }
 
@@ -172,7 +177,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('View workout'), findsOneWidget);
-      expect(find.text('Browse exercises'), findsOneWidget);
+      expect(find.text('Browse exercises'), findsNothing);
     });
 
     testWidgets('tapping View workout navigates to Workout Preview and back returns to Home', (tester) async {
@@ -196,10 +201,12 @@ void main() {
       expect(find.text('Your workout'), findsOneWidget);
       expect(find.text('View workout'), findsOneWidget);
 
+      await tester.ensureVisible(find.text('View workout'));
       await tester.tap(find.text('View workout'));
       await tester.pumpAndSettle();
 
       expect(find.text('Workout preview'), findsOneWidget);
+      await revealPreview(tester, find.text('Warm-up'));
       expect(find.textContaining('Warm-up'), findsWidgets);
 
       // Back navigation
@@ -242,6 +249,7 @@ void main() {
       // Target and goal remain available in the opening disclosure.
       expect(find.textContaining('${userProfile.workoutDuration.minutes} min target'), findsNothing);
       expect(find.textContaining(userProfile.goal.label), findsNothing);
+      await revealPreview(tester, find.text('About this workout'));
       await tester.tap(find.text('About this workout'));
       await tester.pumpAndSettle();
       expect(find.textContaining('${userProfile.workoutDuration.minutes} min target'), findsOneWidget);
@@ -337,6 +345,7 @@ void main() {
       await tester.pumpWidget(buildPreviewOnly(overrides: overrides));
       await tester.pumpAndSettle();
 
+      await revealPreview(tester, find.byType(WorkoutPreviewExerciseRow));
       // Check for reps formatting: e.g., "sets ×" and "reps" or "sec"
       expect(find.textContaining('sets ×'), findsWidgets);
 
@@ -375,6 +384,7 @@ void main() {
       await tester.pumpWidget(buildPreviewOnly(overrides: overrides));
       await tester.pumpAndSettle();
 
+      await revealPreview(tester, find.byType(WorkoutPreviewExerciseRow));
       // At least one prescription with >1 sets should show rest info
       final multiSetPres = expectedPlan.allPrescriptions.where((p) => p.sets > 1).toList();
       if (multiSetPres.isNotEmpty) {
@@ -399,6 +409,7 @@ void main() {
       await tester.pumpWidget(buildPreviewOnly(overrides: overrides));
       await tester.pumpAndSettle();
 
+      await revealPreview(tester, find.textContaining('planned'));
       // Planned times should appear (e.g., "planned" and "budget")
       expect(find.textContaining('planned'), findsWidgets);
       // Budget remains exact data without competing with the section estimate.
@@ -431,6 +442,7 @@ void main() {
       await tester.pumpWidget(buildPreviewOnly(overrides: overrides));
       await tester.pumpAndSettle();
 
+      await revealPreview(tester, find.textContaining('No equipment'));
       // Should show "No equipment" for exercises requiring none
       expect(find.textContaining('No equipment'), findsWidgets);
       expect(find.textContaining('None, No equipment'), findsNothing);

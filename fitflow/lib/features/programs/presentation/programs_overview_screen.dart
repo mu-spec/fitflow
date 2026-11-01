@@ -3,7 +3,7 @@ import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
-import 'package:fitflow/core/design/media/fitflow_program_image.dart';
+import 'widgets/program_editorial_card.dart';
 import 'package:fitflow/features/onboarding/state/user_fitness_profile_controller.dart';
 import 'package:fitflow/features/programs/application/adaptive_programs_controller.dart';
 import 'package:fitflow/features/programs/domain/adaptive_program_catalog.dart';
@@ -138,67 +138,22 @@ class _ProgramOverviewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
     final t = FitFlowTheme.of(context);
-    final imageWidth = ProgramV2Layout.viewport(context).width < 360 ||
-            ProgramV2Layout.largeText(context)
-        ? 80.0
-        : 112.0;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Semantics(
-            button: true,
-            child: InkWell(
-              key: ValueKey('v2_program_link_${definition.id}'),
-              onTap: onTap,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.xxs),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    FitFlowProgramImage(
-                      programId: definition.id,
-                      width: imageWidth,
-                      height: imageWidth * 3 / 4,
-                    ),
-                    const SizedBox(width: FitFlowSpace.sm),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Semantics(
-                            header: true,
-                            child: Text(definition.name,
-                                style: text.titleMedium?.copyWith(
-                                    color: t.textPrimary,
-                                    fontWeight: FontWeight.w500)),
-                          ),
-                          const SizedBox(height: FitFlowSpace.xxs),
-                          Text(definition.focus,
-                              style: text.bodyMedium
-                                  ?.copyWith(color: t.textSecondary)),
-                          const SizedBox(height: FitFlowSpace.xs),
-                          ProgramStructureLine(
-                              definition: definition, includeTotal: false),
-                          if (isRecommended) ...[
-                            const SizedBox(height: FitFlowSpace.xxs),
-                            Text(context.l10n.trainingProgramRecommendedMatch,
-                                style: text.bodySmall
-                                    ?.copyWith(color: t.textSecondary)),
-                          ],
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: FitFlowSpace.xxs),
-                    ExcludeSemantics(
-                        child: Icon(Icons.chevron_right,
-                            color: t.textSecondary, size: 20)),
-                  ],
-                ),
-              ),
-            ),
+          ProgramEditorialCard(
+            key: ValueKey('v2_program_link_${definition.id}'),
+            program: definition,
+            onTap: onTap,
           ),
+          if (isRecommended)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(context.l10n.trainingProgramRecommendedMatch,
+                  style: text.bodySmall?.copyWith(color: t.textSecondary)),
+            ),
           if (isActive || status.hasProgress) ...[
             const SizedBox(height: FitFlowSpace.sm),
             ProgramV2ProgressSummary(

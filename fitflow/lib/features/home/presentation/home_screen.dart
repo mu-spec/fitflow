@@ -185,16 +185,6 @@ class _HomeContent extends ConsumerWidget {
                       const SizedBox(height: 12),
                       const HomeProgramsShelf(),
                       const SizedBox(height: 12),
-                      TextButton(
-                        onPressed: () => context.go(AppRoutes.exerciseLibrary),
-                        child: Row(children: [
-                          const Icon(Icons.fitness_center_outlined, size: 20),
-                          const SizedBox(width: 10),
-                          Expanded(child: Text(context.l10n.homeBrowse)),
-                          const Icon(Icons.arrow_forward_rounded, size: 20),
-                        ]),
-                      ),
-                      const SizedBox(height: 12),
                       HomePersonalizationCard(
                           userProfile: userProfile, plan: plan),
                     ]),

@@ -108,6 +108,7 @@ void main() {
       await pumpAt(tester, AppRoutes.programs,
           overrides: programOverrides(
               profile: programTestProfile(goal: FitnessGoal.buildMuscle)));
+      await programScrollTo(tester, find.text('Matches your selected goal'));
       expect(find.text('Matches your selected goal'), findsOneWidget);
       final tag =
           find.byKey(const ValueKey('v2_program_card_strength_foundations'));

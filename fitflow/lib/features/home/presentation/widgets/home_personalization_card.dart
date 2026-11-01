@@ -1,6 +1,5 @@
 import 'package:fitflow/core/accessibility/system_motion.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
-import 'package:fitflow/features/home/presentation/widgets/home_detail_row.dart';
 import 'package:fitflow/features/home/presentation/widgets/home_adaptive_explanation.dart';
 import 'package:fitflow/features/home/presentation/widgets/home_movement_focus.dart';
 import 'package:fitflow/features/onboarding/data/user_fitness_profile.dart';
@@ -29,12 +28,25 @@ class HomePersonalizationCard extends StatelessWidget {
     final prefs = userProfile.preferences.isEmpty
         ? l.homeNoPreferences
         : userProfile.preferences.map((p) => preferenceLabel(l, p)).join(' · ');
-    Widget fact(String label, String value) =>
-        HomeDetailRow(label: label, value: value);
+    Widget fact(String label, String value) => Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? const Color(0xFF29354A)
+                : const Color(0xFFE8EEFF),
+            borderRadius: BorderRadius.circular(16)),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(label,
+              style: text.labelMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant)),
+          const SizedBox(height: 4),
+          Text(value, style: text.bodyMedium),
+        ]));
     Widget count(String label, int value) => Semantics(
         label: '$label: $value',
         excludeSemantics: true,
-        child: Text('$value $label', style: text.bodyMedium));
+        child: Chip(label: Text('$value $label', style: text.bodyMedium)));
     return ExpansionTile(
       key: const PageStorageKey('home_setup'),
       initiallyExpanded: false,

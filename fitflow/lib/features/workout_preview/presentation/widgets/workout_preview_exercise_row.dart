@@ -33,11 +33,15 @@ class WorkoutPreviewExerciseRow extends StatelessWidget {
     final equipment = equipmentSummary(l, prescription);
     if (compactPreview) {
       final t = FitFlowTheme.of(context);
-      return Column(
-        children: [
-          ListTile(
-            contentPadding:
-                const EdgeInsets.symmetric(vertical: FitFlowSpace.xs),
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: Material(
+          color: FitFlowVisualV2.of(context).support,
+          borderRadius: BorderRadius.circular(18),
+          clipBehavior: Clip.antiAlias,
+          child: ListTile(
+            contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12, vertical: FitFlowSpace.xs),
             minVerticalPadding: FitFlowSpace.xs,
             minTileHeight: 64,
             leading: FitFlowExerciseImage.thumbnail(
@@ -78,8 +82,7 @@ class WorkoutPreviewExerciseRow extends StatelessWidget {
             onTap: () => context
                 .push(AppRoutes.exerciseDetail(prescription.exercise.id)),
           ),
-          Divider(height: 1, color: FitFlowVisualV2.of(context).subtleBorder),
-        ],
+        ),
       );
     }
     if (visualV2) {

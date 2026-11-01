@@ -1,12 +1,11 @@
 import 'package:fitflow/app/router/app_routes.dart';
-import 'package:fitflow/core/design/media/fitflow_program_image.dart';
+import 'package:fitflow/features/programs/presentation/widgets/program_editorial_card.dart';
 import 'package:fitflow/features/programs/domain/adaptive_program_catalog.dart';
 import 'package:fitflow/features/workouts/domain/history/completed_workout.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/l10n/locale_format.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'home_photo_surface.dart';
 
 /// Seven local calendar dates ending today; only saved completions are marked.
 class HomeActivityStrip extends StatelessWidget {
@@ -32,7 +31,7 @@ class HomeActivityStrip extends StatelessWidget {
             .clamp(scaled > 20 ? 62.0 : 40.0, 80.0);
         return Container(
             decoration: BoxDecoration(
-                color: const Color(0xFF243454),
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(20)),
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: SingleChildScrollView(
@@ -59,26 +58,31 @@ class HomeActivityStrip extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             vertical: 8, horizontal: 2),
                         decoration: BoxDecoration(
-                          border: Border(
-                              bottom: BorderSide(
-                            color: isToday
-                                ? const Color(0xFFC8FA63)
-                                : Colors.transparent,
-                            width: isToday ? 3 : 1,
-                          )),
+                          color: isToday
+                              ? const Color(0xFF325BDE)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(16),
                         ),
                         child: Column(children: [
                           Text(
                               FitFlowLocaleFormat.shortWeekday(
                                   material, date.weekday),
-                              style: text.bodySmall
-                                  ?.copyWith(color: Colors.white70)),
+                              style: text.bodySmall?.copyWith(
+                                  color: isToday
+                                      ? Colors.white70
+                                      : Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant)),
                           const SizedBox(height: 4),
                           Container(
                               padding: const EdgeInsets.symmetric(vertical: 2),
                               child: Text(material.formatDecimal(date.day),
                                   style: text.bodyMedium?.copyWith(
-                                      color: Colors.white,
+                                      color: isToday
+                                          ? Colors.white
+                                          : Theme.of(context)
+                                              .colorScheme
+                                              .onSurface,
                                       fontWeight: FontWeight.w600))),
                           const SizedBox(height: 2),
                           Icon(
@@ -88,7 +92,9 @@ class HomeActivityStrip extends StatelessWidget {
                               size: 12,
                               color: count > 0
                                   ? const Color(0xFFC8FA63)
-                                  : Colors.white60),
+                                  : (isToday
+                                      ? Colors.white60
+                                      : Theme.of(context).colorScheme.outline)),
                         ]),
                       ),
                     );
@@ -116,7 +122,6 @@ class HomeProgramsShelf extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final theme = Theme.of(context);
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       _SectionHeading(
           label: l.trainingProgramEntryTitle,
@@ -132,47 +137,9 @@ class HomeProgramsShelf extends StatelessWidget {
                   padding: const EdgeInsets.only(right: 14),
                   child: SizedBox(
                     width: width,
-                    child: Material(
-                      borderRadius: BorderRadius.circular(24),
-                      clipBehavior: Clip.antiAlias,
-                      child: InkWell(
+                    child: ProgramEditorialCard(
                         key: ValueKey('home_program_${program.id}'),
-                        onTap: () =>
-                            context.push(AppRoutes.programDetail(program.id)),
-                        child: HomePhotoSurface(
-                          width: width,
-                          color: cardColor(
-                              program.id, theme.brightness == Brightness.dark),
-                          image: FitFlowProgramImage(
-                              programId: program.id,
-                              width: width,
-                              height: width * .75),
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(program.name,
-                                    style: theme.textTheme.titleLarge?.copyWith(
-                                        color: Colors.white,
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.w700)),
-                                const SizedBox(height: 12),
-                                Row(children: [
-                                  const Icon(Icons.calendar_today_outlined,
-                                      color: Colors.white, size: 18),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                      child: Text(
-                                          l.trainingProgramWeeks(
-                                              program.weekCount),
-                                          style: theme.textTheme.bodyMedium
-                                              ?.copyWith(color: Colors.white))),
-                                  const Icon(Icons.arrow_forward_rounded,
-                                      color: Colors.white, size: 24),
-                                ]),
-                              ]),
-                        ),
-                      ),
-                    ),
+                        program: program, color: cardColor(program.id, false)),
                   )),
           ]),
         );

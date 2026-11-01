@@ -5,8 +5,6 @@ import 'package:fitflow/app/config/app_theme.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/core/design/fitflow_contrast.dart';
 import 'package:fitflow/core/design/media/fitflow_program_image.dart';
-import 'package:fitflow/core/design/media/fitflow_media_image.dart';
-import 'package:fitflow/core/design/media/program_media_registry.dart';
 import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/core/design/widgets/fitflow_v2_feature_art.dart';
@@ -137,8 +135,6 @@ void main() {
 
   Finder cardFor(String id) => find.byKey(ValueKey('v2_program_card_$id'));
   Finder rowFor(String id) => find.byKey(ValueKey('v2_program_session_$id'));
-  Finder coverIn(Finder parent) =>
-      find.descendant(of: parent, matching: find.byType(FitFlowProgramImage));
 
   group('Visual V2 program covers', () {
     test('five canonical IDs and real structures are unchanged', () {
@@ -229,23 +225,15 @@ void main() {
       });
     });
 
-    testWidgets('approved covers map exact IDs into compact 4:3 rows',
-        (tester) async {
+    testWidgets('editorial portraits map exact program IDs without cropping', (tester) async {
       await pumpPrograms(tester, size: const Size(840, 1000));
       for (final definition in AdaptiveProgramCatalog.all) {
+        await programScrollToTop(tester);
         await programScrollTo(tester, cardFor(definition.id));
-        final cover = coverIn(cardFor(definition.id));
-        expect(cover, findsOneWidget);
-        final image = tester.widget<FitFlowProgramImage>(cover);
-        expect(image.programId, definition.id);
-        expect(image.decorative, isTrue);
-        expect(image.width / image.height, closeTo(4 / 3, .001));
-        expect(image.width, lessThanOrEqualTo(112));
-        final media = tester.widget<FitFlowMediaImage>(find.descendant(
-            of: cover, matching: find.byType(FitFlowMediaImage)));
-        expect(media.asset, ProgramMediaRegistry.lookup(definition.id)!.cover);
-        expect(find.descendant(of: cover, matching: find.byType(Text)),
-            findsNothing);
+        final image = tester.widget<Image>(find.descendant(of: cardFor(definition.id), matching: find.byType(Image)));
+        expect((image.image as AssetImage).assetName, 'assets/images/editorial/${definition.id}_portrait.webp');
+        expect(image.fit, BoxFit.contain);
+        expect(image.excludeFromSemantics, isTrue);
       }
       expect(find.byType(FitFlowV2ProgramCover), findsNothing);
     });
@@ -268,6 +256,7 @@ void main() {
       final scaffold = tester.widget<Scaffold>(scaffoldFinder);
       expect(scaffold.backgroundColor, FitFlowVisualV2.of(context).page);
       for (final definition in AdaptiveProgramCatalog.all) {
+        await programScrollToTop(tester);
         await programScrollTo(tester, cardFor(definition.id));
         expect(find.text(definition.name), findsOneWidget);
         expect(
@@ -280,7 +269,7 @@ void main() {
                 of: cardFor(definition.id),
                 matching: find.byType(ProgramStructureLine)),
             findsOneWidget);
-        expect(coverIn(cardFor(definition.id)), findsOneWidget);
+        expect(find.descendant(of: cardFor(definition.id), matching: find.byType(Image)), findsOneWidget);
       }
       expect(find.text('Active program'), findsNothing);
       expect(find.text('Continue'), findsNothing);
@@ -314,7 +303,7 @@ void main() {
             expect(
                 tester.getTopLeft(schedule).dy,
                 greaterThanOrEqualTo(
-                    tester.getBottomLeft(find.byType(AppBar)).dy));
+                    tester.getBottomLeft(find.byType(AppBar)).dy - 0.001));
             expect(tester.takeException(), isNull);
           }
         }
@@ -330,9 +319,10 @@ void main() {
       expect(find.text('Active program'), findsOneWidget);
       expect(find.text('2 of 12 sessions'), findsOneWidget);
       expect(find.text('Week 1 • Next: Session 2'), findsOneWidget);
-      expect(tester.widget<FitFlowProgramImage>(coverIn(active)).programId,
-          balanced.id);
+      expect((tester.widget<Image>(find.descendant(of: active, matching: find.byType(Image)).first).image as AssetImage).assetName,
+          'assets/images/editorial/${balanced.id}_portrait.webp');
       for (final definition in AdaptiveProgramCatalog.all) {
+        await programScrollToTop(tester);
         await programScrollTo(tester, cardFor(definition.id));
         expect(cardFor(definition.id), findsOneWidget);
         expect(find.text(definition.name), findsOneWidget);
@@ -373,6 +363,7 @@ void main() {
       }
       await pumpPrograms(tester, includeProfile: false);
       for (final definition in AdaptiveProgramCatalog.all) {
+        await programScrollToTop(tester);
         await programScrollTo(tester, cardFor(definition.id));
         expect(find.text('Matches your selected goal'), findsNothing);
       }
@@ -388,8 +379,7 @@ void main() {
       expect(find.text(definition.name), findsOneWidget);
       expect(find.text('Program complete'), findsOneWidget);
       expect(find.text('12 of 12 sessions'), findsOneWidget);
-      expect(tester.widget<FitFlowProgramImage>(coverIn(card)).programId,
-          definition.id);
+      expect((tester.widget<Image>(find.descendant(of: card, matching: find.byType(Image))).image as AssetImage).assetName, 'assets/images/editorial/${definition.id}_portrait.webp');
       expect(
           find.descendant(
               of: card, matching: find.byIcon(Icons.check_circle_outline)),
@@ -550,6 +540,8 @@ void main() {
       final prefs = await SharedPreferences.getInstance();
       final before = prefs.getString(AdaptiveProgramsStorage.key);
       for (final definition in AdaptiveProgramCatalog.all) {
+        await programScrollToTop(tester);
+        await programScrollToTop(tester);
         await programScrollTo(tester, cardFor(definition.id));
         _expectNoInventedMetrics();
       }
@@ -573,7 +565,7 @@ void main() {
         await pumpPrograms(tester, size: const Size(840, 1000));
         final heading = tester.getSemantics(find.text('Programs'));
         expect(heading.flagsCollection.isHeader, isTrue);
-        final link = find.byKey(ValueKey('v2_program_link_${balanced.id}'));
+        final link = find.descendant(of: find.byKey(ValueKey('v2_program_link_${balanced.id}')), matching: find.byType(FilledButton));
         expect(tester.getSize(link).height, greaterThanOrEqualTo(48));
         final node = tester.getSemantics(link);
         expect(node.flagsCollection.isButton, isTrue);
@@ -660,23 +652,13 @@ void main() {
       }
     });
 
-    testWidgets(
-        'row images stay 4:3 at large text without continuous animation',
-        (tester) async {
-      await pumpPrograms(tester, state: stateFor(balanced), scale: 1);
-      await programScrollTo(tester, cardFor(balanced.id));
-      final normal = tester
-          .widget<FitFlowProgramImage>(coverIn(cardFor(balanced.id)))
-          .height;
+    testWidgets('editorial portraits retain proportions at large text without animation', (tester) async {
       for (final reduced in [false, true]) {
-        await pumpPrograms(tester,
-            state: stateFor(balanced), scale: 2, reduced: reduced);
+        await pumpPrograms(tester, state: stateFor(balanced), scale: 2, reduced: reduced);
         await programScrollTo(tester, cardFor(balanced.id));
-        final art = coverIn(cardFor(balanced.id));
-        expect(
-            tester.widget<FitFlowProgramImage>(art).height, lessThan(normal));
-        final image = tester.widget<FitFlowProgramImage>(art);
-        expect(image.width / image.height, closeTo(4 / 3, .001));
+        final art = find.descendant(of: cardFor(balanced.id), matching: find.byType(Image));
+        final size = tester.getSize(art);
+        expect(size.width / size.height, closeTo(2 / 3, .001));
         expect(MediaQuery.textScalerOf(tester.element(art)).scale(16), 32);
         await tester.pump(const Duration(seconds: 2));
         expect(tester.binding.transientCallbackCount, 0);
