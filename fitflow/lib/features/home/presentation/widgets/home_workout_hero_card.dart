@@ -1,8 +1,6 @@
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
-import 'home_photo_surface.dart';
-import 'package:fitflow/core/design/media/exercise_media_registry.dart';
-import 'package:fitflow/core/design/media/fitflow_media_image.dart';
+
 import 'package:fitflow/core/design/widgets/fitflow_buttons.dart';
 import 'package:fitflow/features/home/presentation/widgets/home_session_mode_widgets.dart';
 import 'package:fitflow/features/onboarding/data/user_fitness_profile.dart';
@@ -39,10 +37,6 @@ class HomeWorkoutHeroCard extends StatelessWidget {
         : estimated.inSeconds < 60
             ? l.homePlannedShort
             : l.homePlanned((estimated.inSeconds / 60).ceil());
-    // The photo follows the current plan, including temporary mode changes.
-    final featured =
-        plan.main.exercises.isEmpty ? null : plan.main.exercises.first.exercise;
-
     final introduction = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -62,17 +56,6 @@ class HomeWorkoutHeroCard extends StatelessWidget {
             style: text.bodyMedium),
       ],
     );
-    Widget photo(double width) => ClipRRect(
-          borderRadius: BorderRadius.circular(14),
-          child: FitFlowMediaImage(
-            key: const ValueKey('home_workout_photo'),
-            asset: ExerciseMediaRegistry.lookup(featured!.id)?.hero,
-            width: width,
-            height: width * 3 / 4,
-            decorative: false,
-            semanticLabel: featured.name,
-          ),
-        );
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Material(
         borderRadius: BorderRadius.circular(24),
@@ -80,7 +63,19 @@ class HomeWorkoutHeroCard extends StatelessWidget {
         child: LayoutBuilder(builder: (context, constraints) {
           final content =
               Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            introduction,
+            Row(children: [
+              Expanded(flex: 5, child: introduction),
+              const SizedBox(width: 12),
+              Expanded(
+                  flex: 4,
+                  child: AspectRatio(
+                      aspectRatio: 2 / 3,
+                      child: Image.asset(
+                          'assets/images/editorial/strength_foundations_portrait.webp',
+                          key: const ValueKey('home_workout_photo'),
+                          fit: BoxFit.contain,
+                          excludeFromSemantics: true))),
+            ]),
             const SizedBox(height: 16),
             Theme(
               data: Theme.of(context).copyWith(
@@ -99,17 +94,10 @@ class HomeWorkoutHeroCard extends StatelessWidget {
               ),
             ),
           ]);
-          if (featured == null) {
-            return ColoredBox(
-                color: const Color(0xFF183D73),
-                child:
-                    Padding(padding: const EdgeInsets.all(16), child: content));
-          }
-          return HomePhotoSurface(
-              width: constraints.maxWidth,
+          return ColoredBox(
               color: const Color(0xFF183D73),
-              image: photo(constraints.maxWidth),
-              child: content);
+              child:
+                  Padding(padding: const EdgeInsets.all(16), child: content));
         }),
       ),
       const SizedBox(height: FitFlowSpace.sm),

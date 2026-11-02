@@ -210,7 +210,7 @@ class ProgramSessionRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final t = FitFlowTheme.of(context);
-    final v = FitFlowVisualV2.of(context);
+
     final copy = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -231,23 +231,28 @@ class ProgramSessionRow extends StatelessWidget {
             style: theme.textTheme.bodySmall?.copyWith(color: t.textSecondary)),
       ],
     );
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        TextButton(
-          onPressed: onView,
-          style: TextButton.styleFrom(
-            minimumSize: const Size(48, 48),
-            padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.sm),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Material(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(18),
+        child:
+            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          TextButton(
+            onPressed: onView,
+            style: TextButton.styleFrom(
+              minimumSize: const Size(48, 48),
+              padding: const EdgeInsets.all(12),
+            ),
+            child: Row(children: [
+              Expanded(child: copy),
+              const SizedBox(width: FitFlowSpace.xs),
+              const ExcludeSemantics(
+                  child: Icon(Icons.chevron_right, size: 20)),
+            ]),
           ),
-          child: Row(children: [
-            Expanded(child: copy),
-            const SizedBox(width: FitFlowSpace.xs),
-            const ExcludeSemantics(child: Icon(Icons.chevron_right, size: 20)),
-          ]),
-        ),
-        if (!isLast) Divider(height: 1, color: v.subtleBorder),
-      ],
+        ]),
+      ),
     );
   }
 }

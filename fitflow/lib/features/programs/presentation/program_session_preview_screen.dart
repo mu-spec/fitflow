@@ -1,9 +1,9 @@
+import 'widgets/program_identity_banner.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
-import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/features/home/presentation/widgets/home_empty_states.dart';
 import 'package:fitflow/features/home/presentation/widgets/home_error_state.dart';
@@ -193,6 +193,8 @@ class _ProgramSessionPreviewContent extends ConsumerWidget {
           child: ListView(
             padding: const EdgeInsets.all(FitFlowSpace.md),
             children: [
+              ProgramIdentityBanner(program: definition),
+              const SizedBox(height: 16),
               _ProgramSessionSummaryCard(
                 definition: definition,
                 session: session,
@@ -254,6 +256,7 @@ class _ProgramSessionPreviewContent extends ConsumerWidget {
             padding: const EdgeInsets.only(bottom: FitFlowSpace.xs),
             child: WorkoutPreviewExerciseRow(
               prescription: pres,
+              compactPreview: true,
               visualV2: true,
             ),
           ),
@@ -290,15 +293,11 @@ class _ProgramSessionSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final fitFlowTheme = FitFlowTheme.of(context);
+
     final p = plan;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(definition.name,
-            style: theme.textTheme.bodySmall
-                ?.copyWith(color: fitFlowTheme.textSecondary)),
-        const SizedBox(height: FitFlowSpace.xs),
         Semantics(
             header: true,
             child: Text(session.title, style: theme.textTheme.titleLarge)),

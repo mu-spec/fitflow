@@ -33,11 +33,13 @@ void main() {
   }) async {
     final router = programTestRouter(initialLocation: location);
     addTearDown(router.dispose);
-    await tester.pumpWidget(programTestApp(
-      router: router,
-      overrides: overrides ?? programOverrides(),
-      textScale: textScale,
-    ));
+    await tester.pumpWidget(TickerMode(
+        enabled: false,
+        child: programTestApp(
+          router: router,
+          overrides: overrides ?? programOverrides(),
+          textScale: textScale,
+        )));
     await tester.pumpAndSettle();
   }
 
@@ -219,10 +221,12 @@ void main() {
           tester, find.text('Endurance • Goal: Improve endurance'));
       expect(find.text('Endurance • Goal: Improve endurance'), findsWidgets);
       await programScrollToTop(tester);
-      final firstSession = find.byKey(const ValueKey('v2_program_session_balanced_foundations_w1_s1'));
+      final firstSession = find.byKey(
+          const ValueKey('v2_program_session_balanced_foundations_w1_s1'));
       await programScrollTo(tester, firstSession);
       expect(find.text('View workout'), findsNothing);
-      await tester.tap(find.descendant(of: firstSession, matching: find.byType(TextButton)));
+      await tester.tap(
+          find.descendant(of: firstSession, matching: find.byType(TextButton)));
       await tester.pumpAndSettle();
       expect(find.byType(ProgramSessionPreviewScreen), findsOneWidget);
       expect(find.text('Week 1 • Session 1'), findsOneWidget);
@@ -500,6 +504,7 @@ void main() {
           AppRoutes.programSessionPreview(
               'balanced_foundations', 'balanced_foundations_w1_s3'),
           overrides: programOverrides(profile: profile, capability: cap));
+      await programScrollTo(tester, find.byType(WorkoutPreviewExerciseRow));
       final rows = tester
           .widgetList<WorkoutPreviewExerciseRow>(
               find.byType(WorkoutPreviewExerciseRow))
@@ -543,10 +548,12 @@ void main() {
               'balanced_foundations', 'balanced_foundations_w1_s1'),
         );
         addTearDown(router.dispose);
-        await tester.pumpWidget(programTestApp(
-          router: router,
-          overrides: programOverrides(),
-        ));
+        await tester.pumpWidget(TickerMode(
+            enabled: false,
+            child: programTestApp(
+              router: router,
+              overrides: programOverrides(),
+            )));
         await tester.pumpAndSettle();
         final element =
             tester.element(find.byType(ProgramSessionPreviewScreen));
@@ -554,6 +561,7 @@ void main() {
         container.read(workoutSessionModeProvider.notifier).selectMode(mode);
         await tester.pumpAndSettle();
         expect(container.read(workoutSessionModeProvider), mode);
+        await programScrollTo(tester, find.byType(WorkoutPreviewExerciseRow));
         final ids = tester
             .widgetList<WorkoutPreviewExerciseRow>(
                 find.byType(WorkoutPreviewExerciseRow))
@@ -562,7 +570,10 @@ void main() {
         results[mode] = ids.isEmpty ? idsFor(mode) : ids;
         // Target remains the profile duration, now inside the About disclosure.
         if (find.text('15 min target').evaluate().isEmpty) {
-          await tester.ensureVisible(find.byKey(const Key('program_session_about')));
+          await tester.drag(find.byType(ListView).first, const Offset(0, 1500));
+          await tester.pump();
+          await programScrollTo(
+              tester, find.byKey(const Key('program_session_about')));
           await tester.pumpAndSettle();
           await tester.tap(find.byKey(const Key('program_session_about')));
           await tester.pumpAndSettle();
@@ -585,6 +596,10 @@ void main() {
           AppRoutes.programSessionPreview(
               'balanced_foundations', 'balanced_foundations_w1_s1'),
           overrides: programOverrides(profile: programUngenerableProfile()));
+      await programScrollTo(
+          tester,
+          find.text(
+              "This program workout can't be generated with your current setup."));
       expect(
           find.text(
               "This program workout can't be generated with your current setup."),
@@ -620,6 +635,7 @@ void main() {
           tester,
           AppRoutes.programSessionPreview(
               'balanced_foundations', 'balanced_foundations_w1_s1'));
+      await programScrollTo(tester, find.byType(ProgramSessionStatusChip));
       expect(find.byType(ProgramSessionStatusChip), findsOneWidget);
       expect(find.text('Completed'), findsOneWidget);
     });

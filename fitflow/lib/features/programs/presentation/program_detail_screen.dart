@@ -3,7 +3,7 @@ import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
-import 'package:fitflow/core/design/media/fitflow_program_image.dart';
+import 'widgets/program_identity_banner.dart';
 import 'package:fitflow/features/onboarding/state/user_fitness_profile_controller.dart';
 import 'package:fitflow/features/programs/application/adaptive_programs_controller.dart';
 import 'package:fitflow/features/programs/domain/adaptive_program_catalog.dart';
@@ -183,23 +183,7 @@ class _ProgramDetailHeader extends StatelessWidget {
       key: const Key('v2_program_detail_header'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        LayoutBuilder(
-            builder: (context, constraints) => FitFlowProgramImage(
-                  programId: definition.id,
-                  width: constraints.maxWidth,
-                  height: constraints.maxWidth * 3 / 4,
-                )),
-        const SizedBox(height: FitFlowSpace.md),
-        Semantics(
-          header: true,
-          child: Text(definition.name,
-              style: text.titleLarge?.copyWith(fontWeight: FontWeight.w500)),
-        ),
-        const SizedBox(height: FitFlowSpace.xxs),
-        Text(definition.focus,
-            style: text.bodyMedium?.copyWith(color: t.textSecondary)),
-        const SizedBox(height: FitFlowSpace.xs),
-        ProgramStructureLine(definition: definition),
+        ProgramIdentityBanner(program: definition),
         if (isRecommended) ...[
           const SizedBox(height: FitFlowSpace.xs),
           Text(context.l10n.trainingProgramRecommendedMatch,

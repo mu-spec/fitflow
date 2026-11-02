@@ -225,13 +225,16 @@ void main() {
       });
     });
 
-    testWidgets('editorial portraits map exact program IDs without cropping', (tester) async {
+    testWidgets('editorial portraits map exact program IDs without cropping',
+        (tester) async {
       await pumpPrograms(tester, size: const Size(840, 1000));
       for (final definition in AdaptiveProgramCatalog.all) {
         await programScrollToTop(tester);
         await programScrollTo(tester, cardFor(definition.id));
-        final image = tester.widget<Image>(find.descendant(of: cardFor(definition.id), matching: find.byType(Image)));
-        expect((image.image as AssetImage).assetName, 'assets/images/editorial/${definition.id}_portrait.webp');
+        final image = tester.widget<Image>(find.descendant(
+            of: cardFor(definition.id), matching: find.byType(Image)));
+        expect((image.image as AssetImage).assetName,
+            'assets/images/editorial/${definition.id}_portrait.webp');
         expect(image.fit, BoxFit.contain);
         expect(image.excludeFromSemantics, isTrue);
       }
@@ -269,7 +272,10 @@ void main() {
                 of: cardFor(definition.id),
                 matching: find.byType(ProgramStructureLine)),
             findsOneWidget);
-        expect(find.descendant(of: cardFor(definition.id), matching: find.byType(Image)), findsOneWidget);
+        expect(
+            find.descendant(
+                of: cardFor(definition.id), matching: find.byType(Image)),
+            findsOneWidget);
       }
       expect(find.text('Active program'), findsNothing);
       expect(find.text('Continue'), findsNothing);
@@ -319,7 +325,13 @@ void main() {
       expect(find.text('Active program'), findsOneWidget);
       expect(find.text('2 of 12 sessions'), findsOneWidget);
       expect(find.text('Week 1 • Next: Session 2'), findsOneWidget);
-      expect((tester.widget<Image>(find.descendant(of: active, matching: find.byType(Image)).first).image as AssetImage).assetName,
+      expect(
+          (tester
+                  .widget<Image>(find
+                      .descendant(of: active, matching: find.byType(Image))
+                      .first)
+                  .image as AssetImage)
+              .assetName,
           'assets/images/editorial/${balanced.id}_portrait.webp');
       for (final definition in AdaptiveProgramCatalog.all) {
         await programScrollToTop(tester);
@@ -379,7 +391,13 @@ void main() {
       expect(find.text(definition.name), findsOneWidget);
       expect(find.text('Program complete'), findsOneWidget);
       expect(find.text('12 of 12 sessions'), findsOneWidget);
-      expect((tester.widget<Image>(find.descendant(of: card, matching: find.byType(Image))).image as AssetImage).assetName, 'assets/images/editorial/${definition.id}_portrait.webp');
+      expect(
+          (tester
+                  .widget<Image>(
+                      find.descendant(of: card, matching: find.byType(Image)))
+                  .image as AssetImage)
+              .assetName,
+          'assets/images/editorial/${definition.id}_portrait.webp');
       expect(
           find.descendant(
               of: card, matching: find.byIcon(Icons.check_circle_outline)),
@@ -438,14 +456,17 @@ void main() {
       for (final definition in AdaptiveProgramCatalog.all) {
         await pumpPrograms(tester,
             location: AppRoutes.programDetail(definition.id));
-        final art = find.byType(FitFlowProgramImage);
+        final art = find.byWidgetPredicate((w) =>
+            w is Image &&
+            w.image is AssetImage &&
+            (w.image as AssetImage).assetName ==
+                'assets/images/editorial/${definition.id}_portrait.webp');
         expect(art, findsOneWidget);
-        expect(
-            tester.widget<FitFlowProgramImage>(art).programId, definition.id);
+        expect(tester.widget<Image>(art).fit, BoxFit.contain);
         expect(find.text(definition.name), findsOneWidget);
         expect(find.text(definition.description), findsNothing);
         final imageSize = tester.getSize(art);
-        expect(imageSize.width / imageSize.height, closeTo(4 / 3, .001));
+        expect(imageSize.width / imageSize.height, closeTo(2 / 3, .001));
         expect(find.text(definition.focus), findsOneWidget);
         expect(find.textContaining('${definition.weekCount} weeks'),
             findsOneWidget);
@@ -506,11 +527,13 @@ void main() {
             find.descendant(
                 of: row, matching: find.byType(ProgramSessionStatusChip)),
             findsOneWidget);
-        final action = find.descendant(of: row, matching: find.byType(TextButton));
+        final action =
+            find.descendant(of: row, matching: find.byType(TextButton));
         expect(tester.getSize(action).height, greaterThanOrEqualTo(48));
       }
       final session = balanced.sessions[3];
-      final action = find.descendant(of: rowFor(session.id), matching: find.byType(TextButton));
+      final action = find.descendant(
+          of: rowFor(session.id), matching: find.byType(TextButton));
       await tester.ensureVisible(action);
       await tester.tap(action);
       await tester.pumpAndSettle();
@@ -522,7 +545,8 @@ void main() {
           AppRoutes.programSessionPreview(balanced.id, session.id));
       expect(find.byType(ProgramSessionPreviewScreen), findsOneWidget);
       expect(find.text(session.title), findsOneWidget);
-      expect(find.text('Session goal: ${session.generationGoal.label}'), findsNothing);
+      expect(find.text('Session goal: ${session.generationGoal.label}'),
+          findsNothing);
       await tester.tap(find.byKey(const Key('program_session_about')));
       await tester.pumpAndSettle();
       expect(find.text('Session goal: ${session.generationGoal.label}'),
@@ -565,7 +589,9 @@ void main() {
         await pumpPrograms(tester, size: const Size(840, 1000));
         final heading = tester.getSemantics(find.text('Programs'));
         expect(heading.flagsCollection.isHeader, isTrue);
-        final link = find.descendant(of: find.byKey(ValueKey('v2_program_link_${balanced.id}')), matching: find.byType(FilledButton));
+        final link = find.descendant(
+            of: find.byKey(ValueKey('v2_program_link_${balanced.id}')),
+            matching: find.byType(FilledButton));
         expect(tester.getSize(link).height, greaterThanOrEqualTo(48));
         final node = tester.getSemantics(link);
         expect(node.flagsCollection.isButton, isTrue);
@@ -652,11 +678,15 @@ void main() {
       }
     });
 
-    testWidgets('editorial portraits retain proportions at large text without animation', (tester) async {
+    testWidgets(
+        'editorial portraits retain proportions at large text without animation',
+        (tester) async {
       for (final reduced in [false, true]) {
-        await pumpPrograms(tester, state: stateFor(balanced), scale: 2, reduced: reduced);
+        await pumpPrograms(tester,
+            state: stateFor(balanced), scale: 2, reduced: reduced);
         await programScrollTo(tester, cardFor(balanced.id));
-        final art = find.descendant(of: cardFor(balanced.id), matching: find.byType(Image));
+        final art = find.descendant(
+            of: cardFor(balanced.id), matching: find.byType(Image));
         final size = tester.getSize(art);
         expect(size.width / size.height, closeTo(2 / 3, .001));
         expect(MediaQuery.textScalerOf(tester.element(art)).scale(16), 32);
@@ -728,8 +758,9 @@ void main() {
                 tester.widget<ProgramSessionRow>(rowFor(week.sessions.last.id));
             expect(row.session, week.sessions.last);
             expect(row.isLast, isTrue);
-            final action =
-                find.descendant(of: rowFor(week.sessions.last.id), matching: find.byType(TextButton));
+            final action = find.descendant(
+                of: rowFor(week.sessions.last.id),
+                matching: find.byType(TextButton));
             await tester.ensureVisible(action);
             expect(tester.getSize(action).height, greaterThanOrEqualTo(48));
             expect(tester.takeException(), isNull,

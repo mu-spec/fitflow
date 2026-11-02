@@ -5,8 +5,6 @@ import 'package:fitflow/features/programs/domain/adaptive_program_catalog.dart';
 import 'dart:ui' as ui;
 
 import 'package:fitflow/app/router/app_router.dart';
-import 'package:fitflow/core/design/media/fitflow_media_image.dart';
-import 'package:fitflow/core/design/media/exercise_media_registry.dart';
 import 'package:flutter/rendering.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/app/config/app_theme.dart';
@@ -58,8 +56,10 @@ void main() {
       await qa.seedPart6();
       final router = await qa.part6Route(tester, AppRoutes.home);
       final card = find.byKey(ValueKey('home_program_${program.id}'));
-      final image = tester.widget<Image>(find.descendant(of: card, matching: find.byType(Image)));
-      expect((image.image as AssetImage).assetName, 'assets/images/editorial/${program.id}_portrait.webp');
+      final image = tester.widget<Image>(
+          find.descendant(of: card, matching: find.byType(Image)));
+      expect((image.image as AssetImage).assetName,
+          'assets/images/editorial/${program.id}_portrait.webp');
       expect(image.fit, BoxFit.contain);
       await tester.ensureVisible(card);
       await tester.pumpAndSettle();
@@ -136,19 +136,12 @@ void main() {
             final workout = tester
                 .widget<HomeWorkoutHeroCard>(find.byType(HomeWorkoutHeroCard))
                 .plan;
-            final photo = tester.widget<FitFlowMediaImage>(
+            final photo = tester.widget<Image>(
                 find.byKey(const ValueKey('home_workout_photo')));
-            expect(
-                photo.asset?.path,
-                ExerciseMediaRegistry.lookup(
-                        workout.main.exercises.first.exercise.id)!
-                    .hero
-                    .path);
-            expect(photo.semanticLabel,
-                workout.main.exercises.first.exercise.name);
-            expect(photo.decorative, isFalse);
-            expect(photo.width / photo.height, closeTo(4 / 3, .001));
-            expect(photo.asset, isNotNull);
+            expect((photo.image as AssetImage).assetName,
+                'assets/images/editorial/strength_foundations_portrait.webp');
+            expect(photo.fit, BoxFit.contain);
+            expect(photo.excludeFromSemantics, isTrue);
             if ((size == const Size(390, 844) && scale == 1) ||
                 (size == const Size(320, 700) && scale == 2 && dark)) {
               await captureHome(tester,
@@ -195,10 +188,10 @@ void main() {
                   .getRect(find.byKey(const ValueKey('home_workout_photo')));
               final titleRect =
                   tester.getRect(find.text('Adaptive Full Session'));
-              expect(imageRect.height, greaterThan(200));
-              expect(imageRect.width / imageRect.height, closeTo(4 / 3, .01));
-              // Keep all text below the unobscured photograph.
-              expect(titleRect.top, greaterThanOrEqualTo(imageRect.bottom));
+              expect(imageRect.height, lessThan(260));
+              expect(imageRect.width / imageRect.height, closeTo(2 / 3, .01));
+              // Portrait and text remain separate.
+              expect(titleRect.right, lessThanOrEqualTo(imageRect.left));
             }
             if (nav.evaluate().isNotEmpty) {
               final navTheme = Theme.of(tester.element(nav)).navigationBarTheme;
@@ -301,7 +294,7 @@ void main() {
       }
     }
   }
-  testWidgets('photo follows mode changes without a duplicate Home Library shortcut',
+  testWidgets('editorial portrait stays decorative across mode changes',
       (tester) async {
     await qa.seedPart6();
     final router = await qa.part6Route(tester, AppRoutes.home);
@@ -310,16 +303,10 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Low Energy').last);
     await tester.pumpAndSettle();
-    final hero =
-        tester.widget<HomeWorkoutHeroCard>(find.byType(HomeWorkoutHeroCard));
-    final photo = tester.widget<FitFlowMediaImage>(
-        find.byKey(const ValueKey('home_workout_photo')));
-    expect(
-        photo.asset?.path,
-        ExerciseMediaRegistry.lookup(
-                hero.plan.main.exercises.first.exercise.id)!
-            .hero
-            .path);
+    final photo =
+        tester.widget<Image>(find.byKey(const ValueKey('home_workout_photo')));
+    expect((photo.image as AssetImage).assetName,
+        'assets/images/editorial/strength_foundations_portrait.webp');
     expect(find.text('Temporary for this workout'), findsOneWidget);
     expect(find.text('Browse exercises'), findsNothing);
     expect(tester.takeException(), isNull);
@@ -341,7 +328,8 @@ void main() {
     await tester.tap(find.text('View workout'));
     await tester.pumpAndSettle();
     expect(router.state.uri.path, AppRoutes.workoutPreview);
-    await tester.drag(find.byType(CustomScrollView).first, const Offset(0, -400));
+    await tester.drag(
+        find.byType(CustomScrollView).first, const Offset(0, -400));
     await tester.pumpAndSettle();
     final preview = tester.widget<WorkoutPreviewSummaryCard>(
         find.byType(WorkoutPreviewSummaryCard));
