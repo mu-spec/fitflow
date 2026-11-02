@@ -510,41 +510,23 @@ void main() {
       ];
       for (var i = 0; i < expected.length; i++) {
         final session = balanced.sessions[i];
+        await tester.ensureVisible(
+            find.byKey(ValueKey('program_week_${session.week}')));
+        await tester.tap(find.byKey(ValueKey('program_week_${session.week}')));
+        await tester.pumpAndSettle();
         final row = rowFor(session.id);
         await programScrollTo(tester, row);
-        final widget = tester.widget<ProgramSessionRow>(row);
-        expect(widget.session, session);
-        expect(widget.status, expected[i]);
-        expect(widget.isFirst, session.session == 1);
-        expect(widget.isLast, session.session == balanced.sessionsPerWeek);
-        expect(
-            find.descendant(
-                of: row,
-                matching: find.text(
-                    '${session.focus} • Goal: ${session.generationGoal.label}')),
+        final chip = tester.widget<ProgramSessionStatusChip>(find.descendant(
+            of: row, matching: find.byType(ProgramSessionStatusChip)));
+        expect(chip.status, expected[i]);
+        expect(find.descendant(of: row, matching: find.text(session.focus)),
             findsOneWidget);
-        expect(
-            find.descendant(
-                of: row, matching: find.byType(ProgramSessionStatusChip)),
-            findsOneWidget);
-        final action =
-            find.descendant(of: row, matching: find.byType(TextButton));
-        expect(tester.getSize(action).height, greaterThanOrEqualTo(48));
       }
       final session = balanced.sessions[3];
-      final action = find.descendant(
-          of: rowFor(session.id), matching: find.byType(TextButton));
-      await tester.ensureVisible(action);
-      await tester.tap(action);
+      await tester.tap(find.text('Session 1'));
       await tester.pumpAndSettle();
-      expect(
-          GoRouterState.of(
-                  tester.element(find.byType(ProgramSessionPreviewScreen)))
-              .uri
-              .path,
-          AppRoutes.programSessionPreview(balanced.id, session.id));
-      expect(find.byType(ProgramSessionPreviewScreen), findsOneWidget);
-      expect(find.text(session.title), findsOneWidget);
+      expect(find.byType(ProgramSessionPreviewScreen), findsNothing);
+      expect(find.byType(ProgramSessionContent), findsOneWidget);
       expect(find.text('Session goal: ${session.generationGoal.label}'),
           findsNothing);
       await tester.tap(find.byKey(const Key('program_session_about')));
@@ -574,6 +556,9 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(ProgramDetailScreen), findsOneWidget);
       expect(find.text('2 of 18 sessions'), findsOneWidget);
+      await tester.ensureVisible(find.text('Week 6'));
+      await tester.tap(find.text('Week 6'));
+      await tester.pumpAndSettle();
       await programScrollTo(tester, rowFor(strength.sessions.last.id));
       _expectNoInventedMetrics();
       expect(prefs.getString(AdaptiveProgramsStorage.key), before);
@@ -621,7 +606,11 @@ void main() {
             isTrue);
         await programScrollTo(tester, find.text('Week 1'));
         expect(
-            tester.getSemantics(find.text('Week 1')).flagsCollection.isHeader,
+            tester
+                .getSemantics(find.text('Week 1'))
+                .flagsCollection
+                .isSelected
+                .toBoolOrNull(),
             isTrue);
       } finally {
         handle.dispose();
@@ -752,20 +741,31 @@ void main() {
             expect(tester.takeException(), isNull);
           }
           for (final week in strength.weeks) {
-            await programScrollTo(tester, rowFor(week.sessions.last.id),
-                step: 200, maxSteps: 100);
-            final row =
-                tester.widget<ProgramSessionRow>(rowFor(week.sessions.last.id));
-            expect(row.session, week.sessions.last);
-            expect(row.isLast, isTrue);
-            final action = find.descendant(
-                of: rowFor(week.sessions.last.id),
-                matching: find.byType(TextButton));
-            await tester.ensureVisible(action);
-            expect(tester.getSize(action).height, greaterThanOrEqualTo(48));
+            final tab = find.byKey(ValueKey('program_week_${week.number}'));
+            await Scrollable.ensureVisible(tester.element(tab));
+            await tester.pumpAndSettle();
+            await tester.tap(tab);
+            await tester.pumpAndSettle();
+            final row = rowFor(week.sessions.last.id);
+            await programScrollTo(tester, row, step: 200, maxSteps: 100);
+            expect(
+                find.descendant(
+                    of: row, matching: find.text(week.sessions.last.focus)),
+                findsOneWidget);
+            expect(tester.getSize(row).height, greaterThanOrEqualTo(48));
             expect(tester.takeException(), isNull,
                 reason: 'detail week ${week.number}: $size/$dark/$scale');
           }
+          final lastSession = strength.weeks.last.sessions.last;
+          await tester.tap(find.descendant(
+              of: rowFor(lastSession.id),
+              matching: find.text(lastSession.focus)));
+          await tester.pumpAndSettle();
+          await programScrollTo(tester, find.text('Start workout'),
+              step: 200, maxSteps: 100);
+          expect(find.text('Start workout'), findsOneWidget);
+          expect(tester.takeException(), isNull,
+              reason: 'expanded session: $size/$dark/$scale');
         });
       }
     }

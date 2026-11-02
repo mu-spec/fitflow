@@ -43,16 +43,18 @@ class ProgramSessionPreviewScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => WorkoutsTheme(
-      child: _ProgramSessionPreviewContent(
-          programId: programId, sessionId: sessionId));
+      child: ProgramSessionContent(programId: programId, sessionId: sessionId));
 }
 
-class _ProgramSessionPreviewContent extends ConsumerWidget {
-  const _ProgramSessionPreviewContent({
+class ProgramSessionContent extends ConsumerWidget {
+  const ProgramSessionContent({
+    super.key,
+    this.embedded = false,
     required this.programId,
     required this.sessionId,
   });
 
+  final bool embedded;
   final String programId;
   final String sessionId;
 
@@ -61,7 +63,7 @@ class _ProgramSessionPreviewContent extends ConsumerWidget {
     final visual = FitFlowVisualV2.of(context);
     final definition = AdaptiveProgramCatalog.byId(programId);
     if (definition == null) {
-      return Scaffold(
+      return _frame(
         backgroundColor: visual.page,
         appBar: AppBar(
           title: const Text(ProgramCopy.programNotFound),
@@ -76,7 +78,7 @@ class _ProgramSessionPreviewContent extends ConsumerWidget {
     }
     final session = definition.sessionById(sessionId);
     if (session == null) {
-      return Scaffold(
+      return _frame(
         backgroundColor: visual.page,
         appBar: AppBar(
           title: Text(definition.name),
@@ -106,14 +108,14 @@ class _ProgramSessionPreviewContent extends ConsumerWidget {
     );
 
     if (userProfileAsync.isLoading || capabilityAsync.isLoading) {
-      return Scaffold(
+      return _frame(
         backgroundColor: visual.page,
         appBar: appBar,
         body: const HomeLoadingState(),
       );
     }
     if (userProfileAsync.hasError || capabilityAsync.hasError) {
-      return Scaffold(
+      return _frame(
         backgroundColor: visual.page,
         appBar: appBar,
         body: HomeErrorState(onRetry: () {
@@ -125,7 +127,7 @@ class _ProgramSessionPreviewContent extends ConsumerWidget {
     final userProfile = userProfileAsync.value;
     final capability = capabilityAsync.value;
     if (userProfile == null) {
-      return Scaffold(
+      return _frame(
         backgroundColor: visual.page,
         appBar: appBar,
         body: HomeEmptyStates.missingUserProfile(
@@ -135,7 +137,7 @@ class _ProgramSessionPreviewContent extends ConsumerWidget {
       );
     }
     if (capability == null) {
-      return Scaffold(
+      return _frame(
         backgroundColor: visual.page,
         appBar: appBar,
         body: HomeEmptyStates.missingCapabilityProfile(
@@ -155,7 +157,8 @@ class _ProgramSessionPreviewContent extends ConsumerWidget {
 
     final plan = resolution.plan;
 
-    return Scaffold(
+    return _frame(
+      inlineContent: true,
       backgroundColor: visual.page,
       appBar: appBar,
       bottomNavigationBar: plan == null
@@ -191,11 +194,16 @@ class _ProgramSessionPreviewContent extends ConsumerWidget {
         child: FitFlowMaxWidth(
           maxWidth: FitFlowLayout.maxContentWidth,
           child: ListView(
-            padding: const EdgeInsets.all(FitFlowSpace.md),
+            shrinkWrap: embedded,
+            physics: embedded ? const NeverScrollableScrollPhysics() : null,
+            padding: embedded
+                ? EdgeInsets.zero
+                : const EdgeInsets.all(FitFlowSpace.md),
             children: [
-              ProgramIdentityBanner(program: definition),
+              if (!embedded) ProgramIdentityBanner(program: definition),
               const SizedBox(height: 16),
               _ProgramSessionSummaryCard(
+                compact: embedded,
                 definition: definition,
                 session: session,
                 status: status.statusOf(session),
@@ -248,6 +256,27 @@ class _ProgramSessionPreviewContent extends ConsumerWidget {
     );
   }
 
+  Widget _frame(
+      {bool inlineContent = false,
+      Color? backgroundColor,
+      PreferredSizeWidget? appBar,
+      required Widget body,
+      Widget? bottomNavigationBar}) {
+    if (!embedded) {
+      return Scaffold(
+          backgroundColor: backgroundColor,
+          appBar: appBar,
+          body: body,
+          bottomNavigationBar: bottomNavigationBar);
+    }
+    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      // Existing loading/error/setup pages contain Scaffolds. Give those
+      // scrollable pages a finite viewport when shown inside a session.
+      if (inlineContent) body else SizedBox(height: 320, child: body),
+      if (bottomNavigationBar != null) bottomNavigationBar,
+    ]);
+  }
+
   Widget _exerciseList(List<WorkoutExercisePrescription> prescriptions) {
     return Column(
       children: [
@@ -267,6 +296,7 @@ class _ProgramSessionPreviewContent extends ConsumerWidget {
 
 class _ProgramSessionSummaryCard extends StatelessWidget {
   const _ProgramSessionSummaryCard({
+    this.compact = false,
     required this.definition,
     required this.session,
     required this.status,
@@ -274,6 +304,7 @@ class _ProgramSessionSummaryCard extends StatelessWidget {
     required this.plan,
   });
 
+  final bool compact;
   final AdaptiveProgramDefinition definition;
   final AdaptiveProgramSession session;
   final AdaptiveProgramSessionStatus status;
@@ -298,14 +329,20 @@ class _ProgramSessionSummaryCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Semantics(
-            header: true,
-            child: Text(session.title, style: theme.textTheme.titleLarge)),
+        if (!compact)
+          Semantics(
+              header: true,
+              child: Text(session.title, style: theme.textTheme.titleLarge)),
         const SizedBox(height: FitFlowSpace.xs),
-        Wrap(spacing: FitFlowSpace.sm, runSpacing: FitFlowSpace.xs, children: [
-          Text('Focus: ${session.focus}', style: theme.textTheme.bodyMedium),
-          ProgramSessionStatusChip(status: status),
-        ]),
+        if (!compact)
+          Wrap(
+              spacing: FitFlowSpace.sm,
+              runSpacing: FitFlowSpace.xs,
+              children: [
+                Text('Focus: ${session.focus}',
+                    style: theme.textTheme.bodyMedium),
+                ProgramSessionStatusChip(status: status),
+              ]),
         if (p != null) ...[
           const SizedBox(height: FitFlowSpace.xs),
           Text(

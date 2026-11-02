@@ -8,6 +8,9 @@ import 'package:fitflow/features/programs/domain/adaptive_program_progress.dart'
 import 'package:fitflow/features/programs/domain/adaptive_programs_state.dart';
 import 'package:fitflow/features/programs/presentation/program_detail_screen.dart';
 import 'package:fitflow/features/programs/presentation/program_session_preview_screen.dart';
+import 'package:fitflow/features/programs/presentation/program_session_player_screen.dart';
+import 'package:fitflow/features/workout_player/domain/workout_coach.dart';
+import 'package:fitflow/features/workout_player/application/workout_player_controller.dart';
 import 'package:fitflow/features/programs/presentation/widgets/program_widgets.dart';
 import 'package:fitflow/features/workout_preview/presentation/widgets/workout_preview_exercise_row.dart';
 import 'package:fitflow/features/workouts/application/workout_session_mode_controller.dart';
@@ -198,7 +201,9 @@ void main() {
       await programScrollTo(tester, find.text('Week 1'));
       expect(find.text('Week 1'), findsOneWidget);
       expect(find.text('Next'), findsOneWidget);
-      await programScrollTo(tester, find.text('Week 6'), step: 400);
+      await tester.ensureVisible(find.text('Week 6'));
+      await tester.tap(find.text('Week 6'));
+      await tester.pumpAndSettle();
       expect(find.text('Week 6'), findsOneWidget);
       // No locking or lateness claims anywhere.
       expect(find.byIcon(Icons.lock), findsNothing);
@@ -207,29 +212,31 @@ void main() {
       expect(find.textContaining('behind'), findsNothing);
     });
 
-    testWidgets('session rows show focus, goal and one navigation action',
+    testWidgets('session expands inline and starts the selected workout',
         (tester) async {
       SharedPreferences.setMockInitialValues({});
-      await pumpAt(tester, AppRoutes.programDetail('balanced_foundations'));
+      await pumpAt(tester, AppRoutes.programDetail('balanced_foundations'),
+          overrides: [
+            ...programOverrides(),
+            workoutCoachProvider.overrideWithValue(FakeWorkoutCoach()),
+          ]);
       await programScrollTo(tester, find.text('Session 1'));
-      expect(
-          find.text('Full-body basics • Goal: General fitness'), findsWidgets);
-      await programScrollTo(
-          tester, find.text('Strength • Goal: Build strength'));
-      expect(find.text('Strength • Goal: Build strength'), findsWidgets);
-      await programScrollTo(
-          tester, find.text('Endurance • Goal: Improve endurance'));
-      expect(find.text('Endurance • Goal: Improve endurance'), findsWidgets);
-      await programScrollToTop(tester);
-      final firstSession = find.byKey(
-          const ValueKey('v2_program_session_balanced_foundations_w1_s1'));
-      await programScrollTo(tester, firstSession);
-      expect(find.text('View workout'), findsNothing);
-      await tester.tap(
-          find.descendant(of: firstSession, matching: find.byType(TextButton)));
+      expect(find.text('Full-body basics'), findsOneWidget);
+      expect(find.text('Strength'), findsOneWidget);
+      expect(find.text('Endurance'), findsOneWidget);
+      await tester.tap(find.text('Session 1'));
       await tester.pumpAndSettle();
-      expect(find.byType(ProgramSessionPreviewScreen), findsOneWidget);
-      expect(find.text('Week 1 • Session 1'), findsOneWidget);
+      expect(find.byType(ProgramSessionPreviewScreen), findsNothing);
+      expect(find.byType(ProgramSessionContent), findsOneWidget);
+      await programScrollTo(tester, find.text('Start workout'));
+      expect(find.text('Start workout'), findsOneWidget);
+      await tester.tap(find.text('Start workout'));
+      await tester.pumpAndSettle();
+      final player = tester.widget<ProgramSessionPlayerScreen>(
+          find.byType(ProgramSessionPlayerScreen));
+      expect(player.programId, 'balanced_foundations');
+      expect(player.sessionId, 'balanced_foundations_w1_s1');
+      expect(tester.takeException(), isNull);
     });
 
     testWidgets('Start sets the program active and shows progress',
@@ -262,7 +269,7 @@ void main() {
       // Sessions 1 and 3 of week 1 completed, session 2 is next.
       Finder rowOf(String sessionLabel) => find.ancestor(
             of: find.text(sessionLabel).first,
-            matching: find.byType(ProgramSessionRow),
+            matching: find.byType(ExpansionTile),
           );
       expect(
           find.descendant(
@@ -279,7 +286,9 @@ void main() {
           findsOneWidget);
       // Only one Next exists in the whole program.
       expect(find.text('Next').evaluate().length, lessThanOrEqualTo(1));
-      await programScrollTo(tester, find.text('Week 2'));
+      await tester.ensureVisible(find.text('Week 2'));
+      await tester.tap(find.text('Week 2'));
+      await tester.pumpAndSettle();
       expect(find.text('Upcoming'), findsWidgets);
       expect(find.text('Next'), findsNothing);
       expect(find.textContaining('fitness progress'), findsNothing);

@@ -1,4 +1,4 @@
-import 'package:fitflow/app/router/app_routes.dart';
+import 'program_session_preview_screen.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_theme_extension.dart';
@@ -15,9 +15,7 @@ import 'package:fitflow/features/programs/presentation/widgets/program_widgets.d
 import 'package:fitflow/features/workouts/presentation/workouts_theme.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart' show ScrollCacheExtent;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 /// V2 program identity, factual progress, original actions and compact weeks.
 /// No program/session definition, policy, controller or route is replaced.
@@ -32,14 +30,24 @@ class ProgramDetailScreen extends ConsumerWidget {
       WorkoutsTheme(child: _ProgramDetailContent(programId: programId));
 }
 
-class _ProgramDetailContent extends ConsumerWidget {
+class _ProgramDetailContent extends ConsumerStatefulWidget {
   const _ProgramDetailContent({required this.programId});
 
   final String programId;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final definition = AdaptiveProgramCatalog.byId(programId);
+  ConsumerState<_ProgramDetailContent> createState() =>
+      _ProgramDetailContentState();
+}
+
+class _ProgramDetailContentState extends ConsumerState<_ProgramDetailContent> {
+  int? selectedWeek;
+  String? expandedSession;
+  final sessionsKey = GlobalKey();
+
+  @override
+  Widget build(BuildContext context) {
+    final definition = AdaptiveProgramCatalog.byId(widget.programId);
     final v = FitFlowVisualV2.of(context);
     if (definition == null) {
       return Scaffold(
@@ -94,69 +102,124 @@ class _ProgramDetailContent extends ConsumerWidget {
             constraints:
                 const BoxConstraints(maxWidth: FitFlowLayout.maxReadableWidth),
             child: ListView(
-              // Only visible timeline rows are laid out/painted; the saved
-              // state remains entirely in the existing provider, not rows.
-              scrollCacheExtent: const ScrollCacheExtent.pixels(0),
+              // Only the selected week's sessions are mounted.
               padding: EdgeInsets.all(ProgramV2Layout.inset(context)),
               children: [
-                _ProgramDetailHeader(
-                  definition: definition,
-                  isRecommended: isRecommended,
-                ),
-                const SizedBox(height: FitFlowSpace.sm),
-                ProgramV2ProgressSummary(status: status, isActive: isActive),
-                const SizedBox(height: FitFlowSpace.sm),
-                _ProgramActions(
-                  definition: definition,
-                  status: status,
-                  isActive: isActive,
-                  otherActive: otherActive,
-                ),
-                const SizedBox(height: FitFlowSpace.sm),
-                ExpansionTile(
-                  key: const Key('program_details_disclosure'),
-                  tilePadding: EdgeInsets.zero,
-                  childrenPadding:
-                      const EdgeInsets.only(bottom: FitFlowSpace.md),
-                  expandedCrossAxisAlignment: CrossAxisAlignment.start,
-                  shape: const Border(),
-                  collapsedShape: const Border(),
-                  title: Text(context.l10n.trainingProgramAbout,
-                      style: theme.textTheme.titleSmall
-                          ?.copyWith(fontWeight: FontWeight.w500)),
-                  children: [
-                    Align(
-                      alignment: AlignmentDirectional.centerStart,
-                      child: Text(definition.description,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                              color: FitFlowTheme.of(context).textSecondary)),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: FitFlowSpace.md),
-                for (final week in definition.weeks) ...[
-                  Semantics(
-                    header: true,
-                    child: Text(context.l10n.trainingProgramWeek(week.number),
-                        style: theme.textTheme.titleMedium
-                            ?.copyWith(fontWeight: FontWeight.w500)),
-                  ),
-                  const SizedBox(height: FitFlowSpace.xs),
-                  for (var i = 0; i < week.sessions.length; i++)
-                    ProgramSessionRow(
-                      key:
-                          ValueKey('v2_program_session_${week.sessions[i].id}'),
-                      session: week.sessions[i],
-                      status: status.statusOf(week.sessions[i]),
-                      isFirst: i == 0,
-                      isLast: i == week.sessions.length - 1,
-                      onView: () => context.push(
-                        AppRoutes.programSessionPreview(
-                            definition.id, week.sessions[i].id),
+                Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _ProgramDetailHeader(
+                        definition: definition,
+                        isRecommended: isRecommended,
                       ),
-                    ),
-                  const SizedBox(height: FitFlowSpace.sm),
-                ],
+                      const SizedBox(height: FitFlowSpace.sm),
+                      ProgramV2ProgressSummary(
+                          status: status, isActive: isActive),
+                      const SizedBox(height: FitFlowSpace.sm),
+                      _ProgramActions(
+                        definition: definition,
+                        status: status,
+                        isActive: isActive,
+                        otherActive: otherActive,
+                        onContinue: () {
+                          setState(() {
+                            selectedWeek = status.nextSession?.week;
+                            expandedSession = status.nextSession?.id;
+                          });
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            final target = sessionsKey.currentContext;
+                            if (target != null) {
+                              Scrollable.ensureVisible(target);
+                            }
+                          });
+                        },
+                      ),
+                      const SizedBox(height: FitFlowSpace.sm),
+                      ExpansionTile(
+                        key: const Key('program_details_disclosure'),
+                        tilePadding: EdgeInsets.zero,
+                        childrenPadding:
+                            const EdgeInsets.only(bottom: FitFlowSpace.md),
+                        expandedCrossAxisAlignment: CrossAxisAlignment.start,
+                        shape: const Border(),
+                        collapsedShape: const Border(),
+                        title: Text(context.l10n.trainingProgramAbout,
+                            style: theme.textTheme.titleSmall
+                                ?.copyWith(fontWeight: FontWeight.w500)),
+                        children: [
+                          Align(
+                            alignment: AlignmentDirectional.centerStart,
+                            child: Text(definition.description,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: FitFlowTheme.of(context)
+                                        .textSecondary)),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: FitFlowSpace.md),
+                      SingleChildScrollView(
+                        key: sessionsKey,
+                        scrollDirection: Axis.horizontal,
+                        child: Row(children: [
+                          for (final week in definition.weeks)
+                            Padding(
+                                padding:
+                                    const EdgeInsetsDirectional.only(end: 8),
+                                child: ChoiceChip(
+                                  key: ValueKey('program_week_${week.number}'),
+                                  label: Text(context.l10n
+                                      .trainingProgramWeek(week.number)),
+                                  selected: week.number ==
+                                      (selectedWeek ??
+                                          status.nextSession?.week ??
+                                          1),
+                                  onSelected: (_) => setState(() {
+                                    selectedWeek = week.number;
+                                    expandedSession = null;
+                                  }),
+                                )),
+                        ]),
+                      ),
+                      const SizedBox(height: 12),
+                      for (final session in definition.weeks
+                          .firstWhere((w) =>
+                              w.number ==
+                              (selectedWeek ?? status.nextSession?.week ?? 1))
+                          .sessions)
+                        Card(
+                          key: ValueKey('v2_program_session_${session.id}'),
+                          elevation: 0,
+                          margin: const EdgeInsets.only(bottom: 12),
+                          child: ExpansionTile(
+                            key: ValueKey(
+                                'session_${session.id}_${expandedSession == session.id}'),
+                            initiallyExpanded: expandedSession == session.id,
+                            onExpansionChanged: (open) => setState(() =>
+                                expandedSession = open ? session.id : null),
+                            shape: const Border(),
+                            collapsedShape: const Border(),
+                            title: Text(session.focus,
+                                style: theme.textTheme.titleMedium),
+                            subtitle: Wrap(
+                                spacing: 8,
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: [
+                                  Text(context.l10n
+                                      .trainingSession(session.session)),
+                                  ProgramSessionStatusChip(
+                                      status: status.statusOf(session))
+                                ]),
+                            childrenPadding: const EdgeInsets.all(12),
+                            children: [
+                              if (expandedSession == session.id)
+                                ProgramSessionContent(
+                                    programId: definition.id,
+                                    sessionId: session.id,
+                                    embedded: true),
+                            ],
+                          ),
+                        ),
+                    ])
               ],
             ),
           ),
@@ -200,12 +263,14 @@ class _ProgramActions extends ConsumerWidget {
     required this.status,
     required this.isActive,
     required this.otherActive,
+    required this.onContinue,
   });
 
   final AdaptiveProgramDefinition definition;
   final AdaptiveProgramStatus status;
   final bool isActive;
   final bool otherActive;
+  final VoidCallback onContinue;
 
   Future<void> _showFailure(BuildContext context) async {
     if (!context.mounted) return;
@@ -224,8 +289,7 @@ class _ProgramActions extends ConsumerWidget {
       if (next != null) {
         buttons.add(FilledButton.icon(
           style: FilledButton.styleFrom(minimumSize: const Size(64, 48)),
-          onPressed: () => context
-              .push(AppRoutes.programSessionPreview(definition.id, next.id)),
+          onPressed: onContinue,
           icon: const Icon(Icons.arrow_forward_rounded),
           label: Text(context.l10n.trainingProgramContinueLabel),
         ));
