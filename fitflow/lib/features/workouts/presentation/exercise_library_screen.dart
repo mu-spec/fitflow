@@ -1,12 +1,9 @@
-import 'package:fitflow/features/workouts/presentation/widgets/training_presentation.dart';
-import 'package:fitflow/l10n/enum_labels.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
-import 'package:fitflow/core/design/fitflow_radius.dart';
-import 'package:fitflow/core/design/fitflow_spacing.dart';
-import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/core/accessibility/system_motion.dart';
-import 'package:fitflow/app/router/app_routes.dart';
+import 'exercise_body_focus.dart';
+import 'exercise_detail_screen.dart';
+import 'widgets/skill_paths_panel.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/features/workouts/data/exercise_catalog.dart';
 import 'package:fitflow/features/workouts/domain/exercise.dart';
@@ -15,26 +12,39 @@ import 'package:fitflow/features/workouts/presentation/widgets/exercise_filter_s
 import 'package:fitflow/features/workouts/presentation/widgets/exercise_list_tile.dart';
 import 'package:fitflow/features/workouts/presentation/workouts_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 /// Exercise Library with instant search, filters, quick filters, live count.
 /// Scoped Slate + Citrus presentation, identical tokens to the Workouts hub.
 class ExerciseLibraryScreen extends StatelessWidget {
-  const ExerciseLibraryScreen({super.key, this.exercisesForTest});
+  const ExerciseLibraryScreen(
+      {super.key,
+      this.exercisesForTest,
+      this.initialSkills = false,
+      this.initialFamilyId});
 
   /// Optional override for testing empty-catalog handling.
   /// When null, uses [ExerciseCatalog.all] filtered to active exercises.
   final List<Exercise>? exercisesForTest;
+  final bool initialSkills;
+  final String? initialFamilyId;
 
   @override
-  Widget build(BuildContext context) =>
-      WorkoutsTheme(child: _ExerciseLibraryBody(exercisesForTest: exercisesForTest));
+  Widget build(BuildContext context) => WorkoutsTheme(
+      child: _ExerciseLibraryBody(
+          exercisesForTest: exercisesForTest,
+          initialSkills: initialSkills,
+          initialFamilyId: initialFamilyId));
 }
 
 class _ExerciseLibraryBody extends StatefulWidget {
-  const _ExerciseLibraryBody({this.exercisesForTest});
+  const _ExerciseLibraryBody(
+      {this.exercisesForTest,
+      this.initialSkills = false,
+      this.initialFamilyId});
 
   final List<Exercise>? exercisesForTest;
+  final bool initialSkills;
+  final String? initialFamilyId;
 
   @override
   State<_ExerciseLibraryBody> createState() => _ExerciseLibraryScreenState();
@@ -44,11 +54,16 @@ class _ExerciseLibraryScreenState extends State<_ExerciseLibraryBody> {
   late final TextEditingController _searchController;
   late List<Exercise> _allExercises;
   ExerciseLibraryFilter _filter = const ExerciseLibraryFilter();
+  ExerciseBodyFocus _focus = ExerciseBodyFocus.all;
+  late bool _skills;
+  String? _selectedFamily;
 
   @override
   void initState() {
     super.initState();
     _readCatalog();
+    _skills = widget.initialSkills;
+    _selectedFamily = widget.initialFamilyId;
     _searchController = TextEditingController(text: _filter.searchQuery);
   }
 
@@ -61,6 +76,11 @@ class _ExerciseLibraryScreenState extends State<_ExerciseLibraryBody> {
   void didUpdateWidget(covariant _ExerciseLibraryBody oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.exercisesForTest != widget.exercisesForTest) _readCatalog();
+    if (oldWidget.initialSkills != widget.initialSkills ||
+        oldWidget.initialFamilyId != widget.initialFamilyId) {
+      _skills = widget.initialSkills;
+      _selectedFamily = widget.initialFamilyId;
+    }
   }
 
   @override
@@ -108,6 +128,7 @@ class _ExerciseLibraryScreenState extends State<_ExerciseLibraryBody> {
   void _clearFilters() {
     setState(() {
       _filter = _filter.clearFilters();
+      _focus = ExerciseBodyFocus.all;
     });
   }
 
@@ -115,6 +136,7 @@ class _ExerciseLibraryScreenState extends State<_ExerciseLibraryBody> {
     _searchController.clear();
     setState(() {
       _filter = _filter.clearAll();
+      _focus = ExerciseBodyFocus.all;
     });
   }
 
@@ -146,270 +168,151 @@ class _ExerciseLibraryScreenState extends State<_ExerciseLibraryBody> {
       );
     }
 
-    final filtered = applyExerciseLibraryFilter(allExercises, _filter);
-    final hasActiveFilters = _filter.hasActiveFilters;
+    final filtered = applyExerciseLibraryFilter(allExercises, _filter)
+        .where(_focus.matches)
+        .toList();
+    final hasActiveFilters =
+        _filter.hasActiveFilters || _focus != ExerciseBodyFocus.all;
     final hasSearch = _filter.hasSearch;
-    final activeCount = _filter.activeFilterCount;
-
     return Scaffold(
       backgroundColor: v.page,
       appBar: libraryAppBar,
       body: SafeArea(
-        top: false,
-        child: FitFlowMaxWidth(
-          child: CustomScrollView(
-            key: const ValueKey('exercise_library_scroll'),
-            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-            slivers: [
-              SliverToBoxAdapter(
-                  child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Search field
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-                    child: TextField(
-                      key: const ValueKey('exercise_library_search'),
-                      controller: _searchController,
-                      onChanged: _updateSearch,
-                      textInputAction: TextInputAction.search,
-                      onSubmitted: (_) => FocusScope.of(context).unfocus(),
-                      cursorColor: FitFlowTheme.of(context).brand,
-                      style: theme.textTheme.bodyLarge,
-                      decoration: InputDecoration(
-                        hintText: context.l10n.searchExercises,
-                        prefixIcon: const Icon(Icons.search_rounded),
-                        suffixIcon: hasSearch
-                            ? IconButton(
-                                icon: const Icon(Icons.clear),
-                                onPressed: _clearSearch,
-                                tooltip: context.l10n.clearSearch,
-                              )
-                            : null,
-                        filled: true,
-                        fillColor: v.tint,
-                        isDense: false,
-                        constraints: const BoxConstraints(minHeight: 52),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: FitFlowRadius.mediumBorder,
-                          borderSide: BorderSide.none,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: FitFlowRadius.mediumBorder,
-                          borderSide: BorderSide.none,
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: FitFlowRadius.mediumBorder,
-                          borderSide: BorderSide(
-                            color: FitFlowTheme.of(context).brand,
-                            width: 2,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  // Quick filters
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          FilterChip(
-                            side: BorderSide.none,
-                            backgroundColor: v.tint,
-                            showCheckmark: true,
-                            materialTapTargetSize: MaterialTapTargetSize.padded,
-                            chipAnimationStyle: ChipAnimationStyle(
-                                selectAnimation: AnimationStyle(
-                                    duration: SystemMotion.micro(context),
-                                    reverseDuration:
-                                        SystemMotion.micro(context))),
-                            label: Text(context.l10n.quickNoEquipment),
-                            selected: _filter.noEquipment,
-                            onSelected: (v) => setState(() =>
-                                _filter = _filter.copyWith(noEquipment: v)),
-                          ),
-                          const SizedBox(width: 8),
-                          FilterChip(
-                            side: BorderSide.none,
-                            backgroundColor: v.tint,
-                            showCheckmark: true,
-                            materialTapTargetSize: MaterialTapTargetSize.padded,
-                            chipAnimationStyle: ChipAnimationStyle(
-                                selectAnimation: AnimationStyle(
-                                    duration: SystemMotion.micro(context),
-                                    reverseDuration:
-                                        SystemMotion.micro(context))),
-                            label: Text(context.l10n.trainingStanding),
-                            selected: _filter.standingOnly,
-                            onSelected: (v) => setState(() =>
-                                _filter = _filter.copyWith(standingOnly: v)),
-                          ),
-                          const SizedBox(width: 8),
-                          FilterChip(
-                            side: BorderSide.none,
-                            backgroundColor: v.tint,
-                            showCheckmark: true,
-                            materialTapTargetSize: MaterialTapTargetSize.padded,
-                            chipAnimationStyle: ChipAnimationStyle(
-                                selectAnimation: AnimationStyle(
-                                    duration: SystemMotion.micro(context),
-                                    reverseDuration:
-                                        SystemMotion.micro(context))),
-                            label: Text(context.l10n.trainingLowImpact),
-                            selected: _filter.lowImpact,
-                            onSelected: (v) => setState(
-                                () => _filter = _filter.copyWith(lowImpact: v)),
-                          ),
-                          const SizedBox(width: 8),
-                          FilterChip(
-                            side: BorderSide.none,
-                            backgroundColor: v.tint,
-                            showCheckmark: true,
-                            materialTapTargetSize: MaterialTapTargetSize.padded,
-                            chipAnimationStyle: ChipAnimationStyle(
-                                selectAnimation: AnimationStyle(
-                                    duration: SystemMotion.micro(context),
-                                    reverseDuration:
-                                        SystemMotion.micro(context))),
-                            label: Text(context.l10n.quickQuiet),
-                            selected: _filter.quiet,
-                            onSelected: (v) => setState(
-                                () => _filter = _filter.copyWith(quiet: v)),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  // Keep the count aligned with Filters; secondary clearing
-                  // actions wrap independently without squeezing this row.
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: FitFlowSpace.md),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Row(
-                          children: [
-                            Flexible(
-                              child: OutlinedButton.icon(
-                                style: OutlinedButton.styleFrom(
-                                  minimumSize: const Size(48, 48),
-                                  side: BorderSide.none,
-                                  backgroundColor: v.tint,
-                                ),
-                                onPressed: _openFilterSheet,
-                                icon: const Icon(Icons.tune_rounded, size: 18),
-                                label: Text(hasActiveFilters
-                                    ? context.l10n.filtersWithCount(activeCount)
-                                    : context.l10n.filters),
-                              ),
-                            ),
-                            const SizedBox(width: FitFlowSpace.xs),
-                            Expanded(
-                              child: Text(
-                                context.l10n
-                                    .trainingExerciseCount(filtered.length),
-                                textAlign: TextAlign.end,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: FitFlowTheme.of(context).textSecondary,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        if (hasActiveFilters)
-                          Wrap(
-                            spacing: FitFlowSpace.xs,
-                            children: [
-                              TextButton(
-                                style: TextButton.styleFrom(
-                                  minimumSize: const Size(48, 48),
-                                ),
-                                onPressed: _clearFilters,
-                                child: Text(context.l10n.trainingClearFilters),
-                              ),
-                              if (hasSearch)
-                                TextButton(
-                                  style: TextButton.styleFrom(
-                                    minimumSize: const Size(48, 48),
+          top: false,
+          child: FitFlowMaxWidth(
+              child: Column(children: [
+            Padding(
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                child: Row(children: [
+                  Expanded(
+                      child: _tab(context.l10n.libraryExercisesTab, false)),
+                  const SizedBox(width: 8),
+                  Expanded(child: _tab(context.l10n.trainingSkills, true)),
+                ])),
+            Expanded(
+                child: _skills
+                    ? SkillPathsPanel(
+                        key: ValueKey(_selectedFamily),
+                        initialFamilyId: _selectedFamily,
+                        onFamilySelected: (value) => _selectedFamily = value)
+                    : CustomScrollView(
+                        key: const ValueKey('exercise_library_scroll'),
+                        keyboardDismissBehavior:
+                            ScrollViewKeyboardDismissBehavior.onDrag,
+                        slivers: [
+                          SliverToBoxAdapter(
+                              child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  TextField(
+                                    key: const ValueKey(
+                                        'exercise_library_search'),
+                                    controller: _searchController,
+                                    onChanged: _updateSearch,
+                                    decoration: InputDecoration(
+                                      hintText: context.l10n.searchExercises,
+                                      prefixIcon: const Icon(Icons.search),
+                                      suffixIcon: hasSearch
+                                          ? IconButton(
+                                              onPressed: _clearSearch,
+                                              tooltip: context.l10n.clearSearch,
+                                              icon: const Icon(Icons.close))
+                                          : null,
+                                    ),
                                   ),
-                                  onPressed: _clearAll,
-                                  child: Text(context.l10n.trainingClearAll),
-                                ),
-                            ],
-                          ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: FitFlowSpace.xxs),
-                  if (_filter.movementPatterns.isNotEmpty ||
-                      _filter.difficulties.isNotEmpty ||
-                      _filter.equipment.isNotEmpty ||
-                      _filter.positions.isNotEmpty)
-                    Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-                        child: Text(
-                            [
-                              ..._filter.movementPatterns.map(
-                                  (v) => movementPatternLabel(context.l10n, v)),
-                              ..._filter.difficulties.map((v) =>
-                                  trainingDifficultyLabel(context.l10n, v)),
-                              ..._filter.equipment
-                                  .map((v) => equipmentLabel(context.l10n, v)),
-                              ..._filter.positions.map((v) => v.label),
-                            ].join(' · '),
-                            style: theme.textTheme.bodySmall)),
-                ],
-              )),
-              if (filtered.isEmpty)
-                SliverToBoxAdapter(
-                    child: _NoResultsState(
-                  theme: theme,
-                  hasActiveFilters: hasActiveFilters,
-                  hasSearch: hasSearch,
-                  onClearFilters: _clearFilters,
-                  onClearAll:
-                      (hasActiveFilters || hasSearch) ? _clearAll : null,
-                ))
-              else
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(
-                    FitFlowSpace.md,
-                    0,
-                    FitFlowSpace.md,
-                    0,
-                  ),
-                  sliver: SliverList.separated(
-                    itemCount: filtered.length,
-                    separatorBuilder: (_, __) => Divider(
-                      height: 1,
-                      color: FitFlowTheme.of(context).divider,
-                    ),
-                    itemBuilder: (context, index) {
-                      final exercise = filtered[index];
-                      return ExerciseListTile(
-                        key: ValueKey(exercise.id),
-                        exercise: exercise,
-                        onTap: () =>
-                            context.push(AppRoutes.exerciseDetail(exercise.id)),
-                      );
-                    },
-                  ),
-                ),
-              const SliverToBoxAdapter(
-                  child: SizedBox(height: FitFlowSpace.xl)),
-            ],
-          ),
-        ),
-      ),
+                                  const SizedBox(height: 16),
+                                  Row(children: [
+                                    Expanded(
+                                        child: Text(
+                                            context.l10n.libraryFocusBody,
+                                            style:
+                                                theme.textTheme.titleMedium)),
+                                    OutlinedButton.icon(
+                                        onPressed: _openFilterSheet,
+                                        icon: const Icon(Icons.tune, size: 18),
+                                        label: Text(_filter.hasActiveFilters
+                                            ? context.l10n.filtersWithCount(
+                                                _filter.activeFilterCount)
+                                            : context.l10n.filters)),
+                                  ]),
+                                  const SizedBox(height: 8),
+                                  SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: Row(children: [
+                                        for (final focus
+                                            in ExerciseBodyFocus.values)
+                                          Padding(
+                                              padding:
+                                                  const EdgeInsetsDirectional
+                                                      .only(end: 8),
+                                              child: ChoiceChip(
+                                                key: ValueKey(
+                                                    'body_focus_${focus.name}'),
+                                                label: Text(focus.label),
+                                                selected: _focus == focus,
+                                                onSelected: (_) => setState(
+                                                    () => _focus = focus),
+                                              )),
+                                      ])),
+                                  const SizedBox(height: 8),
+                                  Wrap(
+                                      alignment: WrapAlignment.spaceBetween,
+                                      crossAxisAlignment:
+                                          WrapCrossAlignment.center,
+                                      children: [
+                                        Text(
+                                            context.l10n.trainingExerciseCount(
+                                                filtered.length),
+                                            style: theme.textTheme.bodySmall),
+                                        if (hasActiveFilters)
+                                          TextButton(
+                                              onPressed: _clearFilters,
+                                              child: Text(context
+                                                  .l10n.trainingClearFilters)),
+                                      ]),
+                                ]),
+                          )),
+                          if (filtered.isEmpty)
+                            SliverToBoxAdapter(
+                                child: _NoResultsState(
+                                    theme: theme,
+                                    hasActiveFilters: hasActiveFilters,
+                                    hasSearch: hasSearch,
+                                    onClearFilters: _clearFilters,
+                                    onClearAll: _clearAll))
+                          else
+                            SliverPadding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
+                                sliver: SliverList.separated(
+                                  itemCount: filtered.length,
+                                  separatorBuilder: (_, __) =>
+                                      const SizedBox(height: 10),
+                                  itemBuilder: (context, index) =>
+                                      ExerciseListTile(
+                                    key: ValueKey(filtered[index].id),
+                                    exercise: filtered[index],
+                                    onTap: () => showExerciseGuide(
+                                        context, filtered[index].id),
+                                  ),
+                                )),
+                          const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                        ],
+                      )),
+          ]))),
     );
   }
+
+  Widget _tab(String label, bool skills) => Semantics(
+        selected: _skills == skills,
+        child: _skills == skills
+            ? FilledButton(onPressed: () {}, child: Text(label))
+            : OutlinedButton(
+                onPressed: () => setState(() => _skills = skills),
+                child: Text(label)),
+      );
 }
 
 class _EmptyState extends StatelessWidget {

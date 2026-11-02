@@ -1491,7 +1491,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trainingLibrary => 'Exercise Library';
 
   @override
-  String get trainingSkills => 'Exercise skill trees';
+  String get libraryExercisesTab => 'Exercises';
+
+  @override
+  String get libraryBrowse => 'Browse exercises';
+
+  @override
+  String get libraryFocusBody => 'Focus body';
+
+  @override
+  String get exerciseFormBreathing => 'Form & breathing';
+
+  @override
+  String get exerciseMusclesSetup => 'Muscles & setup';
+
+  @override
+  String get trainingSkills => 'Skill paths';
 
   @override
   String get trainingSkillsHelp =>

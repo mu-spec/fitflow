@@ -94,6 +94,27 @@ class ExerciseFilterSheet extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 8),
+              Wrap(spacing: 8, runSpacing: 4, children: [
+                FilterChip(
+                    label: Text(context.l10n.quickNoEquipment),
+                    selected: filter.noEquipment,
+                    onSelected: (v) =>
+                        onChanged(filter.copyWith(noEquipment: v))),
+                FilterChip(
+                    label: Text(context.l10n.trainingStanding),
+                    selected: filter.standingOnly,
+                    onSelected: (v) =>
+                        onChanged(filter.copyWith(standingOnly: v))),
+                FilterChip(
+                    label: Text(context.l10n.trainingLowImpact),
+                    selected: filter.lowImpact,
+                    onSelected: (v) =>
+                        onChanged(filter.copyWith(lowImpact: v))),
+                FilterChip(
+                    label: Text(context.l10n.quickQuiet),
+                    selected: filter.quiet,
+                    onSelected: (v) => onChanged(filter.copyWith(quiet: v))),
+              ]),
               const Divider(),
               const SizedBox(height: 16),
               _FilterSection(

@@ -40,71 +40,62 @@ class SkillTreeNodeCard extends StatelessWidget {
     final byId = {for (final member in familyNodes) member.exercise.id: member};
     final easier = byId[node.exercise.easierVariationId];
     final harder = byId[node.exercise.harderVariationId];
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          FitFlowExerciseImage.thumbnail(exerciseId: node.exercise.id),
-          const SizedBox(width: 12),
-          Expanded(
-              child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(context.l10n.trainingStep(node.position, totalSteps),
-                  style: theme.textTheme.bodySmall
-                      ?.copyWith(color: colors.primary)),
-              const SizedBox(height: 4),
-              Semantics(
-                  header: true,
-                  child: Text(node.exercise.name,
-                      style: theme.textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w500))),
-            ],
-          )),
-        ]),
-        const SizedBox(height: 8),
-        Wrap(spacing: 12, runSpacing: 4, children: [
-          Text(levelLabel, style: theme.textTheme.bodySmall),
-          Text(node.exercise.exerciseType.label,
-              style: theme.textTheme.bodySmall),
-          if (node.exercise.movementPattern != null)
-            Text(node.exercise.movementPattern!.label,
-                style: theme.textTheme.bodySmall),
-        ]),
-        const SizedBox(height: 6),
-        Text(context.l10n.trainingEquipmentFor(equipmentText),
-            style: theme.textTheme.bodySmall
-                ?.copyWith(color: colors.onSurfaceVariant)),
-        const SizedBox(height: 8),
-        _SuitabilityLine(
-            icon: Icons.fitness_center_outlined,
-            label: _levelStatusLabel(context)),
-        const SizedBox(height: 4),
-        _SuitabilityLine(
-            icon: Icons.tune_rounded, label: _setupStatusLabel(context)),
-        for (final issue in node.setupIssueLabels)
-          Padding(
-            padding: const EdgeInsets.only(top: 4, left: 26),
-            child: Text(issue,
-                style: theme.textTheme.bodySmall
-                    ?.copyWith(color: colors.onSurfaceVariant)),
-          ),
-        if (easier != null || harder != null) ...[
-          const SizedBox(height: 8),
-          if (easier != null)
-            Text('${context.l10n.trainingEasier}: ${easier.exercise.name}',
-                style: theme.textTheme.bodySmall),
-          if (harder != null)
-            Text('${context.l10n.trainingHarder}: ${harder.exercise.name}',
-                style: theme.textTheme.bodySmall),
-        ],
-        TextButton.icon(
-          style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
-          onPressed: onViewExercise,
-          icon: const Icon(Icons.arrow_forward, size: 18),
-          label: Text(context.l10n.trainingViewExercise),
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      elevation: 0,
+      clipBehavior: Clip.antiAlias,
+      child: ExpansionTile(
+        key: PageStorageKey('skill_step_${node.exercise.id}'),
+        tilePadding: const EdgeInsets.all(12),
+        childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+        shape: const Border(),
+        collapsedShape: const Border(),
+        leading: CircleAvatar(
+          backgroundColor: colors.surfaceContainerHighest,
+          foregroundColor: colors.onSurface,
+          child: Text('${node.position}'),
         ),
-      ]),
+        title: Text(node.exercise.name, style: theme.textTheme.titleMedium),
+        subtitle:
+            Text(_levelStatusLabel(context), style: theme.textTheme.bodySmall),
+        children: [
+          Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            FitFlowExerciseImage.thumbnail(
+                exerciseId: node.exercise.id, width: 64, height: 64),
+            const SizedBox(width: 12),
+            Expanded(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                  Text('$levelLabel · $equipmentText'),
+                  const SizedBox(height: 6),
+                  Text(_setupStatusLabel(context)),
+                  for (final issue in node.setupIssueLabels)
+                    Text(issue, style: theme.textTheme.bodySmall),
+                ])),
+          ]),
+          if (easier != null || harder != null)
+            Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Wrap(spacing: 12, runSpacing: 6, children: [
+                  if (easier != null)
+                    Text(
+                        '${context.l10n.trainingEasier}: ${easier.exercise.name}',
+                        style: theme.textTheme.bodySmall),
+                  if (harder != null)
+                    Text(
+                        '${context.l10n.trainingHarder}: ${harder.exercise.name}',
+                        style: theme.textTheme.bodySmall),
+                ])),
+          const SizedBox(height: 12),
+          SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: onViewExercise,
+                child: Text(context.l10n.trainingViewExercise),
+              )),
+        ],
+      ),
     );
   }
 
@@ -129,25 +120,4 @@ class SkillTreeNodeCard extends StatelessWidget {
         return context.l10n.trainingSetupUnavailable;
     }
   }
-}
-
-class _SuitabilityLine extends StatelessWidget {
-  const _SuitabilityLine({required this.icon, required this.label});
-  final IconData icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) => Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ExcludeSemantics(
-              child: Icon(icon,
-                  size: 18,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant)),
-          const SizedBox(width: 8),
-          Expanded(
-              child:
-                  Text(label, style: Theme.of(context).textTheme.bodyMedium)),
-        ],
-      );
 }

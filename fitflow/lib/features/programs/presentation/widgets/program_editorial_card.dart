@@ -74,8 +74,8 @@ class ProgramEditorialCard extends StatelessWidget {
             FilledButton.icon(
               onPressed: open,
               style: FilledButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: fill,
+                  backgroundColor: Colors.black,
+                  foregroundColor: Colors.white,
                   minimumSize: const Size(48, 48),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 12)),

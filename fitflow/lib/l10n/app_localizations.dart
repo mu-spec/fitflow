@@ -2603,10 +2603,40 @@ abstract class AppLocalizations {
   /// **'Exercise Library'**
   String get trainingLibrary;
 
+  /// No description provided for @libraryExercisesTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercises'**
+  String get libraryExercisesTab;
+
+  /// No description provided for @libraryBrowse.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse exercises'**
+  String get libraryBrowse;
+
+  /// No description provided for @libraryFocusBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus body'**
+  String get libraryFocusBody;
+
+  /// No description provided for @exerciseFormBreathing.
+  ///
+  /// In en, this message translates to:
+  /// **'Form & breathing'**
+  String get exerciseFormBreathing;
+
+  /// No description provided for @exerciseMusclesSetup.
+  ///
+  /// In en, this message translates to:
+  /// **'Muscles & setup'**
+  String get exerciseMusclesSetup;
+
   /// No description provided for @trainingSkills.
   ///
   /// In en, this message translates to:
-  /// **'Exercise skill trees'**
+  /// **'Skill paths'**
   String get trainingSkills;
 
   /// No description provided for @trainingSkillsHelp.

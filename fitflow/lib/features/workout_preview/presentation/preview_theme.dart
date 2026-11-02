@@ -99,8 +99,8 @@ class PreviewTheme extends StatelessWidget {
         dialogTheme: base.dialogTheme.copyWith(backgroundColor: page),
         filledButtonTheme: FilledButtonThemeData(
             style: FilledButton.styleFrom(
-          backgroundColor: citrus,
-          foregroundColor: slate,
+          backgroundColor: Colors.black,
+          foregroundColor: Colors.white,
           minimumSize: const Size(48, 48),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           textStyle: text.titleSmall?.copyWith(fontWeight: FontWeight.w600),

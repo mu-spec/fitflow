@@ -81,8 +81,8 @@ class HomeWorkoutHeroCard extends StatelessWidget {
               data: Theme.of(context).copyWith(
                   filledButtonTheme: FilledButtonThemeData(
                 style: FilledButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: const Color(0xFF183D73),
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
                     minimumSize: const Size(48, 48)),
               )),
               child: FitFlowPrimaryButton(

@@ -310,24 +310,9 @@ class _CustomWorkoutBuilderScreenState
     }
   }
 
-  void _editPrescription(
-      CustomWorkoutExerciseEntry entry, WorkoutSectionType sectionType) async {
-    final catalogById = ExerciseCatalog.byIdMap;
-    final exercise = catalogById[entry.exerciseId];
-    if (exercise == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Exercise not found in catalog.')));
-      return;
-    }
-
-    final updated = await showDialog<CustomWorkoutExerciseEntry>(
-      context: context,
-      animationStyle: SystemMotion.overlay(context),
-      builder: (ctx) =>
-          _PrescriptionEditorDialog(entry: entry, exercise: exercise),
-    );
-
-    if (updated != null && mounted) {
+  void _editPrescription(CustomWorkoutExerciseEntry entry,
+      WorkoutSectionType sectionType, CustomWorkoutExerciseEntry updated) {
+    if (mounted) {
       setState(() {
         List<CustomWorkoutExerciseEntry> targetList;
         switch (sectionType) {
@@ -473,7 +458,8 @@ class _CustomWorkoutBuilderScreenState
           toolbarHeight: largeText ? (titleScale > 28 ? 104 : 80) : null,
           title: Semantics(
             header: true,
-            child: Text(isEditing ? 'Edit workout' : context.l10n.trainingCreate),
+            child:
+                Text(isEditing ? 'Edit workout' : context.l10n.trainingCreate),
           ),
           actions: [
             if (_isSaving)
@@ -522,6 +508,7 @@ class _CustomWorkoutBuilderScreenState
                           controller: _nameController,
                           decoration: InputDecoration(
                             labelText: 'Workout name',
+                            counterText: '',
                             hintText: 'e.g., Morning Strength',
                             errorText: CustomWorkoutValidator.validateName(
                                             _nameController.text) !=
@@ -546,21 +533,19 @@ class _CustomWorkoutBuilderScreenState
                           ),
                         ),
                         const SizedBox(height: FitFlowSpace.xs),
-                        Wrap(
-                          spacing: FitFlowSpace.xs,
-                          runSpacing: FitFlowSpace.xs,
-                          children: [
-                            for (final dur in WorkoutDuration.values)
-                              ChoiceChip(
-                                label: Text(dur.label),
-                                selected: _selectedDuration == dur,
-                                onSelected: (selected) {
-                                  if (selected) {
-                                    setState(() => _selectedDuration = dur);
-                                  }
-                                },
-                              ),
+                        DropdownButtonFormField<WorkoutDuration>(
+                          initialValue: _selectedDuration,
+                          isExpanded: true,
+                          decoration: const InputDecoration(
+                              contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 12)),
+                          items: [
+                            for (final duration in WorkoutDuration.values)
+                              DropdownMenuItem(
+                                  value: duration, child: Text(duration.label))
                           ],
+                          onChanged: (value) =>
+                              setState(() => _selectedDuration = value),
                         ),
                       ],
                     ),
@@ -570,8 +555,8 @@ class _CustomWorkoutBuilderScreenState
                       type: WorkoutSectionType.warmup,
                       entries: _warmup,
                       onAdd: () => _addExercise(WorkoutSectionType.warmup),
-                      onEdit: (e) =>
-                          _editPrescription(e, WorkoutSectionType.warmup),
+                      onEdit: (e, updated) => _editPrescription(
+                          e, WorkoutSectionType.warmup, updated),
                       onRemove: (e) =>
                           _removeExercise(e, WorkoutSectionType.warmup),
                       onMoveUp: (i) => _moveUp(i, WorkoutSectionType.warmup),
@@ -584,8 +569,8 @@ class _CustomWorkoutBuilderScreenState
                       type: WorkoutSectionType.main,
                       entries: _main,
                       onAdd: () => _addExercise(WorkoutSectionType.main),
-                      onEdit: (e) =>
-                          _editPrescription(e, WorkoutSectionType.main),
+                      onEdit: (e, updated) => _editPrescription(
+                          e, WorkoutSectionType.main, updated),
                       onRemove: (e) =>
                           _removeExercise(e, WorkoutSectionType.main),
                       onMoveUp: (i) => _moveUp(i, WorkoutSectionType.main),
@@ -597,8 +582,8 @@ class _CustomWorkoutBuilderScreenState
                       type: WorkoutSectionType.cooldown,
                       entries: _cooldown,
                       onAdd: () => _addExercise(WorkoutSectionType.cooldown),
-                      onEdit: (e) =>
-                          _editPrescription(e, WorkoutSectionType.cooldown),
+                      onEdit: (e, updated) => _editPrescription(
+                          e, WorkoutSectionType.cooldown, updated),
                       onRemove: (e) =>
                           _removeExercise(e, WorkoutSectionType.cooldown),
                       onMoveUp: (i) => _moveUp(i, WorkoutSectionType.cooldown),
@@ -620,8 +605,8 @@ class _CustomWorkoutBuilderScreenState
                     if (!_isValidForSave)
                       Text(
                         'Add a name, target duration, and at least one exercise per section.',
-                        style: theme.textTheme.bodySmall
-                            ?.copyWith(color: theme.colorScheme.error),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant),
                       ),
                   ],
                 ),
@@ -634,210 +619,124 @@ class _CustomWorkoutBuilderScreenState
   }
 }
 
-class _SectionEditor extends StatelessWidget {
-  const _SectionEditor({
-    required this.title,
-    required this.type,
-    required this.entries,
-    required this.onAdd,
-    required this.onEdit,
-    required this.onRemove,
-    required this.onMoveUp,
-    required this.onMoveDown,
-  });
-
+class _SectionEditor extends StatefulWidget {
+  const _SectionEditor(
+      {required this.title,
+      required this.type,
+      required this.entries,
+      required this.onAdd,
+      required this.onEdit,
+      required this.onRemove,
+      required this.onMoveUp,
+      required this.onMoveDown});
   final String title;
   final WorkoutSectionType type;
   final List<CustomWorkoutExerciseEntry> entries;
   final VoidCallback onAdd;
-  final void Function(CustomWorkoutExerciseEntry) onEdit;
-  final void Function(CustomWorkoutExerciseEntry) onRemove;
-  final void Function(int) onMoveUp;
-  final void Function(int) onMoveDown;
+  final void Function(CustomWorkoutExerciseEntry, CustomWorkoutExerciseEntry)
+      onEdit;
+  final ValueChanged<CustomWorkoutExerciseEntry> onRemove;
+  final ValueChanged<int> onMoveUp, onMoveDown;
+  @override
+  State<_SectionEditor> createState() => _SectionEditorState();
+}
 
+class _SectionEditorState extends State<_SectionEditor> {
+  String? _editing;
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final catalogById = ExerciseCatalog.byIdMap;
+    return Card(
+      key: Key('custom-workout-section-${widget.type.name}'),
+      elevation: 0,
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      child: Padding(
+          padding: const EdgeInsets.all(16),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Text(widget.title, style: theme.textTheme.titleLarge),
+            for (var index = 0; index < widget.entries.length; index++) ...[
+              const SizedBox(height: 12),
+              _entry(context, widget.entries[index], index),
+            ],
+            const SizedBox(height: 8),
+            Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: TextButton.icon(
+                    onPressed: widget.onAdd,
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add exercise'))),
+          ])),
+    );
+  }
 
-    return Padding(
-      key: Key('custom-workout-section-${type.name}'),
-      padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.sm),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final isNarrow = constraints.maxWidth < 380 ||
-                  MediaQuery.textScalerOf(context).scale(16) > 20;
-              final heading = Semantics(
-                header: true,
-                child: Text(
-                  title,
-                  style: theme.textTheme.titleMedium
-                      ?.copyWith(fontWeight: FontWeight.w500),
-                ),
-              );
-              final addButton = TextButton.icon(
-                style: TextButton.styleFrom(
-                  minimumSize: const Size(64, SystemMotion.minTouchTarget),
-                ),
-                onPressed: onAdd,
-                icon: const Icon(Icons.add),
-                label: const Text('Add exercise'),
-              );
-
-              if (isNarrow) {
-                return Column(
+  Widget _entry(
+      BuildContext context, CustomWorkoutExerciseEntry entry, int index) {
+    final exercise = ExerciseCatalog.byId(entry.exerciseId);
+    final workload = entry.isTimed
+        ? '${entry.sets} × ${entry.workDuration!.inSeconds} sec'
+        : '${entry.sets} × ${entry.repsPerSet} reps';
+    return Column(
+      key: ValueKey(
+          'custom-workout-entry-${widget.type.name}-$index-${entry.exerciseId}'),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(children: [
+          if (exercise != null) ...[
+            FitFlowExerciseImage.thumbnail(
+                exerciseId: exercise.id, width: 56, height: 56),
+            const SizedBox(width: 12),
+          ],
+          Expanded(
+              child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    heading,
-                    const SizedBox(height: FitFlowSpace.xxs),
-                    addButton,
-                  ],
-                );
-              }
-              return Row(
-                children: [
-                  Expanded(child: heading),
-                  addButton,
-                ],
-              );
+                Text(exercise?.name ?? 'Missing: ${entry.exerciseId}',
+                    style: Theme.of(context).textTheme.titleSmall),
+                const SizedBox(height: 4),
+                Text('$workload · ${entry.restBetweenSets.inSeconds} sec rest',
+                    style: Theme.of(context).textTheme.bodySmall),
+              ])),
+        ]),
+        Wrap(
+            spacing: 4,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              TextButton(
+                  onPressed: exercise == null
+                      ? null
+                      : () => setState(() => _editing =
+                          _editing == entry.exerciseId
+                              ? null
+                              : entry.exerciseId),
+                  child: const Text('Edit')),
+              IconButton(
+                  tooltip: 'Move up',
+                  onPressed: index > 0 ? () => widget.onMoveUp(index) : null,
+                  icon: const Icon(Icons.arrow_upward, size: 20)),
+              IconButton(
+                  tooltip: 'Move down',
+                  onPressed: index < widget.entries.length - 1
+                      ? () => widget.onMoveDown(index)
+                      : null,
+                  icon: const Icon(Icons.arrow_downward, size: 20)),
+              IconButton(
+                  tooltip: 'Remove',
+                  onPressed: () => widget.onRemove(entry),
+                  icon: const Icon(Icons.delete_outline, size: 20)),
+            ]),
+        if (_editing == entry.exerciseId && exercise != null)
+          _PrescriptionEditor(
+            key: ValueKey('prescription_${entry.exerciseId}'),
+            entry: entry,
+            exercise: exercise,
+            onCancel: () => setState(() => _editing = null),
+            onSaved: (updated) {
+              widget.onEdit(entry, updated);
+              setState(() => _editing = null);
             },
           ),
-          const SizedBox(height: FitFlowSpace.sm),
-          if (entries.isEmpty)
-            Text(
-              'No exercises yet. Tap Add exercise.',
-              style: theme.textTheme.bodySmall
-                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-            )
-          else
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: entries.length,
-              separatorBuilder: (_, __) => const Divider(height: 1),
-              itemBuilder: (context, index) {
-                final entry = entries[index];
-                final Exercise? exercise = catalogById[entry.exerciseId];
-                final isMissing = exercise == null;
-                final workloadText = entry.isTimed
-                    ? '${entry.sets} × ${entry.workDuration!.inSeconds}s'
-                    : '${entry.sets} × ${entry.repsPerSet} reps';
-                final restText = '${entry.restBetweenSets.inSeconds}s rest';
-
-                return Padding(
-                  key: ValueKey(
-                    'custom-workout-entry-${type.name}-$index-${entry.exerciseId}',
-                  ),
-                  padding:
-                      const EdgeInsets.symmetric(vertical: FitFlowSpace.sm),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (!isMissing) ...[
-                            FitFlowExerciseImage.thumbnail(
-                              exerciseId: exercise.id,
-                              width: 64,
-                              height: 64,
-                            ),
-                            const SizedBox(width: FitFlowSpace.sm),
-                          ],
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (isMissing)
-                                  Text(
-                                    'Missing: ${entry.exerciseId}',
-                                    style: theme.textTheme.titleSmall?.copyWith(
-                                      fontWeight: FontWeight.w500,
-                                      color: theme.colorScheme.error,
-                                    ),
-                                  )
-                                else
-                                  Text(
-                                    exercise.name,
-                                    style: theme.textTheme.titleSmall?.copyWith(
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                if (!isMissing) ...[
-                                  const SizedBox(height: FitFlowSpace.xxs),
-                                  Text(
-                                    _customExerciseMetadata(context, exercise),
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: theme.colorScheme.onSurfaceVariant,
-                                    ),
-                                  ),
-                                  const SizedBox(height: FitFlowSpace.xxs),
-                                  Text(
-                                    '$workloadText • $restText',
-                                    style: theme.textTheme.bodySmall,
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: FitFlowSpace.xxs),
-                      Wrap(
-                        spacing: FitFlowSpace.xs,
-                        runSpacing: FitFlowSpace.xxs,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        children: [
-                          IconButton(
-                            tooltip: 'Move up',
-                            onPressed: index > 0 ? () => onMoveUp(index) : null,
-                            icon: const Icon(Icons.arrow_upward),
-                          ),
-                          IconButton(
-                            tooltip: 'Move down',
-                            onPressed: index < entries.length - 1
-                                ? () => onMoveDown(index)
-                                : null,
-                            icon: const Icon(Icons.arrow_downward),
-                          ),
-                          TextButton(
-                            style: TextButton.styleFrom(
-                              minimumSize: const Size(
-                                64,
-                                SystemMotion.minTouchTarget,
-                              ),
-                            ),
-                            onPressed: isMissing ? null : () => onEdit(entry),
-                            child: const Text('Edit'),
-                          ),
-                          TextButton(
-                            style: TextButton.styleFrom(
-                              minimumSize: const Size(
-                                64,
-                                SystemMotion.minTouchTarget,
-                              ),
-                            ),
-                            onPressed: () => onRemove(entry),
-                            child: const Text('Remove'),
-                          ),
-                          if (isMissing)
-                            Text(
-                              'Exercise no longer available',
-                              style: theme.textTheme.bodySmall
-                                  ?.copyWith(color: theme.colorScheme.error),
-                            ),
-                        ],
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-        ],
-      ),
+      ],
     );
   }
 }
@@ -1054,19 +953,24 @@ class _AddExerciseSheetState extends State<_AddExerciseSheet> {
   }
 }
 
-class _PrescriptionEditorDialog extends StatefulWidget {
-  const _PrescriptionEditorDialog(
-      {required this.entry, required this.exercise});
+class _PrescriptionEditor extends StatefulWidget {
+  const _PrescriptionEditor(
+      {super.key,
+      required this.entry,
+      required this.exercise,
+      required this.onSaved,
+      required this.onCancel});
 
   final CustomWorkoutExerciseEntry entry;
   final Exercise exercise;
+  final ValueChanged<CustomWorkoutExerciseEntry> onSaved;
+  final VoidCallback onCancel;
 
   @override
-  State<_PrescriptionEditorDialog> createState() =>
-      _PrescriptionEditorDialogState();
+  State<_PrescriptionEditor> createState() => _PrescriptionEditorState();
 }
 
-class _PrescriptionEditorDialogState extends State<_PrescriptionEditorDialog> {
+class _PrescriptionEditorState extends State<_PrescriptionEditor> {
   late final TextEditingController _setsController;
   late final TextEditingController _repsController;
   late final TextEditingController _workController;
@@ -1131,130 +1035,123 @@ class _PrescriptionEditorDialogState extends State<_PrescriptionEditorDialog> {
     final theme = Theme.of(context);
     final error = _validate();
 
-    return AlertDialog(
-      scrollable: true,
-      shape: RoundedRectangleBorder(borderRadius: FitFlowRadius.cardBorder),
-      title: Semantics(
-        header: true,
-        child: Text('Edit ${widget.exercise.name}',
-            style: theme.textTheme.titleMedium
-                ?.copyWith(fontWeight: FontWeight.w500)),
-      ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextField(
-            controller: _setsController,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              labelText: 'Sets',
-              border: OutlineInputBorder(
-                borderRadius: FitFlowRadius.mediumBorder,
-              ),
-            ),
-            onChanged: (_) => setState(() {}),
-          ),
-          const SizedBox(height: 12),
-          if (_isTimed)
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             TextField(
-              controller: _workController,
+              controller: _setsController,
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(
-                labelText: 'Work seconds',
-                border: OutlineInputBorder(
-                  borderRadius: FitFlowRadius.mediumBorder,
-                ),
-              ),
-              onChanged: (_) => setState(() {}),
-            )
-          else
-            TextField(
-              controller: _repsController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Reps',
+                labelText: 'Sets',
                 border: OutlineInputBorder(
                   borderRadius: FitFlowRadius.mediumBorder,
                 ),
               ),
               onChanged: (_) => setState(() {}),
             ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _restController,
-            keyboardType: TextInputType.number,
-            decoration: const InputDecoration(
-              labelText: 'Rest seconds',
-              border: OutlineInputBorder(
-                borderRadius: FitFlowRadius.mediumBorder,
+            const SizedBox(height: 12),
+            if (_isTimed)
+              TextField(
+                controller: _workController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Work seconds',
+                  border: OutlineInputBorder(
+                    borderRadius: FitFlowRadius.mediumBorder,
+                  ),
+                ),
+                onChanged: (_) => setState(() {}),
+              )
+            else
+              TextField(
+                controller: _repsController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Reps',
+                  border: OutlineInputBorder(
+                    borderRadius: FitFlowRadius.mediumBorder,
+                  ),
+                ),
+                onChanged: (_) => setState(() {}),
               ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _restController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: 'Rest seconds',
+                border: OutlineInputBorder(
+                  borderRadius: FitFlowRadius.mediumBorder,
+                ),
+              ),
+              onChanged: (_) => setState(() {}),
             ),
-            onChanged: (_) => setState(() {}),
-          ),
-          const SizedBox(height: 12),
-          Builder(
-            builder: (context) {
-              final sets = int.tryParse(_setsController.text.trim()) ??
-                  widget.entry.sets;
-              final rest = int.tryParse(_restController.text.trim()) ??
-                  widget.entry.restBetweenSets.inSeconds;
-              String preview;
-              if (_isTimed) {
-                final work = int.tryParse(_workController.text.trim()) ??
-                    widget.entry.workDuration?.inSeconds ??
-                    0;
-                preview = 'Preview: $sets × $work' 's, $rest' 's rest';
-              } else {
-                final reps = int.tryParse(_repsController.text.trim()) ??
-                    widget.entry.repsPerSet ??
-                    0;
-                preview = 'Preview: $sets × $reps reps, $rest' 's rest';
-              }
-              return Text(preview, style: theme.textTheme.bodySmall);
-            },
-          ),
-          if (error != null) ...[
-            const SizedBox(height: 8),
-            Text(error,
-                style: theme.textTheme.bodySmall
-                    ?.copyWith(color: theme.colorScheme.error)),
-          ],
-        ],
-      ),
-      actions: [
-        TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel')),
-        FilledButton(
-          onPressed: error == null
-              ? () {
-                  final sets = int.parse(_setsController.text.trim());
-                  final rest = int.parse(_restController.text.trim());
-                  CustomWorkoutExerciseEntry updated;
-                  if (_isTimed) {
-                    final work = int.parse(_workController.text.trim());
-                    updated = CustomWorkoutExerciseEntry(
-                      exerciseId: widget.entry.exerciseId,
-                      sets: sets,
-                      workDuration: Duration(seconds: work),
-                      restBetweenSets: Duration(seconds: rest),
-                    );
-                  } else {
-                    final reps = int.parse(_repsController.text.trim());
-                    updated = CustomWorkoutExerciseEntry(
-                      exerciseId: widget.entry.exerciseId,
-                      sets: sets,
-                      repsPerSet: reps,
-                      restBetweenSets: Duration(seconds: rest),
-                    );
-                  }
-                  Navigator.of(context).pop(updated);
+            const SizedBox(height: 12),
+            Builder(
+              builder: (context) {
+                final sets = int.tryParse(_setsController.text.trim()) ??
+                    widget.entry.sets;
+                final rest = int.tryParse(_restController.text.trim()) ??
+                    widget.entry.restBetweenSets.inSeconds;
+                String preview;
+                if (_isTimed) {
+                  final work = int.tryParse(_workController.text.trim()) ??
+                      widget.entry.workDuration?.inSeconds ??
+                      0;
+                  preview = 'Preview: $sets × $work' 's, $rest' 's rest';
+                } else {
+                  final reps = int.tryParse(_repsController.text.trim()) ??
+                      widget.entry.repsPerSet ??
+                      0;
+                  preview = 'Preview: $sets × $reps reps, $rest' 's rest';
                 }
-              : null,
-          child: const Text('Save'),
+                return Text(preview, style: theme.textTheme.bodySmall);
+              },
+            ),
+            if (error != null) ...[
+              const SizedBox(height: 8),
+              Text(error,
+                  style: theme.textTheme.bodySmall
+                      ?.copyWith(color: theme.colorScheme.error)),
+            ],
+          ],
         ),
-      ],
+        Wrap(spacing: 8, children: [
+          TextButton(onPressed: widget.onCancel, child: const Text('Cancel')),
+          FilledButton(
+            onPressed: error == null
+                ? () {
+                    final sets = int.parse(_setsController.text.trim());
+                    final rest = int.parse(_restController.text.trim());
+                    CustomWorkoutExerciseEntry updated;
+                    if (_isTimed) {
+                      final work = int.parse(_workController.text.trim());
+                      updated = CustomWorkoutExerciseEntry(
+                        exerciseId: widget.entry.exerciseId,
+                        sets: sets,
+                        workDuration: Duration(seconds: work),
+                        restBetweenSets: Duration(seconds: rest),
+                      );
+                    } else {
+                      final reps = int.parse(_repsController.text.trim());
+                      updated = CustomWorkoutExerciseEntry(
+                        exerciseId: widget.entry.exerciseId,
+                        sets: sets,
+                        repsPerSet: reps,
+                        restBetweenSets: Duration(seconds: rest),
+                      );
+                    }
+                    widget.onSaved(updated);
+                  }
+                : null,
+            child: const Text('Save'),
+          ),
+        ]),
+      ]),
     );
   }
 }

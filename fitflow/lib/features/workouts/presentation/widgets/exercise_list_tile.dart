@@ -6,6 +6,7 @@ import 'package:fitflow/features/onboarding/data/workout_equipment.dart';
 import 'package:fitflow/features/workouts/domain/exercise.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
+import 'training_presentation.dart';
 import 'package:flutter/material.dart';
 
 /// Lazy, media-led library row: name, movement/focus, and equipment only.
@@ -26,13 +27,12 @@ class ExerciseListTile extends StatelessWidget {
         equipment.isEmpty || equipment.contains(WorkoutEquipment.none)
             ? l.trainingNoEquipment
             : equipment.map((e) => equipmentLabel(l, e)).join(' · ');
-    final focus = exercise.movementPattern == null
-        ? exercise.primaryMuscles.map((m) => m.label).join(' · ')
-        : movementPatternLabel(l, exercise.movementPattern!);
+    final focus = trainingDifficultyLabel(l, exercise.difficulty);
 
     return MergeSemantics(
       child: Material(
-        color: Colors.transparent,
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(18),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           borderRadius: FitFlowRadius.mediumBorder,
@@ -40,7 +40,7 @@ class ExerciseListTile extends StatelessWidget {
           child: ConstrainedBox(
             constraints: const BoxConstraints(minHeight: 80),
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.xs),
+              padding: const EdgeInsets.all(FitFlowSpace.sm),
               child: Row(
                 children: [
                   FitFlowExerciseImage.thumbnail(

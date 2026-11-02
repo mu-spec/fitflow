@@ -108,6 +108,8 @@ class FitFlowThemeData {
       filledButtonTheme: FilledButtonThemeData(
         style: _filledStyle(palette),
       ),
+      elevatedButtonTheme:
+          ElevatedButtonThemeData(style: _filledStyle(palette)),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: _outlinedStyle(palette),
       ),
@@ -256,8 +258,8 @@ class FitFlowThemeData {
       minimumSize: const Size(48, 52),
       tapTargetSize: MaterialTapTargetSize.padded,
       elevation: 0,
-      backgroundColor: palette.brand,
-      foregroundColor: palette.onBrand,
+      backgroundColor: Colors.black,
+      foregroundColor: Colors.white,
       disabledBackgroundColor: palette.subtleSurface,
       disabledForegroundColor: palette.textMuted,
       textStyle: FitFlowTypography.label,

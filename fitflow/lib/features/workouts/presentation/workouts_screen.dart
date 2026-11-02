@@ -5,8 +5,8 @@ import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
-import 'package:fitflow/core/design/media/fitflow_program_image.dart';
-import 'package:fitflow/core/design/media/program_media_registry.dart';
+import 'package:fitflow/features/programs/presentation/widgets/program_editorial_card.dart';
+
 import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
@@ -94,16 +94,9 @@ class _WorkoutsContent extends ConsumerWidget {
 
                   // E. Explore — compact secondary tools, never rivaling
                   // the primary features.
-                  _HubHeading(l.trainingExplore),
+                  _HubHeading(l.trainingLibrary),
                   const SizedBox(height: FitFlowSpace.sm),
                   _entrance(context, const _ExploreTiles()),
-                  const Divider(height: 1),
-                  _HubNavigationRow(
-                    title: l.trainingAdaptiveHome,
-                    subtitle: l.trainingAdaptiveAction,
-                    icon: Icons.home_outlined,
-                    onTap: () => context.go(AppRoutes.home),
-                  ),
                 ],
               ),
             ),
@@ -136,7 +129,7 @@ class _WorkoutsHeader extends StatelessWidget {
           header: true,
           child: Text(l.trainingWorkoutsTitle,
               style: text.titleLarge
-                  ?.copyWith(fontSize: 21, fontWeight: FontWeight.w500)),
+                  ?.copyWith(fontSize: 28, fontWeight: FontWeight.w700)),
         ),
       ],
     );
@@ -162,11 +155,8 @@ class _CustomWorkoutsSection extends ConsumerWidget {
           data: (templates) => templates.isEmpty
               ? Column(
                   key: const Key('v2_custom_empty'),
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(l.trainingCustomHelp,
-                        style: Theme.of(context).textTheme.bodyMedium),
-                    const SizedBox(height: FitFlowSpace.sm),
                     FilledButton(
                       onPressed: () => context.push(AppRoutes.customWorkoutNew),
                       child: Text(l.trainingCreate),
@@ -410,11 +400,10 @@ class _ExploreTiles extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final exerciseCount = ExerciseCatalog.all.where((e) => e.active).length;
+
     return Column(children: [
       _HubNavigationRow(
-        title: l.trainingLibrary,
-        subtitle: l.trainingBrowse(exerciseCount),
+        title: l.libraryBrowse,
         icon: Icons.fitness_center_outlined,
         onTap: () => context.push(AppRoutes.exerciseLibrary),
       ),
@@ -432,24 +421,45 @@ class _ProgramsEntry extends StatelessWidget {
   const _ProgramsEntry();
 
   @override
-  Widget build(BuildContext context) =>
-      LayoutBuilder(builder: (context, constraints) {
-        final compact = constraints.maxWidth < 340 ||
-            MediaQuery.textScalerOf(context).scale(16) > 22;
-        final width = compact ? 80.0 : 104.0;
-        return _HubNavigationRow(
-          key: const Key('v2_programs_feature'),
-          // A representative collection cover is decoration, never a recommendation.
-          leading: FitFlowProgramImage(
-            programId: ProgramMediaRegistry.entries.first.programId,
-            width: width,
-            height: width * 3 / 4,
-          ),
-          title: context.l10n.trainingPrograms,
-          subtitle: context.l10n.trainingProgramsHelp,
-          onTap: () => context.push(AppRoutes.programs),
-        );
-      });
+  Widget build(BuildContext context) {
+    const programId = 'balanced_foundations';
+    return Material(
+      key: const Key('v2_programs_feature'),
+      color: ProgramEditorialCard.colorFor(programId),
+      borderRadius: BorderRadius.circular(24),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => context.push(AppRoutes.programs),
+        child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(children: [
+              Expanded(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                    Text(context.l10n.trainingPrograms,
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineSmall
+                            ?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700)),
+                    const SizedBox(height: 20),
+                    const Icon(Icons.arrow_forward, color: Colors.white),
+                  ])),
+              const SizedBox(width: 12),
+              Expanded(
+                  child: AspectRatio(
+                      aspectRatio: 2 / 3,
+                      child: Image.asset(
+                          'assets/images/editorial/${programId}_portrait.webp',
+                          key: const Key('workouts_program_portrait'),
+                          fit: BoxFit.contain,
+                          excludeFromSemantics: true))),
+            ])),
+      ),
+    );
+  }
 }
 
 class _HubHeading extends StatelessWidget {
@@ -463,23 +473,16 @@ class _HubHeading extends StatelessWidget {
             style: Theme.of(context)
                 .textTheme
                 .titleMedium
-                ?.copyWith(fontSize: 18, fontWeight: FontWeight.w500)),
+                ?.copyWith(fontSize: 20, fontWeight: FontWeight.w700)),
       );
 }
 
 /// Native focus, press feedback and tap semantics without another enclosing card.
 class _HubNavigationRow extends StatelessWidget {
   const _HubNavigationRow(
-      {super.key,
-      required this.title,
-      required this.onTap,
-      this.subtitle,
-      this.icon,
-      this.leading});
+      {required this.title, required this.onTap, this.icon});
   final String title;
-  final String? subtitle;
   final IconData? icon;
-  final Widget? leading;
   final VoidCallback onTap;
 
   @override
@@ -494,8 +497,8 @@ class _HubNavigationRow extends StatelessWidget {
         foregroundColor: colors.brand,
       ),
       child: Row(children: [
-        if (leading != null || icon != null) ...[
-          leading ?? ExcludeSemantics(child: Icon(icon, size: 22)),
+        if (icon != null) ...[
+          ExcludeSemantics(child: Icon(icon, size: 22)),
           const SizedBox(width: FitFlowSpace.sm),
         ],
         Expanded(
@@ -505,12 +508,6 @@ class _HubNavigationRow extends StatelessWidget {
             Text(title,
                 style: text.titleMedium?.copyWith(
                     color: colors.textPrimary, fontWeight: FontWeight.w500)),
-            if (subtitle != null) ...[
-              const SizedBox(height: FitFlowSpace.xxs),
-              Text(subtitle!,
-                  style:
-                      text.bodyMedium?.copyWith(color: colors.textSecondary)),
-            ],
           ],
         )),
         const SizedBox(width: FitFlowSpace.xs),

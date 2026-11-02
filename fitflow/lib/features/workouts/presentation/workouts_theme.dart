@@ -13,13 +13,13 @@ class WorkoutsTheme extends StatelessWidget {
     final dark = base.brightness == Brightness.dark;
     final original = FitFlowTheme.of(context).palette;
     const slate = Color(0xFF202526);
-    const citrus = Color(0xFFD4E779);
-    final page = dark ? slate : const Color(0xFFF3F4EE);
-    final surface = dark ? const Color(0xFF303737) : const Color(0xFFE4E8DD);
+
+    final page = dark ? const Color(0xFF17191E) : const Color(0xFFF5F6F9);
+    final surface = dark ? const Color(0xFF252831) : Colors.white;
     final ink = dark ? const Color(0xFFF3F4EE) : slate;
     final secondary = dark ? const Color(0xFFC4CBC3) : const Color(0xFF50594E);
-    final accent = dark ? citrus : const Color(0xFF526515);
-    final line = dark ? const Color(0xFF505958) : const Color(0xFFC5CDBB);
+    final accent = dark ? Colors.white : Colors.black;
+    final line = dark ? const Color(0xFF414650) : const Color(0xFFE3E6ED);
     final palette = FitFlowPalette(
       brand: accent,
       onBrand: dark ? slate : Colors.white,
@@ -141,16 +141,16 @@ class WorkoutsTheme extends StatelessWidget {
         ),
         chipTheme: base.chipTheme.copyWith(
           backgroundColor: surface,
-          selectedColor: citrus,
-          secondarySelectedColor: citrus,
+          selectedColor: Colors.black,
+          secondarySelectedColor: Colors.black,
           disabledColor: surface,
-          checkmarkColor: slate,
+          checkmarkColor: Colors.white,
           labelStyle: text.labelMedium?.copyWith(
             color: WidgetStateColor.resolveWith((states) =>
-                states.contains(WidgetState.selected) ? slate : ink),
+                states.contains(WidgetState.selected) ? Colors.white : ink),
             fontWeight: FontWeight.w500,
           ),
-          secondaryLabelStyle: text.labelMedium?.copyWith(color: slate),
+          secondaryLabelStyle: text.labelMedium?.copyWith(color: Colors.white),
           side: BorderSide(color: line),
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         ),
@@ -161,8 +161,8 @@ class WorkoutsTheme extends StatelessWidget {
         ),
         filledButtonTheme: FilledButtonThemeData(
             style: FilledButton.styleFrom(
-          backgroundColor: citrus,
-          foregroundColor: slate,
+          backgroundColor: Colors.black,
+          foregroundColor: Colors.white,
           minimumSize: const Size(48, 48),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           textStyle: text.titleSmall?.copyWith(fontWeight: FontWeight.w600),

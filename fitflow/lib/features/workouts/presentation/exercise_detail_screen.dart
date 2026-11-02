@@ -23,22 +23,38 @@ import 'package:fitflow/l10n/locale_format.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+Future<void> showExerciseGuide(BuildContext context, String exerciseId) =>
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      showDragHandle: true,
+      clipBehavior: Clip.antiAlias,
+      builder: (_) => FractionallySizedBox(
+          heightFactor: .9,
+          child: ExerciseDetailScreen(exerciseId: exerciseId, isGuide: true)),
+    );
+
 /// Scoped Slate + Citrus presentation. The same tokens back the Player's own
 /// theme, so the Player's exercise-detail visits keep their approved look.
 class ExerciseDetailScreen extends StatelessWidget {
-  const ExerciseDetailScreen({super.key, required this.exerciseId});
+  const ExerciseDetailScreen(
+      {super.key, required this.exerciseId, this.isGuide = false});
 
   final String exerciseId;
+  final bool isGuide;
 
   @override
-  Widget build(BuildContext context) =>
-      WorkoutsTheme(child: _ExerciseDetailContent(exerciseId: exerciseId));
+  Widget build(BuildContext context) => WorkoutsTheme(
+      child: _ExerciseDetailContent(exerciseId: exerciseId, isGuide: isGuide));
 }
 
 class _ExerciseDetailContent extends StatelessWidget {
-  const _ExerciseDetailContent({required this.exerciseId});
+  const _ExerciseDetailContent(
+      {required this.exerciseId, required this.isGuide});
 
   final String exerciseId;
+  final bool isGuide;
 
   @override
   Widget build(BuildContext context) {
@@ -73,6 +89,12 @@ class _ExerciseDetailContent extends StatelessWidget {
       backgroundColor: visual.page,
       appBar: AppBar(
         title: Text(context.l10n.trainingDetails),
+        leading: isGuide
+            ? IconButton(
+                tooltip: context.l10n.trainingClose,
+                icon: const Icon(Icons.close),
+                onPressed: () => Navigator.of(context).pop())
+            : null,
         centerTitle: false,
         toolbarHeight: 56 +
             (MediaQuery.textScalerOf(context).scale(1) - 1).clamp(0, 3) * 48,
@@ -103,32 +125,36 @@ class _ExerciseDetailContent extends StatelessWidget {
                 if (exercise.instructions.isNotEmpty)
                   _HowToSection(exercise: exercise),
                 const SizedBox(height: FitFlowSpace.md),
-                _MusclesSection(exercise: exercise),
-                if (exercise.commonMistakes.isNotEmpty) ...[
-                  const SizedBox(height: FitFlowSpace.md),
-                  _MistakesSection(exercise: exercise),
-                ],
-                if (exercise.breathingGuidance != null) ...[
-                  const SizedBox(height: FitFlowSpace.md),
-                  _BreathingSection(exercise: exercise),
-                ],
-                if (progression != null) ...[
-                  const SizedBox(height: FitFlowSpace.md),
-                  ExerciseProgressionSection(
-                    progression: progression,
-                    skillTreeFamilyId: skillTreeFamilyId,
+                TrainingDisclosure(
+                  title: context.l10n.exerciseFormBreathing,
+                  children: [
+                    if (exercise.commonMistakes.isNotEmpty)
+                      _MistakesSection(exercise: exercise),
+                    if (exercise.breathingGuidance != null)
+                      _BreathingSection(exercise: exercise),
+                  ],
+                ),
+                TrainingDisclosure(
+                  title: context.l10n.exerciseMusclesSetup,
+                  children: [
+                    _MusclesSection(exercise: exercise),
+                    const SizedBox(height: 12),
+                    ExerciseCharacteristicsSection(exercise: exercise),
+                  ],
+                ),
+                if (progression != null && !isGuide)
+                  TrainingDisclosure(
+                    title: context.l10n.trainingProgression,
+                    children: [
+                      ExerciseProgressionSection(
+                        progression: progression,
+                        skillTreeFamilyId: skillTreeFamilyId,
+                      )
+                    ],
                   ),
-                ],
-                const SizedBox(height: FitFlowSpace.md),
                 TrainingDisclosure(
                   title: context.l10n.trainingDefaults,
                   children: [_PrescriptionSection(exercise: exercise)],
-                ),
-                TrainingDisclosure(
-                  title: context.l10n.trainingCatalogDetails,
-                  children: [
-                    ExerciseCharacteristicsSection(exercise: exercise)
-                  ],
                 ),
                 const SizedBox(height: FitFlowSpace.lg),
               ],
