@@ -69,3 +69,15 @@ support contacts. Authoring: tools/squat_sample/build_plank_review.py.
 
 
 2026-11-16: Approved Doorway Row and Bird Dog refinements integrated from original Military Push Ups artwork. Bird Dog shoe orientation follows the ankle. Source attribution/license unchanged.
+
+Dead Bug, Cat-Cow and Reverse Snow Angel were replaced on 16 November 2026 with
+the owner-approved final batch. All three reuse the original Military Push Ups
+part artwork with rigid limb transforms: Dead Bug alternates opposite arm/leg
+reaches over a 5.36-second dual repetition, Cat-Cow uses a 2.68-second loop and
+bends the original shirt path between fixed hip and shoulder endpoints to show
+spinal motion (its shirt path is therefore not byte-identical to the source),
+and Reverse Snow Angel uses the approved oblique side projection for the prone
+arm sweep over 2.68 seconds. Authoring: tools/squat_sample/build_final_three_review.py.
+Publication: tools/squat_sample/publish_final_three.py (only these six files
+changed; the other 22 motion/poster pairs were hash-verified unchanged).
+Source attribution and license are unchanged.
