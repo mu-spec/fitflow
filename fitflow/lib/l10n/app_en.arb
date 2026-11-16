@@ -3,7 +3,16 @@
   "homeActivity": "Your activity",
   "homeSeeAll": "See all",
   "homeActivityDay": "{date}: {count, plural, =1{1 completed workout} other{{count} completed workouts}}",
-  "@homeActivityDay": {"placeholders": {"date": {"type": "String"}, "count": {"type": "int"}}},
+  "@homeActivityDay": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "@@description": "English is the only complete FitFlow V1 locale. Do not add a locale until the consumer-facing experience, including instructional content, has a reviewed translation.",
   "appTitle": "Home Workout",
   "@appTitle": {
@@ -1323,5 +1332,20 @@
   "setupReady": "Your setup is ready",
   "setupPreparationFailed": "Your choices are saved. We couldn’t prepare your workout. Try again.",
   "setupPreparationLocal": "Prepared on your device.",
-  "exerciseExamples": "Exercise examples"
+  "exerciseExamples": "Exercise examples",
+  "profileTrainingSetup": "Your training setup",
+  "programLength": "Program length",
+  "reportOverview": "Overview",
+  "reportHistory": "History",
+  "reportTraining": "Training",
+  "reportTimeDetails": "Time details",
+  "workoutControlsTitle": "Workout controls",
+  "workoutVoiceGuidance": "Voice guidance",
+  "settingsAppearance": "Appearance",
+  "settingsReminderHelp": "Notification help",
+  "settingsAboutData": "Your data",
+  "settingsArtworkSources": "Sources and licenses",
+  "settingsArtworkNotes": "Adaptation notes",
+  "backupCreateSummary": "Keep a copy of your profile, workouts and progress.",
+  "backupIncluded": "What is included?"
 }

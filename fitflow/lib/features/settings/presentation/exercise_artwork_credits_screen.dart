@@ -1,3 +1,4 @@
+import 'package:fitflow/core/design/widgets/fitflow_section_card.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
@@ -11,7 +12,7 @@ class ExerciseArtworkCreditsScreen extends StatelessWidget {
 
   static const title = 'Exercise artwork credits';
   static const illustrationNoticeAsset =
-      'assets/animations/illustrated_athletes/NOTICE.md';
+      'assets/animations/launch25/NOTICE.md';
   static const realPeopleNoticeAsset =
       'assets/animations/real_people/NOTICE.md';
 
@@ -48,10 +49,21 @@ class ExerciseArtworkCreditsScreen extends StatelessWidget {
                       return SingleChildScrollView(
                         padding:
                             const EdgeInsets.all(FitFlowSpace.screenHorizontal),
-                        child: SelectableText(
-                          snapshot.data!.join('\n\n---\n\n'),
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
+                        child: Column(children: [
+                          for (var i = 0; i < snapshot.data!.length; i++)
+                            FitFlowSectionCard(
+                                child: ExpansionTile(
+                                    tilePadding: EdgeInsets.zero,
+                                    title: Text(i == 0
+                                        ? 'Exercise illustrations'
+                                        : 'Exercise media'),
+                                    children: [
+                                  SelectableText(snapshot.data![i],
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium)
+                                ])),
+                        ]),
                       );
                     },
                   ),

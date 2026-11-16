@@ -45,7 +45,10 @@ class WorkoutPreviewExerciseRow extends StatelessWidget {
             minVerticalPadding: FitFlowSpace.xs,
             minTileHeight: 64,
             leading: FitFlowExerciseImage.thumbnail(
-                exerciseId: prescription.exercise.id, width: 56, height: 56),
+                animate: true,
+                exerciseId: prescription.exercise.id,
+                width: 56,
+                height: 56),
             title: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

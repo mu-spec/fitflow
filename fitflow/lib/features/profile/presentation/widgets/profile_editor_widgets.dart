@@ -7,6 +7,7 @@ import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:flutter/material.dart';
+import 'package:fitflow/core/design/widgets/fitflow_section_card.dart';
 import 'package:go_router/go_router.dart';
 
 /// Failure message shown when a profile save could not be persisted. The
@@ -184,23 +185,33 @@ class ProfileOptionTile extends StatelessWidget {
       button: true,
       selected: selected,
       enabled: enabled,
-      child: ListTile(
-        contentPadding: EdgeInsets.zero,
-        minVerticalPadding: 4,
-        minTileHeight: 48,
-        enabled: enabled,
-        selected: selected,
-        onTap: enabled ? onSelected : null,
-        title: Text(label, style: Theme.of(context).textTheme.bodyLarge),
-        subtitle: helperText == null ? null : Text(helperText!),
-        trailing: ExcludeSemantics(
-            child: Icon(
-          selected ? Icons.check_circle : Icons.circle_outlined,
-          color: selected
-              ? Theme.of(context).colorScheme.primary
-              : Theme.of(context).colorScheme.onSurfaceVariant,
-        )),
-      ));
+      child: Material(
+          color: Theme.of(context).colorScheme.surfaceContainerLow,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              side: BorderSide(
+                  color: selected
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.outlineVariant,
+                  width: selected ? 2 : 1)),
+          child: ListTile(
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            minVerticalPadding: 4,
+            minTileHeight: 48,
+            enabled: enabled,
+            selected: selected,
+            onTap: enabled ? onSelected : null,
+            title: Text(label, style: Theme.of(context).textTheme.bodyLarge),
+            subtitle: helperText == null ? null : Text(helperText!),
+            trailing: ExcludeSemantics(
+                child: Icon(
+              selected ? Icons.check_circle : Icons.circle_outlined,
+              color: selected
+                  ? Theme.of(context).colorScheme.primary
+                  : Theme.of(context).colorScheme.onSurfaceVariant,
+            )),
+          )));
 }
 
 class ProfileEditorMissingState extends StatelessWidget {
@@ -213,4 +224,58 @@ class ProfileEditorMissingState extends StatelessWidget {
           action: FilledButton(
               onPressed: () => context.go(AppRoutes.onboarding),
               child: Text(context.l10n.setUpProfile))));
+}
+
+/// A single compact selection; the enclosing editor still owns the draft.
+class ProfileSelectField<T> extends StatelessWidget {
+  const ProfileSelectField(
+      {super.key,
+      required this.title,
+      required this.value,
+      required this.values,
+      required this.label,
+      required this.onChanged,
+      this.enabled = true});
+  final String title;
+  final T value;
+  final List<T> values;
+  final String Function(T) label;
+  final ValueChanged<T> onChanged;
+  final bool enabled;
+
+  @override
+  Widget build(BuildContext context) => FitFlowSectionCard(
+        child:
+            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Text(title, style: Theme.of(context).textTheme.labelLarge),
+          const SizedBox(height: 10),
+          DropdownButtonFormField<T>(
+            initialValue: value,
+            isExpanded: true,
+            isDense: false,
+            selectedItemBuilder: (context) => values
+                .map((v) => Align(
+                    alignment: Alignment.centerLeft, child: Text(label(v))))
+                .toList(),
+            itemHeight: null,
+            menuMaxHeight: 420,
+            decoration: InputDecoration(
+                semanticCounterText: title,
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 12)),
+            items: values
+                .map((v) => DropdownMenuItem(
+                    value: v,
+                    child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        child: Text(label(v)))))
+                .toList(),
+            onChanged: enabled
+                ? (v) {
+                    if (v != null) onChanged(v);
+                  }
+                : null,
+          ),
+        ]),
+      );
 }

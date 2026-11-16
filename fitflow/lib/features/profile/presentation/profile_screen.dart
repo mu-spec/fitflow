@@ -1,3 +1,5 @@
+import 'package:fitflow/features/onboarding/state/onboarding_controller.dart';
+import 'package:fitflow/core/design/widgets/fitflow_section_card.dart';
 import 'package:fitflow/features/settings/presentation/widgets/profile_settings_theme.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/app/router/app_routes.dart';
@@ -7,7 +9,6 @@ import 'package:fitflow/features/profile/presentation/profile_summary_format.dar
 import 'package:fitflow/features/profile/presentation/widgets/profile_editor_widgets.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
-import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
 import 'package:fitflow/features/capability_assessment/presentation/capability_assessment_copy.dart';
@@ -91,15 +92,14 @@ class _ProfileMissingState extends StatelessWidget {
               onPressed: onSetup, child: Text(context.l10n.setUpProfile))));
 }
 
-class _ProfileSummaryList extends StatelessWidget {
+class _ProfileSummaryList extends ConsumerWidget {
   const _ProfileSummaryList({required this.profile});
 
   final UserFitnessProfile profile;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final brand = FitFlowTheme.of(context);
     final l = context.l10n;
 
     return SingleChildScrollView(
@@ -112,75 +112,70 @@ class _ProfileSummaryList extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            l.homeBrand,
-            style: theme.textTheme.labelMedium?.copyWith(
-              color: brand.brand,
-              letterSpacing: 1.0,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: FitFlowSpace.xs),
           Semantics(
-            header: true,
-            child: Text(
-              l.yourProfile,
-              style: theme.textTheme.titleLarge
-                  ?.copyWith(fontSize: 22, fontWeight: FontWeight.w500),
+              header: true,
+              child: Text(l.yourProfile,
+                  style: theme.textTheme.headlineMedium
+                      ?.copyWith(fontSize: 30, fontWeight: FontWeight.w700))),
+          const SizedBox(height: 24),
+          FitFlowSectionCard(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                Text(l.profileTrainingSetup,
+                    style: theme.textTheme.titleMedium
+                        ?.copyWith(fontWeight: FontWeight.w600)),
+                const SizedBox(height: 10),
+                Text(fitnessProfileSummaryPrimary(profile, l10n: l),
+                    style: theme.textTheme.bodyMedium),
+                const SizedBox(height: 6),
+                Text(fitnessProfileSummarySecondary(profile, l10n: l),
+                    style: theme.textTheme.bodySmall),
+              ])),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: OutlinedButton.icon(
+              icon: const Icon(Icons.tune_rounded),
+              label: const Text('Review setup questions'),
+              onPressed: () {
+                ref
+                    .read(onboardingControllerProvider.notifier)
+                    .reviewProfile(profile);
+                context.push(AppRoutes.onboarding);
+              },
             ),
           ),
-          const SizedBox(height: 16),
-          Column(
-            children: [
-              _ProfileSummaryRow(
-                icon: Icons.tune_rounded,
-                title: l.profileFitnessEntry,
-                subtitle:
-                    '${fitnessProfileSummaryPrimary(profile, l10n: l)}\n${fitnessProfileSummarySecondary(profile, l10n: l)}',
-                onTap: () => context.go(AppRoutes.fitnessProfile),
-              ),
-              const Divider(
-                height: 1,
-                indent: FitFlowSpace.md,
-                endIndent: FitFlowSpace.md,
-              ),
-              _ProfileSummaryRow(
-                icon: Icons.build,
-                title: l.homeEquipment,
-                subtitle: formatEquipmentSummary(
-                  profile.equipment,
-                  l10n: l,
-                  showAll: true,
-                ),
-                onTap: () => context.go(AppRoutes.equipment),
-              ),
-              const Divider(
-                height: 1,
-                indent: FitFlowSpace.md,
-                endIndent: FitFlowSpace.md,
-              ),
-              _ProfileSummaryRow(
-                icon: Icons.tune,
-                title: l.profilePreferencesEntry,
-                subtitle: formatPreferencesSummary(
-                  profile.preferences,
-                  l10n: l,
-                  showAll: true,
-                ),
-                onTap: () => context.go(AppRoutes.workoutPreferences),
-              ),
-            ],
-          ),
-          const Divider(height: 16),
-          _ProfileSummaryRow(
-            icon: Icons.settings,
-            title: l.settingsTitle,
-            subtitle: null,
-            isEditing: false,
-            onTap: () => context.go(AppRoutes.settings),
-          ),
-          const Divider(height: 16),
-          const _MovementSummary(),
+          FitFlowSectionCard(
+              padding: EdgeInsets.zero,
+              child: Column(children: [
+                _ProfileSummaryRow(
+                    icon: Icons.person_outline_rounded,
+                    title: l.profileFitnessEntry,
+                    subtitle: null,
+                    onTap: () => context.go(AppRoutes.fitnessProfile)),
+                const Divider(height: 1, indent: 48),
+                _ProfileSummaryRow(
+                    icon: Icons.fitness_center_rounded,
+                    title: l.homeEquipment,
+                    subtitle:
+                        formatEquipmentSummary(profile.equipment, l10n: l),
+                    onTap: () => context.go(AppRoutes.equipment)),
+                const Divider(height: 1, indent: 48),
+                _ProfileSummaryRow(
+                    icon: Icons.tune_rounded,
+                    title: l.profilePreferencesEntry,
+                    subtitle: null,
+                    onTap: () => context.go(AppRoutes.workoutPreferences)),
+              ])),
+          const FitFlowSectionCard(child: _MovementSummary()),
+          FitFlowSectionCard(
+              padding: EdgeInsets.zero,
+              child: _ProfileSummaryRow(
+                  icon: Icons.settings_outlined,
+                  title: l.settingsTitle,
+                  subtitle: null,
+                  isEditing: false,
+                  onTap: () => context.go(AppRoutes.settings))),
         ],
       ),
     );
@@ -216,9 +211,9 @@ class _ProfileSummaryRow extends StatelessWidget {
               ScaffoldMessenger.maybeOf(context)?.hideCurrentSnackBar();
               onTap!();
             },
-      minVerticalPadding: FitFlowSpace.xxs,
+      minVerticalPadding: 12,
       contentPadding: const EdgeInsets.symmetric(
-        horizontal: 0,
+        horizontal: 16,
       ),
       leading: ExcludeSemantics(
         child: Icon(
@@ -243,7 +238,7 @@ class _ProfileSummaryRow extends StatelessWidget {
         message: isEditing ? context.l10n.utilityEditSection(title) : title,
         child: ExcludeSemantics(
           child: Icon(
-            isEditing ? Icons.edit_outlined : Icons.chevron_right,
+            Icons.chevron_right,
             color: theme.colorScheme.onSurfaceVariant,
           ),
         ),

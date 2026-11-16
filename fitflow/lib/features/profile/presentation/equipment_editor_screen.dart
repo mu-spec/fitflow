@@ -176,16 +176,26 @@ class _EquipmentEditorScreenState
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(context.l10n.utilityEditorDraft,
-                            style: theme.textTheme.bodySmall),
-                        const SizedBox(height: FitFlowSpace.md),
-                        for (final equipment in WorkoutEquipment.values)
-                          ProfileOptionTile(
-                            enabled: !_saving,
-                            label: equipmentLabel(context.l10n, equipment),
-                            selected: draft.equipment.contains(equipment),
-                            onSelected: () => _toggleEquipment(equipment),
-                          ),
+                        LayoutBuilder(builder: (context, constraints) {
+                          final wideText =
+                              MediaQuery.textScalerOf(context).scale(1) > 1.4;
+                          final tileWidth = wideText
+                              ? constraints.maxWidth
+                              : (constraints.maxWidth - 12) / 2;
+                          return Wrap(spacing: 12, runSpacing: 12, children: [
+                            for (final equipment in WorkoutEquipment.values)
+                              SizedBox(
+                                  width: tileWidth,
+                                  child: ProfileOptionTile(
+                                      enabled: !_saving,
+                                      label: equipmentLabel(
+                                          context.l10n, equipment),
+                                      selected:
+                                          draft.equipment.contains(equipment),
+                                      onSelected: () =>
+                                          _toggleEquipment(equipment))),
+                          ]);
+                        }),
                       ],
                     ),
                   ),

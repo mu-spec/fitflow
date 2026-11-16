@@ -1,3 +1,4 @@
+import 'package:fitflow/core/design/widgets/fitflow_section_card.dart';
 import 'widgets/progress_presentation.dart';
 import 'package:fitflow/core/design/media/exercise_media_registry.dart';
 import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
@@ -9,8 +10,6 @@ import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
 import 'package:fitflow/features/workouts/application/workout_history_controller.dart';
 import 'package:fitflow/features/workouts/domain/history/completed_workout_exercise.dart';
-import 'package:fitflow/features/workouts/presentation/widgets/training_presentation.dart';
-import 'package:fitflow/l10n/enum_labels.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/l10n/locale_format.dart';
 import 'package:flutter/material.dart';
@@ -132,7 +131,8 @@ class _HistoryDetailContent extends ConsumerWidget {
                       ],
                     ),
                     const SizedBox(height: FitFlowSpace.md),
-                    Column(
+                    FitFlowSectionCard(
+                        child: Column(
                       children: [
                         _DetailRow(
                           label: context.l10n.trainingPlannedDuration,
@@ -160,7 +160,7 @@ class _HistoryDetailContent extends ConsumerWidget {
                           value: '${workout.totalSetCount}',
                         ),
                       ],
-                    ),
+                    )),
                     const SizedBox(height: FitFlowSpace.md),
                     Text(context.l10n.progressTimeHelp,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -291,46 +291,22 @@ class _SectionBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = FitFlowTheme.of(context);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    return FitFlowSectionCard(
+        child: ExpansionTile(
+      tilePadding: EdgeInsets.zero,
+      title: Text('$title · ${exercises.length}',
+          style: theme.textTheme.titleMedium
+              ?.copyWith(fontWeight: FontWeight.w600)),
+      expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Semantics(
-          header: true,
-          child: Text(
-            title,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
-        const SizedBox(height: FitFlowSpace.sm),
-        exercises.isEmpty
-            ? Padding(
-                padding: const EdgeInsets.all(FitFlowSpace.md),
-                child: Text(
-                  context.l10n.trainingNoExercises,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: colors.textSecondary,
-                  ),
-                ),
-              )
-            : Column(
-                children: [
-                  for (var i = 0; i < exercises.length; i++) ...[
-                    _ExerciseRecord(exercise: exercises[i]),
-                    if (i < exercises.length - 1)
-                      const Divider(
-                        height: 1,
-                        indent: FitFlowSpace.md,
-                        endIndent: FitFlowSpace.md,
-                      ),
-                  ],
-                ],
-              ),
+        if (exercises.isEmpty)
+          Text(context.l10n.trainingNoExercises,
+              style: theme.textTheme.bodySmall)
+        else
+          for (final exercise in exercises) _ExerciseRecord(exercise: exercise),
       ],
-    );
+    ));
   }
 }
 
@@ -355,9 +331,6 @@ class _ExerciseRecord extends StatelessWidget {
                     exercise.workDuration!,
                   ),
           );
-    final movementLabel = exercise.movementPattern == null
-        ? l.trainingUnclassified
-        : movementPatternLabel(l, exercise.movementPattern!);
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: FitFlowSpace.sm),
@@ -384,13 +357,6 @@ class _ExerciseRecord extends StatelessWidget {
               ),
             ),
             const SizedBox(height: FitFlowSpace.xxs),
-            Text(
-              '$movementLabel • ${trainingDifficultyLabel(l, exercise.difficulty)}',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colors.textSecondary,
-              ),
-            ),
-            const SizedBox(height: FitFlowSpace.xs),
             Text(
               workload,
               style: theme.textTheme.bodyMedium?.copyWith(

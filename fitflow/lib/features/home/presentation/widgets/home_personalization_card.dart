@@ -25,9 +25,6 @@ class HomePersonalizationCard extends StatelessWidget {
     final equipment = meaningful.isEmpty
         ? l.quickNoEquipment
         : meaningful.map((e) => equipmentLabel(l, e)).join(', ');
-    final prefs = userProfile.preferences.isEmpty
-        ? l.homeNoPreferences
-        : userProfile.preferences.map((p) => preferenceLabel(l, p)).join(' · ');
     Widget fact(String label, String value) => Container(
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.all(14),
@@ -74,11 +71,7 @@ class HomePersonalizationCard extends StatelessWidget {
           HomeMovementFocus(plan: plan!),
         ],
         fact(l.homeGoal, fitnessGoalLabel(l, userProfile.goal)),
-        fact(l.homeEnvironment, environmentLabel(l, userProfile.environment)),
-        fact(l.homeUsualTime,
-            workoutDurationLabel(l, userProfile.workoutDuration)),
         fact(l.homeEquipment, equipment),
-        fact(l.homePreferences, prefs),
         const SizedBox(height: FitFlowSpace.sm),
         ExpansionTile(
           key: const PageStorageKey('home_chosen_explanation'),

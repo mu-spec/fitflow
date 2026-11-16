@@ -1,5 +1,3 @@
-import 'package:fitflow/core/design/media/exercise_media_registry.dart';
-import 'package:fitflow/core/design/media/fitflow_media_image.dart';
 import 'package:fitflow/features/workout_preview/presentation/preview_theme.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
@@ -102,11 +100,6 @@ class _PreviewContent extends ConsumerWidget {
       );
     }
 
-    final featured = [
-      ...plan.main.exercises,
-      ...plan.warmup.exercises,
-      ...plan.cooldown.exercises
-    ].first.exercise;
     final v = FitFlowVisualV2.of(context);
     return Scaffold(
       backgroundColor: v.page,
@@ -140,16 +133,17 @@ class _PreviewContent extends ConsumerWidget {
                 SliverToBoxAdapter(
                     child: ClipRRect(
                   borderRadius: BorderRadius.circular(24),
-                  child: AspectRatio(
-                      aspectRatio: 4 / 3,
-                      child: FitFlowMediaImage(
-                        key: const Key('preview_workout_photo'),
-                        asset: ExerciseMediaRegistry.lookup(featured.id)?.hero,
-                        width: constraints.maxWidth,
-                        height: constraints.maxWidth * 3 / 4,
-                        decorative: false,
-                        semanticLabel: featured.name,
-                      )),
+                  child: ColoredBox(
+                    color: const Color(0xFFE8EDFF),
+                    child: Image.asset(
+                      'assets/images/editorial/strength_foundations_portrait.webp',
+                      key: const Key('preview_workout_photo'),
+                      height: 245,
+                      width: constraints.maxWidth,
+                      fit: BoxFit.contain,
+                      excludeFromSemantics: true,
+                    ),
+                  ),
                 )),
                 const SliverToBoxAdapter(child: SizedBox(height: 16)),
                 SliverToBoxAdapter(

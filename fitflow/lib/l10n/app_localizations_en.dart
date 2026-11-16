@@ -2407,4 +2407,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exerciseExamples => 'Exercise examples';
+
+  @override
+  String get profileTrainingSetup => 'Your training setup';
+
+  @override
+  String get programLength => 'Program length';
+
+  @override
+  String get reportOverview => 'Overview';
+
+  @override
+  String get reportHistory => 'History';
+
+  @override
+  String get reportTraining => 'Training';
+
+  @override
+  String get reportTimeDetails => 'Time details';
+
+  @override
+  String get workoutControlsTitle => 'Workout controls';
+
+  @override
+  String get workoutVoiceGuidance => 'Voice guidance';
+
+  @override
+  String get settingsAppearance => 'Appearance';
+
+  @override
+  String get settingsReminderHelp => 'Notification help';
+
+  @override
+  String get settingsAboutData => 'Your data';
+
+  @override
+  String get settingsArtworkSources => 'Sources and licenses';
+
+  @override
+  String get settingsArtworkNotes => 'Adaptation notes';
+
+  @override
+  String get backupCreateSummary =>
+      'Keep a copy of your profile, workouts and progress.';
+
+  @override
+  String get backupIncluded => 'What is included?';
 }

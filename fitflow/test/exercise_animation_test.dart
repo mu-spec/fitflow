@@ -1,10 +1,6 @@
-import 'dart:typed_data';
-import 'dart:ui' as ui;
-
 import 'package:fitflow/core/design/media/exercise_animation.dart';
 import 'package:fitflow/core/design/media/exercise_animation_registry.dart';
 import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
-import 'package:fitflow/core/design/media/fitflow_media_image.dart';
 import 'package:fitflow/features/workout_player/application/workout_player_controller.dart';
 import 'package:fitflow/features/workout_player/domain/workout_player_phase.dart';
 import 'package:fitflow/features/workout_player/presentation/widgets/workout_player_exercise_center.dart';
@@ -17,11 +13,10 @@ import 'package:fitflow/features/workouts/domain/workout/workout_time_budget.dar
 import 'package:fitflow/features/onboarding/data/workout_duration.dart';
 import 'package:fitflow/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lottie/lottie.dart';
 
-const animatedIds = <String>[
+const originalAnimatedIds = <String>[
   'jumping_jacks',
   'squat_bodyweight',
   'pushup_pike',
@@ -29,7 +24,7 @@ const animatedIds = <String>[
   'reverse_crunch',
 ];
 
-const stillIds = <String>[
+const additionalAnimatedIds = <String>[
   'march_in_place',
   'arm_circles',
   'cat_cow',
@@ -107,13 +102,12 @@ const hiddenIds = <String>[
   'scapular_pullup',
 ];
 
-const gifIds = <String>['squat_bodyweight', 'pushup_pike'];
-const lottieIds = <String>['jumping_jacks', 'lunge_forward', 'reverse_crunch'];
+const animatedIds = [...originalAnimatedIds, ...additionalAnimatedIds];
+const lottieIds = animatedIds;
 
 WorkoutPlan plan(String id) {
-  final prescription =
-      WorkoutExercisePrescription.fromExerciseDefaults(
-              ExerciseCatalog.byId(id)!)!;
+  final prescription = WorkoutExercisePrescription.fromExerciseDefaults(
+      ExerciseCatalog.byId(id)!)!;
   return WorkoutPlan(
     warmup: WorkoutSection(
         type: WorkoutSectionType.warmup, exercises: [prescription]),
@@ -133,8 +127,7 @@ Widget host(Widget child, {bool reduced = false}) => MaterialApp(
     builder: (context, child) => MediaQuery(
         data: MediaQuery.of(context).copyWith(disableAnimations: reduced),
         child: child!),
-    home: Scaffold(
-        body: SafeArea(child: SingleChildScrollView(child: child))));
+    home: Scaffold(body: SafeArea(child: SingleChildScrollView(child: child))));
 
 Future<void> settle(WidgetTester tester) async {
   await tester.pump();
@@ -147,15 +140,10 @@ void main() {
     PaintingBinding.instance.imageCache.clearLiveImages();
   });
 
-  test('registry maps exactly the 5 animated launch movements', () {
-    expect(ExerciseAnimationRegistry.assets.keys,
-        unorderedEquals(animatedIds));
+  test('registry maps exactly the 25 animated launch movements', () {
+    expect(ExerciseAnimationRegistry.assets.keys, unorderedEquals(animatedIds));
     for (final id in animatedIds) {
       expect(ExerciseCatalog.byId(id), isNotNull, reason: id);
-      expect(ExerciseCatalog.byId(id)!.active, isTrue, reason: id);
-    }
-    for (final id in stillIds) {
-      expect(ExerciseAnimationRegistry.assetFor(id), isNull, reason: id);
       expect(ExerciseCatalog.byId(id)!.active, isTrue, reason: id);
     }
     for (final id in hiddenIds) {
@@ -163,36 +151,6 @@ void main() {
       expect(ExerciseCatalog.byId(id)!.active, isFalse, reason: id);
     }
   });
-
-  for (final id in gifIds) {
-    testWidgets('$id bundled GIF loops and decodes', (tester) async {
-      await tester.runAsync(() async {
-        final bytes = (await rootBundle
-            .load(ExerciseAnimationRegistry.assetFor(id)!))
-            .buffer
-            .asUint8List();
-        final codec = await ui.instantiateImageCodec(bytes);
-        try {
-          expect(codec.frameCount, greaterThan(1), reason: id);
-          expect(codec.repetitionCount, -1, reason: id);
-          final frame = await codec.getNextFrame();
-          try {
-            expect(frame.image.width, 360, reason: id);
-            expect(frame.image.height, 360, reason: id);
-            expect(frame.duration, greaterThan(Duration.zero), reason: id);
-          } finally {
-            frame.image.dispose();
-          }
-        } finally {
-          codec.dispose();
-        }
-      });
-
-      await tester.pumpWidget(host(const SizedBox.shrink()));
-      await settle(tester);
-      expect(tester.takeException(), isNull);
-    });
-  }
 
   for (final id in lottieIds) {
     testWidgets('$id bundled Lottie loads offline', (tester) async {
@@ -208,15 +166,22 @@ void main() {
     testWidgets('$id renders in hero and thumbnail', (tester) async {
       final asset = ExerciseAnimationRegistry.assetFor(id)!;
       await tester.pumpWidget(host(Column(children: [
-        FitFlowExerciseImage.hero(
-            exerciseId: id, width: 240, height: 180),
-        FitFlowExerciseImage.thumbnail(
-            exerciseId: id, width: 56, height: 56),
+        FitFlowExerciseImage.hero(exerciseId: id, width: 240, height: 180),
+        FitFlowExerciseImage.thumbnail(exerciseId: id, width: 56, height: 56),
       ])));
       await settle(tester);
       expect(find.byType(ExerciseAnimation), findsNWidgets(2));
       expect(find.byKey(ValueKey(asset)), findsNWidgets(2));
       expect(find.byType(Lottie), findsNWidgets(2));
+      for (final animation in tester.widgetList<Lottie>(find.byType(Lottie))) {
+        expect(animation.controller, isNotNull);
+        final controller = animation.controller! as AnimationController;
+        final repeats = ExerciseAnimationRegistry.repetitionsPerLoop[id]!;
+        if (repeats > 0) {
+          expect(controller.duration!.inMilliseconds / repeats, 2680,
+              reason: '$id hero and thumbnail must share the push-up cadence');
+        }
+      }
     });
 
     testWidgets('$id honors reduced motion with a still fallback',
@@ -225,24 +190,71 @@ void main() {
           FitFlowExerciseImage.hero(exerciseId: id, width: 240, height: 180),
           reduced: true));
       await settle(tester);
-      expect(find.byType(FitFlowMediaImage), findsOneWidget);
+      expect(find.byType(Image), findsOneWidget);
       expect(find.byType(Lottie), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
+  testWidgets('reference cadence matches the untouched push-up composition',
+      (tester) async {
+    final composition = await tester.runAsync(() =>
+        AssetLottie(ExerciseAnimationRegistry.assetFor('pushup_standard')!)
+            .load());
+    expect(
+        composition!.duration, ExerciseAnimationRegistry.referenceRepetition);
+    expect(ExerciseAnimationRegistry.repetitionsPerLoop.keys.toSet(),
+        ExerciseAnimationRegistry.assets.keys.toSet());
+  });
+
+  for (final entry in {
+    'calf_raise': 1,
+    'step_jack': 2,
+    'arm_circles': 20,
+    'lunge_reverse': 2,
+  }.entries) {
+    testWidgets('${entry.key} advances at the shared repetition pace',
+        (tester) async {
+      await tester.runAsync(() =>
+          AssetLottie(ExerciseAnimationRegistry.assetFor(entry.key)!).load());
+      Future<void> show(bool animate) async {
+        await tester.pumpWidget(host(ExerciseAnimation(
+            exerciseId: entry.key, width: 240, height: 240, animate: animate)));
+        await settle(tester);
+      }
+
+      await show(true);
+      final controller = tester.widget<Lottie>(find.byType(Lottie)).controller!
+          as AnimationController;
+      await tester.pump();
+      final initial = controller.value;
+      await tester.pump(const Duration(milliseconds: 134));
+      expect((controller.value - initial + 1) % 1,
+          closeTo(.05 / entry.value, .00001));
+      await show(false);
+      final paused = controller.value;
+      await tester.pump(const Duration(seconds: 1));
+      expect(controller.value, paused);
+      expect(controller.isAnimating, isFalse);
+      await show(true);
+      expect(controller.isAnimating, isTrue);
+      await tester.pumpWidget(const SizedBox.shrink());
       expect(tester.takeException(), isNull);
     });
   }
 
   testWidgets('Player pauses lunge animation without touching the clock',
       (tester) async {
-    await tester.runAsync(() => AssetLottie(
-            ExerciseAnimationRegistry.assetFor('lunge_forward')!)
-        .load());
+    await tester.runAsync(() =>
+        AssetLottie(ExerciseAnimationRegistry.assetFor('lunge_forward')!)
+            .load());
     final controller = WorkoutPlayerController(
         plan: plan('lunge_forward'), autoStartTimer: false);
     addTearDown(controller.dispose);
 
     Future<void> show() async {
-      await tester.pumpWidget(host(
-          WorkoutPlayerExerciseCenter(state: controller.state)));
+      await tester.pumpWidget(
+          host(WorkoutPlayerExerciseCenter(state: controller.state)));
       await settle(tester);
     }
 
@@ -270,26 +282,6 @@ void main() {
     await show();
     expect(tester.widget<Lottie>(find.byType(Lottie)).animate, isFalse);
     await tester.pumpWidget(const SizedBox.shrink());
-    expect(tester.takeException(), isNull);
-  });
-
-  testWidgets('still exercises render labeled photos, no animation',
-      (tester) async {
-    for (final id in ['plank_forearm', 'march_in_place']) {
-      await tester.pumpWidget(host(
-          FitFlowExerciseImage.hero(exerciseId: id, width: 240, height: 180)));
-      await settle(tester);
-      expect(find.byType(ExerciseAnimation), findsNothing);
-      expect(find.byType(Lottie), findsNothing);
-      expect(find.byType(FitFlowMediaImage), findsOneWidget);
-      expect(tester.takeException(), isNull);
-    }
-    await tester.pumpWidget(host(
-        FitFlowExerciseImage.hero(
-            exerciseId: 'pushup_standard', width: 240, height: 180)));
-    await settle(tester);
-    expect(find.byType(Lottie), findsNothing);
-    expect(find.byType(FitFlowMediaImage), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 }

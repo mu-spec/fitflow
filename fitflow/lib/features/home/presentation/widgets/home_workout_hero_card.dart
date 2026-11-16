@@ -46,10 +46,12 @@ class HomeWorkoutHeroCard extends StatelessWidget {
               style: text.titleLarge
                   ?.copyWith(fontSize: 22, fontWeight: FontWeight.w700)),
         ),
-        const SizedBox(height: 6),
-        Text(planned, key: const Key('home_planned'), style: text.bodyMedium),
+        const SizedBox(height: 16),
+        Text(planned,
+            key: const Key('home_planned'),
+            style: text.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
         Text(l.homeExercises(plan.totalExerciseCount), style: text.bodyMedium),
-        const SizedBox(height: 4),
+        const SizedBox(height: 12),
         Text('$minutes ${l.v2HomeTargetUnit}',
             key: const Key('home_target'),
             semanticsLabel: l.homeDurationTarget(minutes),
@@ -64,10 +66,10 @@ class HomeWorkoutHeroCard extends StatelessWidget {
           final content =
               Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             Row(children: [
-              Expanded(flex: 5, child: introduction),
+              Expanded(flex: 1, child: introduction),
               const SizedBox(width: 12),
               Expanded(
-                  flex: 4,
+                  flex: 1,
                   child: AspectRatio(
                       aspectRatio: 2 / 3,
                       child: Image.asset(
@@ -81,8 +83,9 @@ class HomeWorkoutHeroCard extends StatelessWidget {
               data: Theme.of(context).copyWith(
                   filledButtonTheme: FilledButtonThemeData(
                 style: FilledButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.white,
+                    foregroundColor: Colors.black,
+                    side: const BorderSide(color: Color(0xFFCBD2DE)),
                     minimumSize: const Size(48, 48)),
               )),
               child: FitFlowPrimaryButton(
@@ -97,7 +100,7 @@ class HomeWorkoutHeroCard extends StatelessWidget {
           return ColoredBox(
               color: const Color(0xFF183D73),
               child:
-                  Padding(padding: const EdgeInsets.all(16), child: content));
+                  Padding(padding: const EdgeInsets.all(18), child: content));
         }),
       ),
       const SizedBox(height: FitFlowSpace.sm),

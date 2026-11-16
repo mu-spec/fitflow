@@ -1,3 +1,6 @@
+import '../application/workout_music.dart';
+import 'workout_music_sheet.dart';
+import 'package:fitflow/features/workouts/presentation/exercise_detail_screen.dart';
 import 'package:fitflow/features/workout_player/presentation/player_theme.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
@@ -183,6 +186,7 @@ class _WorkoutPlayerSessionViewState
   }
 
   Future<bool> _showExitDialog(BuildContext context) async {
+    _handleAppInactive();
     final result = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
@@ -269,6 +273,7 @@ class _WorkoutPlayerSessionViewState
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(workoutPlayerControllerProvider(_stablePlan));
+    final music = ref.watch(workoutMusicProvider(_stablePlan));
     final controller =
         ref.read(workoutPlayerControllerProvider(_stablePlan).notifier);
 
@@ -334,6 +339,16 @@ class _WorkoutPlayerSessionViewState
                     ?.copyWith(fontWeight: FontWeight.w500)),
             actions: [
               IconButton(
+                tooltip: 'Workout music',
+                icon: Icon(music.enabled
+                    ? Icons.music_note_rounded
+                    : Icons.music_off_rounded),
+                onPressed: () {
+                  _handleAppInactive();
+                  showWorkoutMusic(context, music);
+                },
+              ),
+              IconButton(
                 constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
                 tooltip: state.voiceEnabled
                     ? context.l10n.flowMute
@@ -358,7 +373,7 @@ class _WorkoutPlayerSessionViewState
                   // At enlarged type the content scrolls instead of scaling text down.
                   final mediaHeight = largeText || short
                       ? 210.0
-                      : (constraints.maxHeight - 378).clamp(140.0, 300.0);
+                      : (constraints.maxHeight - 330).clamp(160.0, 340.0);
                   final phase = KeyedSubtree(
                       key: _phasePresentationKey,
                       child: _buildPhaseBody(
@@ -367,8 +382,8 @@ class _WorkoutPlayerSessionViewState
                     if (state.phase == WorkoutPlayerPhase.ready ||
                         state.isPaused)
                       TextButton.icon(
-                          onPressed: () => context.push(
-                              '${GoRouterState.of(context).matchedLocation}/exercise/${Uri.encodeComponent(state.currentPrescription.exercise.id)}'),
+                          onPressed: () => showExerciseGuide(
+                              context, state.currentPrescription.exercise.id),
                           icon:
                               const Icon(Icons.info_outline_rounded, size: 18),
                           label: Text(context.l10n.flowDetails)),
@@ -390,7 +405,6 @@ class _WorkoutPlayerSessionViewState
                             message:
                                 playerPhaseAnnouncement(state, context.l10n)),
                         if (state.phase != WorkoutPlayerPhase.completed) ...[
-                          WorkoutPlayerProgressHeader(state: state),
                           if (_stableOrigin == WorkoutSessionOrigin.adaptive &&
                               _stableMode != WorkoutSessionMode.standard)
                             Text(
@@ -400,6 +414,10 @@ class _WorkoutPlayerSessionViewState
                           const SizedBox(height: 8),
                         ],
                         phase,
+                        if (state.phase != WorkoutPlayerPhase.completed) ...[
+                          const SizedBox(height: 24),
+                          WorkoutPlayerProgressHeader(state: state),
+                        ],
                         if (state.phase == WorkoutPlayerPhase.ready &&
                             _stableOrigin != WorkoutSessionOrigin.adaptive)
                           Padding(

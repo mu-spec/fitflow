@@ -1,3 +1,4 @@
+import 'package:fitflow/features/workouts/presentation/exercise_detail_screen.dart';
 import 'package:fitflow/core/design/media/exercise_animation.dart';
 import 'package:fitflow/features/workout_player/presentation/widgets/pilot_exercise_demonstration.dart';
 import 'package:fitflow/features/workout_player/presentation/widgets/pushup_lottie_demonstration.dart';
@@ -348,12 +349,23 @@ Future<void> _capture(WidgetTester tester, String name) async {
   final bytes = await tester
       .runAsync(() => image.toByteData(format: ui.ImageByteFormat.png));
   image.dispose();
-  final file = File('/home/user/.cache/fitflow-step5a-validation/$name.png');
+  final file = File('build/redesign-qa/$name.png');
   file.parent.createSync(recursive: true);
   file.writeAsBytesSync(bytes!.buffer.asUint8List());
 }
 
 void main() {
+  setUpAll(() async {
+    if (Platform.environment['FITFLOW_STEP5A_CAPTURE'] == '1') {
+      final font = FontLoader('Roboto')
+        ..addFont(Future.value(ByteData.sublistView(
+            File('C:/Windows/Fonts/arial.ttf').readAsBytesSync())));
+      await font.load();
+      final icons = FontLoader('MaterialIcons')
+        ..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'));
+      await icons.load();
+    }
+  });
   group('Slate Citrus phone composition', () {
     for (final size in [
       const Size(360, 640),
@@ -377,7 +389,9 @@ void main() {
               await _settle(tester);
               final viewport = Offset.zero & size;
               final photoRect = tester.getRect(photo);
-              final target = find.byType(WorkoutCountdown).evaluate().isNotEmpty
+              final target = find.byKey(const ValueKey('player_ready_title')).evaluate().isNotEmpty
+                  ? find.byKey(const ValueKey('player_ready_title'))
+                  : find.byType(WorkoutCountdown).evaluate().isNotEmpty
                   ? find.byType(WorkoutCountdown)
                   : find.byKey(const ValueKey('player_rep_target'));
               final actionRect = tester.getRect(primary);
@@ -781,6 +795,18 @@ void main() {
   });
 
   group('Step 5A native routes, conditional actions and unchanged engine', () {
+    testWidgets('Ready is explicit and music settings pause the workout', (tester) async {
+      final h = await _pump(tester);
+      expect(find.byKey(const ValueKey('player_ready_title')), findsOneWidget);
+      expect(find.byType(WorkoutCountdown), findsNothing);
+      h.controller.beginWorkout(); await _settle(tester);
+      expect(h.controller.state.isPaused, isFalse);
+      await tester.tap(find.byTooltip('Workout music')); await _settle(tester);
+      expect(find.text('Background music'), findsOneWidget);
+      expect(h.controller.state.isPaused, isTrue);
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets(
         'rep work never auto-counts with production timer scheduling enabled',
         (tester) async {
@@ -1090,18 +1116,16 @@ void main() {
           findsOneWidget);
       expect(
           tester
-              .widget<CircularProgressIndicator>(
-                  find.byType(CircularProgressIndicator))
-              .value,
-          0);
+              .widget<WorkoutCountdown>(find.byType(WorkoutCountdown))
+              .remaining,
+          const Duration(seconds: 15));
       c.tick();
       await tester.pump();
       expect(
           tester
-              .widget<CircularProgressIndicator>(
-                  find.byType(CircularProgressIndicator))
-              .value,
-          closeTo(1 / 15, .001));
+              .widget<WorkoutCountdown>(find.byType(WorkoutCountdown))
+              .remaining,
+          const Duration(seconds: 14));
       await _tap(tester, _l.skipTransition, const Size(390, 844));
       expect(c.state.phase, WorkoutPlayerPhase.work);
       expect(find.text(_l.flowExercisePosition(2, 2)), findsOneWidget);
@@ -1114,7 +1138,8 @@ void main() {
     testWidgets(
         'timed replacement keeps existing pause/picker/name/prescription behavior',
         (tester) async {
-      final h = await _pump(tester);
+      final h = await _pump(tester,
+          playerPlan: _plan(timedExerciseId: 'plank_forearm'));
       final c = h.controller;
       c.beginWorkout();
       await _settle(tester);
@@ -1151,7 +1176,7 @@ void main() {
     });
 
     testWidgets(
-        'paused active Details returns through the Player-only detail route',
+        'paused active Details opens a guide without leaving the session',
         (tester) async {
       final h = await _pump(tester, timed: false);
       h.controller.beginWorkout();
@@ -1159,12 +1184,10 @@ void main() {
       await _tap(tester, _l.pause, const Size(390, 844));
       final id = h.controller.state.currentPrescription.exercise.id;
       await _tap(tester, _l.flowDetails, const Size(390, 844));
-      expect(find.text('Native detail route'), findsOneWidget);
-      expect(
-          GoRouterState.of(tester.element(find.text('Native detail route')))
-              .uri
-              .path,
-          '/session/exercise/$id');
+      final guide = tester
+          .widget<ExerciseDetailScreen>(find.byType(ExerciseDetailScreen));
+      expect(guide.exerciseId, id);
+      expect(guide.isGuide, isTrue);
       h.router.pop();
       await _settle(tester);
       expect(h.controller.state.isPaused, isTrue);
@@ -1212,7 +1235,7 @@ void main() {
         await _settle(tester);
         expect(find.text(_l.flowExitTitle), findsOneWidget);
         await _tap(tester, _l.flowKeepGoing, const Size(390, 844));
-        expect(c.state.isPaused, paused);
+        expect(c.state.isPaused, isTrue);
         expect(find.byType(WorkoutPlayerExerciseCenter), findsOneWidget);
         await tester.tap(find.byType(BackButton));
         await _settle(tester);

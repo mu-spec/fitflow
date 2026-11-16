@@ -163,80 +163,38 @@ class _FitnessProfileEditorScreenState
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(context.l10n.utilityEditorDraft,
-                            style: theme.textTheme.bodySmall),
-                        const SizedBox(height: FitFlowSpace.md),
-                        ProfileDisclosure(
-                          title: context.l10n.utilityGoal,
-                          summary: fitnessGoalLabel(context.l10n, draft.goal),
-                          children: [
-                            for (final goal in FitnessGoal.values)
-                              ProfileOptionTile(
-                                enabled: !_saving,
-                                label: fitnessGoalLabel(context.l10n, goal),
-                                selected: draft.goal == goal,
-                                onSelected: () =>
-                                    _update((p) => p.copyWith(goal: goal)),
-                              ),
-                          ],
-                        ),
-                        const Divider(height: 1),
-                        ProfileDisclosure(
-                          title: context.l10n.utilityExperience,
-                          summary:
-                              experienceLabel(context.l10n, draft.experience),
-                          children: [
-                            for (final level in ExperienceLevel.values)
-                              ProfileOptionTile(
-                                enabled: !_saving,
-                                label: experienceLabel(context.l10n, level),
-                                helperText: experienceHelp(context.l10n, level),
-                                selected: draft.experience == level,
-                                onSelected: () => _update(
-                                  (p) => p.copyWith(experience: level),
-                                ),
-                              ),
-                          ],
-                        ),
-                        const Divider(height: 1),
-                        ProfileDisclosure(
-                          title: context.l10n.utilityDuration,
-                          summary: workoutDurationLabel(
-                            context.l10n,
-                            draft.workoutDuration,
-                          ),
-                          children: [
-                            for (final duration in WorkoutDuration.values)
-                              ProfileOptionTile(
-                                enabled: !_saving,
-                                label: workoutDurationLabel(
-                                  context.l10n,
-                                  duration,
-                                ),
-                                selected: draft.workoutDuration == duration,
-                                onSelected: () => _update(
-                                  (p) => p.copyWith(workoutDuration: duration),
-                                ),
-                              ),
-                          ],
-                        ),
-                        const Divider(height: 1),
-                        ProfileDisclosure(
-                          title: context.l10n.utilityEnvironment,
-                          summary:
-                              environmentLabel(context.l10n, draft.environment),
-                          children: [
-                            for (final env in TrainingEnvironment.values)
-                              ProfileOptionTile(
-                                enabled: !_saving,
-                                label: environmentLabel(context.l10n, env),
-                                selected: draft.environment == env,
-                                onSelected: () => _update(
-                                  (p) => p.copyWith(environment: env),
-                                ),
-                              ),
-                          ],
-                        ),
+                        ProfileSelectField<FitnessGoal>(
+                            title: context.l10n.utilityGoal,
+                            value: draft.goal,
+                            values: FitnessGoal.values,
+                            enabled: !_saving,
+                            label: (v) => fitnessGoalLabel(context.l10n, v),
+                            onChanged: (v) =>
+                                _update((p) => p.copyWith(goal: v))),
+                        ProfileSelectField<ExperienceLevel>(
+                            title: context.l10n.utilityExperience,
+                            value: draft.experience,
+                            values: ExperienceLevel.values,
+                            enabled: !_saving,
+                            label: (v) => experienceLabel(context.l10n, v),
+                            onChanged: (v) =>
+                                _update((p) => p.copyWith(experience: v))),
+                        ProfileSelectField<WorkoutDuration>(
+                            title: context.l10n.utilityDuration,
+                            value: draft.workoutDuration,
+                            values: WorkoutDuration.values,
+                            enabled: !_saving,
+                            label: (v) => workoutDurationLabel(context.l10n, v),
+                            onChanged: (v) =>
+                                _update((p) => p.copyWith(workoutDuration: v))),
+                        ProfileSelectField<TrainingEnvironment>(
+                            title: context.l10n.utilityEnvironment,
+                            value: draft.environment,
+                            values: TrainingEnvironment.values,
+                            enabled: !_saving,
+                            label: (v) => environmentLabel(context.l10n, v),
+                            onChanged: (v) =>
+                                _update((p) => p.copyWith(environment: v))),
                       ],
                     ),
                   ),

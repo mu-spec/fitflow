@@ -40,7 +40,6 @@ class _ProgressActivityChartState extends State<ProgressActivityChart> {
             header: true,
             child:
                 Text(l.trainingActivity, style: theme.textTheme.titleMedium)),
-      Text(l.progressPeriodOrder, style: theme.textTheme.bodySmall),
       const SizedBox(height: 4),
       Wrap(spacing: 8, runSpacing: 4, children: [
         ChoiceChip(
@@ -107,8 +106,11 @@ class _ProgressActivityChartState extends State<ProgressActivityChart> {
                       Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 2),
                           child: Text(
-                              MaterialLocalizations.of(context)
-                                  .formatShortMonthDay(bucket.start.toLocal()),
+                              bucket.index.isOdd || bucket.isCurrent
+                                  ? MaterialLocalizations.of(context)
+                                      .formatShortMonthDay(
+                                          bucket.start.toLocal())
+                                  : '',
                               textAlign: TextAlign.center,
                               style: theme.textTheme.bodySmall)),
                     ]),

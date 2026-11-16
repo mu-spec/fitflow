@@ -161,8 +161,9 @@ class WorkoutsTheme extends StatelessWidget {
         ),
         filledButtonTheme: FilledButtonThemeData(
             style: FilledButton.styleFrom(
-          backgroundColor: Colors.black,
-          foregroundColor: Colors.white,
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          side: const BorderSide(color: Color(0xFFCBD2DE)),
           minimumSize: const Size(48, 48),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           textStyle: text.titleSmall?.copyWith(fontWeight: FontWeight.w600),

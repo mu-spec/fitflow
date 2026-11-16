@@ -15,17 +15,17 @@ class UtilityHeading extends StatelessWidget {
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.fromLTRB(
           0,
-          FitFlowSpace.sm,
+          FitFlowSpace.lg,
           0,
-          FitFlowSpace.xs,
+          FitFlowSpace.sm,
         ),
         child: Semantics(
           header: true,
           child: Text(
             title,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   color: FitFlowTheme.of(context).brand,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                 ),
           ),
         ),

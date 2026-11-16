@@ -445,17 +445,31 @@ class _ProgramsEntry extends StatelessWidget {
                                 color: Colors.white,
                                 fontWeight: FontWeight.w700)),
                     const SizedBox(height: 20),
-                    const Icon(Icons.arrow_forward, color: Colors.white),
+                    FilledButton(
+                      style: FilledButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.black,
+                          shape: const StadiumBorder(),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 12)),
+                      onPressed: () => context.push(AppRoutes.programs),
+                      child:
+                          const Row(mainAxisSize: MainAxisSize.min, children: [
+                        Flexible(child: Text('Explore')),
+                        SizedBox(width: 10),
+                        Icon(Icons.arrow_forward_rounded, size: 20),
+                      ]),
+                    ),
                   ])),
               const SizedBox(width: 12),
-              Expanded(
-                  child: AspectRatio(
-                      aspectRatio: 2 / 3,
-                      child: Image.asset(
-                          'assets/images/editorial/${programId}_portrait.webp',
-                          key: const Key('workouts_program_portrait'),
-                          fit: BoxFit.contain,
-                          excludeFromSemantics: true))),
+              SizedBox(
+                  width: 100,
+                  height: 128,
+                  child: Image.asset(
+                      'assets/images/editorial/${programId}_portrait.webp',
+                      key: const Key('workouts_program_portrait'),
+                      fit: BoxFit.contain,
+                      excludeFromSemantics: true)),
             ])),
       ),
     );

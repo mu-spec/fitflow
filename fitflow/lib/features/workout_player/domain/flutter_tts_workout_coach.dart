@@ -5,7 +5,14 @@ import 'workout_coach.dart';
 /// Production implementation using flutter_tts.
 /// Best-effort: never throws through UI, tolerates PlatformException, missing engine, etc.
 class FlutterTtsWorkoutCoach implements WorkoutCoach {
-  FlutterTtsWorkoutCoach({FlutterTts? tts}) : _tts = tts ?? FlutterTts();
+  FlutterTtsWorkoutCoach({FlutterTts? tts, this.onSpeakingChanged})
+      : _tts = tts ?? FlutterTts() {
+    _tts.setStartHandler(() => onSpeakingChanged?.call(true));
+    _tts.setCompletionHandler(() => onSpeakingChanged?.call(false));
+    _tts.setCancelHandler(() => onSpeakingChanged?.call(false));
+    _tts.setErrorHandler((_) => onSpeakingChanged?.call(false));
+  }
+  final void Function(bool)? onSpeakingChanged;
 
   final FlutterTts _tts;
   bool _initialized = false;
@@ -31,12 +38,14 @@ class FlutterTtsWorkoutCoach implements WorkoutCoach {
       await _ensureInitialized();
       await _tts.speak(message);
     } catch (_) {
+      onSpeakingChanged?.call(false);
       // Never throw, continue workout if TTS fails
     }
   }
 
   @override
   Future<void> stop() async {
+    onSpeakingChanged?.call(false);
     try {
       await _tts.stop();
     } catch (_) {

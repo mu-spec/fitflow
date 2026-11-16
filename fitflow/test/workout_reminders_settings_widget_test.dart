@@ -51,10 +51,6 @@ void main() {
     ));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
-    if (child is SettingsScreen) {
-      await tester.tap(find.text('Appearance'));
-      await tester.pumpAndSettle();
-    }
     await tester.ensureVisible(find.text('Workout reminders').first);
     await tester.tap(find.text('Workout reminders').first);
     await tester.pumpAndSettle();
@@ -77,11 +73,14 @@ void main() {
     expect(find.text('System default'), findsOneWidget);
     await tester.dragUntilVisible(
       find.text('Send test notification'),
-      find.byType(SingleChildScrollView),
+      find.byType(SingleChildScrollView).last,
       const Offset(0, -200),
     );
     expect(find.text('Workout reminders'), findsWidgets);
     expect(find.text('Reminders are off.'), findsOneWidget);
+    await tester.ensureVisible(find.text('Notification help'));
+    await tester.tap(find.text('Notification help'));
+    await tester.pumpAndSettle();
     expect(
         find.text(
             'Android may deliver reminders slightly later to reduce battery use.'),

@@ -17,7 +17,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Presentation only: every action goes through
 /// [WorkoutRemindersController]; no plugin calls live here.
 class WorkoutRemindersSection extends ConsumerStatefulWidget {
-  const WorkoutRemindersSection({super.key});
+  const WorkoutRemindersSection({super.key, this.initiallyExpanded = false});
+  final bool initiallyExpanded;
 
   /// Locale-aware day names and time. Selected weekdays stay ISO values.
   static String scheduleSummary(
@@ -139,6 +140,8 @@ class _WorkoutRemindersSectionState
     };
 
     return UtilityDisclosure(
+      key: const ValueKey('reminders_loaded'),
+      initiallyExpanded: widget.initiallyExpanded,
       title: l.reminderSectionTitle,
       icon: Icons.notifications_outlined,
       summary: busy
@@ -226,32 +229,16 @@ class _WorkoutRemindersSectionState
           },
         ),
         const SizedBox(height: FitFlowSpace.xs),
-        Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 0,
-            vertical: FitFlowSpace.xs,
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        ExpansionTile(
+            tilePadding: EdgeInsets.zero,
+            title:
+                Text(l.settingsReminderHelp, style: theme.textTheme.bodyMedium),
             children: [
-              ExcludeSemantics(
-                child: Icon(
-                  Icons.info_outline_rounded,
-                  size: 18,
-                  color: colors.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(width: FitFlowSpace.sm),
-              Expanded(
-                child: Text(
-                  context.l10n.reminderInexactNote,
-                  style: theme.textTheme.bodySmall
-                      ?.copyWith(color: colors.onSurfaceVariant),
-                ),
-              ),
-            ],
-          ),
-        ),
+              Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Text(l.reminderInexactNote,
+                      style: theme.textTheme.bodySmall))
+            ]),
         const SizedBox(height: 8),
         Align(
           alignment: AlignmentDirectional.centerStart,

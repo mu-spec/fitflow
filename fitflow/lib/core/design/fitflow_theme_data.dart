@@ -258,8 +258,9 @@ class FitFlowThemeData {
       minimumSize: const Size(48, 52),
       tapTargetSize: MaterialTapTargetSize.padded,
       elevation: 0,
-      backgroundColor: Colors.black,
-      foregroundColor: Colors.white,
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.black,
+      side: const BorderSide(color: Color(0xFFCBD2DE)),
       disabledBackgroundColor: palette.subtleSurface,
       disabledForegroundColor: palette.textMuted,
       textStyle: FitFlowTypography.label,
@@ -267,8 +268,12 @@ class FitFlowThemeData {
         borderRadius: FitFlowRadius.mediumBorder,
       ),
     ).copyWith(
-      overlayColor: _overlay(palette, on: palette.onBrand),
-      side: _focusSide(palette),
+      overlayColor: _overlay(palette, on: Colors.black),
+      side: WidgetStateProperty.resolveWith((states) => BorderSide(
+          color: states.contains(WidgetState.focused)
+              ? palette.focus
+              : const Color(0xFFCBD2DE),
+          width: states.contains(WidgetState.focused) ? 2 : 1)),
     );
   }
 

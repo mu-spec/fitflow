@@ -265,6 +265,8 @@ class _CustomWorkoutBuilderScreenState
     }
   }
 
+  WorkoutSectionType _selectedSection = WorkoutSectionType.warmup;
+
   void _addExercise(WorkoutSectionType sectionType) async {
     final userProfile = ref.read(userFitnessProfileProvider).value;
     final capabilityProfile = ref.read(capabilityProfileProvider).value;
@@ -550,46 +552,70 @@ class _CustomWorkoutBuilderScreenState
                       ],
                     ),
                     const SizedBox(height: FitFlowSpace.md),
-                    _SectionEditor(
-                      title: 'Warm-up',
-                      type: WorkoutSectionType.warmup,
-                      entries: _warmup,
-                      onAdd: () => _addExercise(WorkoutSectionType.warmup),
-                      onEdit: (e, updated) => _editPrescription(
-                          e, WorkoutSectionType.warmup, updated),
-                      onRemove: (e) =>
-                          _removeExercise(e, WorkoutSectionType.warmup),
-                      onMoveUp: (i) => _moveUp(i, WorkoutSectionType.warmup),
-                      onMoveDown: (i) =>
-                          _moveDown(i, WorkoutSectionType.warmup),
-                    ),
+                    Wrap(spacing: 8, runSpacing: 8, children: [
+                      for (final section in WorkoutSectionType.values)
+                        ChoiceChip(
+                          label: Text(switch (section) {
+                            WorkoutSectionType.warmup =>
+                              '1. Warm-up (${_warmup.length})',
+                            WorkoutSectionType.main =>
+                              '2. Main (${_main.length})',
+                            WorkoutSectionType.cooldown =>
+                              '3. Cool-down (${_cooldown.length})',
+                          }),
+                          selected: _selectedSection == section,
+                          onSelected: (_) =>
+                              setState(() => _selectedSection = section),
+                        ),
+                    ]),
+                    if (_selectedSection == WorkoutSectionType.warmup)
+                      _SectionEditor(
+                        key: const ValueKey('editor-warmup'),
+                        title: 'Warm-up',
+                        type: WorkoutSectionType.warmup,
+                        entries: _warmup,
+                        onAdd: () => _addExercise(WorkoutSectionType.warmup),
+                        onEdit: (e, updated) => _editPrescription(
+                            e, WorkoutSectionType.warmup, updated),
+                        onRemove: (e) =>
+                            _removeExercise(e, WorkoutSectionType.warmup),
+                        onMoveUp: (i) => _moveUp(i, WorkoutSectionType.warmup),
+                        onMoveDown: (i) =>
+                            _moveDown(i, WorkoutSectionType.warmup),
+                      ),
                     const SizedBox(height: FitFlowSpace.sm),
-                    _SectionEditor(
-                      title: 'Main',
-                      type: WorkoutSectionType.main,
-                      entries: _main,
-                      onAdd: () => _addExercise(WorkoutSectionType.main),
-                      onEdit: (e, updated) => _editPrescription(
-                          e, WorkoutSectionType.main, updated),
-                      onRemove: (e) =>
-                          _removeExercise(e, WorkoutSectionType.main),
-                      onMoveUp: (i) => _moveUp(i, WorkoutSectionType.main),
-                      onMoveDown: (i) => _moveDown(i, WorkoutSectionType.main),
-                    ),
+                    if (_selectedSection == WorkoutSectionType.main)
+                      _SectionEditor(
+                        key: const ValueKey('editor-main'),
+                        title: 'Main',
+                        type: WorkoutSectionType.main,
+                        entries: _main,
+                        onAdd: () => _addExercise(WorkoutSectionType.main),
+                        onEdit: (e, updated) => _editPrescription(
+                            e, WorkoutSectionType.main, updated),
+                        onRemove: (e) =>
+                            _removeExercise(e, WorkoutSectionType.main),
+                        onMoveUp: (i) => _moveUp(i, WorkoutSectionType.main),
+                        onMoveDown: (i) =>
+                            _moveDown(i, WorkoutSectionType.main),
+                      ),
                     const SizedBox(height: FitFlowSpace.sm),
-                    _SectionEditor(
-                      title: 'Cool-down',
-                      type: WorkoutSectionType.cooldown,
-                      entries: _cooldown,
-                      onAdd: () => _addExercise(WorkoutSectionType.cooldown),
-                      onEdit: (e, updated) => _editPrescription(
-                          e, WorkoutSectionType.cooldown, updated),
-                      onRemove: (e) =>
-                          _removeExercise(e, WorkoutSectionType.cooldown),
-                      onMoveUp: (i) => _moveUp(i, WorkoutSectionType.cooldown),
-                      onMoveDown: (i) =>
-                          _moveDown(i, WorkoutSectionType.cooldown),
-                    ),
+                    if (_selectedSection == WorkoutSectionType.cooldown)
+                      _SectionEditor(
+                        key: const ValueKey('editor-cooldown'),
+                        title: 'Cool-down',
+                        type: WorkoutSectionType.cooldown,
+                        entries: _cooldown,
+                        onAdd: () => _addExercise(WorkoutSectionType.cooldown),
+                        onEdit: (e, updated) => _editPrescription(
+                            e, WorkoutSectionType.cooldown, updated),
+                        onRemove: (e) =>
+                            _removeExercise(e, WorkoutSectionType.cooldown),
+                        onMoveUp: (i) =>
+                            _moveUp(i, WorkoutSectionType.cooldown),
+                        onMoveDown: (i) =>
+                            _moveDown(i, WorkoutSectionType.cooldown),
+                      ),
                     const SizedBox(height: FitFlowSpace.lg),
                     FilledButton(
                       style: FilledButton.styleFrom(
@@ -621,7 +647,8 @@ class _CustomWorkoutBuilderScreenState
 
 class _SectionEditor extends StatefulWidget {
   const _SectionEditor(
-      {required this.title,
+      {super.key,
+      required this.title,
       required this.type,
       required this.entries,
       required this.onAdd,

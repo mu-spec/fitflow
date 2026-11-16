@@ -10,6 +10,7 @@ import 'package:fitflow/l10n/fitflow_l10n.dart';
 import 'package:fitflow/features/onboarding/state/user_fitness_profile_controller.dart';
 import 'package:fitflow/features/profile/presentation/widgets/profile_editor_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:fitflow/core/design/widgets/fitflow_section_card.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -157,16 +158,21 @@ class _WorkoutPreferencesEditorScreenState
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(context.l10n.utilityEditorDraft,
-                            style: theme.textTheme.bodySmall),
-                        const SizedBox(height: FitFlowSpace.md),
-                        for (final preference in WorkoutPreference.values)
-                          ProfileOptionTile(
-                            enabled: !_saving,
-                            label: preferenceLabel(context.l10n, preference),
-                            selected: draft.preferences.contains(preference),
-                            onSelected: () => _togglePreference(preference),
-                          ),
+                        FitFlowSectionCard(
+                            padding: EdgeInsets.zero,
+                            child: Column(children: [
+                              for (final preference in WorkoutPreference.values)
+                                SwitchListTile.adaptive(
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 16, vertical: 6),
+                                    title: Text(preferenceLabel(
+                                        context.l10n, preference)),
+                                    value:
+                                        draft.preferences.contains(preference),
+                                    onChanged: _saving
+                                        ? null
+                                        : (_) => _togglePreference(preference)),
+                            ])),
                       ],
                     ),
                   ),

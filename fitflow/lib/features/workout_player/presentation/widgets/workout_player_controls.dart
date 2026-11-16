@@ -76,11 +76,21 @@ class WorkoutPlayerControls extends StatelessWidget {
     }
     secondary.addAll(secondaryActions);
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      FilledButton.icon(
-          key: const ValueKey('player_primary_action'),
-          onPressed: action,
-          icon: Icon(icon),
-          label: Text(label)),
+      Align(
+          alignment: Alignment.center,
+          child: ConstrainedBox(
+              constraints: BoxConstraints(
+                  minWidth: state.phase == WorkoutPlayerPhase.ready ||
+                          state.phase == WorkoutPlayerPhase.sectionBreak
+                      ? double.infinity
+                      : 180),
+              child: FilledButton.icon(
+                  key: const ValueKey('player_primary_action'),
+                  onPressed: action,
+                  icon: Icon(icon),
+                  style:
+                      FilledButton.styleFrom(minimumSize: const Size(180, 60)),
+                  label: Text(label)))),
       const SizedBox(height: 4),
       // Reserve the same secondary zone even when no secondary action applies.
       if (secondary.isEmpty)

@@ -111,6 +111,14 @@ class _ExerciseAnimationState extends State<ExerciseAnimation>
   }
 
   Widget _photo() {
+    final poster = ExerciseAnimationRegistry.posterFor(widget.exerciseId);
+    if (poster != null) {
+      return Image.asset(poster,
+          width: widget.width,
+          height: widget.height,
+          fit: BoxFit.contain,
+          excludeFromSemantics: true);
+    }
     final spec = ExerciseMediaRegistry.lookup(widget.exerciseId);
     return FitFlowMediaImage(
         asset: widget.heroFallback ? spec?.hero : spec?.thumbnail,
@@ -138,16 +146,14 @@ class _ExerciseAnimationState extends State<ExerciseAnimation>
         ),
       );
     }
-    return Lottie.asset(asset,
-        key: ValueKey(asset),
+    return _PacedExerciseLottie(
+        key: ValueKey('paced:$asset'),
+        exerciseId: widget.exerciseId,
+        asset: asset,
         width: widget.width,
         height: widget.height,
-        fit: BoxFit.contain,
-        repeat: true,
         animate: widget.animate && _foreground,
-        frameBuilder: (context, child, composition) =>
-            composition == null ? _photo() : child,
-        errorBuilder: (context, error, stackTrace) => _photo());
+        fallback: _photo());
   }
 
   @override
@@ -170,4 +176,70 @@ class _ExerciseAnimationState extends State<ExerciseAnimation>
                         ? _animation(asset)
                         : _photo()))));
   }
+}
+
+/// Owns only the visual clock. Removing an offscreen/reduced-motion animation
+/// disposes its ticker; pausing an onscreen one retains its exact frame.
+class _PacedExerciseLottie extends StatefulWidget {
+  const _PacedExerciseLottie(
+      {super.key,
+      required this.exerciseId,
+      required this.asset,
+      required this.width,
+      required this.height,
+      required this.animate,
+      required this.fallback});
+  final String exerciseId, asset;
+  final double width, height;
+  final bool animate;
+  final Widget fallback;
+
+  @override
+  State<_PacedExerciseLottie> createState() => _PacedExerciseLottieState();
+}
+
+class _PacedExerciseLottieState extends State<_PacedExerciseLottie>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(vsync: this);
+  bool _loaded = false;
+
+  void _syncPlayback() {
+    if (_loaded && widget.animate) {
+      if (!_controller.isAnimating) _controller.repeat();
+    } else {
+      _controller.stop();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant _PacedExerciseLottie oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _syncPlayback();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => Lottie.asset(widget.asset,
+      key: ValueKey(widget.asset),
+      controller: _controller,
+      width: widget.width,
+      height: widget.height,
+      fit: BoxFit.contain,
+      repeat: true,
+      animate: widget.animate,
+      onLoaded: (composition) {
+        if (!mounted) return;
+        _controller.duration = ExerciseAnimationRegistry.playbackDuration(
+            widget.exerciseId, composition.duration);
+        _loaded = true;
+        _syncPlayback();
+      },
+      frameBuilder: (context, child, composition) =>
+          composition == null ? widget.fallback : child,
+      errorBuilder: (context, error, stackTrace) => widget.fallback);
 }

@@ -1,3 +1,4 @@
+import 'package:fitflow/core/design/widgets/fitflow_section_card.dart';
 import 'widgets/progress_presentation.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
@@ -31,10 +32,23 @@ class ProgressScreen extends ConsumerWidget {
       const ProgressTheme(child: _ProgressContent());
 }
 
-class _ProgressContent extends ConsumerWidget {
+class _ProgressContent extends ConsumerStatefulWidget {
   const _ProgressContent();
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_ProgressContent> createState() => _ProgressContentState();
+}
+
+class _ProgressContentState extends ConsumerState<_ProgressContent> {
+  int _tab = 0;
+  final _scroll = ScrollController();
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final historyAsync = ref.watch(workoutHistoryProvider);
     final visual = FitFlowVisualV2.of(context);
 
@@ -73,59 +87,83 @@ class _ProgressContent extends ConsumerWidget {
               now: now,
             );
 
-            if (analytics.isEmpty) {
-              return _progressOverviewScroll(
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const ProgressOverviewHeader(),
-                    const SizedBox(height: FitFlowSpace.xl),
-                    const _ProgressEmptyState(),
-                  ],
-                ),
-              );
-            }
-
-            return _progressOverviewScroll(
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const ProgressOverviewHeader(showDeviceNote: false),
-                  const SizedBox(height: 12),
-                  ProgressSummaryCards(analytics: analytics),
-                  const Divider(height: 24),
-                  ProgressActivityChart(analytics: analytics),
-                  const SizedBox(height: 12),
-                  ProgressConsistency(analytics: analytics, showHeading: false),
-                  const Divider(height: 32),
-                  ProgressMovementTraining(analytics: analytics, compact: true),
-                  const Divider(height: 32),
-                  ProgressRecentWorkouts(
-                      history: analytics.validWorkouts, initialCount: 3),
-                  const Divider(height: 24),
-                  ProgressDisclosure(
-                    key: const Key('progress_more_details'),
-                    title: context.l10n.progressMoreDetails,
-                    children: [
-                      Text(context.l10n.progressDeviceNote,
-                          style: Theme.of(context).textTheme.bodySmall),
-                      const SizedBox(height: 8),
-                      Text(context.l10n.trainingPlannedNote,
-                          style: Theme.of(context).textTheme.bodySmall),
-                      const SizedBox(height: 16),
-                      ProgressPeriodComparison(analytics: analytics),
-                      const Divider(height: 32),
-                      ProgressMovementTraining(analytics: analytics),
-                      const Divider(height: 32),
-                      const ProgressCapabilitySnapshot(),
-                      const Divider(height: 32),
-                      ProgressRecoverySection(
-                          recoveryStatuses: recoveryStatuses, now: now),
-                    ],
-                  ),
-                  const SizedBox(height: FitFlowSpace.xl),
-                ],
-              ),
+            final l = context.l10n;
+            return SingleChildScrollView(
+              controller: _scroll,
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+              child: FitFlowMaxWidth(
+                  maxWidth: FitFlowLayout.maxContentWidth,
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const ProgressOverviewHeader(showDeviceNote: false),
+                        const SizedBox(height: 20),
+                        if (!analytics.isEmpty)
+                          Wrap(spacing: 8, runSpacing: 8, children: [
+                            for (var i = 0; i < 3; i++)
+                              ChoiceChip(
+                                  key: ValueKey('report_tab_$i'),
+                                  label: Text([
+                                    l.reportOverview,
+                                    l.reportHistory,
+                                    l.reportTraining
+                                  ][i]),
+                                  selected: _tab == i,
+                                  onSelected: (_) {
+                                    setState(() => _tab = i);
+                                    if (_scroll.hasClients) _scroll.jumpTo(0);
+                                  }),
+                          ]),
+                        const SizedBox(height: 20),
+                        if (analytics.isEmpty) ...[
+                          const FitFlowSectionCard(
+                              child: _ProgressEmptyState()),
+                        ] else if (_tab == 0) ...[
+                          FitFlowSectionCard(
+                              child:
+                                  ProgressSummaryCards(analytics: analytics)),
+                          FitFlowSectionCard(
+                              child:
+                                  ProgressActivityChart(analytics: analytics)),
+                          FitFlowSectionCard(
+                              child: ProgressConsistency(
+                                  analytics: analytics, showHeading: false)),
+                          FitFlowSectionCard(
+                              child: ProgressRecentWorkouts(
+                                  history: analytics.validWorkouts,
+                                  initialCount: 1)),
+                          Text(l.trainingPlannedNote,
+                              style: Theme.of(context).textTheme.bodySmall),
+                        ] else if (_tab == 1) ...[
+                          FitFlowSectionCard(
+                              child: ProgressRecentWorkouts(
+                                  history: analytics.validWorkouts)),
+                        ] else ...[
+                          FitFlowSectionCard(
+                              child: ProgressPeriodComparison(
+                                  analytics: analytics)),
+                          FitFlowSectionCard(
+                              child: ProgressMovementTraining(
+                                  analytics: analytics)),
+                          FitFlowSectionCard(
+                              child: ProgressDisclosure(
+                                  title: l.utilityMovementTitle,
+                                  children: [
+                                const ProgressCapabilitySnapshot()
+                              ])),
+                          FitFlowSectionCard(
+                              child: ProgressDisclosure(
+                                  title: l.trainingRecoveryDetails,
+                                  children: [
+                                ProgressRecoverySection(
+                                    recoveryStatuses: recoveryStatuses,
+                                    now: now,
+                                    showHeading: false)
+                              ])),
+                          Text(l.trainingPlannedNote,
+                              style: Theme.of(context).textTheme.bodySmall),
+                        ],
+                      ])),
             );
           },
         ),
@@ -133,17 +171,6 @@ class _ProgressContent extends ConsumerWidget {
     );
   }
 }
-
-Widget _progressOverviewScroll(Widget child) => SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(
-        horizontal: FitFlowSpace.screenHorizontal,
-        vertical: FitFlowSpace.sm,
-      ),
-      child: FitFlowMaxWidth(
-        maxWidth: FitFlowLayout.maxContentWidth,
-        child: child,
-      ),
-    );
 
 class _ProgressEmptyState extends StatelessWidget {
   const _ProgressEmptyState();

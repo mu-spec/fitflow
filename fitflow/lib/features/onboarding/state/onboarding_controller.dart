@@ -81,6 +81,16 @@ class OnboardingController extends Notifier<OnboardingState> {
   @override
   OnboardingState build() => const OnboardingState();
 
+  void reviewProfile(UserFitnessProfile profile) {
+    state = OnboardingState(
+        goal: profile.goal,
+        experience: profile.experience,
+        workoutDuration: profile.workoutDuration,
+        environment: profile.environment,
+        equipment: {...profile.equipment},
+        preferences: {...profile.preferences});
+  }
+
   void selectGoal(FitnessGoal goal) {
     state = state.copyWith(goal: goal);
   }

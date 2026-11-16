@@ -14,6 +14,10 @@ class ProgressTheme extends StatelessWidget {
           final base = Theme.of(context);
           return Theme(
             data: base.copyWith(
+              colorScheme: base.colorScheme.copyWith(
+                  primary: base.brightness == Brightness.dark
+                      ? const Color(0xFF9EB4FF)
+                      : const Color(0xFF365BE8)),
               textTheme: base.textTheme.copyWith(
                 titleLarge: base.textTheme.titleLarge?.copyWith(fontSize: 18),
                 labelLarge: base.textTheme.bodyMedium

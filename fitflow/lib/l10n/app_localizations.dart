@@ -4084,6 +4084,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Exercise examples'**
   String get exerciseExamples;
+
+  /// No description provided for @profileTrainingSetup.
+  ///
+  /// In en, this message translates to:
+  /// **'Your training setup'**
+  String get profileTrainingSetup;
+
+  /// No description provided for @programLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Program length'**
+  String get programLength;
+
+  /// No description provided for @reportOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get reportOverview;
+
+  /// No description provided for @reportHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get reportHistory;
+
+  /// No description provided for @reportTraining.
+  ///
+  /// In en, this message translates to:
+  /// **'Training'**
+  String get reportTraining;
+
+  /// No description provided for @reportTimeDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Time details'**
+  String get reportTimeDetails;
+
+  /// No description provided for @workoutControlsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout controls'**
+  String get workoutControlsTitle;
+
+  /// No description provided for @workoutVoiceGuidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice guidance'**
+  String get workoutVoiceGuidance;
+
+  /// No description provided for @settingsAppearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get settingsAppearance;
+
+  /// No description provided for @settingsReminderHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification help'**
+  String get settingsReminderHelp;
+
+  /// No description provided for @settingsAboutData.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data'**
+  String get settingsAboutData;
+
+  /// No description provided for @settingsArtworkSources.
+  ///
+  /// In en, this message translates to:
+  /// **'Sources and licenses'**
+  String get settingsArtworkSources;
+
+  /// No description provided for @settingsArtworkNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Adaptation notes'**
+  String get settingsArtworkNotes;
+
+  /// No description provided for @backupCreateSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep a copy of your profile, workouts and progress.'**
+  String get backupCreateSummary;
+
+  /// No description provided for @backupIncluded.
+  ///
+  /// In en, this message translates to:
+  /// **'What is included?'**
+  String get backupIncluded;
 }
 
 class _AppLocalizationsDelegate

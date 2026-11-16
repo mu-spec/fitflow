@@ -15,7 +15,7 @@ class ProgressOverviewHeader extends StatelessWidget {
                 style: Theme.of(context)
                     .textTheme
                     .titleLarge
-                    ?.copyWith(fontSize: 22, fontWeight: FontWeight.w500))),
+                    ?.copyWith(fontSize: 30, fontWeight: FontWeight.w700))),
         if (showDeviceNote) ...[
           const SizedBox(height: 4),
           Text(context.l10n.progressDeviceNote,
@@ -71,8 +71,6 @@ class ProgressSummaryCards extends StatelessWidget {
                       child: metric),
               ]);
       }),
-      const SizedBox(height: 4),
-      Text(l.progressDeltaContext, style: text.bodySmall),
     ]);
   }
 }
@@ -87,17 +85,13 @@ class _Metric extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Semantics(
-        label: '$label $value. ${context.l10n.progressDeltaContext}: $delta',
+        label: '$label $value',
         excludeSemantics: true,
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(value,
               style: theme.textTheme.titleLarge
-                  ?.copyWith(fontSize: 22, fontWeight: FontWeight.w500)),
+                  ?.copyWith(fontSize: 30, fontWeight: FontWeight.w700)),
           Text(label, style: theme.textTheme.bodySmall),
-          const SizedBox(height: 2),
-          Text(delta,
-              style: theme.textTheme.bodySmall
-                  ?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
         ]));
   }
 }

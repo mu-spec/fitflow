@@ -1,3 +1,4 @@
+import 'package:fitflow/core/constants/app_constants.dart';
 import 'dart:async';
 
 import 'package:fitflow/app/app.dart';
@@ -18,10 +19,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// M21 Part 1: startup latency and routing efficiency.
-///
-/// The fixed 1.5s splash delay is gone; routing waits only for the two
-/// required persisted states, resolved concurrently, and navigates once.
+/// Startup respects the requested brand presentation and concurrent loads.
 void main() {
   final userProfile = UserFitnessProfile(
     goal: FitnessGoal.generalFitness,
@@ -123,7 +121,7 @@ void main() {
     Future<int> pumpUntil(
       WidgetTester tester,
       Finder finder, {
-      int maxCumulative = 1500,
+      int maxCumulative = 6500,
       int step = 100,
     }) async {
       var pumped = 0;
@@ -135,24 +133,25 @@ void main() {
       return pumped;
     }
 
-    testWidgets('no artificial 1500ms delay: configured user reaches Home '
-        'well under the old delay', (tester) async {
+    testWidgets(
+        'configured user reaches Home '
+        'after the brand presentation', (tester) async {
       await seedBothProfiles();
       await tester.pumpWidget(const ProviderScope(child: FitFlowApp()));
 
       final ms = await pumpUntil(
         tester,
         find.text('Your workout'),
-        maxCumulative: 600,
+        maxCumulative: AppConstants.splashDelay.inMilliseconds + 500,
       );
 
       expect(find.text('Your workout'), findsOneWidget,
-          reason: 'startup must reach Home within ${ms}ms — the fixed '
-              '1500ms delay must be gone');
-      expect(ms, lessThan(1500));
+          reason: 'startup must route after the brand presentation (${ms}ms)');
+      expect(
+          ms, lessThanOrEqualTo(AppConstants.splashDelay.inMilliseconds + 500));
     });
 
-    testWidgets('first launch routes to Onboarding without the old delay',
+    testWidgets('first launch routes to Onboarding after brand presentation',
         (tester) async {
       SharedPreferences.setMockInitialValues({});
       await tester.pumpWidget(const ProviderScope(child: FitFlowApp()));
@@ -160,11 +159,12 @@ void main() {
       final ms = await pumpUntil(
         tester,
         find.text('Welcome to Home Workout'),
-        maxCumulative: 600,
+        maxCumulative: AppConstants.splashDelay.inMilliseconds + 500,
       );
 
       expect(find.text('Welcome to Home Workout'), findsOneWidget);
-      expect(ms, lessThan(1500));
+      expect(
+          ms, lessThanOrEqualTo(AppConstants.splashDelay.inMilliseconds + 500));
     });
 
     testWidgets('profile without capability routes to assessment quickly',
@@ -177,11 +177,12 @@ void main() {
       final ms = await pumpUntil(
         tester,
         find.text('Movement Check'),
-        maxCumulative: 600,
+        maxCumulative: AppConstants.splashDelay.inMilliseconds + 500,
       );
 
       expect(find.text('Movement Check'), findsWidgets);
-      expect(ms, lessThan(1500));
+      expect(
+          ms, lessThanOrEqualTo(AppConstants.splashDelay.inMilliseconds + 500));
     });
 
     testWidgets('navigation happens only once and stays settled',
@@ -227,6 +228,7 @@ void main() {
       // Capability resolves (missing) -> assessment, proving both loads were
       // awaited concurrently and routing happened as soon as both completed.
       capabilityGate.complete(null);
+      await tester.pump(AppConstants.splashDelay);
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
       expect(find.text('Movement Check'), findsWidgets);
@@ -254,7 +256,8 @@ void main() {
       await tester.pump();
 
       // Replace the tree (disposing the splash) BEFORE either load resolves.
-      await tester.pumpWidget(const MaterialApp(home: Scaffold(body: Text('gone'))));
+      await tester
+          .pumpWidget(const MaterialApp(home: Scaffold(body: Text('gone'))));
       expect(find.text('gone'), findsOneWidget);
 
       // Now let the pending loads finish; the disposed splash must not

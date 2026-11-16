@@ -24,7 +24,6 @@ class SkillTreeNodeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colors = theme.colorScheme;
     final levelLabel = trainingDifficultyLabel(context.l10n, node.difficulty);
     final equipment = node.exercise.requiredEquipment
         .where((item) => item != WorkoutEquipment.none)
@@ -50,11 +49,8 @@ class SkillTreeNodeCard extends StatelessWidget {
         childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         shape: const Border(),
         collapsedShape: const Border(),
-        leading: CircleAvatar(
-          backgroundColor: colors.surfaceContainerHighest,
-          foregroundColor: colors.onSurface,
-          child: Text('${node.position}'),
-        ),
+        leading: FitFlowExerciseImage.thumbnail(
+            exerciseId: node.exercise.id, width: 52, height: 52),
         title: Text(node.exercise.name, style: theme.textTheme.titleMedium),
         subtitle:
             Text(_levelStatusLabel(context), style: theme.textTheme.bodySmall),

@@ -25,9 +25,20 @@ import 'package:fitflow/features/workouts/state/capability_profile_controller.da
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+final workoutSpeechActivityProvider = Provider<ValueNotifier<bool>>((ref) {
+  final activity = ValueNotifier(false);
+  ref.onDispose(activity.dispose);
+  return activity;
+});
+
 /// Provider for WorkoutCoach abstraction.
 final workoutCoachProvider = Provider<WorkoutCoach>((ref) {
-  return FlutterTtsWorkoutCoach();
+  final activity = ref.read(workoutSpeechActivityProvider);
+  var alive = true;
+  ref.onDispose(() => alive = false);
+  return FlutterTtsWorkoutCoach(onSpeakingChanged: (speaking) {
+    if (alive) activity.value = speaking;
+  });
 });
 
 /// Dedicated testable controller for Workout Player with smart replacement.

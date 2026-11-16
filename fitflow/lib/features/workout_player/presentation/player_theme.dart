@@ -13,13 +13,13 @@ class PlayerTheme extends StatelessWidget {
     final dark = base.brightness == Brightness.dark;
     final original = FitFlowTheme.of(context).palette;
     const slate = Color(0xFF202526);
-    const citrus = Color(0xFFD4E779);
-    final page = dark ? slate : const Color(0xFFF3F4EE);
-    final surface = dark ? const Color(0xFF303737) : const Color(0xFFE4E8DD);
-    final ink = dark ? const Color(0xFFF3F4EE) : slate;
-    final secondary = dark ? const Color(0xFFC4CBC3) : const Color(0xFF50594E);
-    final accent = dark ? citrus : const Color(0xFF526515);
-    final line = dark ? const Color(0xFF505958) : const Color(0xFFC5CDBB);
+    const citrus = Color(0xFF9EB4FF);
+    final page = dark ? slate : Colors.white;
+    final surface = dark ? const Color(0xFF303737) : Colors.white;
+    final ink = dark ? const Color(0xFFF5F6F9) : slate;
+    final secondary = dark ? const Color(0xFFC4CBC3) : const Color(0xFF596574);
+    final accent = dark ? citrus : const Color(0xFF365BE8);
+    final line = dark ? const Color(0xFF505958) : const Color(0xFFE1E6EE);
     final palette = FitFlowPalette(
       brand: accent,
       onBrand: dark ? slate : Colors.white,
@@ -86,9 +86,9 @@ class PlayerTheme extends StatelessWidget {
         ],
         textTheme: text.copyWith(
           displayLarge: text.displayLarge?.copyWith(
-              fontSize: 48, height: 1.05, fontWeight: FontWeight.w600),
+              fontSize: 60, height: 1.05, fontWeight: FontWeight.w600),
           displayMedium: text.displayMedium?.copyWith(
-              fontSize: 48, height: 1.05, fontWeight: FontWeight.w600),
+              fontSize: 60, height: 1.05, fontWeight: FontWeight.w600),
         ),
         iconTheme: base.iconTheme.copyWith(color: ink),
         appBarTheme: base.appBarTheme.copyWith(
@@ -99,8 +99,9 @@ class PlayerTheme extends StatelessWidget {
         dialogTheme: base.dialogTheme.copyWith(backgroundColor: page),
         filledButtonTheme: FilledButtonThemeData(
             style: FilledButton.styleFrom(
-          backgroundColor: Colors.black,
-          foregroundColor: Colors.white,
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          side: const BorderSide(color: Color(0xFFCBD2DE)),
           minimumSize: const Size(48, 48),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           textStyle: text.titleSmall?.copyWith(fontWeight: FontWeight.w600),

@@ -1,4 +1,3 @@
-import 'program_widgets.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/programs/domain/adaptive_program_definition.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
@@ -39,29 +38,36 @@ class ProgramEditorialCard extends StatelessWidget {
       child: InkWell(
         onTap: open,
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(18),
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Text(program.focus,
+                style: text.labelMedium?.copyWith(letterSpacing: .4)),
+            const SizedBox(height: 12),
             Text(program.name,
                 style: text.titleLarge
                     ?.copyWith(fontSize: 22, fontWeight: FontWeight.w700)),
             const SizedBox(height: 12),
             Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
               Expanded(
-                  flex: 5,
+                  flex: 1,
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(program.focus, style: text.bodyMedium),
-                        const SizedBox(height: 16),
-                        ProgramStructureLine(
-                            definition: program,
-                            color: Colors.white,
-                            includeTotal: false),
+                        Text(l.trainingProgramWeeks(program.weekCount),
+                            style: text.titleMedium
+                                ?.copyWith(fontWeight: FontWeight.w700)),
+                        const SizedBox(height: 20),
+                        Text(l.trainingProgramPerWeek(program.sessionsPerWeek),
+                            style: text.titleMedium
+                                ?.copyWith(fontWeight: FontWeight.w700)),
+                        const SizedBox(height: 6),
+                        Text(l.trainingProgramTotal(program.totalSessionCount),
+                            style: text.bodySmall),
                       ])),
               const SizedBox(width: 8),
               Expanded(
-                  flex: 4,
+                  flex: 1,
                   child: AspectRatio(
                     aspectRatio: 2 / 3,
                     child: Image.asset(
@@ -70,12 +76,13 @@ class ProgramEditorialCard extends StatelessWidget {
                         excludeFromSemantics: true),
                   )),
             ]),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             FilledButton.icon(
               onPressed: open,
               style: FilledButton.styleFrom(
-                  backgroundColor: Colors.black,
-                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
+                  side: const BorderSide(color: Color(0xFFCBD2DE)),
                   minimumSize: const Size(48, 48),
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 12)),

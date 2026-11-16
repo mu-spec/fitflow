@@ -1,3 +1,4 @@
+import 'package:fitflow/core/design/widgets/fitflow_section_card.dart';
 import 'package:fitflow/features/settings/presentation/widgets/profile_settings_theme.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
@@ -113,36 +114,19 @@ class PrivacyPolicyScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: FitFlowSpace.md),
-                  FitFlowV2InfoSurface(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        for (var index = 0;
-                            index < sections.length;
-                            index++) ...[
-                          Semantics(
-                            header: true,
-                            child: Text(
-                              sections[index].heading,
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: FitFlowSpace.xs),
-                          Text(
-                            sections[index].body,
-                            style: theme.textTheme.bodyMedium,
-                          ),
-                          if (index < sections.length - 1) ...[
-                            const SizedBox(height: FitFlowSpace.md),
-                            const Divider(height: 1),
-                            const SizedBox(height: FitFlowSpace.md),
-                          ],
-                        ],
-                      ],
-                    ),
-                  ),
+                  for (final section in sections)
+                    FitFlowSectionCard(
+                        child: ExpansionTile(
+                            tilePadding: EdgeInsets.zero,
+                            title: Text(section.heading,
+                                style: theme.textTheme.titleMedium),
+                            children: [
+                          Padding(
+                              padding:
+                                  const EdgeInsets.only(top: 12, bottom: 8),
+                              child: SelectableText(section.body,
+                                  style: theme.textTheme.bodyMedium))
+                        ])),
                 ],
               ),
             ),

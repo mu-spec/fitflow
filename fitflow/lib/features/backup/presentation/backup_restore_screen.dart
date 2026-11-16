@@ -1,3 +1,4 @@
+import 'package:fitflow/core/design/widgets/fitflow_section_card.dart';
 import 'package:fitflow/features/settings/presentation/widgets/profile_settings_theme.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
@@ -140,7 +141,7 @@ class _BackupRestoreScreenState
                   _BackupSection(
                     icon: Icons.save_alt_rounded,
                     title: BackupCopy.createTitle,
-                    description: BackupCopy.createDescription,
+                    description: context.l10n.backupCreateSummary,
                     action: FilledButton.icon(
                       key: BackupRestoreScreen.createButtonKey,
                       onPressed: state.isBusy ? null : controller.createBackup,
@@ -161,7 +162,7 @@ class _BackupRestoreScreenState
                       ),
                     ),
                   ),
-                  const Divider(height: FitFlowSpace.xl),
+                  const SizedBox(height: 4),
                   _BackupSection(
                     icon: Icons.restore_rounded,
                     title: BackupCopy.restoreTitle,
@@ -180,6 +181,13 @@ class _BackupRestoreScreenState
                       ),
                     ),
                   ),
+                  ExpansionTile(
+                      title: Text(context.l10n.backupIncluded),
+                      children: [
+                        Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Text(BackupCopy.createDescription))
+                      ]),
                   if (state.preview != null) ...[
                     const SizedBox(height: FitFlowSpace.md),
                     BackupPreviewCard(
@@ -237,7 +245,8 @@ class _BackupSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Column(
+    return FitFlowSectionCard(
+        child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Row(
@@ -265,6 +274,6 @@ class _BackupSection extends StatelessWidget {
         const SizedBox(height: FitFlowSpace.md),
         action,
       ],
-    );
+    ));
   }
 }

@@ -1,3 +1,4 @@
+import 'package:fitflow/core/design/widgets/fitflow_section_card.dart';
 import 'package:fitflow/features/settings/presentation/widgets/profile_settings_theme.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/core/design/fitflow_layout.dart';
@@ -119,104 +120,76 @@ class _SettingsScreenState extends ConsumerState<_SettingsScreenContent> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   UtilityHeading(l.utilityPreferences),
-                  UtilityDisclosure(
-                    title: l.utilityAppearance,
-                    icon: Icons.palette_outlined,
-                    hideSummaryWhenExpanded: true,
-                    summary: _savingAppearance
-                        ? l.utilitySaving
-                        : appearance.isLoading
-                            ? l.utilityUpdating
-                            : appearance.hasError
-                                ? l.utilityRetryBody
-                                : (mode == AppearanceMode.system
-                                    ? l.utilitySystemDefault
-                                    : appearanceModeLabel(l, mode)),
-                    children: [
-                      if (appearance.isLoading)
-                        FitFlowLoading(label: l.utilityUpdating)
-                      else if (appearance.hasError)
-                        FitFlowErrorState(
-                          title: l.utilityAppearance,
-                          message: l.utilityRetryBody,
-                          action: TextButton(
-                            onPressed: () =>
-                                ref.invalidate(appearanceControllerProvider),
-                            child: Text(l.retry),
-                          ),
-                        )
-                      else
-                        RadioGroup<AppearanceMode>(
-                          groupValue: mode,
-                          onChanged: (value) {
-                            if (value == null || _savingAppearance) return;
-                            // ignore: discarded_futures
-                            _selectAppearance(value);
-                          },
-                          child: Column(
-                            children: [
-                              _AppearanceOption(
-                                title: l.utilitySystemDefault,
-                                value: AppearanceMode.system,
-                                selected: mode == AppearanceMode.system,
-                                enabled: !_savingAppearance,
-                              ),
-                              _AppearanceOption(
-                                title: l.appearanceLight,
-                                value: AppearanceMode.light,
-                                selected: mode == AppearanceMode.light,
-                                enabled: !_savingAppearance,
-                              ),
-                              _AppearanceOption(
-                                title: l.appearanceDark,
-                                value: AppearanceMode.dark,
-                                selected: mode == AppearanceMode.dark,
-                                enabled: !_savingAppearance,
-                              ),
-                            ],
-                          ),
-                        ),
-                    ],
-                  ),
-                  const Divider(height: 1),
-                  const WorkoutRemindersSection(),
-                  const Divider(height: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      UtilityHeading(l.utilityData),
-                      const BackupRestoreSettingsEntry(),
-                      const Divider(
-                        height: 1,
-                        indent: FitFlowSpace.md,
-                        endIndent: FitFlowSpace.md,
-                      ),
-                      UtilityHeading(l.utilityAbout),
-                      const _PrivacyPolicyEntry(),
-                      const _ExerciseArtworkCreditsEntry(),
-                    ],
-                  ),
-                  const SizedBox(height: FitFlowSpace.md),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ExcludeSemantics(
-                        child: Icon(
-                          Icons.info_outline_rounded,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      const SizedBox(width: FitFlowSpace.sm),
-                      Expanded(
-                        child: Text(
-                          SettingsScreen.localDataFooter,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  FitFlowSectionCard(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                        Text(l.utilityAppearance,
+                            style: theme.textTheme.titleMedium),
+                        const SizedBox(height: 12),
+                        if (appearance.isLoading)
+                          FitFlowLoading(label: l.utilityUpdating)
+                        else if (appearance.hasError)
+                          TextButton(
+                              onPressed: () =>
+                                  ref.invalidate(appearanceControllerProvider),
+                              child: Text(l.retry))
+                        else
+                          DropdownButtonFormField<AppearanceMode>(
+                              key: ValueKey(mode),
+                              initialValue: mode,
+                              isExpanded: true,
+                              itemHeight: null,
+                              decoration: const InputDecoration(
+                                  contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 12)),
+                              items: [
+                                for (final value in AppearanceMode.values)
+                                  DropdownMenuItem(
+                                      value: value,
+                                      child: Text(value == AppearanceMode.system
+                                          ? l.utilitySystemDefault
+                                          : appearanceModeLabel(l, value)))
+                              ],
+                              onChanged: _savingAppearance
+                                  ? null
+                                  : (value) {
+                                      if (value != null) {
+                                        _selectAppearance(value);
+                                      }
+                                    }),
+                      ])),
+                  FitFlowSectionCard(
+                      padding: EdgeInsets.zero,
+                      child: ListTile(
+                          leading: const Icon(Icons.notifications_outlined),
+                          title: Text(l.reminderSectionTitle),
+                          trailing: const Icon(Icons.chevron_right_rounded),
+                          onTap: () => showModalBottomSheet<void>(
+                              context: context,
+                              isScrollControlled: true,
+                              useSafeArea: true,
+                              showDragHandle: true,
+                              builder: (sheetContext) => ProfileSettingsTheme(
+                                  child: SizedBox(
+                                      height: MediaQuery.sizeOf(sheetContext)
+                                              .height *
+                                          .85,
+                                      child: const SingleChildScrollView(
+                                          padding: EdgeInsets.all(20),
+                                          child: WorkoutRemindersSection(
+                                              initiallyExpanded: true))))))),
+                  UtilityHeading(l.utilityData),
+                  const FitFlowSectionCard(child: BackupRestoreSettingsEntry()),
+                  UtilityHeading(l.utilityAbout),
+                  const FitFlowSectionCard(
+                      child: Column(children: [
+                    _PrivacyPolicyEntry(),
+                    Divider(height: 1),
+                    _ExerciseArtworkCreditsEntry(),
+                  ])),
+                  Text(SettingsScreen.localDataFooter,
+                      style: theme.textTheme.bodySmall),
                 ],
               ),
             ),
@@ -278,33 +251,6 @@ class _ExerciseArtworkCreditsEntry extends StatelessWidget {
         child: Icon(Icons.chevron_right_rounded),
       ),
       onTap: () => context.go(AppRoutes.exerciseArtworkCredits),
-    );
-  }
-}
-
-class _AppearanceOption extends StatelessWidget {
-  const _AppearanceOption({
-    required this.title,
-    required this.value,
-    required this.selected,
-    this.enabled = true,
-  });
-
-  final String title;
-  final AppearanceMode value;
-  final bool selected;
-
-  /// Disabled while an appearance write is in flight.
-  final bool enabled;
-
-  @override
-  Widget build(BuildContext context) {
-    return RadioListTile<AppearanceMode>(
-      contentPadding: EdgeInsets.zero,
-      title: Text(title, style: Theme.of(context).textTheme.bodyLarge),
-      value: value,
-      selected: selected,
-      enabled: enabled,
     );
   }
 }

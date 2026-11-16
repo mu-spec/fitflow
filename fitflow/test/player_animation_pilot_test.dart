@@ -1,8 +1,7 @@
-import 'dart:ui' as ui;
+import 'package:lottie/lottie.dart';
 
 import 'package:fitflow/app/config/app_theme.dart';
 import 'package:fitflow/core/design/media/fitflow_exercise_image.dart';
-import 'package:fitflow/core/design/media/fitflow_media_image.dart';
 import 'package:fitflow/core/design/media/exercise_animation_registry.dart';
 import 'package:fitflow/features/workout_player/application/workout_player_controller.dart';
 import 'package:fitflow/features/workout_player/domain/workout_player_phase.dart';
@@ -66,23 +65,15 @@ Future<void> pumpImageFrames(WidgetTester tester, {int count = 16}) async {
   }
 }
 
-ui.Image marchFrame(WidgetTester tester) => tester
-    .widget<RawImage>(
-        find.descendant(of: marchImage(), matching: find.byType(RawImage)))
-    .image!;
+double marchFrame(WidgetTester tester) => tester
+    .widget<RawLottie>(
+        find.descendant(of: marchImage(), matching: find.byType(RawLottie)))
+    .progress;
 
 Future<void> expectMarchAdvance(WidgetTester tester) async {
-  final frame = marchFrame(tester).clone();
-  try {
-    var changed = false;
-    for (var i = 0; i < 40 && !changed; i++) {
-      await pumpImageFrames(tester, count: 1);
-      changed = !marchFrame(tester).isCloneOf(frame);
-    }
-    expect(changed, isTrue);
-  } finally {
-    frame.dispose();
-  }
+  final frame = marchFrame(tester);
+  await pumpImageFrames(tester, count: 4);
+  expect(marchFrame(tester), isNot(frame));
 }
 
 void main() {
@@ -103,15 +94,11 @@ void main() {
     }
 
     Future<void> frozen() async {
-      final image = marchFrame(tester).clone();
+      final frame = marchFrame(tester);
       final state = controller.state;
-      try {
-        await pumpImageFrames(tester);
-        expect(marchFrame(tester).isCloneOf(image), isTrue);
-        expect(controller.state, same(state));
-      } finally {
-        image.dispose();
-      }
+      await pumpImageFrames(tester);
+      expect(marchFrame(tester), frame);
+      expect(controller.state, same(state));
     }
 
     await show();
@@ -148,7 +135,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('march reduced motion keeps the static photo fallback',
+  testWidgets('march reduced motion keeps the matching character poster',
       (tester) async {
     final controller = WorkoutPlayerController(
         plan: plan('march_in_place'), autoStartTimer: false);
@@ -159,7 +146,9 @@ void main() {
     await tester.pump();
     expect(find.byType(FitFlowExerciseImage), findsOneWidget);
     expect(marchImage(), findsNothing);
-    expect(find.byType(FitFlowMediaImage), findsOneWidget);
+    final image = tester.widget<Image>(find.byType(Image));
+    expect((image.image as AssetImage).assetName,
+        ExerciseAnimationRegistry.posterFor('march_in_place'));
     expect(tester.takeException(), isNull);
   });
 

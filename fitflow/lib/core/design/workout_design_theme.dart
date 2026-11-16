@@ -99,8 +99,9 @@ class WorkoutDesignTheme extends StatelessWidget {
         dialogTheme: base.dialogTheme.copyWith(backgroundColor: page),
         filledButtonTheme: FilledButtonThemeData(
             style: FilledButton.styleFrom(
-          backgroundColor: Colors.black,
-          foregroundColor: Colors.white,
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          side: const BorderSide(color: Color(0xFFCBD2DE)),
           shape: const StadiumBorder(),
           minimumSize: const Size(48, 48),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),

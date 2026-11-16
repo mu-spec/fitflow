@@ -40,7 +40,9 @@ class WorkoutPreviewSummaryCard extends StatelessWidget {
           header: true,
           child: Text(l.homeSession,
               style: text.titleLarge?.copyWith(
-                  color: t.textPrimary, fontWeight: FontWeight.w500)),
+                  color: t.textPrimary,
+                  fontSize: 26,
+                  fontWeight: FontWeight.w700)),
         ),
         const SizedBox(height: FitFlowSpace.xs),
         Text(

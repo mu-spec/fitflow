@@ -230,7 +230,7 @@ class WorkoutPlayerCompletedView extends ConsumerWidget {
             value: '${state.completedSets} / ${state.totalSets}',
             label: l.flowSets,
           );
-          if (constraints.maxWidth >= 460 &&
+          if (constraints.maxWidth >= 280 &&
               !WorkoutV2Layout.largeText(context)) {
             return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Expanded(child: exercises),
