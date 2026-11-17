@@ -4,6 +4,7 @@ import 'package:fitflow/app/config/app_theme.dart';
 import 'package:fitflow/app/router/app_router.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/backup/domain/backup_format.dart';
+import 'package:fitflow/features/settings/data/privacy_policy_links.dart';
 import 'package:fitflow/features/settings/presentation/privacy_policy_screen.dart';
 import 'package:fitflow/features/settings/presentation/settings_screen.dart';
 import 'package:flutter/material.dart';
@@ -151,15 +152,37 @@ void main() {
   });
 
   group('privacy policy', () {
-    test('route and publishing template exist without claiming publication', () {
+    test('hosted policy is static, complete, and matches the in-app link', () {
       expect(AppRoutes.privacyPolicy, '/profile/settings/privacy-policy');
       final router = File('lib/app/router/app_router.dart').readAsStringSync();
       expect(router.contains("path: 'privacy-policy'"), isTrue);
       final html = File('docs/privacy-policy.html').readAsStringSync();
-      expect(html.contains('<script'), isFalse);
-      expect(html.contains('TODO: developer/legal entity name'), isTrue);
-      expect(html.contains('TODO: privacy contact email'), isTrue);
-      expect(html.toLowerCase().contains('not yet published'), isTrue);
+      final lower = html.toLowerCase();
+      // Static page: no scripts, no external subresources, no trackers.
+      expect(lower.contains('<script'), isFalse);
+      expect(lower.contains('<iframe'), isFalse);
+      expect(RegExp(r'src="https?://').hasMatch(html), isFalse);
+      expect(RegExp(r'<link[^>]+href="https?://').hasMatch(html), isFalse);
+      // It describes this app, not a template for some other product.
+      expect(html.contains('com.fitflow.fitflow'), isTrue);
+      expect(lower.contains('internet permission'), isTrue);
+      expect(lower.contains('not a medical device'), isTrue);
+      expect(lower.contains('allowbackup="false"'), isTrue);
+      expect(html.contains('mailto:'), isTrue);
+      // The in-app screen opens exactly the hosted page.
+      expect(PrivacyPolicyLinks.privacyPolicyUrl, startsWith('https://'));
+      expect(PrivacyPolicyLinks.privacyPolicyUrl, endsWith('privacy-policy.html'));
+      expect(
+          File('lib/features/settings/presentation/privacy_policy_screen.dart')
+              .readAsStringSync()
+              .contains('PrivacyPolicyLinks.privacyPolicyUrl'),
+          isTrue);
+      // Three operator fields are still marked for the developer to fill in.
+      final publishing =
+          File('docs/release/PRIVACY_POLICY_PUBLISHING.md').readAsStringSync();
+      for (final field in ['DEVELOPER_NAME', 'CONTACT_EMAIL', 'PUBLIC_URL']) {
+        expect(publishing.contains(field), isTrue, reason: field);
+      }
       expect(File('docs/release/PRIVACY_POLICY_PUBLISHING.md').existsSync(), isTrue);
       expect(File('docs/release/play_data_safety.md').existsSync(), isTrue);
       expect(File('docs/release/play_health_declaration.md').existsSync(), isTrue);

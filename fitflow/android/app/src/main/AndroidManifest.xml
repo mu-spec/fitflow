@@ -69,5 +69,12 @@
         <intent>
             <action android:name="android.intent.action.TTS_SERVICE"/>
         </intent>
+        <!-- Android 11+ package visibility: allows the Privacy Policy screen to
+             hand its https URL to a browser via url_launcher. This does not add
+             the INTERNET permission; the app still cannot transmit data. -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="https"/>
+        </intent>
     </queries>
 </manifest>

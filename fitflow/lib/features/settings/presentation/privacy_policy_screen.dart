@@ -4,16 +4,41 @@ import 'package:fitflow/core/design/fitflow_layout.dart';
 import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/core/design/fitflow_theme_extension.dart';
+import 'package:fitflow/features/settings/data/privacy_policy_links.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-/// In-app explanation of FitFlow V1 data handling.
+/// In-app explanation of FitFlow V1 data handling, plus the link to the full
+/// hosted policy (`docs/privacy-policy.html`, served at
+/// [PrivacyPolicyLinks.privacyPolicyUrl]).
 ///
-/// This is not a published web policy and does not invent a developer
-/// contact. External placeholders belong only in docs/privacy-policy.html.
+/// The offline summary stays the primary content so the screen works with no
+/// network; the URL is always shown as selectable text so it can be copied even
+/// when no browser can be opened.
 class PrivacyPolicyScreen extends StatelessWidget {
   const PrivacyPolicyScreen({super.key});
 
   static const String title = 'Privacy Policy';
+
+  static const Key onlinePolicyButtonKey = Key('privacy_policy_online_button');
+
+  /// Opens the hosted policy in the system browser. Never throws: a device with
+  /// no browser falls back to the copyable address already on screen.
+  static Future<void> openOnlinePolicy(BuildContext context) async {
+    final messenger = ScaffoldMessenger.of(context);
+    var opened = false;
+    try {
+      opened = await launchUrl(Uri.parse(PrivacyPolicyLinks.privacyPolicyUrl),
+          mode: LaunchMode.externalApplication);
+    } catch (_) {
+      opened = false;
+    }
+    if (!opened) {
+      messenger.showSnackBar(const SnackBar(
+          content: Text(
+              'No browser could be opened. Copy the address shown above.')));
+    }
+  }
 
   static const List<({String heading, String body})> sections = [
     (
@@ -106,11 +131,37 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 children: [
                   FitFlowV2InfoSurface(
                     tonal: true,
-                    child: Text(
-                      'This page describes how Home Workout handles information in this version of the app.',
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        color: FitFlowTheme.of(context).textPrimary,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'This page describes how Home Workout handles information in this version of the app.',
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: FitFlowTheme.of(context).textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: FitFlowSpace.sm),
+                        Text(
+                          'The full, hosted policy is the version referenced by the Play Store listing. The summary below works offline.',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: FitFlowTheme.of(context).textSecondary,
+                          ),
+                        ),
+                        const SizedBox(height: FitFlowSpace.sm),
+                        SelectableText(
+                          PrivacyPolicyLinks.privacyPolicyUrl,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: FitFlowTheme.of(context).textSecondary,
+                          ),
+                        ),
+                        const SizedBox(height: FitFlowSpace.sm),
+                        OutlinedButton.icon(
+                          key: onlinePolicyButtonKey,
+                          onPressed: () => openOnlinePolicy(context),
+                          icon: const Icon(Icons.open_in_new_rounded),
+                          label: const Text('Open full policy in browser'),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: FitFlowSpace.md),

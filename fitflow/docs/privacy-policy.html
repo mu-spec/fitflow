@@ -1,101 +1,257 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Home Workout Privacy Policy (template — not yet published)</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 24px 16px 48px;
-      font-family: Georgia, "Times New Roman", serif;
-      line-height: 1.5;
-      color: #1b1b1b;
-      background: #fff;
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home Workout (FitFlow) — Privacy Policy</title>
+<meta name="description" content="Privacy policy for the Home Workout (FitFlow) Android app: no account, no server, no ads, no analytics, and no internet permission in the release build.">
+<meta name="robots" content="index, follow">
+<style>
+  :root {
+    --ink: #16181d;
+    --muted: #5b6472;
+    --line: #e3e7ee;
+    --accent: #0f766e;
+    --warn-bg: #fff8e6;
+    --warn-line: #d9a300;
+    --card: #f6f8fa;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #e8eaed;
+      --muted: #9aa4b2;
+      --line: #2b313b;
+      --accent: #5eead4;
+      --warn-bg: #3a2f10;
+      --warn-line: #b98b00;
+      --card: #171a1f;
     }
-    main {
-      max-width: 40rem;
-      margin: 0 auto;
-    }
-    h1, h2 {
-      font-family: Arial, Helvetica, sans-serif;
-      line-height: 1.25;
-    }
-    .notice {
-      border: 1px solid #b45309;
-      background: #fff7ed;
-      padding: 12px 14px;
-      margin: 16px 0 24px;
-    }
-    code {
-      font-family: Consolas, "Courier New", monospace;
-    }
-  </style>
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 32px 20px 72px;
+    background: #fff;
+    color: var(--ink);
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-text-size-adjust: 100%;
+  }
+  @media (prefers-color-scheme: dark) { body { background: #0f1114; } }
+  main { max-width: 46rem; margin: 0 auto; }
+  header { border-bottom: 1px solid var(--line); padding-bottom: 20px; margin-bottom: 28px; }
+  h1 { font-size: 1.9rem; line-height: 1.2; margin: 0 0 8px; letter-spacing: -0.01em; }
+  h2 { font-size: 1.18rem; margin: 2.2rem 0 .6rem; line-height: 1.3; }
+  h3 { font-size: 1rem; margin: 1.4rem 0 .4rem; }
+  p, li { margin: .6rem 0; }
+  ul { padding-left: 1.2rem; }
+  a { color: var(--accent); }
+  .sub { color: var(--muted); margin: 0; }
+  .meta { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 18px 0 0; font-size: .92rem; }
+  .meta dt { color: var(--muted); }
+  .meta dd { margin: 0; }
+  .todo {
+    border: 1px solid var(--warn-line);
+    background: var(--warn-bg);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin: 0 0 28px;
+    font-size: .93rem;
+  }
+  .todo strong { display: block; margin-bottom: 6px; }
+  .todo ul { margin: .2rem 0 0; }
+  .summary, table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: .94rem; }
+  table th, table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table th { color: var(--muted); font-weight: 600; }
+  .card { background: var(--card); border-radius: 12px; padding: 14px 16px; margin: 16px 0; }
+  .card p:first-child { margin-top: 0; }
+  .card p:last-child { margin-bottom: 0; }
+  code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .9em; }
+  footer { margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: .87rem; }
+  @media print { .todo { display: none; } body { padding: 0; } }
+</style>
 </head>
 <body>
-  <main>
-    <h1>Home Workout Privacy Policy</h1>
-    <p class="notice">
-      This file is a static template. It is not the published Play Console privacy-policy URL.
-      Replace every TODO before hosting it on a public, non-geofenced webpage.
-    </p>
-    <p><strong>App:</strong> Home Workout</p>
-    <p><strong>Developer / legal entity:</strong> TODO: developer/legal entity name</p>
-    <p><strong>Privacy contact email:</strong> TODO: privacy contact email</p>
-    <p><strong>Public policy URL:</strong> TODO: public privacy-policy URL</p>
-    <p><strong>Effective date:</strong> TODO: effective date</p>
+<main>
 
-    <h2>What this policy covers</h2>
-    <p>
-      Home Workout is a general home-workout app. It provides exercise routines. It does not diagnose disease, treat a medical condition, provide rehabilitation, or act as a medical device.
-    </p>
+  <!-- ===================================================================
+       BEFORE YOU PUBLISH THIS PAGE, replace the three UPPERCASE fields:
+         DEVELOPER_NAME, CONTACT_EMAIL, PUBLIC_URL
+       and confirm EFFECTIVE_DATE / LAST_UPDATED below, then delete the
+       .todo block that follows (it is hidden when printed).
+       =================================================================== -->
 
-    <h2>No Home Workout account or backend</h2>
-    <p>
-      Home Workout does not ask you to create an account and does not operate a Home Workout backend, cloud sync service, advertising service, or analytics service. The app works on your device without a login.
-    </p>
+  <header>
+    <h1>Home Workout privacy policy</h1>
+    <p class="sub">The Android app Home Workout — project name FitFlow — collects nothing, sends nothing, and needs no account.</p>
+    <dl class="meta">
+      <dt>App</dt><dd>Home Workout (project name: FitFlow)</dd>
+      <dt>Android application ID</dt><dd><code>com.fitflow.fitflow</code></dd>
+      <dt>Developer / publisher</dt><dd>DEVELOPER_NAME</dd>
+      <dt>Privacy contact</dt><dd><a href="mailto:CONTACT_EMAIL">CONTACT_EMAIL</a></dd>
+      <dt>Effective date</dt><dd>16 November 2026</dd>
+      <dt>Last updated</dt><dd>16 November 2026</dd>
+      <dt>This page</dt><dd><a href="PUBLIC_URL">PUBLIC_URL</a></dd>
+    </dl>
+  </header>
 
-    <h2>Information stored on your device</h2>
-    <p>Home Workout stores the following on the device, and does not send it to a Home Workout server:</p>
+  <div class="todo">
+    <strong>Before publishing — 3 edits, then delete this box</strong>
     <ul>
-      <li>fitness profile and preferences</li>
-      <li>capability profile and adaptive progression evidence</li>
-      <li>workout history</li>
-      <li>custom workouts</li>
-      <li>adaptive program progress</li>
-      <li>reminder choices</li>
-      <li>appearance preference</li>
+      <li><code>DEVELOPER_NAME</code> — your name or the legal entity that publishes the app.</li>
+      <li><code>CONTACT_EMAIL</code> — a working privacy contact address (2 places: the contact block and the “Contact us” section).</li>
+      <li><code>PUBLIC_URL</code> — the address this page is served from (2 places).</li>
     </ul>
+  </div>
 
-    <h2>Backups you create</h2>
-    <p>
-      A backup file is created only when you choose Backup &amp; restore. You pick where it is saved. Home Workout does not upload that file. Android automatic backup and device-to-device transfer of Home Workout app data are turned off. A file you already saved remains where you put it until you delete it.
-    </p>
+  <div class="card">
+    <p><strong>In one paragraph.</strong> Home Workout is an offline home-workout app. It has no user
+    accounts, no backend servers, no advertising and no analytics. Everything you enter is stored on
+    your own device. The released Android build does not even declare the internet permission, so the
+    app is not technically able to send your information anywhere. The only time data leaves the app
+    is when <em>you</em> export a backup file to a folder you pick, or when your device's own
+    text-to-speech engine speaks coaching cues.</p>
+  </div>
 
-    <h2>Notifications</h2>
-    <p>
-      If you enable reminders, Home Workout uses notification permission only to show those reminders. After a restart, the boot permission lets Home Workout restore the reminders you scheduled. Home Workout does not use exact alarms.
-    </p>
+  <h2>1. Who we are</h2>
+  <p>Home Workout is an independent Android application developed and published by
+  DEVELOPER_NAME (“we”, “us”). This policy explains what the app does with information. It applies to
+  the Home Workout app distributed through Google Play and any directly installed release build with
+  the application ID <code>com.fitflow.fitflow</code>.</p>
 
-    <h2>Voice coaching</h2>
-    <p>
-      Voice coaching uses the text-to-speech service configured on your device. Home Workout does not operate a speech server. The engine selected on the device may be offline or online. Home Workout does not control that provider and does not guarantee that every third-party speech engine stays offline.
-    </p>
+  <h2>2. What we do not do</h2>
+  <ul>
+    <li>We do not ask you to create an account, sign in, or give an email address to use the app.</li>
+    <li>We do not operate a server, cloud sync, or online profile for Home Workout.</li>
+    <li>We do not include advertising SDKs, analytics SDKs, crash-reporting SDKs, attribution SDKs, or
+        any other third-party tracking library.</li>
+    <li>We do not sell, rent, trade, or share personal information with anyone.</li>
+    <li>We do not use your data to train machine-learning models.</li>
+    <li>We do not request access to your location, camera, microphone, contacts, calendar, SMS, call
+        logs, photos, or health-platform data.</li>
+  </ul>
 
-    <h2>Ads and sale of data</h2>
-    <p>
-      Home Workout does not include an advertising SDK or an analytics SDK, and it does not sell Home Workout user data.
-    </p>
+  <h2>3. Information stored on your device</h2>
+  <p>To make workouts adapt to you, Home Workout saves the following in the app's private storage on
+  your device. None of it is transmitted to us or to any third party.</p>
+  <table>
+    <tr><th>What</th><th>Why it exists</th></tr>
+    <tr><td>Onboarding answers: goal, available time, training space, equipment, noise and impact preferences</td><td>Chooses which exercises are suitable for you</td></tr>
+    <tr><td>Movement capability levels and assessment answers, including “ease into it” and skip choices</td><td>Ranks exercise difficulty and progression steps</td></tr>
+    <tr><td>Profile edits (for example name or display preferences you choose to enter)</td><td>Personalises the app's labels; optional</td></tr>
+    <tr><td>Workout history: completed sessions, exercise snapshots, duration, feedback</td><td>Progress screens, training trends, recovery suggestions</td></tr>
+    <tr><td>Custom workouts you build, and your selected adaptive program and its progress</td><td>Restores your plans between sessions</td></tr>
+    <tr><td>Reminder settings, reminder times and reminder state</td><td>Schedules local notifications you asked for</td></tr>
+    <tr><td>Appearance preference (system / light / dark) and background-music preference, track choice and volume</td><td>Remembers how you set the app up</td></tr>
+    <tr><td>Backup reminder preference and last-backup information</td><td>Reminds you when you have asked to be reminded</td></tr>
+  </table>
+  <p>This information is not linked to an identity, an advertising ID, or a device fingerprint, because
+  the app does not collect those identifiers.</p>
 
-    <h2>Removing the app</h2>
-    <p>
-      Uninstalling Home Workout removes app-owned local state, subject to ordinary operating-system behavior. Backup files you saved outside the app remain until you delete them. There is no Home Workout account to delete.
-    </p>
+  <h2>4. Permissions the app requests, and why</h2>
+  <table>
+    <tr><th>Permission</th><th>Used for</th></tr>
+    <tr><td><code>POST_NOTIFICATIONS</code> (Android 13+)</td><td>Showing the workout reminders you enable, and the test notification you explicitly request. Declining it leaves the rest of the app working.</td></tr>
+    <tr><td><code>RECEIVE_BOOT_COMPLETED</code></td><td>Re-scheduling your reminders after the device restarts or the app is updated.</td></tr>
+    <tr><td>Text-to-speech service query (Android 11+ package visibility)</td><td>Finding the device's installed text-to-speech engine so voice coaching can speak.</td></tr>
+    <tr><td>System file picker (no storage permission requested)</td><td>Only when you tap Backup or Restore; you choose the file and folder yourself.</td></tr>
+  </table>
+  <p>Home Workout does <strong>not</strong> request the internet permission, exact-alarm permission,
+  location, camera, microphone, or broad storage access. Reminders use inexact scheduling, which
+  Android may deliver a little earlier or later depending on battery optimisations.</p>
 
-    <h2>Contact</h2>
-    <p>
-      TODO: privacy contact email — replace this line with the real privacy contact before publication. Until that address exists, do not treat this repository file as the Play privacy-policy URL.
-    </p>
-  </main>
+  <h2>5. Backups</h2>
+  <p>Home Workout can export your data to a backup file, but only when you choose
+  Profiles &amp; settings → Backup &amp; restore. The file is written wherever you select with the
+  Android file picker, and it is never uploaded by the app. Restoring reads a file you pick and
+  replaces the app's local data after validation.</p>
+  <p>Android automatic backup and device-to-device transfer for Home Workout app data are disabled
+  (<code>android:allowBackup="false"</code>), so the operating system does not silently copy your
+  workout data to Google Drive or to another device. A backup file you saved stays where you put it
+  until you delete it.</p>
+
+  <h2>6. Voice coaching and background music</h2>
+  <p><strong>Voice coaching</strong> uses the text-to-speech engine already installed and configured on
+  your device. We do not operate a speech service and never receive audio. Depending on the engine you
+  (or your device manufacturer) selected, that engine may process text locally or send it to its own
+  online service under that provider's terms — Home Workout does not control that provider. You can
+  turn voice coaching off in settings, or change or remove the engine in Android settings.</p>
+  <p><strong>Workout music</strong> ships as audio files inside the app and plays offline. There is no
+  streaming, no music account, and no listening analytics. Music is off until you turn it on.</p>
+
+  <h2>7. Exercise instructions, artwork and third-party components</h2>
+  <p>Exercise instructions, cues and workout logic are authored for Home Workout and stored inside the
+  app. Some exercise animations are adapted from artwork by third-party creators and are used under
+  their licences. The required attribution notices, licence names and licence texts are bundled with
+  the app and can be read offline in <em>Profiles &amp; settings → Exercise artwork credits</em>. That
+  screen is an attribution requirement of those licences, not a tracking or advertising feature.</p>
+  <p>Home Workout is built with open-source components, including the Flutter engine, the
+  <code>lottie</code> animation library, <code>just_audio</code> and <code>audio_session</code> for
+  audio playback, <code>flutter_tts</code> for speech, <code>flutter_local_notifications</code> and
+  <code>timezone</code> for reminders, <code>shared_preferences</code> for local settings,
+  <code>file_picker</code> for backup files, <code>go_router</code>, and
+  <code>flutter_riverpod</code>. These components run on your device as part of the app.</p>
+
+  <h2>8. Data sharing and disclosure</h2>
+  <p>We do not share your information because we do not receive it. We may disclose information only if
+  we are legally compelled to — and because the released app transmits nothing to us, we hold no
+  user data to disclose.</p>
+
+  <h2>9. Retention and deleting your data</h2>
+  <ul>
+    <li><strong>In-app data</strong> lives on your device until you delete it. Uninstalling Home
+        Workout removes the app's private storage, subject to normal Android behaviour.</li>
+    <li><strong>Backup files</strong> you exported remain in the location you chose until you delete
+        them yourself. We cannot delete them, because we never see them.</li>
+    <li><strong>There is no server-side copy</strong> to request deletion of, and no account to close.</li>
+  </ul>
+
+  <h2>10. Children</h2>
+  <p>Home Workout is a general fitness app intended for a general adult audience and is not directed to
+  children. We do not knowingly collect information from children — the app collects no information
+  from anyone.</p>
+
+  <h2>11. Security</h2>
+  <p>Your information stays inside the app's private storage area, which Android isolates from other
+  apps. There is no network transmission to intercept. The main risks are the ones that apply to any
+  device: someone with physical access to an unlocked phone, or a backup file you store in a shared or
+  cloud-synced folder. Keep your device locked and store backups somewhere you trust.</p>
+
+  <h2>12. Not medical advice</h2>
+  <p>Home Workout provides general fitness workouts and exercise information. It does not diagnose or
+  treat any condition, does not provide rehabilitation or medical advice, and is not a medical device.
+  Speak to a qualified professional before starting a new exercise programme, especially if you are
+  pregnant, recovering from injury, or managing a health condition. Stop if you feel pain or
+  dizziness.</p>
+
+  <h2>13. Google Play Data safety summary</h2>
+  <p>The answers we publish in Play Console correspond to this policy:</p>
+  <table>
+    <tr><th>Question</th><th>Answer</th></tr>
+    <tr><td>Data collected</td><td>None. Fitness profile, history and settings stay on the device.</td></tr>
+    <tr><td>Data shared with third parties</td><td>None.</td></tr>
+    <tr><td>Data transmitted off device</td><td>No. The release build declares no internet permission.</td></tr>
+    <tr><td>Advertising or analytics identifiers</td><td>None used.</td></tr>
+    <tr><td>Data deletion request</td><td>Uninstalling the app removes local data; there is no server copy.</td></tr>
+    <tr><td>Encryption in transit</td><td>Not applicable — no data is transmitted.</td></tr>
+  </table>
+
+  <h2>14. Changes to this policy</h2>
+  <p>If a future version changes how the app handles information — for example by adding cloud backup
+  or optional online features — we will update this page before that version is released, and change
+  the “Last updated” date above. Material changes will also be described in the app's release notes.</p>
+
+  <h2>15. Contact us</h2>
+  <p>Questions about this policy or about privacy in Home Workout:
+  <a href="mailto:CONTACT_EMAIL">CONTACT_EMAIL</a>. This is also the address to use for any privacy
+  request or complaint. We aim to respond within 30 days.</p>
+
+  <footer>
+    <p>Home Workout (FitFlow) — privacy policy, effective 16 November 2026.<br>
+    This page is a static document: it sets no cookies, runs no JavaScript, and loads no external
+    fonts, images, analytics or trackers.</p>
+  </footer>
+
+</main>
 </body>
 </html>
