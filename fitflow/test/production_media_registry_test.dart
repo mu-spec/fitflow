@@ -18,16 +18,24 @@ void main() {
   final missing = assets.where((a) => !File(a.path).existsSync()).toList();
   const requireAssets = bool.fromEnvironment('FITFLOW_REQUIRE_MEDIA_ASSETS');
 
-  test('all 88 canonical IDs are explicitly covered with no duplicates', () {
+  test('every active ID is explicitly covered with no duplicates', () {
     final ids = ExerciseMediaRegistry.entries.map((e) => e.exerciseId).toList();
     expect(ExerciseCatalog.all, hasLength(88));
-    expect(ids, hasLength(88));
+    final active = ExerciseCatalog.all.where((e) => e.active).toList();
+    expect(active, hasLength(25));
+    expect(ids, hasLength(active.length));
     expect(ids.toSet(), hasLength(ids.length));
-    expect(ids.toSet(), ExerciseCatalog.all.map((e) => e.id).toSet());
-    for (final exercise in ExerciseCatalog.all) {
+    expect(ids.toSet(), active.map((e) => e.id).toSet());
+    for (final exercise in active) {
       expect(
           ExerciseMediaRegistry.lookup(exercise.id)?.exerciseId, exercise.id);
       expect(ExerciseMediaRegistry.lookup(exercise.name), isNull);
+    }
+    // Inactive definitions are not bundled; they must resolve to nothing so the
+    // shared image widget falls back instead of requesting a missing asset.
+    for (final exercise in ExerciseCatalog.all.where((e) => !e.active)) {
+      expect(ExerciseMediaRegistry.lookup(exercise.id), isNull,
+          reason: exercise.id);
     }
   });
 
@@ -52,7 +60,7 @@ void main() {
 
   test('asset paths are unique local WebP exports with the agreed dimensions',
       () {
-    expect(assets.map((e) => e.path).toSet(), hasLength(181));
+    expect(assets.map((e) => e.path).toSet(), hasLength(55));
     for (final spec in ExerciseMediaRegistry.entries) {
       expect(spec.thumbnail.path,
           'assets/images/exercises/thumb/${spec.exerciseId}.webp');
@@ -109,7 +117,7 @@ void main() {
     }
   },
       skip: !requireAssets && missing.isNotEmpty
-          ? '${missing.length}/181 photos missing; run with --dart-define=FITFLOW_REQUIRE_MEDIA_ASSETS=true for the mandatory release gate'
+          ? '${missing.length}/55 photos missing; run with --dart-define=FITFLOW_REQUIRE_MEDIA_ASSETS=true for the mandatory release gate'
           : false);
 }
 

@@ -33,9 +33,11 @@ flutter:
   generate: true
   uses-material-design: true
   assets:
+    # 25 active animations + posters (see ExerciseAnimationRegistry).
     - assets/animations/launch25/
-    - assets/animations/illustrated_athletes/
-    - assets/animations/real_people/
+    # Provenance/licence text only; the superseded medium and the
+    # illustrated_athletes artwork are no longer bundled or shipped.
+    - assets/animations/illustrated_athletes/NOTICE.md
     - assets/animations/real_people/NOTICE.md
     - assets/animations/real_people/LICENSE-CC-BY-SA-4.0.txt
     - assets/animations/real_people/LICENSE-LOTTIE-SIMPLE.md

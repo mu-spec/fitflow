@@ -176,19 +176,22 @@ void main() {
     expect(backend.plays, 0);
     expect(backend.disposed, true);
   });
-  test('changing track while paused waits for resume', () async {
+  test('re-selecting the bundled track while paused does not reload it',
+      () async {
     final backend = FakeMusic();
     final music = WorkoutMusic(backend, persist: false);
+    expect(workoutTracks, hasLength(workoutTrackAssets.length));
     music.setEnabled(true);
     music.updateSession(true);
     await music.settled;
+    expect(backend.loads, 1);
     music.updateSession(false);
-    music.selectTrack(1);
+    music.selectTrack(0);
     await music.settled;
     expect(backend.loads, 1);
     music.updateSession(true);
     await music.settled;
-    expect(backend.loads, 2);
+    expect(backend.loads, 1);
     music.dispose();
   });
 }

@@ -3,6 +3,13 @@
 Status: **photography not supplied; reference image not supplied**.
 The registry is complete; the asset library is not. No photographic assets or substitute exercise illustrations were generated.
 Current expected inventory: **176 exercise WebPs + 5 program WebPs = 181 missing files**.
+
+> **Update 16 November 2026 — active-only delivery.** The catalog now marks 25 of
+> 88 exercises active and the app cannot render an inactive one, so
+> `ExerciseMediaRegistry` declares stills for those 25 only (50 exercise WebPs +
+> 5 program covers = 55 files). The 63 inactive ids below keep their historical
+> rows for reference; their images are no longer bundled and any reactivation
+> needs the pair restored from git history.
 Editorial directory is reserved; no editorial asset is declared until approved.
 
 ## Delivery contract

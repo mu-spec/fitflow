@@ -1,4 +1,7 @@
-EDM Detection Mode and Club Diver by Kevin MacLeod (incompetech.com).
+EDM Detection Mode by Kevin MacLeod (incompetech.com).
 Creative Commons Attribution 4.0: https://creativecommons.org/licenses/by/4.0/
 Source: https://incompetech.com/music/royalty-free/
-Original recordings, unmodified. Playback loops in FitFlow.
+Original recording, unmodified. Playback loops in FitFlow.
+
+Club Diver (also by Kevin MacLeod, same licence) was removed from the bundle on
+16 November 2026 to reduce release size; only this track ships.

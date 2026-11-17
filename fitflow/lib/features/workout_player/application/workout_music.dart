@@ -8,11 +8,10 @@ import '../domain/workout_player_phase.dart';
 import '../../workouts/domain/workout/workout_plan.dart';
 import 'workout_player_controller.dart';
 
-const workoutTracks = ['EDM Detection Mode', 'Club Diver'];
-const workoutTrackAssets = [
-  'assets/audio/edm_detection.mp3',
-  'assets/audio/club_diver.mp3'
-];
+/// One bundled track keeps the release lean; the picker stays list-driven so a
+/// second track can be added without touching playback logic.
+const workoutTracks = ['EDM Detection Mode'];
+const workoutTrackAssets = ['assets/audio/edm_detection.mp3'];
 
 /// Transport is injectable so lifecycle and loading races can be tested.
 abstract class MusicTransport {
