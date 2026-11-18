@@ -63,16 +63,24 @@ Manual checks the developer must complete in Play Console. Not done here:
 
 `com.fitflow.fitflow` is the current applicationId candidate. It was not renamed. After the first upload, changing it means a different Play listing.
 
-## Icon and artwork — Part 2 blocker
+## Icon and artwork
 
-The launcher icons are still the default Flutter logo (blue Flutter mark on black). They are not a FitFlow icon and must be replaced before publication. Do not reuse another app's icon.
+Resolved. The default Flutter logo is gone; the launcher icons and the store
+listing icon are the approved artwork (two fitness models on a light green
+field), and nothing here is a placeholder any more.
 
-Assets that still require final replacement:
+| Item | Where | State |
+| --- | --- | --- |
+| Legacy launcher icons, API 25 and below | `android/app/src/main/res/mipmap-{mdpi,hdpi,xhdpi,xxhdpi,xxxhdpi}/ic_launcher.png` (48/72/96/144/192 px) | Approved artwork, full-bleed, no white corners |
+| Round launcher icons (`android:roundIcon`) | same folders, `ic_launcher_round.png` | Approved artwork in a circular mask |
+| Adaptive icon, Android 8+ | `mipmap-anydpi-v26/ic_launcher.xml` and `ic_launcher_round.xml` | Present. Foreground = the two models at 62/108 dp, background = the artwork's own radial green field (`#9DFB6A` → `#48E61D`) |
+| Play Store listing icon | `docs/release/artwork/play_store_icon.png` | The approved 512×512 PNG, byte-identical to the delivered upload; upload this file as the store icon |
+| Splash | `assets/images/branding/home_workout_icon.png` + `values/colors.xml` `launch_background_color` `#E3FBDD` | Approved artwork on the pale brand green |
 
-- `android/app/src/main/res/mipmap-mdpi/ic_launcher.png`
-- `android/app/src/main/res/mipmap-hdpi/ic_launcher.png`
-- `android/app/src/main/res/mipmap-xhdpi/ic_launcher.png`
-- `android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png`
-- `android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png`
+Regenerate every launcher asset with `python3 tools/media/build_launcher_icons.py`
+and the visual check sheet with `python3 tools/media/make_mask_check.py`. Details
+and measurements: `docs/release/artwork/icon-generation.md`.
 
-There is no adaptive icon XML under `mipmap-anydpi-v26`. Part 2 must supply final launcher and store artwork. This part does not generate artwork.
+Remaining store-listing work is Play Console only: phone/tablet screenshots,
+feature graphic and the short/full description. This repository does not generate
+them.

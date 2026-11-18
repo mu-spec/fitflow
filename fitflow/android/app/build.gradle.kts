@@ -52,11 +52,30 @@ android {
         }
     }
 
+    // Architecture policy: the shipped bundle is 64-bit ARM only. Flutter asks
+    // for armeabi-v7a, arm64-v8a and x86_64 by default, and the jni package
+    // (pulled in by path_provider through just_audio) compiles libjni.so for
+    // every ABI it is told to build. Excluding the other two ABI folders here
+    // keeps libflutter.so, libapp.so and libjni.so for arm64-v8a intact while
+    // guaranteeing that no 32-bit or x86 library can reach the bundle, whichever
+    // command or IDE action produces it.
+    packaging {
+        jniLibs {
+            excludes +=
+                setOf(
+                    "lib/armeabi-v7a/**",
+                    "lib/x86/**",
+                    "lib/x86_64/**",
+                )
+        }
+    }
+
     defaultConfig {
         // Candidate for the first Play upload. Confirm and register this exact
         // value in Play Console before upload. Do not rename it after release.
         applicationId = "com.fitflow.fitflow"
-        minSdk = 24
+        // Android 8.0 baseline. Explicit, never inherited from Flutter defaults.
+        minSdk = 26
         targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName

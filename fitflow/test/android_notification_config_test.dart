@@ -63,8 +63,8 @@ void main() {
       expect(gradle.contains('VERSION_1_8'), isFalse);
     });
 
-    test('minSdk stays 24 and Play target/compile SDK are explicit', () {
-      expect(gradle, contains('minSdk = 24'));
+    test('minSdk stays 26 and Play target/compile SDK are explicit', () {
+      expect(gradle, contains('minSdk = 26'));
       expect(gradle, contains('targetSdk = 36'));
       expect(gradle, contains('compileSdk = 36'));
       expect(gradle.contains('flutter.minSdkVersion'), isFalse);
@@ -79,8 +79,6 @@ void main() {
       for (final banned in [
         'firebase',
         'onesignal',
-        'http:',
-        'dio:',
         'awesome_notifications',
         'workmanager',
         'android_alarm_manager',
@@ -88,6 +86,16 @@ void main() {
         '-beta',
       ]) {
         expect(pubspec.contains(banned), isFalse, reason: banned);
+      }
+      // Match dependency *keys*, not substrings: `dio:` and `http:` appear
+      // inside other lines (just_audio contains "dio:"), so anchor to a key at
+      // the start of a line instead of using String.contains.
+      for (final bannedDependency in ['dio', 'http']) {
+        expect(
+          RegExp('^\\s*$bannedDependency:', multiLine: true).hasMatch(pubspec),
+          isFalse,
+          reason: bannedDependency,
+        );
       }
     });
   });

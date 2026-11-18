@@ -48,12 +48,20 @@ Voice coaching stays in the app.
 
 ## Permissions declared by FitFlow
 
-Release source manifest (`android/app/src/main/AndroidManifest.xml`):
+Merged release manifest (`android/app/src/main/AndroidManifest.xml` plus the
+`flutter_local_notifications` 22.3.1 library manifest, which is merged at build time):
 
-| Permission | Intentional? | Purpose |
-| --- | --- | --- |
-| `POST_NOTIFICATIONS` | Yes | Show workout reminders the user enabled. Android 13+. |
-| `RECEIVE_BOOT_COMPLETED` | Yes | Restore scheduled reminders after reboot. |
+| Permission | Source | Intentional? | Purpose |
+| --- | --- | --- | --- |
+| `POST_NOTIFICATIONS` | App manifest (also declared by the plugin) | Yes | Show workout reminders the user enabled. Android 13+. |
+| `RECEIVE_BOOT_COMPLETED` | App manifest | Yes | Restore scheduled reminders after reboot. |
+| `VIBRATE` | `flutter_local_notifications` library manifest only | Yes, accepted | Lets the reminder notification use the device vibration setting. Normal permission: granted at install, never prompted, no data access. |
+
+`VIBRATE` is declared by the notification plugin, not by FitFlow source. It does
+not read data, does not transmit anything and does not change any Data Safety
+answer; it appears in the Play permission list for the reminder notifications.
+Removing it would suppress notification vibration, so it is accepted rather than
+stripped with `tools:node="remove"`.
 
 Not declared, and not required for V1:
 

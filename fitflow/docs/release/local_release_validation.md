@@ -45,7 +45,7 @@ Confirm:
 - package name `com.fitflow.fitflow` (register this exact id in Play Console before the first upload)
 - versionName `1.0.0`
 - versionCode `1`
-- minSdk `24`
+- minSdk `26`
 - targetSdk `36`
 - compileSdk `36`
 - label `FitFlow`

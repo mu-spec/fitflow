@@ -36,8 +36,9 @@ void main() {
       expect(gradle.contains('versionName = flutter.versionName'), isTrue);
     });
 
-    test('SDK levels are explicit and do not drop below API 24', () {
-      expect(gradle.contains('minSdk = 24'), isTrue);
+    test('SDK levels are explicit and do not drop below API 26', () {
+      expect(gradle.contains('minSdk = 26'), isTrue);
+      expect(gradle.contains('minSdk = 24'), isFalse);
       expect(gradle.contains('targetSdk = 36'), isTrue);
       expect(gradle.contains('compileSdk = 36'), isTrue);
       expect(gradle.contains('flutter.minSdkVersion'), isFalse);
@@ -46,6 +47,17 @@ void main() {
       expect(gradle.contains('JavaVersion.VERSION_17'), isTrue);
       expect(gradle.contains('JvmTarget.JVM_17'), isTrue);
       expect(gradle.contains('isCoreLibraryDesugaringEnabled = true'), isTrue);
+    });
+
+    test('native libraries are 64-bit ARM only', () {
+      final gradleProperties =
+          File('android/gradle.properties').readAsStringSync();
+      expect(gradleProperties.contains('target-platform=android-arm64'), isTrue);
+      for (final abi in ['lib/armeabi-v7a/**', 'lib/x86/**', 'lib/x86_64/**']) {
+        expect(gradle.contains(abi), isTrue, reason: abi);
+      }
+      expect(gradle.contains('packaging {'), isTrue);
+      expect(gradle.contains('jniLibs {'), isTrue);
     });
 
     test('applicationId candidate is unchanged', () {
