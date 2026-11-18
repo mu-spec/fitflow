@@ -12,6 +12,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+/// Splash brand surface: a pale tint of the approved artwork's own light green
+/// (#48E61D rim mixed 85% towards white). The icon plate sits on it as a tile,
+/// so the artwork and the background never fight and the shape stays readable.
+const Color _splashBackground = Color(0xFFE3FBDD);
+const Color _splashInk = Color(0xFF15251A);
+const Color _splashInkMuted = Color(0xFF3F5B45);
+const Color _splashAccent = Color(0xFF48E61D);
+
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
@@ -138,13 +146,14 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     return WorkoutsTheme(child: Builder(builder: (context) {
       final theme = Theme.of(context);
       return AnnotatedRegion<SystemUiOverlayStyle>(
-          value: _loadFailed && theme.brightness == Brightness.light
-              ? SystemUiOverlayStyle.dark
-              : SystemUiOverlayStyle.light,
+          value: _loadFailed
+              ? (theme.brightness == Brightness.dark
+                  ? SystemUiOverlayStyle.light
+                  : SystemUiOverlayStyle.dark)
+              : SystemUiOverlayStyle.dark,
           child: Scaffold(
-            backgroundColor: _loadFailed
-                ? theme.scaffoldBackgroundColor
-                : const Color(0xFF202526),
+            backgroundColor:
+                _loadFailed ? theme.scaffoldBackgroundColor : _splashBackground,
             body: SafeArea(
               child: Center(
                 child: Padding(
@@ -173,7 +182,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                               style: theme.textTheme.headlineMedium?.copyWith(
                                 fontWeight: FontWeight.w700,
                                 letterSpacing: -.7,
-                                color: const Color(0xFFF3F4EE),
+                                color: _splashInk,
                               ),
                             ),
                             const SizedBox(height: 12),
@@ -181,7 +190,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                               AppConstants.tagline,
                               textAlign: TextAlign.center,
                               style: theme.textTheme.bodyLarge?.copyWith(
-                                color: const Color(0xFFC4CBC3),
+                                color: _splashInkMuted,
                               ),
                             ),
                             const SizedBox(height: 28),
@@ -189,7 +198,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                                 width: 44,
                                 height: 4,
                                 decoration: BoxDecoration(
-                                    color: const Color(0xFFD4E779),
+                                    color: _splashAccent,
                                     borderRadius: BorderRadius.circular(2))),
                           ],
                         )),

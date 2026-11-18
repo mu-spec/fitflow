@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Home Workout launcher icon (Android 8.0+).
-     Foreground: the approved artwork, drawn at 73/108 of the canvas so both
-     characters, the house symbol and the dumbbell stay inside the 72 dp safe
-     area for every launcher mask.
-     Background: matching dark green field, from the artwork's own palette.
+     Foreground: the two characters from the approved artwork only, drawn at
+     62/108 of the canvas so both faces, the crossed arms and the neon accents
+     stay inside the 72 dp safe area for every launcher mask (circle, squircle,
+     rounded square, ...). Model scale comes from the measured 58% widest-point
+     radius of the silhouettes.
+     Background: the artwork's own light green field, rebuilt as a radial
+     gradient (centre #9DFB6A -> rim #48E61D) so the foreground sits in the
+     same light it was drawn with.
      Legacy ic_launcher.png in each mipmap-<density> folder covers API 25 and
-     below. -->
+     below; docs/release/artwork/play_store_icon.png stays the untouched
+     512x512 Play Store upload. -->
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
     <background android:drawable="@mipmap/ic_launcher_background" />
     <foreground android:drawable="@mipmap/ic_launcher_foreground" />
