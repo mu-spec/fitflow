@@ -8,6 +8,7 @@ import 'package:fitflow/core/design/widgets/fitflow_feedback.dart';
 import 'package:fitflow/features/backup/presentation/widgets/backup_restore_settings_entry.dart';
 import 'package:fitflow/features/reminders/presentation/widgets/workout_reminders_section.dart';
 import 'package:fitflow/features/settings/data/appearance_mode.dart';
+import 'package:fitflow/features/settings/presentation/privacy_policy_launcher.dart';
 import 'package:fitflow/features/settings/presentation/widgets/utility_presentation.dart';
 import 'package:fitflow/features/settings/state/appearance_controller.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
@@ -226,7 +227,7 @@ class _PrivacyPolicyEntry extends StatelessWidget {
       trailing: const ExcludeSemantics(
         child: Icon(Icons.chevron_right_rounded),
       ),
-      onTap: () => context.go(AppRoutes.privacyPolicy),
+      onTap: () => openPrivacyPolicyInBrowser(context),
     );
   }
 }

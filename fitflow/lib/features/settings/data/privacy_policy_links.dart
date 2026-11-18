@@ -1,13 +1,12 @@
 /// Single source of truth for the hosted documents the app links to.
 ///
-/// Google Play requires a publicly reachable privacy-policy URL. The HTML that
-/// must be served at [privacyPolicyUrl] lives in `docs/privacy-policy.html`.
-/// If the page is hosted somewhere else, change the constant here only — the
-/// Privacy Policy screen reads it, so nothing else needs updating.
+/// Google Play requires a publicly reachable privacy-policy URL. The policy is
+/// published at GitHub Pages under the `home-workout-privacy` project site; the
+/// HTML source lives in `docs/privacy-policy.html` in this repository.
 ///
-/// Default: GitHub Pages served from the repository `docs/` folder, which makes
-/// `docs/privacy-policy.html` available at the URL below.
+/// Change the constant here only — every Privacy Policy entry point in the app
+/// (the Settings tile and the in-app summary screen) reads this value.
 abstract final class PrivacyPolicyLinks {
   static const String privacyPolicyUrl =
-      'https://mu-spec.github.io/fitflow/privacy-policy.html';
+      'https://mu-spec.github.io/home-workout-privacy/';
 }

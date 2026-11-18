@@ -15,13 +15,17 @@ looks and behaves the same on any host.
 
 ```dart
 static const String privacyPolicyUrl =
-    'https://mu-spec.github.io/fitflow/privacy-policy.html';
+    'https://mu-spec.github.io/home-workout-privacy/';
 ```
 
-`PrivacyPolicyScreen` shows that address as selectable text and an
-**“Open full policy in browser”** button (opened with `url_launcher` in the system
-browser). If you host the page somewhere else, edit that one constant and rebuild —
-nothing else references the URL.
+Every Privacy Policy entry point goes through
+`lib/features/settings/presentation/privacy_policy_launcher.dart`, which hands that
+address to the device's default browser with `url_launcher`
+(`LaunchMode.externalApplication`) and shows a SnackBar with the address if no
+browser can open it. The Settings tile opens the hosted page directly; the in-app
+`PrivacyPolicyScreen` shows the same address as selectable text plus an
+**“Open full policy in browser”** button. If you host the page somewhere else, edit
+that one constant and rebuild — nothing else references the URL.
 
 ## Three fields to fill in before you publish
 
@@ -45,9 +49,12 @@ it is already hidden when the page is printed.
 3. Repository → **Settings → Pages → Build and deployment**:
    - Source: **Deploy from a branch**
    - Branch: **`main`**, folder: **`/docs`** → **Save**
-4. Wait for the deployment banner, then open
-   **`https://mu-spec.github.io/fitflow/privacy-policy.html`** — this is exactly the
-   URL compiled into the app, so no code change is needed if you use this host.
+4. The published page must answer at
+   **`https://mu-spec.github.io/home-workout-privacy/`** — this is exactly the URL
+   compiled into the app (`PrivacyPolicyLinks.privacyPolicyUrl`), so no code change is
+   needed if you use this host. Serve the contents of `docs/` at the root of that
+   project site (the page is `privacy-policy.html` there), or point the constant at
+   whatever address actually serves it.
 5. Verify in a private window and, if possible, from a different network: the page
    must load with no login and no cookie banner.
 
@@ -60,8 +67,9 @@ domain). Point `privacyPolicyUrl` at it and rebuild.
 - Keep the page consistent with the **Data safety** answers in
   `docs/release/play_data_safety.md` and the health declaration in
   `docs/release/play_health_declaration.md`.
-- Keep the in-app screen (`PrivacyPolicyScreen`) as the offline summary: it is
-  accurate and contains no placeholder tokens, but it is not the Play-required URL.
+- The Play-required URL is the hosted page above; the Settings tile opens it in the
+  browser. `PrivacyPolicyScreen` remains the offline in-app summary (accurate, no
+  placeholder tokens) and is not the Play-required URL.
 - If the contact address or entity name changes, update the hosted page **before**
   submitting the next release. A dead or mismatched policy URL is a common cause of
   review rejection.

@@ -5,12 +5,11 @@ import 'package:fitflow/core/design/fitflow_spacing.dart';
 import 'package:fitflow/core/design/fitflow_visual_v2.dart';
 import 'package:fitflow/core/design/fitflow_theme_extension.dart';
 import 'package:fitflow/features/settings/data/privacy_policy_links.dart';
+import 'package:fitflow/features/settings/presentation/privacy_policy_launcher.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 /// In-app explanation of FitFlow V1 data handling, plus the link to the full
-/// hosted policy (`docs/privacy-policy.html`, served at
-/// [PrivacyPolicyLinks.privacyPolicyUrl]).
+/// hosted policy (served at [PrivacyPolicyLinks.privacyPolicyUrl]).
 ///
 /// The offline summary stays the primary content so the screen works with no
 /// network; the URL is always shown as selectable text so it can be copied even
@@ -22,23 +21,11 @@ class PrivacyPolicyScreen extends StatelessWidget {
 
   static const Key onlinePolicyButtonKey = Key('privacy_policy_online_button');
 
-  /// Opens the hosted policy in the system browser. Never throws: a device with
-  /// no browser falls back to the copyable address already on screen.
-  static Future<void> openOnlinePolicy(BuildContext context) async {
-    final messenger = ScaffoldMessenger.of(context);
-    var opened = false;
-    try {
-      opened = await launchUrl(Uri.parse(PrivacyPolicyLinks.privacyPolicyUrl),
-          mode: LaunchMode.externalApplication);
-    } catch (_) {
-      opened = false;
-    }
-    if (!opened) {
-      messenger.showSnackBar(const SnackBar(
-          content: Text(
-              'No browser could be opened. Copy the address shown above.')));
-    }
-  }
+  /// Opens the hosted policy in the system browser through the same launcher
+  /// the Settings tile uses. Never throws: a device with no browser falls back
+  /// to the copyable address already on screen.
+  static Future<void> openOnlinePolicy(BuildContext context) =>
+      openPrivacyPolicyInBrowser(context);
 
   static const List<({String heading, String body})> sections = [
     (

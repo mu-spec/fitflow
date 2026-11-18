@@ -12,6 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'helpers/fake_url_launcher_channel.dart';
 import 'helpers/profile_editor_test_helpers.dart';
 import 'helpers/workout_reminder_test_helpers.dart';
 
@@ -169,9 +170,22 @@ void main() {
       expect(lower.contains('not a medical device'), isTrue);
       expect(lower.contains('allowbackup="false"'), isTrue);
       expect(html.contains('mailto:'), isTrue);
-      // The in-app screen opens exactly the hosted page.
-      expect(PrivacyPolicyLinks.privacyPolicyUrl, startsWith('https://'));
-      expect(PrivacyPolicyLinks.privacyPolicyUrl, endsWith('privacy-policy.html'));
+      // Every entry point opens exactly the official hosted page.
+      expect(
+        PrivacyPolicyLinks.privacyPolicyUrl,
+        'https://mu-spec.github.io/home-workout-privacy/',
+      );
+      final launcherSource =
+          File('lib/features/settings/presentation/privacy_policy_launcher.dart')
+              .readAsStringSync();
+      expect(
+          launcherSource.contains('PrivacyPolicyLinks.privacyPolicyUrl'), isTrue);
+      expect(launcherSource.contains('LaunchMode.externalApplication'), isTrue);
+      expect(
+          File('lib/features/settings/presentation/settings_screen.dart')
+              .readAsStringSync()
+              .contains('openPrivacyPolicyInBrowser'),
+          isTrue);
       expect(
           File('lib/features/settings/presentation/privacy_policy_screen.dart')
               .readAsStringSync()
@@ -203,9 +217,12 @@ void main() {
       expect(combined.contains('no Home Workout account') || combined.contains('does not create an account'), isTrue);
     });
 
-    testWidgets('Settings opens the Privacy Policy', (tester) async {
+    testWidgets('Settings Privacy Policy tile opens the official URL externally',
+        (tester) async {
       SharedPreferences.setMockInitialValues({});
       ensureTimezones();
+      final launcher = FakeUrlLauncherChannel()..install();
+      addTearDown(launcher.uninstall);
       final reminders = FakeWorkoutReminderNotificationService();
       tester.view.physicalSize = const Size(390, 844);
       tester.view.devicePixelRatio = 1;
@@ -229,9 +246,14 @@ void main() {
       await tester.tap(tile);
       await settleProfileFrames(tester);
 
-      expect(find.text('No account and no Home Workout service'), findsOneWidget);
-      expect(find.text('No ads, analytics, or sale of data'), findsOneWidget);
-      expect(find.textContaining('does not diagnose disease'), findsOneWidget);
+      // Tapping the existing tile hands the official policy to the device
+      // browser (useWebView stays false); it does not push a second, in-app
+      // copy of the policy.
+      expect(launcher.calls, hasLength(1));
+      expect(launcher.lastLaunchedUrl,
+          'https://mu-spec.github.io/home-workout-privacy/');
+      expect(launcher.lastUsedWebView, isFalse);
+      expect(find.text('Privacy Policy'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   });

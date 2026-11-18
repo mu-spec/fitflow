@@ -18,6 +18,7 @@ import 'package:fitflow/features/reminders/domain/workout_reminder_preferences.d
 import 'package:fitflow/features/reminders/domain/workout_reminder_time.dart';
 import 'package:fitflow/features/settings/data/appearance_mode.dart';
 import 'package:fitflow/features/settings/data/appearance_storage.dart';
+import 'package:fitflow/features/settings/data/privacy_policy_links.dart';
 import 'package:fitflow/features/settings/presentation/privacy_policy_screen.dart';
 import 'package:fitflow/features/settings/presentation/settings_screen.dart';
 import 'package:fitflow/features/settings/presentation/widgets/utility_presentation.dart';
@@ -31,6 +32,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'helpers/backup_test_helpers.dart';
+import 'helpers/fake_url_launcher_channel.dart';
 import 'helpers/workout_reminder_test_helpers.dart';
 
 void main() {
@@ -94,31 +96,20 @@ void main() {
         Brightness.dark,
       );
 
-      // About remains the existing factual Privacy Policy destination.
+      // The Privacy Policy entry hands the official hosted page to the device
+      // browser; it does not navigate to a second, in-app copy.
+      final launcher = FakeUrlLauncherChannel()..install();
+      addTearDown(launcher.uninstall);
       await tester
           .ensureVisible(find.byKey(SettingsScreen.privacyPolicyTileKey));
       await tester.tap(find.byKey(SettingsScreen.privacyPolicyTileKey));
       await _settle(tester);
-      expect(router.state.uri.path, AppRoutes.privacyPolicy);
-      expect(find.byType(PrivacyPolicyScreen), findsOneWidget);
-      expect(
-        Theme.of(tester.element(find.byType(PrivacyPolicyScreen))).brightness,
-        Brightness.dark,
-      );
-      expect(find.text(PrivacyPolicyScreen.title), findsOneWidget);
+      expect(launcher.lastLaunchedUrl, PrivacyPolicyLinks.privacyPolicyUrl);
+      expect(launcher.lastUsedWebView, isFalse);
+      expect(router.state.uri.path, AppRoutes.settings);
+      // The in-app summary still exists for callers that route to it directly.
       expect(PrivacyPolicyScreen.sections, hasLength(9));
-      for (final section in PrivacyPolicyScreen.sections) {
-        expect(find.text(section.heading), findsOneWidget,
-            reason: section.heading);
-      }
-      expect(
-        find.text(
-            'This page describes how Home Workout handles information in this version of the app.'),
-        findsOneWidget,
-      );
       expect(find.text('About Home Workout'), findsNothing);
-
-      router.go(AppRoutes.settings);
       await _settle(tester);
       final entry = find.byKey(BackupRestoreSettingsEntry.tileKey);
       await tester.ensureVisible(entry);
