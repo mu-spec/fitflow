@@ -1,4 +1,3 @@
-import 'setup_photo_background.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/l10n/enum_labels.dart';
 import 'package:fitflow/l10n/fitflow_l10n.dart';
@@ -7,6 +6,7 @@ import 'package:fitflow/features/onboarding/presentation/environment_step_conten
 import 'package:fitflow/features/onboarding/presentation/equipment_step_content.dart';
 import 'package:fitflow/features/onboarding/presentation/experience_step_content.dart';
 import 'package:fitflow/features/onboarding/presentation/goal_step_content.dart';
+import 'package:fitflow/features/onboarding/presentation/onboarding_design.dart';
 import 'package:fitflow/features/onboarding/presentation/onboarding_shell.dart';
 import 'package:fitflow/features/onboarding/presentation/preferences_step_content.dart';
 import 'package:fitflow/features/onboarding/presentation/widgets/onboarding_intro.dart';
@@ -101,7 +101,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       'environment' => const EnvironmentStepContent(),
       'equipment' => const EquipmentStepContent(),
       'preferences' => const PreferencesStepContent(),
-      'ready' => SetupPhotoPanel(child: Text(body ?? '')),
+      'ready' => OnboardingNote(
+          icon: Icons.check_circle_rounded, text: body ?? ''),
       _ => const SizedBox.shrink(),
     };
   }

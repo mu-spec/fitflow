@@ -21,11 +21,16 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:fitflow/features/onboarding/presentation/setup_photo_background.dart';
+import 'package:fitflow/features/onboarding/presentation/onboarding_design.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'helpers/part6_quality_helpers.dart' as qa;
 import 'helpers/backup_test_helpers.dart';
 import 'helpers/profile_editor_test_helpers.dart';
+
+double contrastRatio(Color a, Color b) {
+  final la = a.computeLuminance(), lb = b.computeLuminance();
+  return (la > lb ? la + .05 : lb + .05) / (la > lb ? lb + .05 : la + .05);
+}
 
 Future<void> pressV2(WidgetTester tester, Finder finder) async {
   await tester.ensureVisible(finder);
@@ -56,51 +61,68 @@ class PendingCapabilitySave extends CapabilityProfileController {
 
 void main() {
   for (final dark in [false, true]) {
-    testWidgets('photo choices retain contrast without opaque cards dark=$dark',
-        (tester) async {
+    testWidgets('light onboarding choices keep readable, distinct states '
+        'dark=$dark', (tester) async {
       await tester.pumpWidget(qa.part6Host(
           dark: dark,
-          child: SetupPhotoTheme(
-              child: SetupPhotoBackground(
-                  exerciseId: 'march_in_place',
-                  child: Scaffold(
-                      backgroundColor: Colors.transparent,
-                      body: SetupPhotoPanel(
-                          child: OnboardingChoice(
-                              label: 'TEST choice',
-                              selected: false,
-                              onSelected: () {})))))));
-      final context = tester.element(find.byType(OnboardingChoice));
-      final label = Theme.of(context).colorScheme.onSurfaceVariant;
-      // Worst-case white photograph under the weakest scrim and one panel.
-      final choice = tester.widget<Material>(find
-          .descendant(
-              of: find.byType(OnboardingChoice),
-              matching: find.byType(Material))
-          .first);
-      final gradient = tester
-          .widgetList<DecoratedBox>(find.byType(DecoratedBox))
-          .map((box) => box.decoration)
-          .whereType<BoxDecoration>()
-          .map((box) => box.gradient)
-          .whereType<LinearGradient>()
-          .first;
-      final weakest = gradient.colors.reduce((a, b) => a.a < b.a ? a : b);
-      final background = Color.alphaBlend(
-          choice.color!, Color.alphaBlend(weakest, Colors.white));
-      expect(
-          (label.computeLuminance() + .05) /
-              (background.computeLuminance() + .05),
-          greaterThanOrEqualTo(4.5));
-      for (final material in tester.widgetList<Material>(find.descendant(
-          of: find.byType(SetupPhotoPanel), matching: find.byType(Material)))) {
-        if (material.color != null) {
-          expect(material.color!.a, lessThan(.7));
-        }
+          child: Scaffold(
+              backgroundColor: OnboardingColors.page,
+              body: Column(children: [
+                OnboardingChoice(
+                    label: 'TEST choice',
+                    helperText: 'TEST helper',
+                    selected: false,
+                    onSelected: () {}),
+                OnboardingChoice(
+                    label: 'TEST selected',
+                    helperText: 'TEST helper',
+                    selected: true,
+                    onSelected: () {}),
+              ]))));
+
+      // Text tokens stay well above the 4.5:1 floor on both card surfaces.
+      for (final surface in [
+        OnboardingColors.surface,
+        OnboardingColors.surfaceSelected
+      ]) {
+        expect(contrastRatio(OnboardingColors.title, surface),
+            greaterThanOrEqualTo(4.5));
+        expect(contrastRatio(OnboardingColors.muted, surface),
+            greaterThanOrEqualTo(4.5));
       }
+      expect(contrastRatio(OnboardingColors.heading, OnboardingColors.page),
+          greaterThanOrEqualTo(4.5));
+      expect(contrastRatio(OnboardingColors.body, OnboardingColors.page),
+          greaterThanOrEqualTo(4.5));
+      // White button text on the primary green.
+      expect(contrastRatio(Colors.white, OnboardingColors.accentDeep),
+          greaterThanOrEqualTo(4.5));
+
+      BoxDecoration surfaceOf(int index) => tester
+          .widget<DecoratedBox>(find
+              .descendant(
+                  of: find.byType(OnboardingChoice).at(index),
+                  matching: find.byType(DecoratedBox))
+              .first)
+          .decoration as BoxDecoration;
+
+      final unselected = surfaceOf(0);
+      final selected = surfaceOf(1);
+      expect(unselected.color, OnboardingColors.surface);
+      expect(selected.color, OnboardingColors.surfaceSelected);
+      expect((selected.border as Border?)?.top.color,
+          OnboardingColors.accent);
+      expect((unselected.border as Border?)?.top.color,
+          isNot(OnboardingColors.accent));
+      expect(
+          tester
+              .widget<Icon>(find.byIcon(Icons.check_circle_rounded))
+              .color,
+          OnboardingColors.accentDeep);
       expect(tester.takeException(), isNull);
     });
   }
+
   for (final size in qa.part6Sizes) {
     for (final dark in [false, true]) {
       for (final scale in [1.0, 2.0]) {
@@ -125,10 +147,18 @@ void main() {
           };
           for (var step = 0; step < 8; step++) {
             expect(find.text('${step + 1} of 8'), findsOneWidget);
-            final backdrop = find.byKey(const Key('setup_fullscreen_photo'));
-            expect(backdrop, findsOneWidget);
-            expect(tester.getSize(backdrop), size);
-            expect(tester.widget<Image>(backdrop).fit, BoxFit.cover);
+            // Every step is a plain white page: no photo backdrop or overlay.
+            expect(find.byKey(const Key('setup_fullscreen_photo')), findsNothing);
+            expect(find.byType(Image), findsNothing);
+            expect(
+                tester
+                    .widget<Scaffold>(find
+                        .descendant(
+                            of: find.byType(OnboardingScreen),
+                            matching: find.byType(Scaffold))
+                        .first)
+                    .backgroundColor,
+                OnboardingColors.page);
             for (var i = 0; i < 8; i++) {
               final segment = tester.widget<AnimatedContainer>(
                   find.byKey(ValueKey('setup_segment_$i')));
