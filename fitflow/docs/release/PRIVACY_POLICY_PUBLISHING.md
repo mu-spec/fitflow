@@ -22,10 +22,10 @@ Every Privacy Policy entry point goes through
 `lib/features/settings/presentation/privacy_policy_launcher.dart`, which hands that
 address to the device's default browser with `url_launcher`
 (`LaunchMode.externalApplication`) and shows a SnackBar with the address if no
-browser can open it. The Settings tile opens the hosted page directly; the in-app
-`PrivacyPolicyScreen` shows the same address as selectable text plus an
-**“Open full policy in browser”** button. If you host the page somewhere else, edit
-that one constant and rebuild — nothing else references the URL.
+browser can open it. The Settings tile is the only Privacy Policy entry in the app
+and it opens the hosted page directly; there is no second, in-app copy of the policy
+to drift out of date. If you host the page somewhere else, edit that one constant and
+rebuild — nothing else references the URL.
 
 ## Three fields to fill in before you publish
 
@@ -67,9 +67,9 @@ domain). Point `privacyPolicyUrl` at it and rebuild.
 - Keep the page consistent with the **Data safety** answers in
   `docs/release/play_data_safety.md` and the health declaration in
   `docs/release/play_health_declaration.md`.
-- The Play-required URL is the hosted page above; the Settings tile opens it in the
-  browser. `PrivacyPolicyScreen` remains the offline in-app summary (accurate, no
-  placeholder tokens) and is not the Play-required URL.
+- The Play-required URL is the hosted page above, and the Settings tile opens exactly
+  that address in the browser. Nothing inside the app restates the policy, so the
+  hosted page is the single source of truth for reviewers and users alike.
 - If the contact address or entity name changes, update the hosted page **before**
   submitting the next release. A dead or mismatched policy URL is a common cause of
   review rejection.

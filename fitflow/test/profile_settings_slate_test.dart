@@ -30,8 +30,7 @@ void main() {
             AppRoutes.fitnessProfile,
             AppRoutes.equipment,
             AppRoutes.workoutPreferences,
-            AppRoutes.backupRestore,
-            AppRoutes.privacyPolicy
+            AppRoutes.backupRestore
           ]) {
             router.go(route);
             await tester.pumpAndSettle();

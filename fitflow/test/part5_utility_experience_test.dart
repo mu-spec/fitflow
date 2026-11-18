@@ -393,8 +393,7 @@ void main() {
     AppRoutes.equipment,
     AppRoutes.workoutPreferences,
     AppRoutes.settings,
-    AppRoutes.backupRestore,
-    AppRoutes.privacyPolicy
+    AppRoutes.backupRestore
   ];
   const sizes = [
     Size(320, 760),

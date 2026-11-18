@@ -161,8 +161,7 @@ void registerPart6Matrix(List<Size> sizes) {
             AppRoutes.equipment,
             AppRoutes.workoutPreferences,
             AppRoutes.settings,
-            AppRoutes.backupRestore,
-            AppRoutes.privacyPolicy
+            AppRoutes.backupRestore
           ];
           for (final route in routes) {
             final router =

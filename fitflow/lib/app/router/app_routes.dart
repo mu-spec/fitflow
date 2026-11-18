@@ -21,9 +21,6 @@ class AppRoutes {
   /// Manual local backup & restore (M18), nested under Settings.
   static const String backupRestore = '$settings/backup-restore';
 
-  /// In-app privacy policy, nested under Settings.
-  static const String privacyPolicy = '$settings/privacy-policy';
-
   /// Offline exercise artwork credits and license, nested under Settings.
   static const String exerciseArtworkCredits = '$settings/exercise-artwork-credits';
 

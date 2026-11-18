@@ -5,7 +5,6 @@ import 'package:fitflow/app/router/app_router.dart';
 import 'package:fitflow/app/router/app_routes.dart';
 import 'package:fitflow/features/backup/domain/backup_format.dart';
 import 'package:fitflow/features/settings/data/privacy_policy_links.dart';
-import 'package:fitflow/features/settings/presentation/privacy_policy_screen.dart';
 import 'package:fitflow/features/settings/presentation/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -154,9 +153,6 @@ void main() {
 
   group('privacy policy', () {
     test('hosted policy is static, complete, and matches the in-app link', () {
-      expect(AppRoutes.privacyPolicy, '/profile/settings/privacy-policy');
-      final router = File('lib/app/router/app_router.dart').readAsStringSync();
-      expect(router.contains("path: 'privacy-policy'"), isTrue);
       final html = File('docs/privacy-policy.html').readAsStringSync();
       final lower = html.toLowerCase();
       // Static page: no scripts, no external subresources, no trackers.
@@ -186,11 +182,6 @@ void main() {
               .readAsStringSync()
               .contains('openPrivacyPolicyInBrowser'),
           isTrue);
-      expect(
-          File('lib/features/settings/presentation/privacy_policy_screen.dart')
-              .readAsStringSync()
-              .contains('PrivacyPolicyLinks.privacyPolicyUrl'),
-          isTrue);
       // Three operator fields are still marked for the developer to fill in.
       final publishing =
           File('docs/release/PRIVACY_POLICY_PUBLISHING.md').readAsStringSync();
@@ -204,17 +195,6 @@ void main() {
       expect(File('docs/release/data_safety_audit.md').existsSync(), isTrue);
       expect(File('docs/release/android_binary_validation.md').existsSync(), isTrue);
       expect(File('docs/release/local_release_validation.md').existsSync(), isTrue);
-    });
-
-    test('in-app policy does not show placeholder tokens or medical claims', () {
-      final combined = PrivacyPolicyScreen.sections.map((section) => section.body).join(' ');
-      expect(combined.contains('TODO'), isFalse);
-      expect(combined.contains('@'), isFalse);
-      expect(combined.toLowerCase().contains('diagnos'), isTrue);
-      expect(combined.toLowerCase().contains('does not diagnose'), isTrue);
-      expect(combined.contains('does not sell Home Workout user data'), isTrue);
-      expect(combined.contains('does not operate a speech server'), isTrue);
-      expect(combined.contains('no Home Workout account') || combined.contains('does not create an account'), isTrue);
     });
 
     testWidgets('Settings Privacy Policy tile opens the official URL externally',

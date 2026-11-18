@@ -19,7 +19,6 @@ import 'package:fitflow/features/reminders/domain/workout_reminder_time.dart';
 import 'package:fitflow/features/settings/data/appearance_mode.dart';
 import 'package:fitflow/features/settings/data/appearance_storage.dart';
 import 'package:fitflow/features/settings/data/privacy_policy_links.dart';
-import 'package:fitflow/features/settings/presentation/privacy_policy_screen.dart';
 import 'package:fitflow/features/settings/presentation/settings_screen.dart';
 import 'package:fitflow/features/settings/presentation/widgets/utility_presentation.dart';
 import 'package:fitflow/features/settings/state/appearance_controller.dart';
@@ -107,8 +106,6 @@ void main() {
       expect(launcher.lastLaunchedUrl, PrivacyPolicyLinks.privacyPolicyUrl);
       expect(launcher.lastUsedWebView, isFalse);
       expect(router.state.uri.path, AppRoutes.settings);
-      // The in-app summary still exists for callers that route to it directly.
-      expect(PrivacyPolicyScreen.sections, hasLength(9));
       expect(find.text('About Home Workout'), findsNothing);
       await _settle(tester);
       final entry = find.byKey(BackupRestoreSettingsEntry.tileKey);
@@ -440,17 +437,6 @@ void main() {
           await _settle(tester);
           expect(find.byType(BackupPreviewCard), findsOneWidget);
         }
-
-        router.go(AppRoutes.privacyPolicy);
-        await _settle(tester);
-        expect(find.byType(PrivacyPolicyScreen), findsOneWidget);
-        await _expectReachable(
-          tester,
-          find.text('Not medical advice'),
-          viewport.size,
-          reason: 'Privacy content should scroll at $viewport',
-        );
-        expect(tester.takeException(), isNull, reason: 'Privacy $viewport');
       } finally {
         await tester.pumpWidget(const SizedBox.shrink());
         router.dispose();
