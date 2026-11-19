@@ -61,8 +61,8 @@ void main() {
     });
 
     test('applicationId candidate is unchanged', () {
-      expect(gradle.contains('namespace = "com.fitflow.fitflow"'), isTrue);
-      expect(gradle.contains('applicationId = "com.fitflow.fitflow"'), isTrue);
+      expect(gradle.contains('namespace = "com.muspec.fitflow"'), isTrue);
+      expect(gradle.contains('applicationId = "com.muspec.fitflow"'), isTrue);
     });
 
     test('launcher label is Home Workout from a string resource', () {
@@ -173,7 +173,7 @@ void main() {
       expect(RegExp(r'src="https?://').hasMatch(html), isFalse);
       expect(RegExp(r'<link[^>]+href="https?://').hasMatch(html), isFalse);
       // It describes this app, not a template for some other product.
-      expect(html.contains('com.fitflow.fitflow'), isTrue);
+      expect(html.contains('com.muspec.fitflow'), isTrue);
       expect(lower.contains('internet permission'), isTrue);
       expect(lower.contains('not a medical device'), isTrue);
       expect(lower.contains('allowbackup="false"'), isTrue);

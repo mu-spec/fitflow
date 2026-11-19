@@ -56,12 +56,12 @@ Manual checks the developer must complete in Play Console. Not done here:
 
 - developer identity verified
 - contact details current
-- package name `com.fitflow.fitflow` registered and accepted before the first upload
+- package name `com.muspec.fitflow` registered and accepted before the first upload
 - payment profile only if the account features require it
 - public developer contact finalized
 - privacy-policy URL hosted and entered (see `PRIVACY_POLICY_PUBLISHING.md`)
 
-`com.fitflow.fitflow` is the current applicationId candidate. It was not renamed. After the first upload, changing it means a different Play listing.
+`com.muspec.fitflow` is the current applicationId candidate. It was not renamed. After the first upload, changing it means a different Play listing.
 
 ## Icon and artwork
 

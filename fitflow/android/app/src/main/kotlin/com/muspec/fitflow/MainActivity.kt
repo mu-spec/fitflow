@@ -1,4 +1,4 @@
-package com.fitflow.fitflow
+package com.muspec.fitflow
 
 import android.content.Intent
 import android.net.Uri

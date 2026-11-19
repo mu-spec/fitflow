@@ -6,7 +6,7 @@ This is a local source/artifact review, not Play approval or a complete policy c
 
 - `build/app/outputs/flutter-apk/app-release.apk`: 31,361,616 bytes, modified 25 October 2026 at 13:28 local time.
 - SHA-256: `094753960B4BF699ACAA8571817C048D53569725B102C61178D603D211806349`.
-- Package `com.fitflow.fitflow`, version 1.0.0 (1), label Home Workout, minimum API 24, target/compile API 36.
+- Package `com.muspec.fitflow`, version 1.0.0 (1), label Home Workout, minimum API 24, target/compile API 36.
 - `apksigner verify --verbose --print-certs`: valid APK Signature Scheme v2, one RSA-2048 signer with a custom certificate, not the standard Android debug certificate. v1/v3/v4 absent; v2 verification succeeds for this minimum API. This does not prove Play App Signing enrollment or an upload-key match for an existing listing.
 - Public certificate SHA-256: `37fa4ab49cff09ec4f9297c8c771f9c548edb7404457a7c8da4236458a066662`.
 - This pre-existing APK does not contain this milestone's changes. The installed phone APK cannot be identified from the repository alone.

@@ -35,7 +35,7 @@ from docx.shared import Pt, RGBColor, Cm
 # --------------------------------------------------------------------------
 APP_NAME = "Home Workout"
 PROJECT_NAME = "FitFlow"
-PACKAGE_ID = "com.fitflow.fitflow"
+PACKAGE_ID = "com.muspec.fitflow"
 VERSION_NAME = "1.0.0"
 VERSION_CODE = "1"
 PLATFORM = "Android (Google Play)"
@@ -208,7 +208,7 @@ def build() -> Path:
     doc.core_properties.subject = "Privacy policy for the Home Workout Android app"
     doc.core_properties.author = "Home Workout (FitFlow)"
     doc.core_properties.comments = (
-        "Describes the release build of Home Workout (com.fitflow.fitflow). "
+        "Describes the release build of Home Workout (com.muspec.fitflow). "
         "Fill in the developer name and privacy contact email before publishing."
     )
 

@@ -29,7 +29,7 @@ fun releaseSigningValue(name: String): String {
 }
 
 android {
-    namespace = "com.fitflow.fitflow"
+    namespace = "com.muspec.fitflow"
     // Explicit Play baseline. Do not inherit Flutter's moving defaults.
     compileSdk = 36
     ndkVersion = flutter.ndkVersion
@@ -73,7 +73,7 @@ android {
     defaultConfig {
         // Candidate for the first Play upload. Confirm and register this exact
         // value in Play Console before upload. Do not rename it after release.
-        applicationId = "com.fitflow.fitflow"
+        applicationId = "com.muspec.fitflow"
         // Android 8.0 baseline. Explicit, never inherited from Flutter defaults.
         minSdk = 26
         targetSdk = 36
